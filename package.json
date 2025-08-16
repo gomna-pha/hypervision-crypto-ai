@@ -25,6 +25,7 @@
   ],
   "author": "Farouk Umar",
   "license": "MIT",
+  "homepage": "https://gomna-pha.github.io/hypervision-crypto-ai",
   "browserslist": {
     "production": [
       ">0.2%",
