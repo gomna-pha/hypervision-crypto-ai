@@ -17,12 +17,24 @@
   },
   "keywords": [
     "cryptocurrency",
-    "hyperbolic-cnn", 
+    "hyperbolic-cnn",
     "machine-learning",
     "fintech",
     "react",
     "real-time-data"
   ],
   "author": "Farouk Umar",
-  "license": "MIT"
+  "license": "MIT",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
