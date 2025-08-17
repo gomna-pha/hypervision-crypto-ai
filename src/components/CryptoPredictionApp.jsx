@@ -339,17 +339,17 @@ const CryptoPredictionApp = () => {
           </div>
           
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div>
+            <div className="bg-cream-light p-2 rounded">
               <span className="text-gray-600">Bid:</span>
-              <span className="font-medium ml-2">${realTimePrice.bid.toFixed(2)}</span>
+              <span className="font-semibold ml-2 text-lightblue-700">${realTimePrice.bid.toFixed(2)}</span>
             </div>
-            <div>
+            <div className="bg-cream-light p-2 rounded">
               <span className="text-gray-600">Ask:</span>
-              <span className="font-medium ml-2">${realTimePrice.ask.toFixed(2)}</span>
+              <span className="font-semibold ml-2 text-lightblue-700">${realTimePrice.ask.toFixed(2)}</span>
             </div>
-            <div>
+            <div className="bg-cream-light p-2 rounded">
               <span className="text-gray-600">Volume:</span>
-              <span className="font-medium ml-2">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
+              <span className="font-semibold ml-2 text-lightblue-700">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
             </div>
           </div>
         </div>
@@ -387,7 +387,7 @@ const CryptoPredictionApp = () => {
       
       <div className="space-y-3 max-h-60 overflow-y-auto">
         {newsData.map((news, index) => (
-          <div key={index} className="p-3 bg-gray-50 rounded border border-gray-200">
+          <div key={index} className="p-3 bg-cream-light rounded-lg border border-lightblue-200 hover:shadow-md transition-shadow">
             <div className="flex items-start justify-between mb-1">
               <div className="font-medium text-sm">{news.title}</div>
               <div className={`w-2 h-2 rounded-full ${
@@ -421,7 +421,7 @@ const CryptoPredictionApp = () => {
       
       <div className="space-y-3">
         {Object.entries(dataSourceHealth).map(([source, health]) => (
-          <div key={source} className="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
+          <div key={source} className="flex items-center justify-between p-3 bg-cream-light rounded-lg border border-lightblue-200 hover:shadow-md transition-shadow">
             <div className="flex items-center gap-3">
               <StatusIndicator status={health.status} />
               <div>
@@ -490,7 +490,7 @@ const CryptoPredictionApp = () => {
                 <Wifi className="w-8 h-8 text-green-500" />
                 <h1 className="text-2xl font-bold text-gray-800">HyperVision Live</h1>
               </div>
-              <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
+              <div className="bg-lightblue-100 text-lightblue-800 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2">
                 <StatusIndicator status="active" pulse={true} />
                 Real-Time AI
               </div>
@@ -500,7 +500,7 @@ const CryptoPredictionApp = () => {
               <select 
                 value={userMode} 
                 onChange={(e) => setUserMode(e.target.value)}
-                className="px-4 py-2 bg-white border border-blue-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="px-4 py-2 bg-white border border-lightblue-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-lightblue-500 hover:border-lightblue-400 transition-colors"
               >
                 <option value="retail">Retail Mode</option>
                 <option value="institutional">Institutional</option>
@@ -536,7 +536,7 @@ const CryptoPredictionApp = () => {
           <select 
             value={selectedAsset} 
             onChange={(e) => setSelectedAsset(e.target.value)}
-            className="px-4 py-2 bg-white border border-blue-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-white border border-lightblue-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-lightblue-500 hover:border-lightblue-400 transition-colors"
           >
             {cryptoAssets.map(asset => (
               <option key={asset} value={asset}>{asset}</option>
@@ -546,7 +546,7 @@ const CryptoPredictionApp = () => {
           <select 
             value={predictionHorizon} 
             onChange={(e) => setPredictionHorizon(e.target.value)}
-            className="px-4 py-2 bg-white border border-blue-200 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 bg-white border border-lightblue-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-lightblue-500 hover:border-lightblue-400 transition-colors"
           >
             <option value="1h">1 Hour</option>
             <option value="4h">4 Hours</option>
