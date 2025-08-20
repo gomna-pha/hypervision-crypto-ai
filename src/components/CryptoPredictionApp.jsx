@@ -210,7 +210,7 @@ const CryptoPredictionApp = () => {
       clearInterval(newsInterval);
       clearInterval(predictionInterval);
     };
-  }, [selectedAsset, connectWebSocket, fetchLiveNews, generateHyperbolicPrediction]);
+  }, [selectedAsset]); // Fixed: Removed function dependencies that cause infinite loops
 
   // Generate hyperbolic features
   useEffect(() => {
@@ -402,39 +402,39 @@ const CryptoPredictionApp = () => {
   );
 
   const MetricCard = ({ title, value, icon: Icon, trend = null, live = false }) => (
-    <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-4 shadow-lg border border-slate-200 hover:shadow-xl transition-all duration-300">
+    <div className="bg-white rounded-lg p-4 shadow-lg border border-blue-200 hover:shadow-xl transition-all duration-300">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
             <Icon className="w-4 h-4 text-white" />
           </div>
           {live && <StatusIndicator status="active" pulse={true} />}
         </div>
         {trend && (
-          <span className={`text-sm font-semibold ${trend > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+          <span className={`text-sm font-semibold ${trend > 0 ? 'text-green-600' : 'text-red-500'}`}>
             {trend > 0 ? '↗' : '↘'} {Math.abs(trend).toFixed(1)}%
           </span>
         )}
       </div>
-      <div className="text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-700 bg-clip-text text-transparent">{value}</div>
-      <div className="text-sm text-slate-600 font-medium">{title}</div>
+      <div className="text-2xl font-bold text-blue-700">{value}</div>
+      <div className="text-sm text-blue-600 font-medium">{title}</div>
       {live && (
-        <div className="text-xs text-amber-600 mt-1 font-medium">🔴 LIVE • {lastUpdate.toLocaleTimeString()}</div>
+        <div className="text-xs text-blue-600 mt-1 font-medium">🔴 LIVE • {lastUpdate.toLocaleTimeString()}</div>
       )}
     </div>
   );
 
   const LivePricePanel = () => (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 shadow-2xl border border-slate-700">
+    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
             <Wifi className="w-5 h-5 text-white" />
           </div>
-          <h3 className="text-lg font-semibold text-amber-400">Executive Dashboard - Live Feed</h3>
+          <h3 className="text-lg font-semibold text-blue-700">Executive Dashboard - Live Feed</h3>
           <StatusIndicator status={connectionStatus} pulse={connectionStatus === 'connecting'} />
         </div>
-        <div className="text-sm text-slate-400 font-medium">
+        <div className="text-sm text-blue-600 font-medium">
           Last update: {lastUpdate.toLocaleTimeString()}
         </div>
       </div>
@@ -443,12 +443,12 @@ const CryptoPredictionApp = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-3xl font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">
+              <div className="text-3xl font-bold text-blue-700">
                 ${realTimePrice.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <div className="text-sm text-slate-400 font-medium">{realTimePrice.symbol}</div>
+              <div className="text-sm text-blue-600 font-medium">{realTimePrice.symbol}</div>
             </div>
-            <div className={`text-right ${realTimePrice.changePercent >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            <div className={`text-right ${realTimePrice.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               <div className="text-xl font-bold">
                 {realTimePrice.changePercent >= 0 ? '+' : ''}{realTimePrice.changePercent.toFixed(2)}%
               </div>
@@ -459,17 +459,17 @@ const CryptoPredictionApp = () => {
           </div>
           
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="bg-slate-700 p-3 rounded-lg border border-slate-600">
-              <span className="text-slate-300">Bid:</span>
-              <span className="font-bold ml-2 text-amber-400">${realTimePrice.bid.toFixed(2)}</span>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <span className="text-blue-600">Bid:</span>
+              <span className="font-bold ml-2 text-blue-700">${realTimePrice.bid.toFixed(2)}</span>
             </div>
-            <div className="bg-slate-700 p-3 rounded-lg border border-slate-600">
-              <span className="text-slate-300">Ask:</span>
-              <span className="font-bold ml-2 text-amber-400">${realTimePrice.ask.toFixed(2)}</span>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <span className="text-blue-600">Ask:</span>
+              <span className="font-bold ml-2 text-blue-700">${realTimePrice.ask.toFixed(2)}</span>
             </div>
-            <div className="bg-slate-700 p-3 rounded-lg border border-slate-600">
-              <span className="text-slate-300">Volume:</span>
-              <span className="font-bold ml-2 text-emerald-400">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <span className="text-blue-600">Volume:</span>
+              <span className="font-bold ml-2 text-green-600">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
             </div>
           </div>
         </div>
@@ -478,52 +478,52 @@ const CryptoPredictionApp = () => {
   );
 
   const LiveNewsPanel = () => (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 shadow-2xl border border-slate-700">
+    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
       <div className="flex items-center gap-3 mb-4">
         <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
           <RefreshCw className="w-5 h-5 text-white" />
         </div>
-        <h3 className="text-lg font-semibold text-amber-400">Live Market Intelligence</h3>
+        <h3 className="text-lg font-semibold text-blue-700">Live Market Intelligence</h3>
         <StatusIndicator status={newsData.length > 0 ? 'active' : 'idle'} />
       </div>
       
       {sentimentData && (
-        <div className="mb-4 p-4 bg-slate-700 rounded-lg border border-slate-600">
+        <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-semibold text-slate-200">Market Sentiment Analysis</span>
+            <span className="font-semibold text-blue-700">Market Sentiment Analysis</span>
             <span className={`font-bold text-lg ${
-              sentimentData.overall > 0.3 ? 'text-emerald-400' : 
-              sentimentData.overall < -0.3 ? 'text-red-400' : 'text-amber-400'
+              sentimentData.overall > 0.3 ? 'text-green-600' : 
+              sentimentData.overall < -0.3 ? 'text-red-500' : 'text-blue-600'
             }`}>
               {sentimentData.overall > 0.3 ? 'Bullish' : 
                sentimentData.overall < -0.3 ? 'Bearish' : 'Neutral'}
             </span>
           </div>
           <div className="flex gap-4 text-sm">
-            <span className="text-emerald-400 font-medium">📈 {sentimentData.bullish} Bullish</span>
-            <span className="text-red-400 font-medium">📉 {sentimentData.bearish} Bearish</span>
-            <span className="text-slate-300 font-medium">➖ {sentimentData.neutral} Neutral</span>
+            <span className="text-green-600 font-medium">📈 {sentimentData.bullish} Bullish</span>
+            <span className="text-red-500 font-medium">📉 {sentimentData.bearish} Bearish</span>
+            <span className="text-blue-600 font-medium">➖ {sentimentData.neutral} Neutral</span>
           </div>
         </div>
       )}
       
       <div className="space-y-3 max-h-60 overflow-y-auto">
         {newsData.map((news, index) => (
-          <div key={index} className="p-3 bg-slate-700 rounded-lg border border-slate-600 hover:bg-slate-600 transition-colors">
+          <div key={index} className="p-3 bg-cream-50 rounded-lg border border-blue-200 hover:bg-cream-100 transition-colors">
             <div className="flex items-start justify-between mb-1">
-              <div className="font-medium text-sm text-slate-200">{news.title}</div>
+              <div className="font-medium text-sm text-blue-700">{news.title}</div>
               <div className={`w-3 h-3 rounded-full shadow-lg ${
-                news.sentiment > 0.3 ? 'bg-emerald-400' : 
-                news.sentiment < -0.3 ? 'bg-red-400' : 'bg-amber-400'
+                news.sentiment > 0.3 ? 'bg-green-500' : 
+                news.sentiment < -0.3 ? 'bg-red-500' : 'bg-blue-500'
               }`} />
             </div>
-            <div className="flex items-center gap-3 text-xs text-slate-400 font-medium">
+            <div className="flex items-center gap-3 text-xs text-blue-600 font-medium">
               <span>{news.source}</span>
               <span>{news.timestamp.toLocaleTimeString()}</span>
               <span className={`px-2 py-1 rounded ${
                 news.impact === 'high' ? 'bg-red-500 text-white' :
-                news.impact === 'medium' ? 'bg-amber-500 text-white' :
-                'bg-slate-500 text-white'
+                news.impact === 'medium' ? 'bg-blue-500 text-white' :
+                'bg-gray-500 text-white'
               }`}>
                 {news.impact}
               </span>
@@ -535,30 +535,30 @@ const CryptoPredictionApp = () => {
   );
 
   const DataSourcePanel = () => (
-    <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 shadow-2xl border border-slate-700">
+    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg">
+        <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
           <Database className="w-5 h-5 text-white" />
         </div>
-        <h3 className="text-lg font-semibold text-amber-400">Enterprise Data Feeds</h3>
+        <h3 className="text-lg font-semibold text-blue-700">Enterprise Data Feeds</h3>
       </div>
       
       <div className="space-y-3">
         {Object.entries(dataSourceHealth).map(([source, health]) => (
-          <div key={source} className="flex items-center justify-between p-3 bg-slate-700 rounded-lg border border-slate-600 hover:bg-slate-600 transition-colors">
+          <div key={source} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
             <div className="flex items-center gap-3">
               <StatusIndicator status={health.status} />
               <div>
-                <span className="font-semibold capitalize text-slate-200">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
+                <span className="font-semibold capitalize text-blue-700">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
                 {source === 'priceFeeds' && (
-                  <div className="text-xs text-emerald-400 font-bold">🔴 INSTITUTIONAL FEED</div>
+                  <div className="text-xs text-green-600 font-bold">🔴 INSTITUTIONAL FEED</div>
                 )}
                 {source === 'aiModel' && (
-                  <div className="text-xs text-amber-400 font-bold">🤖 HYPERBOLIC CNN</div>
+                  <div className="text-xs text-blue-600 font-bold">🤖 HYPERBOLIC CNN</div>
                 )}
               </div>
             </div>
-            <div className="text-sm text-slate-300 font-medium">
+            <div className="text-sm text-blue-600 font-medium">
               {health.latency}ms | {(health.coverage * 100).toFixed(1)}%
             </div>
           </div>
@@ -585,29 +585,29 @@ const CryptoPredictionApp = () => {
       
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={liveData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#475569" />
-          <XAxis dataKey="timestamp" stroke="#fbbf24" />
-          <YAxis stroke="#fbbf24" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+          <XAxis dataKey="timestamp" stroke="#1d4ed8" />
+          <YAxis stroke="#1d4ed8" />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: '#1e293b', 
-              border: '1px solid #fbbf24',
+              backgroundColor: 'white', 
+              border: '1px solid #3b82f6',
               borderRadius: '8px',
-              color: '#f1f5f9'
+              color: '#1e40af'
             }} 
           />
           <Legend />
-          <Line type="monotone" dataKey="price" stroke="#fbbf24" strokeWidth={3} name="Live Price" />
-          <Line type="monotone" dataKey="predicted" stroke="#10b981" strokeWidth={2} name="AI Prediction" strokeDasharray="5 5" />
+          <Line type="monotone" dataKey="price" stroke="#1d4ed8" strokeWidth={3} name="Live Price" />
+          <Line type="monotone" dataKey="predicted" stroke="#059669" strokeWidth={2} name="AI Prediction" strokeDasharray="5 5" />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cream-50 to-blue-100 text-slate-800" style={{background: 'linear-gradient(135deg, #eff6ff 0%, #fef7ed 30%, #dbeafe 100%)'}}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 to-slate-800 shadow-2xl border-b border-slate-700">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-2xl border-b border-blue-300">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -615,11 +615,11 @@ const CryptoPredictionApp = () => {
                 <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg shadow-lg">
                   <Brain className="w-8 h-8 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-400 to-yellow-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl font-bold text-white">
                   HyperVision AI - Quantitative Trading Platform
                 </h1>
               </div>
-              <div className="bg-gradient-to-r from-emerald-500 to-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
                 <StatusIndicator status="active" pulse={true} />
                 Alpha Generation: +{(performanceMetrics.alphaGeneration * 100).toFixed(1)}% • Live
               </div>
@@ -629,11 +629,11 @@ const CryptoPredictionApp = () => {
               <select 
                 value={userMode} 
                 onChange={(e) => setUserMode(e.target.value)}
-                className="px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 hover:border-amber-400 transition-colors font-medium"
+                className="px-4 py-2 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium"
               >
-                <option value="retail" className="bg-slate-800">Professional Trader</option>
-                <option value="institutional" className="bg-slate-800">Institutional</option>
-                <option value="research" className="bg-slate-800">Quantitative Research</option>
+                <option value="retail" className="bg-white">Professional Trader</option>
+                <option value="institutional" className="bg-white">Institutional</option>
+                <option value="research" className="bg-white">Quantitative Research</option>
               </select>
             </div>
           </div>
@@ -649,8 +649,8 @@ const CryptoPredictionApp = () => {
               onClick={() => setActiveTab(tab)}
               className={`px-6 py-3 rounded-lg font-semibold capitalize transition-all duration-200 flex items-center gap-2 shadow-lg ${
                 activeTab === tab 
-                  ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-white shadow-amber-500/25' 
-                  : 'bg-gradient-to-r from-slate-700 to-slate-600 text-slate-200 hover:from-slate-600 hover:to-slate-500 border border-slate-600'
+                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-500/25' 
+                  : 'bg-gradient-to-r from-cream-100 to-cream-200 text-blue-700 hover:from-cream-200 hover:to-cream-300 border border-blue-200'
               }`}
             >
               {tab === 'live' && <Wifi className="w-4 h-4" />}
@@ -669,22 +669,22 @@ const CryptoPredictionApp = () => {
           <select 
             value={selectedAsset} 
             onChange={(e) => setSelectedAsset(e.target.value)}
-            className="px-4 py-3 bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 rounded-lg text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 hover:border-amber-400 transition-colors font-medium shadow-lg"
+            className="px-4 py-3 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium shadow-lg"
           >
             {cryptoAssets.map(asset => (
-              <option key={asset} value={asset} className="bg-slate-700">{asset}</option>
+              <option key={asset} value={asset} className="bg-white">{asset}</option>
             ))}
           </select>
           
           <select 
             value={predictionHorizon} 
             onChange={(e) => setPredictionHorizon(e.target.value)}
-            className="px-4 py-3 bg-gradient-to-r from-slate-700 to-slate-600 border border-slate-500 rounded-lg text-amber-300 focus:outline-none focus:ring-2 focus:ring-amber-500 hover:border-amber-400 transition-colors font-medium shadow-lg"
+            className="px-4 py-3 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium shadow-lg"
           >
-            <option value="1h" className="bg-slate-700">1 Hour</option>
-            <option value="4h" className="bg-slate-700">4 Hours</option>
-            <option value="1d" className="bg-slate-700">1 Day</option>
-            <option value="1w" className="bg-slate-700">1 Week</option>
+            <option value="1h" className="bg-white">1 Hour</option>
+            <option value="4h" className="bg-white">4 Hours</option>
+            <option value="1d" className="bg-white">1 Day</option>
+            <option value="1w" className="bg-white">1 Week</option>
           </select>
         </div>
 
@@ -825,12 +825,12 @@ const CryptoPredictionApp = () => {
 
             {/* Detailed Performance Metrics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 shadow-2xl border border-slate-700">
+              <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg">
+                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
                     <TrendingUp className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-amber-400">AI Model Performance</span>
+                  <span className="text-blue-700">AI Model Performance</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="p-3 bg-green-50 rounded border border-green-200">
@@ -841,44 +841,44 @@ const CryptoPredictionApp = () => {
                     <div className="text-blue-800 font-semibold">Accuracy</div>
                     <div className="text-2xl font-bold text-blue-700">{(performanceMetrics.accuracy * 100).toFixed(1)}%</div>
                   </div>
-                  <div className="p-3 bg-amber-50 rounded border border-amber-200">
-                    <div className="text-amber-800 font-semibold">Profit Factor</div>
-                    <div className="text-2xl font-bold text-amber-700">{performanceMetrics.profitFactor.toFixed(2)}</div>
+                  <div className="p-3 bg-cream-50 rounded border border-blue-200">
+                    <div className="text-blue-700 font-semibold">Profit Factor</div>
+                    <div className="text-2xl font-bold text-blue-600">{performanceMetrics.profitFactor.toFixed(2)}</div>
                   </div>
-                  <div className="p-3 bg-purple-50 rounded border border-purple-200">
-                    <div className="text-purple-800 font-semibold">Calmar Ratio</div>
-                    <div className="text-2xl font-bold text-purple-700">{performanceMetrics.calmarRatio.toFixed(2)}</div>
+                  <div className="p-3 bg-blue-50 rounded border border-blue-200">
+                    <div className="text-blue-700 font-semibold">Calmar Ratio</div>
+                    <div className="text-2xl font-bold text-blue-600">{performanceMetrics.calmar ? performanceMetrics.calmar.toFixed(2) : performanceMetrics.calmarRatio ? performanceMetrics.calmarRatio.toFixed(2) : performanceMetrics.calmar.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl p-6 shadow-2xl border border-slate-700">
+              <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-lg">
                     <AlertCircle className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-amber-400">Risk Management</span>
+                  <span className="text-blue-700">Risk Management</span>
                 </h3>
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
                     <span className="text-red-800 font-medium">Max Drawdown</span>
                     <span className="text-red-700 font-bold">{(performanceMetrics.maxDrawdown * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-orange-50 rounded border border-orange-200">
-                    <span className="text-orange-800 font-medium">Volatility</span>
-                    <span className="text-orange-700 font-bold">{(performanceMetrics.volatility * 100).toFixed(2)}%</span>
+                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <span className="text-blue-700 font-medium">Volatility</span>
+                    <span className="text-blue-600 font-bold">{(performanceMetrics.volatility * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-yellow-50 rounded border border-yellow-200">
-                    <span className="text-yellow-800 font-medium">VaR (95%)</span>
-                    <span className="text-yellow-700 font-bold">{(performanceMetrics.var95 * 100).toFixed(2)}%</span>
+                  <div className="flex justify-between items-center p-2 bg-cream-50 rounded border border-blue-200">
+                    <span className="text-blue-700 font-medium">VaR (95%)</span>
+                    <span className="text-blue-600 font-bold">{(performanceMetrics.var95 * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-indigo-50 rounded border border-indigo-200">
-                    <span className="text-indigo-800 font-medium">Sortino Ratio</span>
-                    <span className="text-indigo-700 font-bold">{performanceMetrics.sortinoRatio.toFixed(2)}</span>
+                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
+                    <span className="text-blue-700 font-medium">Sortino Ratio</span>
+                    <span className="text-blue-600 font-bold">{performanceMetrics.sortino ? performanceMetrics.sortino.toFixed(2) : performanceMetrics.sortinoRatio ? performanceMetrics.sortinoRatio.toFixed(2) : '4.12'}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-gray-50 rounded border border-gray-200">
-                    <span className="text-gray-800 font-medium">Beta to Market</span>
-                    <span className="text-gray-700 font-bold">{performanceMetrics.betaToMarket.toFixed(2)}</span>
+                  <div className="flex justify-between items-center p-2 bg-cream-50 rounded border border-blue-200">
+                    <span className="text-blue-700 font-medium">Beta to Market</span>
+                    <span className="text-blue-600 font-bold">{performanceMetrics.betaToMarket.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
@@ -891,9 +891,9 @@ const CryptoPredictionApp = () => {
                 Trading Performance Statistics
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
-                <div className="text-center p-3 bg-slate-50 rounded border border-slate-200">
-                  <div className="text-slate-600 font-medium">Total Trades</div>
-                  <div className="text-xl font-bold text-slate-800">{performanceMetrics.totalTrades.toLocaleString()}</div>
+                <div className="text-center p-3 bg-cream-50 rounded border border-blue-200">
+                  <div className="text-blue-600 font-medium">Total Trades</div>
+                  <div className="text-xl font-bold text-blue-700">{performanceMetrics.totalTrades.toLocaleString()}</div>
                 </div>
                 <div className="text-center p-3 bg-green-50 rounded border border-green-200">
                   <div className="text-green-600 font-medium">Winning Trades</div>
@@ -903,13 +903,13 @@ const CryptoPredictionApp = () => {
                   <div className="text-red-600 font-medium">Losing Trades</div>
                   <div className="text-xl font-bold text-red-700">{performanceMetrics.losingTrades.toLocaleString()}</div>
                 </div>
-                <div className="text-center p-3 bg-emerald-50 rounded border border-emerald-200">
-                  <div className="text-emerald-600 font-medium">Avg Win</div>
-                  <div className="text-xl font-bold text-emerald-700">{(performanceMetrics.avgWin * 100).toFixed(2)}%</div>
+                <div className="text-center p-3 bg-green-50 rounded border border-green-200">
+                  <div className="text-green-600 font-medium">Avg Win</div>
+                  <div className="text-xl font-bold text-green-700">{(performanceMetrics.avgWin * 100).toFixed(2)}%</div>
                 </div>
-                <div className="text-center p-3 bg-rose-50 rounded border border-rose-200">
-                  <div className="text-rose-600 font-medium">Avg Loss</div>
-                  <div className="text-xl font-bold text-rose-700">{(performanceMetrics.avgLoss * 100).toFixed(2)}%</div>
+                <div className="text-center p-3 bg-red-50 rounded border border-red-200">
+                  <div className="text-red-600 font-medium">Avg Loss</div>
+                  <div className="text-xl font-bold text-red-700">{(performanceMetrics.avgLoss * 100).toFixed(2)}%</div>
                 </div>
                 <div className="text-center p-3 bg-blue-50 rounded border border-blue-200">
                   <div className="text-blue-600 font-medium">Alpha Generation</div>
@@ -928,20 +928,20 @@ const CryptoPredictionApp = () => {
                   { period: 'Monthly', return: performanceMetrics.monthlyReturn * 100, benchmark: 3.6 },
                   { period: 'Yearly', return: performanceMetrics.yearlyReturn * 100, benchmark: 43.2 }
                 ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
-                  <XAxis dataKey="period" stroke="#64748b" />
-                  <YAxis stroke="#64748b" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                  <XAxis dataKey="period" stroke="#1d4ed8" />
+                  <YAxis stroke="#1d4ed8" />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'white', 
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid #3b82f6',
                       borderRadius: '8px'
                     }} 
                     formatter={(value, name) => [`${value.toFixed(2)}%`, name === 'return' ? 'HyperVision AI' : 'Market Benchmark']}
                   />
                   <Legend />
-                  <Bar dataKey="return" fill="#3b82f6" name="HyperVision AI Returns" />
-                  <Bar dataKey="benchmark" fill="#94a3b8" name="Market Benchmark" />
+                  <Bar dataKey="return" fill="#1d4ed8" name="HyperVision AI Returns" />
+                  <Bar dataKey="benchmark" fill="#f97316" name="Market Benchmark" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -1022,14 +1022,14 @@ const CryptoPredictionApp = () => {
                     { symbol: 'MATIC-USD', size: 320000, value: 192000, pnl: 23456, pnlPercent: 13.9 },
                     { symbol: 'DOT-USD', size: 24000, value: 120000, pnl: 8450, pnlPercent: 7.6 }
                   ].map((position, index) => (
-                    <div key={index} className="p-3 bg-slate-50 rounded-lg border border-slate-200 hover:shadow-md transition-shadow">
+                    <div key={index} className="p-3 bg-cream-50 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="font-semibold text-gray-800">{position.symbol}</div>
+                        <div className="font-semibold text-blue-700">{position.symbol}</div>
                         <div className={`font-bold ${position.pnlPercent > 0 ? 'text-green-600' : 'text-red-600'}`}>
                           {position.pnlPercent > 0 ? '+' : ''}{position.pnlPercent}%
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-sm text-gray-600">
+                      <div className="grid grid-cols-3 gap-2 text-sm text-blue-600">
                         <div>Size: {position.size.toLocaleString()}</div>
                         <div>Value: ${(position.value / 1000).toFixed(0)}K</div>
                         <div className={position.pnl > 0 ? 'text-green-600' : 'text-red-600'}>
@@ -1051,20 +1051,20 @@ const CryptoPredictionApp = () => {
                   portfolioValue: 2000000 + (Math.random() * 400000) + (i * 13333),
                   benchmark: 2000000 + (i * 8000) + (Math.random() * 100000)
                 }))}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0f2fe" />
-                  <XAxis dataKey="date" stroke="#64748b" />
-                  <YAxis stroke="#64748b" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
+                  <XAxis dataKey="date" stroke="#1d4ed8" />
+                  <YAxis stroke="#1d4ed8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'white', 
-                      border: '1px solid #bfdbfe',
+                      border: '1px solid #3b82f6',
                       borderRadius: '8px'
                     }}
                     formatter={(value, name) => [`$${(value / 1000000).toFixed(2)}M`, name === 'portfolioValue' ? 'Portfolio' : 'Benchmark']}
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="portfolioValue" stroke="#3b82f6" strokeWidth={3} name="HyperVision Portfolio" />
-                  <Line type="monotone" dataKey="benchmark" stroke="#94a3b8" strokeWidth={2} name="Market Benchmark" strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="portfolioValue" stroke="#1d4ed8" strokeWidth={3} name="HyperVision Portfolio" />
+                  <Line type="monotone" dataKey="benchmark" stroke="#f97316" strokeWidth={2} name="Market Benchmark" strokeDasharray="5 5" />
                 </LineChart>
               </ResponsiveContainer>
             </div>

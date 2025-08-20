@@ -1,15 +1,12 @@
 module.exports = {
   apps: [{
-    name: "hypervision-crypto",
-    script: "npm",
-    args: "start",
+    name: 'crypto-app',
+    script: 'npm',
+    args: 'start',
+    cwd: '/home/user/webapp',
     env: {
-      PORT: 3000,
-      BROWSER: "none",
-      HOST: "0.0.0.0"
-    },
-    watch: false,
-    autorestart: true,
-    max_memory_restart: "500M"
+      NODE_ENV: 'development',
+      BROWSER: 'none'
+    }
   }]
 };
