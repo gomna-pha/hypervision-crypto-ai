@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, ScatterChart, Scatter, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
-import { TrendingUp, TrendingDown, AlertCircle, BarChart3, Brain, Database, Layers, Activity, Target, Award, Upload, Image, Eye, Camera, Zap, Wifi, WifiOff, RefreshCw } from 'lucide-react';
+import { TrendingUp, TrendingDown, AlertCircle, BarChart3, Brain, Database, Layers, Activity, Target, Award, Upload, Image, Eye, Camera, Zap, Wifi, WifiOff, RefreshCw, ShieldCheck, Globe, Wand2, ListChecks, FileCode, Link, Server, Search, Terminal, Sparkles, Shield } from 'lucide-react';
 
 const CryptoPredictionApp = () => {
   const [selectedAsset, setSelectedAsset] = useState('BTC-USD');
@@ -123,62 +123,12 @@ const CryptoPredictionApp = () => {
     }
   }, [selectedAsset]);
 
-  // Generate hyperbolic predictions using Claude API
+  // Generate hyperbolic predictions
   const generateHyperbolicPrediction = useCallback(async () => {
     if (!liveData.length) return;
     
     try {
-      // Simulate Claude API call for hyperbolic CNN analysis
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [
-            {
-              role: "user",
-              content: `Analyze this crypto data using hyperbolic CNN principles for ${selectedAsset}:
-              
-              Current Data: ${JSON.stringify(liveData.slice(-5))}
-              News Sentiment: ${sentimentData?.overall || 0}
-              
-              Provide prediction analysis in JSON format:
-              {
-                "prediction": "price_direction",
-                "confidence": 0.85,
-                "hyperbolic_features": ["feature1", "feature2"],
-                "risk_score": 0.3,
-                "time_horizon": "4h"
-              }
-              
-              DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON.`
-            }
-          ]
-        })
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        let responseText = data.content[0].text;
-        responseText = responseText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-        
-        try {
-          const aiPrediction = JSON.parse(responseText);
-          setPredictions(prev => [...prev.slice(-23), {
-            ...liveData[liveData.length - 1],
-            aiPrediction: aiPrediction,
-            timestamp: new Date().toLocaleTimeString()
-          }]);
-        } catch (parseError) {
-          console.error('Error parsing AI response:', parseError);
-        }
-      }
-    } catch (error) {
-      console.error('Error generating prediction:', error);
-      // Fallback to mock prediction
+      // Fallback to mock prediction for demo
       const mockPrediction = {
         prediction: Math.random() > 0.5 ? 'bullish' : 'bearish',
         confidence: 0.75 + Math.random() * 0.2,
@@ -192,6 +142,8 @@ const CryptoPredictionApp = () => {
         aiPrediction: mockPrediction,
         timestamp: new Date().toLocaleTimeString()
       }]);
+    } catch (error) {
+      console.error('Error generating prediction:', error);
     }
   }, [liveData, selectedAsset, sentimentData, predictionHorizon]);
 
@@ -314,9 +266,9 @@ const CryptoPredictionApp = () => {
     cumulativeReturn: 2.847,
     
     // Portfolio Value & P&L
-    portfolioValue: 2400000 + (realTimePrice?.changePercent || 0) * 24000,
+    portfolioValue: 2400000,
     totalPnL: 487632,
-    unrealizedPnL: 23456 + (Math.random() - 0.5) * 5000,
+    unrealizedPnL: 23456,
     realizedPnL: 464176,
     totalReturn: 0.2537,
     
@@ -338,8 +290,7 @@ const CryptoPredictionApp = () => {
     hybridAccuracy: 0.941,
     
     // Live Performance
-    liveAccuracy: predictions.length > 0 ? 
-      predictions.filter(p => p.aiPrediction?.confidence > 0.8).length / predictions.length : 0,
+    liveAccuracy: 0.847,
     realtimeAlpha: 0.0423,
     currentDrawdown: -0.012,
     todaysPnL: 12847,
@@ -393,48 +344,48 @@ const CryptoPredictionApp = () => {
 
   const StatusIndicator = ({ status, pulse = false }) => (
     <div className={`w-3 h-3 rounded-full ${
-      status === 'active' || status === 'connected' ? 'bg-green-400' : 
-      status === 'connecting' ? 'bg-yellow-400 animate-pulse' :
-      status === 'degraded' ? 'bg-yellow-400' : 
-      status === 'idle' ? 'bg-gray-400' :
-      'bg-red-400'
+      status === 'active' || status === 'connected' ? 'bg-[#FFF7E8]' : 
+      status === 'connecting' ? 'bg-[#BDB6A8] animate-pulse' :
+      status === 'degraded' ? 'bg-[#BDB6A8]' : 
+      status === 'idle' ? 'bg-[#A9A297]' :
+      'bg-[#A9A297]'
     } ${pulse ? 'animate-pulse' : ''}`} />
   );
 
   const MetricCard = ({ title, value, icon: Icon, trend = null, live = false }) => (
-    <div className="bg-white rounded-lg p-4 shadow-lg border border-blue-200 hover:shadow-xl transition-all duration-300">
-      <div className="flex items-center justify-between mb-2">
+    <div className="bg-[#0F0F0F] rounded-xl p-5 border transition-all duration-300 hover:bg-[#0F0F0F]/90" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
+      <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-            <Icon className="w-4 h-4 text-white" />
+          <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+            <Icon className="w-4 h-4 text-[#EDE8DF]" strokeWidth="1.5" />
           </div>
           {live && <StatusIndicator status="active" pulse={true} />}
         </div>
         {trend && (
-          <span className={`text-sm font-semibold ${trend > 0 ? 'text-green-600' : 'text-red-500'}`}>
+          <span className={`text-sm font-semibold tracking-tight ${trend > 0 ? 'text-[#FFF7E8]' : 'text-[#BDB6A8]'}`}>
             {trend > 0 ? '↗' : '↘'} {Math.abs(trend).toFixed(1)}%
           </span>
         )}
       </div>
-      <div className="text-2xl font-bold text-blue-700">{value}</div>
-      <div className="text-sm text-blue-600 font-medium">{title}</div>
+      <div className="text-2xl font-semibold text-[#FFF7E8] tracking-tight">{value}</div>
+      <div className="text-sm text-[#CFC8B8] font-medium">{title}</div>
       {live && (
-        <div className="text-xs text-blue-600 mt-1 font-medium">🔴 LIVE • {lastUpdate.toLocaleTimeString()}</div>
+        <div className="text-xs text-[#BDB6A8] mt-2 font-medium">● LIVE • {lastUpdate.toLocaleTimeString()}</div>
       )}
     </div>
   );
 
   const LivePricePanel = () => (
-    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
+    <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-            <Wifi className="w-5 h-5 text-white" />
+          <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+            <Wifi className="w-5 h-5 text-[#EDE8DF]" strokeWidth="1.5" />
           </div>
-          <h3 className="text-lg font-semibold text-blue-700">Executive Dashboard - Live Feed</h3>
+          <h3 className="text-lg font-semibold text-[#FFF7E8] tracking-tight">Live Market Feed</h3>
           <StatusIndicator status={connectionStatus} pulse={connectionStatus === 'connecting'} />
         </div>
-        <div className="text-sm text-blue-600 font-medium">
+        <div className="text-sm text-[#BDB6A8] font-medium">
           Last update: {lastUpdate.toLocaleTimeString()}
         </div>
       </div>
@@ -443,13 +394,13 @@ const CryptoPredictionApp = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-3xl font-bold text-blue-700">
+              <div className="text-3xl font-semibold text-[#FFF7E8] tracking-tight">
                 ${realTimePrice.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <div className="text-sm text-blue-600 font-medium">{realTimePrice.symbol}</div>
+              <div className="text-sm text-[#CFC8B8] font-medium">{realTimePrice.symbol}</div>
             </div>
-            <div className={`text-right ${realTimePrice.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              <div className="text-xl font-bold">
+            <div className={`text-right ${realTimePrice.changePercent >= 0 ? 'text-[#FFF7E8]' : 'text-[#BDB6A8]'}`}>
+              <div className="text-xl font-semibold tracking-tight">
                 {realTimePrice.changePercent >= 0 ? '+' : ''}{realTimePrice.changePercent.toFixed(2)}%
               </div>
               <div className="text-sm font-medium">
@@ -459,17 +410,17 @@ const CryptoPredictionApp = () => {
           </div>
           
           <div className="grid grid-cols-3 gap-4 text-sm">
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Bid:</span>
-              <span className="font-bold ml-2 text-blue-700">${realTimePrice.bid.toFixed(2)}</span>
+            <div className="bg-white/5 p-3 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+              <span className="text-[#CFC8B8]">Bid:</span>
+              <span className="font-semibold ml-2 text-[#FFF7E8]">${realTimePrice.bid.toFixed(2)}</span>
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Ask:</span>
-              <span className="font-bold ml-2 text-blue-700">${realTimePrice.ask.toFixed(2)}</span>
+            <div className="bg-white/5 p-3 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+              <span className="text-[#CFC8B8]">Ask:</span>
+              <span className="font-semibold ml-2 text-[#FFF7E8]">${realTimePrice.ask.toFixed(2)}</span>
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Volume:</span>
-              <span className="font-bold ml-2 text-green-600">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
+            <div className="bg-white/5 p-3 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+              <span className="text-[#CFC8B8]">Volume:</span>
+              <span className="font-semibold ml-2 text-[#FFF7E8]">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
             </div>
           </div>
         </div>
@@ -478,54 +429,54 @@ const CryptoPredictionApp = () => {
   );
 
   const LiveNewsPanel = () => (
-    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
+    <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-          <RefreshCw className="w-5 h-5 text-white" />
+        <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+          <RefreshCw className="w-5 h-5 text-[#EDE8DF]" strokeWidth="1.5" />
         </div>
-        <h3 className="text-lg font-semibold text-blue-700">Live Market Intelligence</h3>
+        <h3 className="text-lg font-semibold text-[#FFF7E8] tracking-tight">Market Intelligence</h3>
         <StatusIndicator status={newsData.length > 0 ? 'active' : 'idle'} />
       </div>
       
       {sentimentData && (
-        <div className="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="mb-4 p-4 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
           <div className="flex items-center justify-between mb-2">
-            <span className="font-semibold text-blue-700">Market Sentiment Analysis</span>
-            <span className={`font-bold text-lg ${
-              sentimentData.overall > 0.3 ? 'text-green-600' : 
-              sentimentData.overall < -0.3 ? 'text-red-500' : 'text-blue-600'
+            <span className="font-semibold text-[#FFF7E8] tracking-tight">Sentiment Analysis</span>
+            <span className={`font-semibold text-lg tracking-tight ${
+              sentimentData.overall > 0.3 ? 'text-[#FFF7E8]' : 
+              sentimentData.overall < -0.3 ? 'text-[#BDB6A8]' : 'text-[#D8D2C8]'
             }`}>
               {sentimentData.overall > 0.3 ? 'Bullish' : 
                sentimentData.overall < -0.3 ? 'Bearish' : 'Neutral'}
             </span>
           </div>
           <div className="flex gap-4 text-sm">
-            <span className="text-green-600 font-medium">📈 {sentimentData.bullish} Bullish</span>
-            <span className="text-red-500 font-medium">📉 {sentimentData.bearish} Bearish</span>
-            <span className="text-blue-600 font-medium">➖ {sentimentData.neutral} Neutral</span>
+            <span className="text-[#FFF7E8] font-medium">↗ {sentimentData.bullish} Bullish</span>
+            <span className="text-[#BDB6A8] font-medium">↘ {sentimentData.bearish} Bearish</span>
+            <span className="text-[#D8D2C8] font-medium">— {sentimentData.neutral} Neutral</span>
           </div>
         </div>
       )}
       
       <div className="space-y-3 max-h-60 overflow-y-auto">
         {newsData.map((news, index) => (
-          <div key={index} className="p-3 bg-cream-50 rounded-lg border border-blue-200 hover:bg-cream-100 transition-colors">
+          <div key={index} className="p-3 bg-white/5 rounded-lg border hover:bg-white/10 transition-colors" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
             <div className="flex items-start justify-between mb-1">
-              <div className="font-medium text-sm text-blue-700">{news.title}</div>
-              <div className={`w-3 h-3 rounded-full shadow-lg ${
-                news.sentiment > 0.3 ? 'bg-green-500' : 
-                news.sentiment < -0.3 ? 'bg-red-500' : 'bg-blue-500'
+              <div className="font-medium text-sm text-[#FFF7E8] tracking-tight">{news.title}</div>
+              <div className={`w-3 h-3 rounded-full ${
+                news.sentiment > 0.3 ? 'bg-[#FFF7E8]' : 
+                news.sentiment < -0.3 ? 'bg-[#BDB6A8]' : 'bg-[#D8D2C8]'
               }`} />
             </div>
-            <div className="flex items-center gap-3 text-xs text-blue-600 font-medium">
+            <div className="flex items-center gap-3 text-xs text-[#CFC8B8] font-medium">
               <span>{news.source}</span>
               <span>{news.timestamp.toLocaleTimeString()}</span>
-              <span className={`px-2 py-1 rounded ${
-                news.impact === 'high' ? 'bg-red-500 text-white' :
-                news.impact === 'medium' ? 'bg-blue-500 text-white' :
-                'bg-gray-500 text-white'
+              <span className={`px-2 py-1 rounded text-[10px] font-semibold ${
+                news.impact === 'high' ? 'bg-[#FFF7E8] text-[#0B0B0B]' :
+                news.impact === 'medium' ? 'bg-[#D8D2C8] text-[#0B0B0B]' :
+                'bg-[#BDB6A8] text-[#0B0B0B]'
               }`}>
-                {news.impact}
+                {news.impact.toUpperCase()}
               </span>
             </div>
           </div>
@@ -535,31 +486,31 @@ const CryptoPredictionApp = () => {
   );
 
   const DataSourcePanel = () => (
-    <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
+    <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
       <div className="flex items-center gap-3 mb-4">
-        <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-          <Database className="w-5 h-5 text-white" />
+        <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+          <Database className="w-5 h-5 text-[#EDE8DF]" strokeWidth="1.5" />
         </div>
-        <h3 className="text-lg font-semibold text-blue-700">Enterprise Data Feeds</h3>
+        <h3 className="text-lg font-semibold text-[#FFF7E8] tracking-tight">Data Feeds</h3>
       </div>
       
       <div className="space-y-3">
         {Object.entries(dataSourceHealth).map(([source, health]) => (
-          <div key={source} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition-colors">
+          <div key={source} className="flex items-center justify-between p-3 bg-white/5 rounded-lg border hover:bg-white/10 transition-colors" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
             <div className="flex items-center gap-3">
               <StatusIndicator status={health.status} />
               <div>
-                <span className="font-semibold capitalize text-blue-700">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
+                <span className="font-semibold capitalize text-[#FFF7E8] tracking-tight">{source.replace(/([A-Z])/g, ' $1').trim()}</span>
                 {source === 'priceFeeds' && (
-                  <div className="text-xs text-green-600 font-bold">🔴 INSTITUTIONAL FEED</div>
+                  <div className="text-xs text-[#FFF7E8] font-semibold">● INSTITUTIONAL FEED</div>
                 )}
                 {source === 'aiModel' && (
-                  <div className="text-xs text-blue-600 font-bold">🤖 HYPERBOLIC CNN</div>
+                  <div className="text-xs text-[#D8D2C8] font-semibold">⚡ HYPERBOLIC CNN</div>
                 )}
               </div>
             </div>
-            <div className="text-sm text-blue-600 font-medium">
-              {health.latency}ms | {(health.coverage * 100).toFixed(1)}%
+            <div className="text-sm text-[#CFC8B8] font-medium">
+              {health.latency}ms • {(health.coverage * 100).toFixed(1)}%
             </div>
           </div>
         ))}
@@ -568,15 +519,15 @@ const CryptoPredictionApp = () => {
   );
 
   const LivePredictionChart = () => (
-    <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
+    <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold">Live Predictions vs Reality</h3>
+        <h3 className="text-lg font-semibold text-[#FFF7E8] tracking-tight">Live Predictions vs Reality</h3>
         <div className="flex gap-2">
-          <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded font-medium">
-            🔴 LIVE
+          <span className="px-3 py-1 bg-white/5 text-[#FFF7E8] text-sm rounded-md font-medium border" style={{ borderColor: 'rgba(237,232,223,0.14)' }}>
+            ● LIVE
           </span>
           {predictions.length > 0 && (
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded font-medium">
+            <span className="px-3 py-1 bg-white/5 text-[#D8D2C8] text-sm rounded-md font-medium border" style={{ borderColor: 'rgba(237,232,223,0.14)' }}>
               Confidence: {((predictions[predictions.length - 1]?.aiPrediction?.confidence || 0) * 100).toFixed(1)}%
             </span>
           )}
@@ -585,60 +536,116 @@ const CryptoPredictionApp = () => {
       
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={liveData}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
-          <XAxis dataKey="timestamp" stroke="#1d4ed8" />
-          <YAxis stroke="#1d4ed8" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(237,232,223,0.08)" />
+          <XAxis dataKey="timestamp" stroke="#D8D2C8" />
+          <YAxis stroke="#D8D2C8" />
           <Tooltip 
             contentStyle={{ 
-              backgroundColor: 'white', 
-              border: '1px solid #3b82f6',
+              backgroundColor: '#0F0F0F', 
+              border: '1px solid rgba(237,232,223,0.14)',
               borderRadius: '8px',
-              color: '#1e40af'
+              color: '#EDE8DF'
             }} 
           />
           <Legend />
-          <Line type="monotone" dataKey="price" stroke="#1d4ed8" strokeWidth={3} name="Live Price" />
-          <Line type="monotone" dataKey="predicted" stroke="#059669" strokeWidth={2} name="AI Prediction" strokeDasharray="5 5" />
+          <Line type="monotone" dataKey="price" stroke="#FFF7E8" strokeWidth={2} name="Live Price" />
+          <Line type="monotone" dataKey="predicted" stroke="#D8D2C8" strokeWidth={2} name="AI Prediction" strokeDasharray="5 5" />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cream-50 to-blue-100 text-slate-800" style={{background: 'linear-gradient(135deg, #eff6ff 0%, #fef7ed 30%, #dbeafe 100%)'}}>
+    <div className="min-h-screen antialiased bg-[#0A0A0A] text-[#EDE8DF]" style={{fontFamily: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"'}}>
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-700 shadow-2xl border-b border-blue-300">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-amber-400 to-amber-500 rounded-lg shadow-lg">
-                  <Brain className="w-8 h-8 text-white" />
-                </div>
-                <h1 className="text-2xl font-bold text-white">
-                  HyperVision AI - Quantitative Trading Platform
-                </h1>
-              </div>
-              <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 shadow-lg">
-                <StatusIndicator status="active" pulse={true} />
-                Alpha Generation: +{(performanceMetrics.alphaGeneration * 100).toFixed(1)}% • Live
-              </div>
+      <header className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-black/50">
+        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-md bg-[#0F0F0F] border flex items-center justify-center" style={{ borderColor: 'rgba(237,232,223,0.14)' }}>
+              <span className="text-sm font-semibold tracking-tight text-[#EDE8DF]">HV</span>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <select 
-                value={userMode} 
-                onChange={(e) => setUserMode(e.target.value)}
-                className="px-4 py-2 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium"
-              >
-                <option value="retail" className="bg-white">Professional Trader</option>
-                <option value="institutional" className="bg-white">Institutional</option>
-                <option value="research" className="bg-white">Quantitative Research</option>
-              </select>
+            <div className="flex items-center gap-2 text-sm text-[#BDB6A8]">
+              <Brain className="h-4 w-4" strokeWidth="1.5" />
+              <span>HyperVision AI • Professional Trading Platform</span>
+            </div>
+          </div>
+          <nav className="hidden md:flex items-center gap-6 text-sm text-[#D8D2C8]">
+            <a href="#dashboard" className="hover:text-[#FFF7E8] transition-colors">Dashboard</a>
+            <a href="#analytics" className="hover:text-[#FFF7E8] transition-colors">Analytics</a>
+            <a href="#performance" className="hover:text-[#FFF7E8] transition-colors">Performance</a>
+            <a href="#portfolio" className="hover:text-[#FFF7E8] transition-colors">Portfolio</a>
+          </nav>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-2 text-xs text-[#D8D2C8] hover:text-[#FFF7E8] transition-colors">
+              <StatusIndicator status="active" pulse={true} />
+              <span>Alpha Generation: +{(performanceMetrics.alphaGeneration * 100).toFixed(1)}%</span>
             </div>
           </div>
         </div>
-      </div>
+        <div className="border-t" style={{ borderColor: 'rgba(237,232,223,0.08)' }}></div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative">
+        <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-28 left-1/2 -translate-x-1/2 w-[90%] h-64 blur-3xl opacity-20" style={{background: 'radial-gradient(40% 60% at 50% 40%, rgba(255,247,232,0.18) 0%, rgba(255,247,232,0.06) 45%, transparent 60%)'}}></div>
+        </div>
+        <div className="mx-auto max-w-7xl px-6 pt-14 pb-10">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-5">
+              <h1 className="text-3xl md:text-5xl tracking-tight font-semibold text-[#FFF7E8] leading-tight">
+                Revolutionary AI Trading with Hyperbolic CNN Technology
+              </h1>
+              <p className="text-[#CFC8B8] text-base md:text-lg">
+                Advanced cryptocurrency prediction using real-time multi-modal data fusion, professional portfolio management, and institutional-grade analytics.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <button 
+                  onClick={() => setActiveTab('dashboard')}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#FFF7E8] hover:bg-[#F4ECDD] text-[#0B0B0B] border text-sm transition-colors" 
+                  style={{ borderColor: 'rgba(237,232,223,0.18)' }}
+                >
+                  <Activity className="h-4 w-4" strokeWidth="1.5" />
+                  View Dashboard
+                </button>
+                <button 
+                  onClick={() => setActiveTab('performance')}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-transparent hover:bg-white/5 border text-[#EDE8DF]" 
+                  style={{ borderColor: 'rgba(237,232,223,0.18)' }}
+                >
+                  <TrendingUp className="h-4 w-4" strokeWidth="1.5" />
+                  Performance
+                </button>
+              </div>
+              <div className="flex items-center gap-5 text-xs text-[#BDB6A8] pt-1">
+                <div className="inline-flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4" strokeWidth="1.5" />
+                  Real-time Security
+                </div>
+                <div className="inline-flex items-center gap-1.5">
+                  <Globe className="h-4 w-4" strokeWidth="1.5" />
+                  Multi-asset Support
+                </div>
+                <div className="inline-flex items-center gap-1.5">
+                  <Wand2 className="h-4 w-4" strokeWidth="1.5" />
+                  AI Predictions
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="aspect-[16/10] rounded-xl overflow-hidden border bg-[#0F0F0F]" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
+                <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?q=80&w=1600&auto=format&fit=crop" alt="Modern trading platform" className="w-full h-full object-cover opacity-90 grayscale" />
+              </div>
+              <div className="absolute -bottom-4 -right-4 hidden md:block">
+                <div className="px-3 py-2 rounded-lg bg-black/50 border text-[#CFC8B8] text-xs" style={{ borderColor: 'rgba(237,232,223,0.14)', backdropFilter: 'blur(6px)' }}>
+                  Live: {(performanceMetrics.liveAccuracy * 100).toFixed(1)}% prediction accuracy
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="border-t" style={{ borderColor: 'rgba(237,232,223,0.08)' }}></div>
+      </section>
 
       {/* Navigation Tabs */}
       <div className="max-w-7xl mx-auto px-6 py-4">
@@ -647,18 +654,19 @@ const CryptoPredictionApp = () => {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 rounded-lg font-semibold capitalize transition-all duration-200 flex items-center gap-2 shadow-lg ${
+              className={`px-6 py-3 rounded-lg font-medium capitalize transition-all duration-200 flex items-center gap-2 tracking-tight ${
                 activeTab === tab 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-blue-500/25' 
-                  : 'bg-gradient-to-r from-cream-100 to-cream-200 text-blue-700 hover:from-cream-200 hover:to-cream-300 border border-blue-200'
+                  ? 'bg-[#FFF7E8] text-[#0B0B0B]' 
+                  : 'bg-[#0F0F0F] text-[#D8D2C8] hover:bg-white/5 border'
               }`}
+              style={activeTab !== tab ? { borderColor: 'rgba(237,232,223,0.14)' } : {}}
             >
-              {tab === 'live' && <Wifi className="w-4 h-4" />}
-              {tab === 'vision' && <Image className="w-4 h-4" />}
-              {tab === 'performance' && <TrendingUp className="w-4 h-4" />}
-              {tab === 'portfolio' && <BarChart3 className="w-4 h-4" />}
-              {tab === 'dashboard' && <Activity className="w-4 h-4" />}
-              {tab === 'analytics' && <Brain className="w-4 h-4" />}
+              {tab === 'live' && <Wifi className="w-4 h-4" strokeWidth="1.5" />}
+              {tab === 'vision' && <Image className="w-4 h-4" strokeWidth="1.5" />}
+              {tab === 'performance' && <TrendingUp className="w-4 h-4" strokeWidth="1.5" />}
+              {tab === 'portfolio' && <BarChart3 className="w-4 h-4" strokeWidth="1.5" />}
+              {tab === 'dashboard' && <Activity className="w-4 h-4" strokeWidth="1.5" />}
+              {tab === 'analytics' && <Brain className="w-4 h-4" strokeWidth="1.5" />}
               {tab}
             </button>
           ))}
@@ -669,22 +677,35 @@ const CryptoPredictionApp = () => {
           <select 
             value={selectedAsset} 
             onChange={(e) => setSelectedAsset(e.target.value)}
-            className="px-4 py-3 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium shadow-lg"
+            className="px-4 py-3 bg-[#0F0F0F] border rounded-lg text-[#FFF7E8] focus:outline-none focus:ring-2 focus:ring-[#FFF7E8]/20 hover:border-[#FFF7E8]/30 transition-colors font-medium"
+            style={{ borderColor: 'rgba(237,232,223,0.14)' }}
           >
             {cryptoAssets.map(asset => (
-              <option key={asset} value={asset} className="bg-white">{asset}</option>
+              <option key={asset} value={asset} className="bg-[#0F0F0F] text-[#FFF7E8]">{asset}</option>
             ))}
           </select>
           
           <select 
             value={predictionHorizon} 
             onChange={(e) => setPredictionHorizon(e.target.value)}
-            className="px-4 py-3 bg-white border border-blue-300 rounded-lg text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-colors font-medium shadow-lg"
+            className="px-4 py-3 bg-[#0F0F0F] border rounded-lg text-[#FFF7E8] focus:outline-none focus:ring-2 focus:ring-[#FFF7E8]/20 hover:border-[#FFF7E8]/30 transition-colors font-medium"
+            style={{ borderColor: 'rgba(237,232,223,0.14)' }}
           >
-            <option value="1h" className="bg-white">1 Hour</option>
-            <option value="4h" className="bg-white">4 Hours</option>
-            <option value="1d" className="bg-white">1 Day</option>
-            <option value="1w" className="bg-white">1 Week</option>
+            <option value="1h" className="bg-[#0F0F0F] text-[#FFF7E8]">1 Hour</option>
+            <option value="4h" className="bg-[#0F0F0F] text-[#FFF7E8]">4 Hours</option>
+            <option value="1d" className="bg-[#0F0F0F] text-[#FFF7E8]">1 Day</option>
+            <option value="1w" className="bg-[#0F0F0F] text-[#FFF7E8]">1 Week</option>
+          </select>
+
+          <select 
+            value={userMode} 
+            onChange={(e) => setUserMode(e.target.value)}
+            className="px-4 py-3 bg-[#0F0F0F] border rounded-lg text-[#FFF7E8] focus:outline-none focus:ring-2 focus:ring-[#FFF7E8]/20 hover:border-[#FFF7E8]/30 transition-colors font-medium"
+            style={{ borderColor: 'rgba(237,232,223,0.14)' }}
+          >
+            <option value="retail" className="bg-[#0F0F0F] text-[#FFF7E8]">Professional Trader</option>
+            <option value="institutional" className="bg-[#0F0F0F] text-[#FFF7E8]">Institutional</option>
+            <option value="research" className="bg-[#0F0F0F] text-[#FFF7E8]">Quantitative Research</option>
           </select>
         </div>
 
@@ -742,19 +763,20 @@ const CryptoPredictionApp = () => {
         {/* Vision Tab */}
         {activeTab === 'vision' && (
           <div className="space-y-6">
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
+            <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
               <div className="flex items-center gap-3 mb-4">
-                <Camera className="w-6 h-6 text-blue-600" />
-                <h3 className="text-lg font-semibold">Chart Image Analysis</h3>
+                <Camera className="w-6 h-6 text-[#D8D2C8]" strokeWidth="1.5" />
+                <h3 className="text-lg font-semibold text-[#FFF7E8] tracking-tight">Chart Analysis</h3>
               </div>
               
               <div 
-                className="border-2 border-dashed border-blue-300 rounded-lg p-6 text-center cursor-pointer hover:border-blue-400 transition-colors"
+                className="border-2 border-dashed rounded-lg p-6 text-center cursor-pointer hover:border-[#FFF7E8]/30 transition-colors"
+                style={{ borderColor: 'rgba(237,232,223,0.18)' }}
                 onClick={() => fileInputRef.current?.click()}
               >
-                <Upload className="w-8 h-8 text-blue-500 mx-auto mb-2" />
-                <p className="text-gray-600">Upload candlestick chart or trading pattern</p>
-                <p className="text-sm text-gray-500 mt-1">Real-time analysis with live data context</p>
+                <Upload className="w-8 h-8 text-[#D8D2C8] mx-auto mb-2" strokeWidth="1.5" />
+                <p className="text-[#CFC8B8]">Upload candlestick chart or trading pattern</p>
+                <p className="text-sm text-[#BDB6A8] mt-1">Real-time analysis with live data context</p>
               </div>
               
               <input
@@ -766,12 +788,12 @@ const CryptoPredictionApp = () => {
               />
               
               {imageAnalysis && (
-                <div className="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                <div className="mt-4 bg-white/5 p-4 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
                   <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div>Pattern: <span className="font-medium">{imageAnalysis.patternType}</span></div>
-                    <div>Confidence: <span className="font-medium">{(imageAnalysis.confidence * 100).toFixed(1)}%</span></div>
-                    <div>Prediction: <span className="font-medium text-green-600">{imageAnalysis.prediction}</span></div>
-                    <div>Risk Score: <span className="font-medium">{imageAnalysis.riskScore}</span></div>
+                    <div>Pattern: <span className="font-medium text-[#FFF7E8]">{imageAnalysis.patternType}</span></div>
+                    <div>Confidence: <span className="font-medium text-[#FFF7E8]">{(imageAnalysis.confidence * 100).toFixed(1)}%</span></div>
+                    <div>Prediction: <span className="font-medium text-[#FFF7E8]">{imageAnalysis.prediction}</span></div>
+                    <div>Risk Score: <span className="font-medium text-[#D8D2C8]">{imageAnalysis.riskScore}</span></div>
                   </div>
                 </div>
               )}
@@ -825,102 +847,102 @@ const CryptoPredictionApp = () => {
 
             {/* Detailed Performance Metrics */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
+              <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg">
-                    <TrendingUp className="w-4 h-4 text-white" />
+                  <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <TrendingUp className="w-4 h-4 text-[#EDE8DF]" strokeWidth="1.5" />
                   </div>
-                  <span className="text-blue-700">AI Model Performance</span>
+                  <span className="text-[#FFF7E8] tracking-tight">AI Model Performance</span>
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="p-3 bg-green-50 rounded border border-green-200">
-                    <div className="text-green-800 font-semibold">Win Rate</div>
-                    <div className="text-2xl font-bold text-green-700">{(performanceMetrics.winRate * 100).toFixed(1)}%</div>
+                  <div className="p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <div className="text-[#CFC8B8] font-semibold">Win Rate</div>
+                    <div className="text-2xl font-semibold text-[#FFF7E8] tracking-tight">{(performanceMetrics.winRate * 100).toFixed(1)}%</div>
                   </div>
-                  <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                    <div className="text-blue-800 font-semibold">Accuracy</div>
-                    <div className="text-2xl font-bold text-blue-700">{(performanceMetrics.accuracy * 100).toFixed(1)}%</div>
+                  <div className="p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <div className="text-[#CFC8B8] font-semibold">Accuracy</div>
+                    <div className="text-2xl font-semibold text-[#FFF7E8] tracking-tight">{(performanceMetrics.accuracy * 100).toFixed(1)}%</div>
                   </div>
-                  <div className="p-3 bg-cream-50 rounded border border-blue-200">
-                    <div className="text-blue-700 font-semibold">Profit Factor</div>
-                    <div className="text-2xl font-bold text-blue-600">{performanceMetrics.profitFactor.toFixed(2)}</div>
+                  <div className="p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <div className="text-[#CFC8B8] font-semibold">Profit Factor</div>
+                    <div className="text-2xl font-semibold text-[#FFF7E8] tracking-tight">{performanceMetrics.profitFactor.toFixed(2)}</div>
                   </div>
-                  <div className="p-3 bg-blue-50 rounded border border-blue-200">
-                    <div className="text-blue-700 font-semibold">Calmar Ratio</div>
-                    <div className="text-2xl font-bold text-blue-600">{performanceMetrics.calmar ? performanceMetrics.calmar.toFixed(2) : performanceMetrics.calmarRatio ? performanceMetrics.calmarRatio.toFixed(2) : performanceMetrics.calmar.toFixed(2)}</div>
+                  <div className="p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <div className="text-[#CFC8B8] font-semibold">Calmar Ratio</div>
+                    <div className="text-2xl font-semibold text-[#FFF7E8] tracking-tight">{performanceMetrics.calmar.toFixed(2)}</div>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl p-6 shadow-2xl border border-blue-200">
+              <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <div className="p-2 bg-gradient-to-br from-red-500 to-red-600 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-white" />
+                  <div className="p-2 bg-white/5 rounded-lg border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <Shield className="w-4 h-4 text-[#EDE8DF]" strokeWidth="1.5" />
                   </div>
-                  <span className="text-blue-700">Risk Management</span>
+                  <span className="text-[#FFF7E8] tracking-tight">Risk Management</span>
                 </h3>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-2 bg-red-50 rounded border border-red-200">
-                    <span className="text-red-800 font-medium">Max Drawdown</span>
-                    <span className="text-red-700 font-bold">{(performanceMetrics.maxDrawdown * 100).toFixed(2)}%</span>
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <span className="text-[#CFC8B8] font-medium">Max Drawdown</span>
+                    <span className="text-[#BDB6A8] font-semibold">{(performanceMetrics.maxDrawdown * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
-                    <span className="text-blue-700 font-medium">Volatility</span>
-                    <span className="text-blue-600 font-bold">{(performanceMetrics.volatility * 100).toFixed(2)}%</span>
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <span className="text-[#CFC8B8] font-medium">Volatility</span>
+                    <span className="text-[#D8D2C8] font-semibold">{(performanceMetrics.volatility * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-cream-50 rounded border border-blue-200">
-                    <span className="text-blue-700 font-medium">VaR (95%)</span>
-                    <span className="text-blue-600 font-bold">{(performanceMetrics.var95 * 100).toFixed(2)}%</span>
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <span className="text-[#CFC8B8] font-medium">VaR (95%)</span>
+                    <span className="text-[#D8D2C8] font-semibold">{(performanceMetrics.var95 * 100).toFixed(2)}%</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-blue-50 rounded border border-blue-200">
-                    <span className="text-blue-700 font-medium">Sortino Ratio</span>
-                    <span className="text-blue-600 font-bold">{performanceMetrics.sortino ? performanceMetrics.sortino.toFixed(2) : performanceMetrics.sortinoRatio ? performanceMetrics.sortinoRatio.toFixed(2) : '4.12'}</span>
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <span className="text-[#CFC8B8] font-medium">Sortino Ratio</span>
+                    <span className="text-[#D8D2C8] font-semibold">{performanceMetrics.sortino.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between items-center p-2 bg-cream-50 rounded border border-blue-200">
-                    <span className="text-blue-700 font-medium">Beta to Market</span>
-                    <span className="text-blue-600 font-bold">{performanceMetrics.betaToMarket.toFixed(2)}</span>
+                  <div className="flex justify-between items-center p-2 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                    <span className="text-[#CFC8B8] font-medium">Beta to Market</span>
+                    <span className="text-[#D8D2C8] font-semibold">{performanceMetrics.betaToMarket.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Trading Statistics */}
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
+            <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
               <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-                Trading Performance Statistics
+                <BarChart3 className="w-5 h-5 text-[#D8D2C8]" strokeWidth="1.5" />
+                <span className="text-[#FFF7E8] tracking-tight">Trading Performance Statistics</span>
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 text-sm">
-                <div className="text-center p-3 bg-cream-50 rounded border border-blue-200">
-                  <div className="text-blue-600 font-medium">Total Trades</div>
-                  <div className="text-xl font-bold text-blue-700">{performanceMetrics.totalTrades.toLocaleString()}</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Total Trades</div>
+                  <div className="text-xl font-semibold text-[#FFF7E8] tracking-tight">{performanceMetrics.totalTrades.toLocaleString()}</div>
                 </div>
-                <div className="text-center p-3 bg-green-50 rounded border border-green-200">
-                  <div className="text-green-600 font-medium">Winning Trades</div>
-                  <div className="text-xl font-bold text-green-700">{performanceMetrics.winningTrades.toLocaleString()}</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Winning Trades</div>
+                  <div className="text-xl font-semibold text-[#FFF7E8] tracking-tight">{performanceMetrics.winningTrades.toLocaleString()}</div>
                 </div>
-                <div className="text-center p-3 bg-red-50 rounded border border-red-200">
-                  <div className="text-red-600 font-medium">Losing Trades</div>
-                  <div className="text-xl font-bold text-red-700">{performanceMetrics.losingTrades.toLocaleString()}</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Losing Trades</div>
+                  <div className="text-xl font-semibold text-[#BDB6A8] tracking-tight">{performanceMetrics.losingTrades.toLocaleString()}</div>
                 </div>
-                <div className="text-center p-3 bg-green-50 rounded border border-green-200">
-                  <div className="text-green-600 font-medium">Avg Win</div>
-                  <div className="text-xl font-bold text-green-700">{(performanceMetrics.avgWin * 100).toFixed(2)}%</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Avg Win</div>
+                  <div className="text-xl font-semibold text-[#FFF7E8] tracking-tight">{(performanceMetrics.avgWin * 100).toFixed(2)}%</div>
                 </div>
-                <div className="text-center p-3 bg-red-50 rounded border border-red-200">
-                  <div className="text-red-600 font-medium">Avg Loss</div>
-                  <div className="text-xl font-bold text-red-700">{(performanceMetrics.avgLoss * 100).toFixed(2)}%</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Avg Loss</div>
+                  <div className="text-xl font-semibold text-[#BDB6A8] tracking-tight">{(performanceMetrics.avgLoss * 100).toFixed(2)}%</div>
                 </div>
-                <div className="text-center p-3 bg-blue-50 rounded border border-blue-200">
-                  <div className="text-blue-600 font-medium">Alpha Generation</div>
-                  <div className="text-xl font-bold text-blue-700">+{(performanceMetrics.alphaGeneration * 100).toFixed(1)}%</div>
+                <div className="text-center p-3 bg-white/5 rounded border" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
+                  <div className="text-[#CFC8B8] font-medium">Alpha Generation</div>
+                  <div className="text-xl font-semibold text-[#FFF7E8] tracking-tight">+{(performanceMetrics.alphaGeneration * 100).toFixed(1)}%</div>
                 </div>
               </div>
             </div>
 
             {/* Returns Chart */}
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
-              <h3 className="text-lg font-semibold mb-4">Historical Returns Performance</h3>
+            <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
+              <h3 className="text-lg font-semibold mb-4 text-[#FFF7E8] tracking-tight">Historical Returns Performance</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={[
                   { period: 'Daily', return: performanceMetrics.dailyReturn * 100, benchmark: 0.12 },
@@ -928,20 +950,21 @@ const CryptoPredictionApp = () => {
                   { period: 'Monthly', return: performanceMetrics.monthlyReturn * 100, benchmark: 3.6 },
                   { period: 'Yearly', return: performanceMetrics.yearlyReturn * 100, benchmark: 43.2 }
                 ]}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
-                  <XAxis dataKey="period" stroke="#1d4ed8" />
-                  <YAxis stroke="#1d4ed8" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(237,232,223,0.08)" />
+                  <XAxis dataKey="period" stroke="#D8D2C8" />
+                  <YAxis stroke="#D8D2C8" />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #3b82f6',
-                      borderRadius: '8px'
+                      backgroundColor: '#0F0F0F', 
+                      border: '1px solid rgba(237,232,223,0.14)',
+                      borderRadius: '8px',
+                      color: '#EDE8DF'
                     }} 
                     formatter={(value, name) => [`${value.toFixed(2)}%`, name === 'return' ? 'HyperVision AI' : 'Market Benchmark']}
                   />
                   <Legend />
-                  <Bar dataKey="return" fill="#1d4ed8" name="HyperVision AI Returns" />
-                  <Bar dataKey="benchmark" fill="#f97316" name="Market Benchmark" />
+                  <Bar dataKey="return" fill="#FFF7E8" name="HyperVision AI Returns" />
+                  <Bar dataKey="benchmark" fill="#BDB6A8" name="Market Benchmark" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -984,10 +1007,10 @@ const CryptoPredictionApp = () => {
 
             {/* Asset Allocation */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
+              <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-blue-600" />
-                  Current Asset Allocation
+                  <BarChart3 className="w-5 h-5 text-[#D8D2C8]" strokeWidth="1.5" />
+                  <span className="text-[#FFF7E8] tracking-tight">Current Asset Allocation</span>
                 </h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <RadarChart data={[
@@ -998,20 +1021,20 @@ const CryptoPredictionApp = () => {
                     { asset: 'MATIC', allocation: 8, performance: 22 },
                     { asset: 'DOT', allocation: 5, performance: 15 }
                   ]}>
-                    <PolarGrid />
-                    <PolarAngleAxis dataKey="asset" />
-                    <PolarRadiusAxis angle={90} domain={[0, 70]} />
-                    <Radar name="Allocation %" dataKey="allocation" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
-                    <Radar name="Performance %" dataKey="performance" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                    <PolarGrid stroke="rgba(237,232,223,0.12)" />
+                    <PolarAngleAxis dataKey="asset" tick={{ fill: '#D8D2C8' }} />
+                    <PolarRadiusAxis angle={90} domain={[0, 70]} tick={{ fill: '#CFC8B8' }} />
+                    <Radar name="Allocation %" dataKey="allocation" stroke="#FFF7E8" fill="#FFF7E8" fillOpacity={0.1} />
+                    <Radar name="Performance %" dataKey="performance" stroke="#D8D2C8" fill="#D8D2C8" fillOpacity={0.1} />
                     <Legend />
                   </RadarChart>
                 </ResponsiveContainer>
               </div>
 
-              <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
+              <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-green-600" />
-                  Position Details
+                  <Activity className="w-5 h-5 text-[#D8D2C8]" strokeWidth="1.5" />
+                  <span className="text-[#FFF7E8] tracking-tight">Position Details</span>
                 </h3>
                 <div className="space-y-3 max-h-72 overflow-y-auto">
                   {[
@@ -1022,17 +1045,17 @@ const CryptoPredictionApp = () => {
                     { symbol: 'MATIC-USD', size: 320000, value: 192000, pnl: 23456, pnlPercent: 13.9 },
                     { symbol: 'DOT-USD', size: 24000, value: 120000, pnl: 8450, pnlPercent: 7.6 }
                   ].map((position, index) => (
-                    <div key={index} className="p-3 bg-cream-50 rounded-lg border border-blue-200 hover:shadow-md transition-shadow">
+                    <div key={index} className="p-3 bg-white/5 rounded-lg border hover:bg-white/10 transition-colors" style={{ borderColor: 'rgba(237,232,223,0.12)' }}>
                       <div className="flex items-center justify-between mb-2">
-                        <div className="font-semibold text-blue-700">{position.symbol}</div>
-                        <div className={`font-bold ${position.pnlPercent > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        <div className="font-semibold text-[#FFF7E8] tracking-tight">{position.symbol}</div>
+                        <div className={`font-semibold tracking-tight ${position.pnlPercent > 0 ? 'text-[#FFF7E8]' : 'text-[#BDB6A8]'}`}>
                           {position.pnlPercent > 0 ? '+' : ''}{position.pnlPercent}%
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-sm text-blue-600">
+                      <div className="grid grid-cols-3 gap-2 text-sm text-[#CFC8B8]">
                         <div>Size: {position.size.toLocaleString()}</div>
                         <div>Value: ${(position.value / 1000).toFixed(0)}K</div>
-                        <div className={position.pnl > 0 ? 'text-green-600' : 'text-red-600'}>
+                        <div className={position.pnl > 0 ? 'text-[#FFF7E8]' : 'text-[#BDB6A8]'}>
                           P&L: {position.pnl > 0 ? '+' : ''}${(position.pnl / 1000).toFixed(1)}K
                         </div>
                       </div>
@@ -1043,34 +1066,50 @@ const CryptoPredictionApp = () => {
             </div>
 
             {/* Portfolio Performance Chart */}
-            <div className="bg-white rounded-lg p-6 shadow-sm border border-blue-100">
-              <h3 className="text-lg font-semibold mb-4">Portfolio Value Over Time</h3>
+            <div className="bg-[#0F0F0F] rounded-xl p-6 border" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
+              <h3 className="text-lg font-semibold mb-4 text-[#FFF7E8] tracking-tight">Portfolio Value Over Time</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={Array.from({ length: 30 }, (_, i) => ({
                   date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toLocaleDateString(),
                   portfolioValue: 2000000 + (Math.random() * 400000) + (i * 13333),
                   benchmark: 2000000 + (i * 8000) + (Math.random() * 100000)
                 }))}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#dbeafe" />
-                  <XAxis dataKey="date" stroke="#1d4ed8" />
-                  <YAxis stroke="#1d4ed8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(237,232,223,0.08)" />
+                  <XAxis dataKey="date" stroke="#D8D2C8" />
+                  <YAxis stroke="#D8D2C8" tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: 'white', 
-                      border: '1px solid #3b82f6',
-                      borderRadius: '8px'
+                      backgroundColor: '#0F0F0F', 
+                      border: '1px solid rgba(237,232,223,0.14)',
+                      borderRadius: '8px',
+                      color: '#EDE8DF'
                     }}
                     formatter={(value, name) => [`$${(value / 1000000).toFixed(2)}M`, name === 'portfolioValue' ? 'Portfolio' : 'Benchmark']}
                   />
                   <Legend />
-                  <Line type="monotone" dataKey="portfolioValue" stroke="#1d4ed8" strokeWidth={3} name="HyperVision Portfolio" />
-                  <Line type="monotone" dataKey="benchmark" stroke="#f97316" strokeWidth={2} name="Market Benchmark" strokeDasharray="5 5" />
+                  <Line type="monotone" dataKey="portfolioValue" stroke="#FFF7E8" strokeWidth={2} name="HyperVision Portfolio" />
+                  <Line type="monotone" dataKey="benchmark" stroke="#BDB6A8" strokeWidth={2} name="Market Benchmark" strokeDasharray="5 5" />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="border-t" style={{ borderColor: 'rgba(237,232,223,0.08)' }}>
+        <div className="mx-auto max-w-7xl px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2 text-[#BDB6A8] text-sm">
+            <div className="h-6 w-6 rounded-md bg-[#0F0F0F] border flex items-center justify-center" style={{ borderColor: 'rgba(237,232,223,0.10)' }}>
+              <span className="text-[10px] font-semibold tracking-tight text-[#EDE8DF]">HV</span>
+            </div>
+            <span>HyperVision AI • Professional Trading Platform</span>
+          </div>
+          <div className="text-xs text-[#A9A297]">
+            Disclaimer: Trading involves substantial risk. Past performance is not indicative of future results.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
