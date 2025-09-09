@@ -1,48 +1,32 @@
 {
-  "name": "hypervision-crypto-ai",
+  "name": "hypervision-ai-trading",
   "version": "1.0.0",
-  "description": "Hyperbolic CNN cryptocurrency prediction with real-time data fusion",
-  "main": "src/components/CryptoPredictionApp.jsx",
-  "dependencies": {
-    "express": "^5.1.0",
-    "lucide-react": "^0.263.1",
-    "pm2": "^6.0.8",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-scripts": "^5.0.1",
-    "recharts": "^2.0.0"
-  },
+  "description": "HyperVision AI - Quantitative Trading Platform with AI-powered predictions outperforming market benchmarks",
+  "main": "index.html",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "deploy": "npm run build && gh-pages -d build",
-    "predeploy": "npm run build"
+    "start": "python3 -m http.server 8000",
+    "serve": "npx serve -p 8000"
   },
   "keywords": [
+    "trading",
+    "quantitative",
+    "ai",
     "cryptocurrency",
-    "hyperbolic-cnn",
-    "machine-learning",
-    "fintech",
-    "react",
-    "real-time-data"
+    "bitcoin",
+    "ethereum",
+    "finance",
+    "dashboard",
+    "charts",
+    "real-time"
   ],
-  "author": "Farouk Umar",
+  "author": "",
   "license": "MIT",
-  "homepage": "https://gomna-pha.github.io/hypervision-crypto-ai",
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/hypervision-ai-trading.git"
   },
+  "homepage": "https://yourusername.github.io/hypervision-ai-trading/",
   "devDependencies": {
-    "gh-pages": "^6.3.0"
+    "serve": "^14.2.0"
   }
 }
