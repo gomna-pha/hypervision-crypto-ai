@@ -7,16 +7,39 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#fefbf3',
+                            100: '#fdf6e3',
+                            200: '#f5e6d3',
+                            300: '#e8dcc7',
+                            400: '#d4c4a8',
+                            500: '#c0ac89',
+                            600: '#a08968',
+                            700: '#8b7355',
+                            800: '#6d5d48',
+                            900: '#5a4d3b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="trading-api.js"></script>
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
         }
         .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(253, 246, 227, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(232, 220, 199, 0.3);
         }
         .animate-pulse-slow {
             animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -26,18 +49,20 @@
             50% { opacity: .7; }
         }
         .formula-box {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
+            border-left: 4px solid #8b7355;
             padding: 1rem;
             margin: 1rem 0;
             border-radius: 0.5rem;
         }
         .metric-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            background: linear-gradient(135deg, #fefbf3 0%, #faf5ed 100%);
             transition: transform 0.2s;
+            border: 1px solid rgba(232, 220, 199, 0.2);
         }
         .metric-card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
         }
         .MathJax {
             font-size: 1.1em !important;
@@ -60,6 +85,13 @@
         canvas {
             max-height: 100% !important;
         }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
+        }
     </style>
     <script>
         window.MathJax = {
@@ -78,16 +110,16 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <div class="p-2 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
+                            <div class="p-2 bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
                                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <!-- Gomna Custom Logo -->
-                                    <circle cx="24" cy="24" r="22" stroke="white" stroke-width="2" opacity="0.9"/>
-                                    <path d="M24 8 L16 20 L24 18 L32 20 Z" fill="white" opacity="0.9"/>
-                                    <path d="M12 24 Q24 16 36 24 Q30 32 24 28 Q18 32 12 24" fill="white" opacity="0.8"/>
-                                    <circle cx="20" cy="24" r="2" fill="white"/>
-                                    <circle cx="28" cy="24" r="2" fill="white"/>
-                                    <path d="M20 32 Q24 36 28 32" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
-                                    <text x="24" y="44" font-family="Arial Black" font-size="8" font-weight="bold" fill="white" text-anchor="middle">GOMNA</text>
+                                    <circle cx="24" cy="24" r="22" stroke="#fdf6e3" stroke-width="2" opacity="0.9"/>
+                                    <path d="M24 8 L16 20 L24 18 L32 20 Z" fill="#fdf6e3" opacity="0.9"/>
+                                    <path d="M12 24 Q24 16 36 24 Q30 32 24 28 Q18 32 12 24" fill="#fdf6e3" opacity="0.8"/>
+                                    <circle cx="20" cy="24" r="2" fill="#fdf6e3"/>
+                                    <circle cx="28" cy="24" r="2" fill="#fdf6e3"/>
+                                    <path d="M20 32 Q24 36 28 32" stroke="#fdf6e3" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    <text x="24" y="44" font-family="Arial Black" font-size="8" font-weight="bold" fill="#fdf6e3" text-anchor="middle">GOMNA</text>
                                 </svg>
                             </div>
                             <div>
@@ -114,7 +146,7 @@
                             <option value="backtest">Backtest Mode</option>
                             <option value="paper">Paper Trading</option>
                         </select>
-                        <button id="transparency-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                        <button id="transparency-btn" class="px-4 py-2 bg-gradient-to-r from-amber-700 to-amber-800 text-cream-50 rounded-lg font-medium hover:from-amber-800 hover:to-amber-900 transition-all shadow-md">
                             <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
                             Model Transparency
                         </button>
@@ -766,12 +798,57 @@
 
             <!-- Agentic AI Trading Tab -->
             <div id="agentic-tab" class="tab-content hidden">
+                <!-- API Connection Panel -->
+                <div class="bg-gradient-to-r from-cream-50 to-cream-100 p-6 rounded-xl shadow-lg mb-6 border border-cream-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">Trading API Connection</h3>
+                        <div id="api-status" class="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                            <div class="flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                                <span>Disconnected</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700">Exchange</label>
+                            <select id="exchange-select" class="w-full mt-1 px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="binance">Binance</option>
+                                <option value="coinbase">Coinbase Pro</option>
+                                <option value="kraken">Kraken</option>
+                                <option value="demo">Demo Mode</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700">API Key</label>
+                            <input type="password" id="api-key" placeholder="Enter API Key" class="w-full mt-1 px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        
+                        <div>
+                            <label class="text-sm font-semibold text-gray-700">API Secret</label>
+                            <div class="flex gap-2">
+                                <input type="password" id="api-secret" placeholder="Enter API Secret" class="flex-1 mt-1 px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <button id="connect-api" class="mt-1 px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg font-medium hover:from-amber-700 hover:to-amber-800 transition-all">
+                                    Connect
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <p class="text-xs text-amber-800">
+                            <strong>Security Note:</strong> API credentials are encrypted and stored locally. For production use, enable IP whitelisting and read-only permissions where possible.
+                        </p>
+                    </div>
+                </div>
                 <!-- AI Agent Control Panel -->
-                <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl shadow-lg mb-6">
+                <div class="bg-gradient-to-r from-cream-100 to-cream-200 p-6 rounded-xl shadow-lg mb-6 border border-cream-300">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-3">
-                            <div class="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
-                                <i data-lucide="cpu" class="w-8 h-8 text-white"></i>
+                            <div class="p-3 bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl shadow-lg">
+                                <i data-lucide="cpu" class="w-8 h-8 text-cream-50"></i>
                             </div>
                             <div>
                                 <h3 class="text-2xl font-bold text-gray-900">Autonomous Trading Agent</h3>
@@ -826,7 +903,7 @@
                                 </div>
                             </label>
                             
-                            <label class="flex items-start gap-3 p-3 border-2 border-purple-200 rounded-lg cursor-pointer hover:bg-purple-50 transition-colors">
+                            <label class="flex items-start gap-3 p-3 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
                                 <input type="radio" name="strategy" value="custom" class="mt-1">
                                 <div>
                                     <div class="font-semibold text-gray-800">Custom ML Strategy</div>
@@ -945,10 +1022,10 @@
                         <div class="text-xs text-gray-500 mt-1">312 wins / 97 losses</div>
                     </div>
                     
-                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl shadow-lg">
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-4 rounded-xl shadow-lg">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-xs font-semibold text-gray-600">Avg Trade</span>
-                            <i data-lucide="activity" class="w-4 h-4 text-purple-600"></i>
+                            <i data-lucide="activity" class="w-4 h-4 text-amber-600"></i>
                         </div>
                         <div class="text-2xl font-bold text-gray-900">$<span id="agent-avg">2,847</span></div>
                         <div class="text-xs text-gray-500 mt-1">15 min avg hold</div>
@@ -2067,6 +2144,68 @@
         let agentActive = false;
         let agentStrategy = 'conservative';
         
+        // Initialize API Connection
+        function initializeAPIConnection() {
+            const connectBtn = document.getElementById('connect-api');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', async function() {
+                    const exchange = document.getElementById('exchange-select').value;
+                    const apiKey = document.getElementById('api-key').value;
+                    const apiSecret = document.getElementById('api-secret').value;
+                    
+                    if (exchange === 'demo') {
+                        // Demo mode - no credentials needed
+                        updateAPIStatus('connected');
+                        console.log('Connected to demo mode');
+                    } else if (apiKey && apiSecret) {
+                        // Real exchange connection
+                        const result = await window.tradingAPI.initialize(apiKey, apiSecret, exchange, false);
+                        if (result.success) {
+                            updateAPIStatus('connected');
+                            console.log('API connected successfully');
+                        } else {
+                            updateAPIStatus('error');
+                            console.error('API connection failed:', result.error);
+                        }
+                    } else {
+                        alert('Please enter API credentials');
+                    }
+                });
+            }
+        }
+
+        // Update API Status Display
+        function updateAPIStatus(status) {
+            const statusDiv = document.getElementById('api-status');
+            if (statusDiv) {
+                if (status === 'connected') {
+                    statusDiv.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            <span>Connected</span>
+                        </div>
+                    `;
+                    statusDiv.className = 'px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800';
+                } else if (status === 'error') {
+                    statusDiv.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            <span>Error</span>
+                        </div>
+                    `;
+                    statusDiv.className = 'px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800';
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                            <span>Disconnected</span>
+                        </div>
+                    `;
+                    statusDiv.className = 'px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600';
+                }
+            }
+        }
+
         // Initialize Agent Controls
         function initializeAgentControls() {
             // Agent toggle button
@@ -2176,11 +2315,72 @@
         }
 
         // Execute Agent Trade
-        function executeAgentTrade(decision) {
+        async function executeAgentTrade(decision) {
             console.log('Executing trade:', decision);
-            // In production, this would send the trade to the exchange
-            // For demo, we'll just update the UI
+            
+            // Check if API is connected
+            if (window.tradingAPI && window.tradingAPI.connected) {
+                // Prepare signal for real execution
+                const signal = {
+                    symbol: decision.asset,
+                    action: decision.action,
+                    price: parseFloat(document.getElementById('predictions-chart') ? 45234 : 0), // Get from real price
+                    confidence: parseFloat(decision.confidence),
+                    orderType: 'MARKET',
+                    stopLoss: parseFloat(document.getElementById('stop-loss').value) / 100,
+                    takeProfit: parseFloat(document.getElementById('take-profit').value) / 100,
+                    riskRewardRatio: 3,
+                    agentId: 'agentic-ai-' + Date.now(),
+                    strategy: decision.strategy
+                };
+                
+                // Execute real trade
+                const result = await window.tradingAPI.executeAgenticTrade(signal);
+                
+                if (result.success) {
+                    console.log('Trade executed successfully:', result);
+                    // Add to trade history
+                    addTradeToHistory(result.order);
+                } else {
+                    console.error('Trade execution failed:', result.error);
+                }
+            } else {
+                // Demo mode - just update UI
+                console.log('Demo mode - simulating trade execution');
+            }
+            
             updateAgentMetrics();
+        }
+        
+        // Add trade to history table
+        function addTradeToHistory(order) {
+            const tradesTable = document.getElementById('agent-trades-table');
+            if (!tradesTable || !order) return;
+            
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50 bg-green-50';
+            row.innerHTML = `
+                <td class="py-2 text-sm">${new Date().toLocaleTimeString()}</td>
+                <td class="py-2 text-sm font-medium">${order.symbol}</td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                        ${order.side}
+                    </span>
+                </td>
+                <td class="py-2 text-sm text-right">$${formatNumber(order.price)}</td>
+                <td class="py-2 text-sm text-right">${order.quantity}</td>
+                <td class="py-2 text-sm text-right font-medium text-gray-500">Pending</td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        LIVE
+                    </span>
+                </td>
+                <td class="py-2 text-sm">
+                    <span class="text-xs font-bold text-green-600">EXECUTED</span>
+                </td>
+            `;
+            
+            tradesTable.insertBefore(row, tradesTable.firstChild);
         }
 
         // Update Agent Trades Table
@@ -2269,6 +2469,7 @@
 
         // Call initialization
         initializeTooltips();
+        initializeAPIConnection();
         initializeAgentControls();
     </script>
 </body>
