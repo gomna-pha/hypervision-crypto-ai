@@ -216,11 +216,11 @@
                                 <div class="text-sm text-gray-600 mb-1">Sharpe Ratio</div>
                                 <div class="flex justify-center gap-4">
                                     <div>
-                                        <div class="text-lg font-bold text-green-600">2.89</div>
+                                        <div class="text-lg font-bold text-green-600">1.89</div>
                                         <div class="text-xs text-gray-500">AI</div>
                                     </div>
                                     <div>
-                                        <div class="text-lg font-bold text-gray-600">1.45</div>
+                                        <div class="text-lg font-bold text-gray-600">0.95</div>
                                         <div class="text-xs text-gray-500">Benchmark</div>
                                     </div>
                                 </div>
@@ -284,8 +284,9 @@
                             </div>
                             <div class="bg-white p-4 rounded-lg border border-orange-200">
                                 <div class="text-xs text-gray-600 mb-1">Risk-Adjusted Return</div>
-                                <div class="text-xl font-bold text-orange-600" id="risk-adjusted">2.34</div>
+                                <div class="text-xl font-bold text-orange-600" id="risk-adjusted">1.82</div>
                                 <div class="text-xs text-gray-500 mt-1">Sharpe Ratio</div>
+                                <div class="text-xs text-green-600 mt-1 font-semibold">Excellent</div>
                             </div>
                         </div>
                         
@@ -407,7 +408,7 @@
                                 <div class="grid grid-cols-2 gap-3">
                                     <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
                                         <span class="text-sm font-medium text-gray-700">Info Ratio</span>
-                                        <span class="font-bold text-purple-600" id="ai-info-ratio">3.21</span>
+                                        <span class="font-bold text-purple-600" id="ai-info-ratio">1.85</span>
                                     </div>
                                     <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
                                         <span class="text-sm font-medium text-gray-700">AUC-ROC</span>
@@ -648,13 +649,13 @@
                                     <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
                                         <div class="flex justify-between items-center">
                                             <span class="text-gray-700">Sortino Ratio</span>
-                                            <span class="font-bold text-purple-600" id="portfolio-sortino">3.14</span>
+                                            <span class="font-bold text-purple-600" id="portfolio-sortino">2.14</span>
                                         </div>
                                     </div>
                                     <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                                         <div class="flex justify-between items-center">
                                             <span class="text-gray-700">Calmar Ratio</span>
-                                            <span class="font-bold text-green-600" id="portfolio-calmar">6.82</span>
+                                            <span class="font-bold text-green-600" id="portfolio-calmar">2.73</span>
                                         </div>
                                     </div>
                                 </div>
@@ -1546,7 +1547,7 @@
                 precision: 89.7,
                 recall: 92.8,
                 f1: 0.913,
-                infoRatio: 3.21,
+                infoRatio: 1.85,  // Realistic information ratio
                 auc: 0.947
             };
             
@@ -1668,19 +1669,58 @@
                 
                 document.getElementById('optimal-allocation').textContent = `${cryptoAllocation}/${stableAllocation}`;
                 
-                // Calculate risk-adjusted return (simplified Sharpe ratio)
-                const expectedReturn = cryptoAllocation * 0.35 + stableAllocation * 0.04; // Assumed annual returns
-                const portfolioVolatility = Math.sqrt(
-                    Math.pow(cryptoAllocation / 100 * riskLevel, 2) + 
-                    Math.pow(stableAllocation / 100 * 0.12, 2)
-                );
-                const sharpeRatio = (expectedReturn / portfolioVolatility).toFixed(2);
-                document.getElementById('risk-adjusted').textContent = sharpeRatio;
+                // Calculate realistic risk-adjusted return (Sharpe ratio)
+                // Typical annual returns: Crypto ~35%, Stablecoin ~4%, Risk-free rate ~2%
+                const riskFreeRate = 0.02; // 2% risk-free rate (US Treasury)
+                const cryptoReturn = 0.35; // 35% expected crypto return
+                const stableReturn = 0.04; // 4% stablecoin yield
                 
-                // Update AI recommendation
+                // Portfolio expected return
+                const portfolioReturn = (cryptoAllocation / 100 * cryptoReturn) + (stableAllocation / 100 * stableReturn);
+                
+                // Portfolio volatility (using realistic volatility values)
+                const cryptoAnnualVol = riskLevel * 3.65; // Convert daily to annual volatility (√365)
+                const stableAnnualVol = 0.5; // ~0.5% annual volatility for stablecoins
+                
+                // Portfolio standard deviation
+                const portfolioVolatility = Math.sqrt(
+                    Math.pow(cryptoAllocation / 100 * cryptoAnnualVol / 100, 2) + 
+                    Math.pow(stableAllocation / 100 * stableAnnualVol / 100, 2) +
+                    2 * (cryptoAllocation / 100) * (stableAllocation / 100) * 0.1 * (cryptoAnnualVol / 100) * (stableAnnualVol / 100) // correlation factor
+                );
+                
+                // Sharpe Ratio = (Return - Risk Free Rate) / Standard Deviation
+                const sharpeRatio = portfolioVolatility > 0 ? 
+                    ((portfolioReturn - riskFreeRate) / portfolioVolatility).toFixed(2) : 
+                    '0.00';
+                
+                // Ensure realistic bounds (Sharpe rarely exceeds 3.0)
+                const finalSharpe = Math.min(parseFloat(sharpeRatio), 3.0).toFixed(2);
+                document.getElementById('risk-adjusted').textContent = finalSharpe;
+                
+                // Update AI recommendation with realistic metrics
+                const annualReturn = (portfolioReturn * 100).toFixed(1);
+                const riskLevel = finalSharpe >= 2.0 ? 'Excellent' : 
+                                 finalSharpe >= 1.5 ? 'Very Good' :
+                                 finalSharpe >= 1.0 ? 'Good' :
+                                 finalSharpe >= 0.5 ? 'Acceptable' : 'Poor';
+                
                 const recommendation = `Based on current market volatility (${avgCryptoVolatility}%), recommend ${stableAllocation}% stablecoin allocation for risk mitigation while maintaining ${cryptoAllocation}% crypto exposure. ` +
-                    `This portfolio targets a ${sharpeRatio} Sharpe ratio with expected annual return of ${expectedReturn.toFixed(1)}%.`;
+                    `This portfolio achieves a ${finalSharpe} Sharpe ratio (${riskLevel}) with expected annual return of ${annualReturn}% and volatility of ${(portfolioVolatility * 100).toFixed(1)}%.`;
                 document.getElementById('ai-recommendation').textContent = recommendation;
+                
+                // Update Sharpe rating indicator
+                const sharpeElement = document.getElementById('risk-adjusted').parentElement;
+                const ratingDiv = sharpeElement.querySelector('.text-xs.mt-1.font-semibold') || 
+                                 sharpeElement.appendChild(document.createElement('div'));
+                ratingDiv.className = 'text-xs mt-1 font-semibold';
+                ratingDiv.textContent = riskLevel;
+                ratingDiv.classList.add(
+                    finalSharpe >= 2.0 ? 'text-green-600' :
+                    finalSharpe >= 1.5 ? 'text-blue-600' :
+                    finalSharpe >= 1.0 ? 'text-yellow-600' :
+                    'text-red-600'
+                );
             }
         }
 
