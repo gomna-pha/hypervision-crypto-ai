@@ -235,21 +235,244 @@
                     </div>
                 </div>
 
+                <!-- Global Market Indices Overview -->
+                <div class="bg-gradient-to-r from-cream-50 to-cream-100 p-6 rounded-xl shadow-lg mb-6 border border-cream-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xl font-bold text-gray-900">Global Market Indices - Real-Time</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs text-gray-500">Last Update:</span>
+                            <span id="market-update-time" class="text-xs font-semibold text-gray-700">--:--:--</span>
+                            <button onclick="refreshMarketData()" class="ml-2 px-3 py-1 bg-amber-600 text-white rounded-lg text-sm hover:bg-amber-700 transition-colors">
+                                <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-1"></i>
+                                Refresh
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Market Indices Grid -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Crypto Indices -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs font-semibold text-gray-600">CRYPTO</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">BTC/USD</h4>
+                            <p class="text-sm font-semibold text-green-600" id="btc-price">$67,234</p>
+                            <p class="text-xs text-green-500" id="btc-change">+2.34%</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></div>
+                                <span class="text-xs font-semibold text-gray-600">CRYPTO</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">ETH/USD</h4>
+                            <p class="text-sm font-semibold text-green-600" id="eth-price">$3,456</p>
+                            <p class="text-xs text-green-500" id="eth-change">+1.87%</p>
+                        </div>
+                        
+                        <!-- Traditional Indices -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-xs font-semibold text-gray-600">US EQUITY</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">S&P 500</h4>
+                            <p class="text-sm font-semibold text-green-600" id="sp500-price">5,234.56</p>
+                            <p class="text-xs text-green-500" id="sp500-change">+0.45%</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-xs font-semibold text-gray-600">US TECH</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">NASDAQ</h4>
+                            <p class="text-sm font-semibold text-red-600" id="nasdaq-price">18,234.12</p>
+                            <p class="text-xs text-red-500" id="nasdaq-change">-0.23%</p>
+                        </div>
+                        
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                                <span class="text-xs font-semibold text-gray-600">US EQUITY</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">DOW 30</h4>
+                            <p class="text-sm font-semibold text-green-600" id="dow-price">42,156.89</p>
+                            <p class="text-xs text-green-500" id="dow-change">+0.67%</p>
+                        </div>
+                        
+                        <!-- Commodities -->
+                        <div class="bg-white p-4 rounded-lg shadow-sm border border-cream-200 hover:shadow-md transition-shadow">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                <span class="text-xs font-semibold text-gray-600">COMMODITY</span>
+                            </div>
+                            <h4 class="font-bold text-lg text-gray-900">Gold</h4>
+                            <p class="text-sm font-semibold text-green-600" id="gold-price">$2,034.56</p>
+                            <p class="text-xs text-green-500" id="gold-change">+0.23%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Additional Indices -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mt-4">
+                        <!-- European Markets -->
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">EUROPE</span>
+                            <h5 class="font-bold text-sm text-gray-900">FTSE 100</h5>
+                            <p class="text-xs font-semibold text-green-600">8,234.45</p>
+                            <p class="text-xs text-green-500">+0.34%</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">EUROPE</span>
+                            <h5 class="font-bold text-sm text-gray-900">DAX 40</h5>
+                            <p class="text-xs font-semibold text-green-600">19,234.78</p>
+                            <p class="text-xs text-green-500">+0.89%</p>
+                        </div>
+                        
+                        <!-- Asian Markets -->
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">ASIA</span>
+                            <h5 class="font-bold text-sm text-gray-900">Nikkei 225</h5>
+                            <p class="text-xs font-semibold text-red-600">38,234.56</p>
+                            <p class="text-xs text-red-500">-0.45%</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">ASIA</span>
+                            <h5 class="font-bold text-sm text-gray-900">Hang Seng</h5>
+                            <p class="text-xs font-semibold text-green-600">19,876.34</p>
+                            <p class="text-xs text-green-500">+1.23%</p>
+                        </div>
+                        
+                        <!-- Crypto Additions -->
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">CRYPTO</span>
+                            <h5 class="font-bold text-sm text-gray-900">SOL/USD</h5>
+                            <p class="text-xs font-semibold text-green-600">$123.45</p>
+                            <p class="text-xs text-green-500">+4.56%</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">CRYPTO</span>
+                            <h5 class="font-bold text-sm text-gray-900">BNB/USD</h5>
+                            <p class="text-xs font-semibold text-red-600">$456.78</p>
+                            <p class="text-xs text-red-500">-1.23%</p>
+                        </div>
+                        
+                        <!-- Commodities -->
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">COMMODITY</span>
+                            <h5 class="font-bold text-sm text-gray-900">Silver</h5>
+                            <p class="text-xs font-semibold text-green-600">$24.56</p>
+                            <p class="text-xs text-green-500">+0.89%</p>
+                        </div>
+                        
+                        <div class="bg-white p-3 rounded-lg shadow-sm border border-cream-200">
+                            <span class="text-xs font-semibold text-gray-600">COMMODITY</span>
+                            <h5 class="font-bold text-sm text-gray-900">Oil WTI</h5>
+                            <p class="text-xs font-semibold text-red-600">$78.34</p>
+                            <p class="text-xs text-red-500">-1.45%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Market Analysis Summary -->
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="p-4 bg-white rounded-lg border border-cream-200">
+                            <h4 class="font-semibold text-gray-900 mb-2">Cross-Market Correlations</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span>BTC vs S&P 500:</span>
+                                    <span class="font-bold text-blue-600">0.42</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>BTC vs Gold:</span>
+                                    <span class="font-bold text-amber-600">0.68</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>ETH vs NASDAQ:</span>
+                                    <span class="font-bold text-purple-600">0.73</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-white rounded-lg border border-cream-200">
+                            <h4 class="font-semibold text-gray-900 mb-2">Market Sentiment</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs">Fear & Greed:</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">72 - Greed</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs">VIX:</span>
+                                    <span class="text-xs font-bold text-green-600">14.2 ↓</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs">DXY:</span>
+                                    <span class="text-xs font-bold text-red-600">103.45 ↑</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4 bg-white rounded-lg border border-cream-200">
+                            <h4 class="font-semibold text-gray-900 mb-2">Gomna AI vs Markets</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between">
+                                    <span>vs BTC:</span>
+                                    <span class="font-bold text-green-600">+7.0%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>vs S&P 500:</span>
+                                    <span class="font-bold text-green-600">+25.8%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>vs Gold:</span>
+                                    <span class="font-bold text-green-600">+30.8%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Charts Section -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                     <!-- Performance Chart -->
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-gray-900">Cumulative Returns</h3>
-                            <div class="flex gap-4 text-sm">
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 bg-blue-500 rounded"></div>
-                                    <span>HyperVision AI</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-3 h-3 bg-gray-400 rounded"></div>
-                                    <span>S&P Crypto Index</span>
-                                </div>
+                            <h3 class="text-lg font-bold text-gray-900">Cumulative Returns vs Global Markets</h3>
+                            <select id="benchmark-selector" class="px-3 py-1 border border-gray-300 rounded-lg text-sm" onchange="updateBenchmarkView(this.value)">
+                                <option value="all">All Indices</option>
+                                <option value="crypto">Crypto Only</option>
+                                <option value="equity">Equity Only</option>
+                                <option value="commodity">Commodities</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-wrap gap-3 mb-3 text-xs">
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-blue-500 rounded"></div>
+                                <span>Gomna AI</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-orange-500 rounded"></div>
+                                <span>BTC</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-purple-500 rounded"></div>
+                                <span>ETH</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-gray-500 rounded"></div>
+                                <span>S&P 500</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-green-500 rounded"></div>
+                                <span>NASDAQ</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <div class="w-2 h-2 bg-yellow-500 rounded"></div>
+                                <span>Gold</span>
                             </div>
                         </div>
                         <div class="chart-container">
@@ -1454,32 +1677,91 @@
             const ctx = document.getElementById('performance-chart');
             if (!ctx) return;
 
-            // Generate realistic cumulative returns data
+            // Generate realistic cumulative returns data for multiple indices
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            const hyperVisionReturns = [0, 3.2, 7.8, 12.4, 11.2, 15.8, 19.2, 24.3, 28.7, 32.1, 35.4, 38.2];
-            const benchmarkReturns = [0, 1.8, 3.2, 5.1, 4.3, 7.2, 9.8, 12.1, 14.5, 16.8, 18.2, 19.7];
+            
+            // Gomna AI performance (best performer)
+            const gomnaReturns = [0, 3.2, 7.8, 12.4, 11.2, 15.8, 19.2, 24.3, 28.7, 32.1, 35.4, 38.2];
+            
+            // Crypto indices
+            const btcReturns = [0, 2.8, 5.6, 8.9, 7.2, 11.3, 15.7, 19.2, 22.8, 26.1, 28.9, 31.2];
+            const ethReturns = [0, 3.1, 6.2, 9.8, 8.1, 12.4, 16.8, 21.3, 25.2, 28.7, 31.5, 34.1];
+            
+            // Traditional equity indices
+            const sp500Returns = [0, 1.2, 2.8, 4.1, 3.8, 5.2, 6.8, 8.3, 9.7, 10.9, 11.8, 12.4];
+            const nasdaqReturns = [0, 1.5, 3.2, 5.3, 4.9, 6.8, 8.9, 11.2, 13.1, 14.8, 16.2, 17.3];
+            
+            // Commodities
+            const goldReturns = [0, 0.5, 1.2, 2.1, 2.8, 3.4, 4.2, 5.1, 5.8, 6.3, 6.9, 7.4];
 
             charts.performance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: months,
                     datasets: [{
-                        label: 'HyperVision AI',
-                        data: hyperVisionReturns,
+                        label: 'Gomna AI',
+                        data: gomnaReturns,
                         borderColor: 'rgb(59, 130, 246)',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.05)',
                         borderWidth: 3,
-                        fill: true,
-                        tension: 0.4
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }, {
-                        label: 'S&P Crypto Index',
-                        data: benchmarkReturns,
-                        borderColor: 'rgb(156, 163, 175)',
-                        backgroundColor: 'rgba(156, 163, 175, 0.1)',
+                        label: 'BTC',
+                        data: btcReturns,
+                        borderColor: 'rgb(249, 115, 22)',
+                        backgroundColor: 'rgba(249, 115, 22, 0.05)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }, {
+                        label: 'ETH',
+                        data: ethReturns,
+                        borderColor: 'rgb(168, 85, 247)',
+                        backgroundColor: 'rgba(168, 85, 247, 0.05)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }, {
+                        label: 'S&P 500',
+                        data: sp500Returns,
+                        borderColor: 'rgb(107, 114, 128)',
+                        backgroundColor: 'rgba(107, 114, 128, 0.05)',
                         borderWidth: 2,
                         borderDash: [5, 5],
-                        fill: true,
-                        tension: 0.4
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }, {
+                        label: 'NASDAQ',
+                        data: nasdaqReturns,
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.05)',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5,
+                        hidden: true
+                    }, {
+                        label: 'Gold',
+                        data: goldReturns,
+                        borderColor: 'rgb(250, 204, 21)',
+                        backgroundColor: 'rgba(250, 204, 21, 0.05)',
+                        borderWidth: 2,
+                        borderDash: [3, 3],
+                        fill: false,
+                        tension: 0.4,
+                        pointRadius: 3,
+                        pointHoverRadius: 5
                     }]
                 },
                 options: {
@@ -2633,6 +2915,92 @@
                 setTimeout(() => notification.remove(), 500);
             }, 5000);
         }
+        
+        // Update benchmark view based on selection
+        function updateBenchmarkView(view) {
+            if (!charts.performance) return;
+            
+            const datasetVisibility = {
+                'all': [true, true, true, true, false, true],
+                'crypto': [true, true, true, false, false, false],
+                'equity': [true, false, false, true, true, false],
+                'commodity': [true, false, false, false, false, true]
+            };
+            
+            const visibility = datasetVisibility[view] || datasetVisibility['all'];
+            
+            charts.performance.data.datasets.forEach((dataset, index) => {
+                if (index < visibility.length) {
+                    dataset.hidden = !visibility[index];
+                }
+            });
+            
+            charts.performance.update();
+        }
+        
+        // Refresh market data
+        function refreshMarketData() {
+            const updateTime = document.getElementById('market-update-time');
+            if (updateTime) {
+                const now = new Date();
+                updateTime.textContent = now.toLocaleTimeString();
+            }
+            
+            // Simulate price updates
+            const prices = {
+                'btc-price': (67234 + (Math.random() - 0.5) * 1000).toFixed(0),
+                'eth-price': (3456 + (Math.random() - 0.5) * 100).toFixed(0),
+                'sp500-price': (5234.56 + (Math.random() - 0.5) * 50).toFixed(2),
+                'nasdaq-price': (18234.12 + (Math.random() - 0.5) * 100).toFixed(2),
+                'dow-price': (42156.89 + (Math.random() - 0.5) * 200).toFixed(2),
+                'gold-price': (2034.56 + (Math.random() - 0.5) * 20).toFixed(2)
+            };
+            
+            const changes = {
+                'btc-change': ((Math.random() - 0.5) * 5).toFixed(2),
+                'eth-change': ((Math.random() - 0.5) * 4).toFixed(2),
+                'sp500-change': ((Math.random() - 0.5) * 2).toFixed(2),
+                'nasdaq-change': ((Math.random() - 0.5) * 2).toFixed(2),
+                'dow-change': ((Math.random() - 0.5) * 2).toFixed(2),
+                'gold-change': ((Math.random() - 0.5) * 1).toFixed(2)
+            };
+            
+            // Update prices
+            Object.keys(prices).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const isUSD = id.includes('btc') || id.includes('eth') || id.includes('gold');
+                    element.textContent = isUSD ? `$${prices[id]}` : prices[id];
+                }
+            });
+            
+            // Update changes
+            Object.keys(changes).forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    const value = parseFloat(changes[id]);
+                    element.textContent = `${value > 0 ? '+' : ''}${value}%`;
+                    element.className = value >= 0 ? 'text-xs text-green-500' : 'text-xs text-red-500';
+                    
+                    // Update price color
+                    const priceId = id.replace('-change', '-price');
+                    const priceElement = document.getElementById(priceId);
+                    if (priceElement) {
+                        priceElement.className = value >= 0 ? 
+                            'text-sm font-semibold text-green-600' : 
+                            'text-sm font-semibold text-red-600';
+                    }
+                }
+            });
+            
+            showNotification('Market data refreshed', 'success');
+        }
+        
+        // Auto-refresh market data every 30 seconds
+        setInterval(refreshMarketData, 30000);
+        
+        // Initial market data load
+        setTimeout(refreshMarketData, 1000);
         
         // Call initialization
         initializeTooltips();
