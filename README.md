@@ -1,6 +1,6 @@
-# HyperVision AI - Quantitative Trading Platform
+# Gomna AI - Institutional Quantitative Trading & Payment Platform
 
-A sophisticated quantitative trading platform that demonstrates AI-powered trading strategies outperforming market benchmarks through advanced predictive analytics.
+A sophisticated institutional-grade platform combining AI-powered quantitative trading with comprehensive payment processing capabilities, designed to impress Wall Street investors and MIT academics.
 
 ![Status](https://img.shields.io/badge/Status-Live-green)
 ![Performance](https://img.shields.io/badge/Alpha-+13.9%25-purple)
@@ -8,7 +8,7 @@ A sophisticated quantitative trading platform that demonstrates AI-powered tradi
 
 ## 🚀 Live Demo
 
-Visit the live platform: [HyperVision AI Trading Platform](https://yourusername.github.io/hypervision-ai-trading/)
+Visit the live platform: [Gomna AI Trading & Payment Platform](https://gomna-pha.github.io/hypervision-crypto-ai/)
 
 ## 📊 Key Features
 

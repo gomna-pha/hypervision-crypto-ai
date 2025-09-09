@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HyperVision AI - Institutional Quantitative Trading Platform</title>
+    <title>Gomna AI - Institutional Quantitative Trading & Payment Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -78,14 +78,23 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-xl">
-                                <i data-lucide="brain-circuit" class="w-10 h-10 text-white"></i>
+                            <div class="p-2 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
+                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Gomna Custom Logo -->
+                                    <circle cx="24" cy="24" r="22" stroke="white" stroke-width="2" opacity="0.9"/>
+                                    <path d="M24 8 L16 20 L24 18 L32 20 Z" fill="white" opacity="0.9"/>
+                                    <path d="M12 24 Q24 16 36 24 Q30 32 24 28 Q18 32 12 24" fill="white" opacity="0.8"/>
+                                    <circle cx="20" cy="24" r="2" fill="white"/>
+                                    <circle cx="28" cy="24" r="2" fill="white"/>
+                                    <path d="M20 32 Q24 36 28 32" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                    <text x="24" y="44" font-family="Arial Black" font-size="8" font-weight="bold" fill="white" text-anchor="middle">GOMNA</text>
+                                </svg>
                             </div>
                             <div>
                                 <h1 class="text-3xl font-bold text-gray-900">
-                                    HyperVision AI
+                                    Gomna AI Trading
                                 </h1>
-                                <p class="text-sm text-gray-600">Institutional Quantitative Trading Platform</p>
+                                <p class="text-sm text-gray-600">Institutional Quantitative Trading & Payment Platform</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
@@ -137,6 +146,10 @@
                     <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="transparency">
                         <i data-lucide="microscope" class="w-4 h-4 inline mr-2"></i>
                         Model Transparency
+                    </button>
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="payments">
+                        <i data-lucide="credit-card" class="w-4 h-4 inline mr-2"></i>
+                        Payment Systems
                     </button>
                 </div>
             </div>
@@ -404,6 +417,343 @@
                             </thead>
                             <tbody id="positions-table">
                                 <!-- Positions will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Systems Tab -->
+            <div id="payments-tab" class="tab-content hidden">
+                <!-- Payment Gateway Integration -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6">Enterprise Payment Gateway Integration</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Traditional Banking -->
+                        <div class="border-2 border-blue-200 rounded-xl p-6 hover:border-blue-400 transition-colors">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-gray-800">Traditional Banking</h4>
+                                <div class="p-2 bg-blue-100 rounded-lg">
+                                    <i data-lucide="building-2" class="w-6 h-6 text-blue-600"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">SWIFT Wire Transfer</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">ACH Processing</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">SEPA (Europe)</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">FedWire</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t">
+                                <div class="text-xs text-gray-500">Settlement: T+1</div>
+                                <div class="text-xs text-gray-500">Limits: $10M per transaction</div>
+                            </div>
+                        </div>
+
+                        <!-- Cryptocurrency -->
+                        <div class="border-2 border-purple-200 rounded-xl p-6 hover:border-purple-400 transition-colors">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-gray-800">Digital Assets</h4>
+                                <div class="p-2 bg-purple-100 rounded-lg">
+                                    <i data-lucide="coins" class="w-6 h-6 text-purple-600"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">Bitcoin (BTC)</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">Ethereum (ETH)</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">USDC/USDT Stablecoins</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">Lightning Network</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t">
+                                <div class="text-xs text-gray-500">Settlement: Instant - 30 min</div>
+                                <div class="text-xs text-gray-500">Limits: No maximum</div>
+                            </div>
+                        </div>
+
+                        <!-- Cards & Digital Wallets -->
+                        <div class="border-2 border-green-200 rounded-xl p-6 hover:border-green-400 transition-colors">
+                            <div class="flex items-center justify-between mb-4">
+                                <h4 class="font-semibold text-gray-800">Cards & Wallets</h4>
+                                <div class="p-2 bg-green-100 rounded-lg">
+                                    <i data-lucide="wallet" class="w-6 h-6 text-green-600"></i>
+                                </div>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">Visa/Mastercard</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">American Express</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">Apple Pay/Google Pay</span>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-sm">PayPal Business</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t">
+                                <div class="text-xs text-gray-500">Settlement: Instant</div>
+                                <div class="text-xs text-gray-500">Limits: $250K per transaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Processing Metrics -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-gray-600">Daily Volume</h3>
+                            <i data-lucide="trending-up" class="w-5 h-5 text-green-600"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900">$<span id="daily-volume">847.3</span>M</div>
+                        <div class="text-sm text-green-600 mt-2">+23.4% from yesterday</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-gray-600">Success Rate</h3>
+                            <i data-lucide="check-circle" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900"><span id="success-rate">99.97</span>%</div>
+                        <div class="text-sm text-gray-500 mt-2">3 failures / 10K transactions</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-gray-600">Avg Latency</h3>
+                            <i data-lucide="zap" class="w-5 h-5 text-purple-600"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900"><span id="avg-latency">124</span>ms</div>
+                        <div class="text-sm text-gray-500 mt-2">P99: 287ms</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <h3 class="text-sm font-semibold text-gray-600">Active Accounts</h3>
+                            <i data-lucide="users" class="w-5 h-5 text-orange-600"></i>
+                        </div>
+                        <div class="text-3xl font-bold text-gray-900"><span id="active-accounts">12,847</span></div>
+                        <div class="text-sm text-gray-500 mt-2">Enterprise: 2,341</div>
+                    </div>
+                </div>
+
+                <!-- Smart Contract & DeFi Integration -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Smart Contract & DeFi Integration</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Smart Contract Features -->
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Automated Trading Contracts</h4>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Escrow Smart Contracts</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Automated settlement with multi-sig security</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        Contract: 0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Yield Farming Integration</span>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">Active</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Auto-compound yield strategies</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        APY: 12.4% | TVL: $45.2M
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Flash Loan Arbitrage</span>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Beta</span>
+                                    </div>
+                                    <p class="text-sm text-gray-600">Automated cross-DEX arbitrage</p>
+                                    <div class="mt-2 text-xs text-gray-500">
+                                        Daily Profit: $47K | Success Rate: 73%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- DeFi Protocols -->
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Connected DeFi Protocols</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full"></div>
+                                        <span class="font-medium">Uniswap V3</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">$2.3M liquidity</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-purple-500 rounded-full"></div>
+                                        <span class="font-medium">Aave</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">$12.7M borrowed</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-orange-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-orange-500 rounded-full"></div>
+                                        <span class="font-medium">Compound</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">$8.4M supplied</span>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-green-500 rounded-full"></div>
+                                        <span class="font-medium">Curve Finance</span>
+                                    </div>
+                                    <span class="text-sm text-gray-600">$5.6M in pools</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compliance & Security -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">Regulatory Compliance & Security</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="p-4 border-2 border-green-200 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">Licenses & Compliance</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    <span>SEC Registered RIA</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    <span>FINRA Member</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    <span>BitLicense (NY)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    <span>PCI DSS Level 1</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    <span>SOC 2 Type II</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 border-2 border-blue-200 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">Security Features</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+                                    <span>Multi-Sig Wallets (3-of-5)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+                                    <span>Hardware Security Modules</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+                                    <span>Cold Storage (95% funds)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+                                    <span>2FA + Biometric Auth</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-blue-600"></i>
+                                    <span>Real-time Fraud Detection</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="p-4 border-2 border-purple-200 rounded-lg">
+                            <h4 class="font-semibold text-gray-800 mb-3">Insurance & Protection</h4>
+                            <ul class="space-y-2 text-sm">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                                    <span>$250M Custody Insurance</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                                    <span>FDIC Coverage (USD)</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                                    <span>Lloyd's of London</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                                    <span>Crime Insurance</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield-check" class="w-4 h-4 text-purple-600"></i>
+                                    <span>E&O Coverage</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Recent Payment Transactions</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Time</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Type</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Method</th>
+                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Amount</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Status</th>
+                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Fee</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Confirmation</th>
+                                </tr>
+                            </thead>
+                            <tbody id="payment-transactions">
+                                <!-- Transactions will be inserted here -->
                             </tbody>
                         </table>
                     </div>
@@ -1108,11 +1458,15 @@
             updateLiveTrades();
             updateMetrics();
             updatePositions();
+            updatePaymentTransactions();
+            updatePaymentMetrics();
             
             // Set up intervals
             setInterval(updateLiveTrades, CONFIG.UPDATE_INTERVALS.TRADES);
             setInterval(updateMetrics, CONFIG.UPDATE_INTERVALS.METRICS);
             setInterval(updateCharts, CONFIG.UPDATE_INTERVALS.PREDICTIONS);
+            setInterval(updatePaymentTransactions, 4000);
+            setInterval(updatePaymentMetrics, 8000);
         }
 
         // Update Live Trades
@@ -1257,6 +1611,96 @@
         function updateDataSource(source) {
             console.log(`Switching to ${source} data source`);
             // In production, this would switch between live APIs and historical data
+        }
+
+        // Update Payment Transactions
+        function updatePaymentTransactions() {
+            const transactionsTable = document.getElementById('payment-transactions');
+            if (!transactionsTable) return;
+
+            const methods = ['Wire Transfer', 'Bitcoin', 'Ethereum', 'USDC', 'Credit Card', 'ACH', 'Lightning'];
+            const types = ['Deposit', 'Withdrawal', 'Trade Settlement', 'Fee Payment'];
+            const statuses = ['Completed', 'Pending', 'Processing'];
+            
+            // Generate a new transaction
+            const transaction = {
+                time: new Date().toLocaleTimeString(),
+                type: types[Math.floor(Math.random() * types.length)],
+                method: methods[Math.floor(Math.random() * methods.length)],
+                amount: (Math.random() * 500000 + 10000).toFixed(2),
+                status: statuses[Math.random() < 0.8 ? 0 : Math.floor(Math.random() * statuses.length)],
+                fee: (Math.random() * 100 + 5).toFixed(2),
+                confirmation: Math.random() < 0.7 ? generateTxHash() : 'Pending'
+            };
+
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="py-2 text-sm">${transaction.time}</td>
+                <td class="py-2 text-sm">${transaction.type}</td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium ${
+                        transaction.method.includes('Bitcoin') || transaction.method.includes('Ethereum') ? 
+                        'bg-purple-100 text-purple-800' : 
+                        transaction.method.includes('Wire') || transaction.method.includes('ACH') ?
+                        'bg-blue-100 text-blue-800' :
+                        'bg-gray-100 text-gray-800'
+                    }">
+                        ${transaction.method}
+                    </span>
+                </td>
+                <td class="py-2 text-sm text-right font-medium">$${formatNumber(parseFloat(transaction.amount))}</td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium ${
+                        transaction.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                        transaction.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-blue-100 text-blue-800'
+                    }">
+                        ${transaction.status}
+                    </span>
+                </td>
+                <td class="py-2 text-sm text-right">$${transaction.fee}</td>
+                <td class="py-2 text-sm font-mono text-xs">
+                    ${transaction.confirmation.substring(0, 16)}...
+                </td>
+            `;
+
+            // Add to top and limit to 15 rows
+            transactionsTable.insertBefore(row, transactionsTable.firstChild);
+            while (transactionsTable.children.length > 15) {
+                transactionsTable.removeChild(transactionsTable.lastChild);
+            }
+        }
+
+        // Update Payment Metrics
+        function updatePaymentMetrics() {
+            const metrics = {
+                'daily-volume': (847.3 + (Math.random() - 0.5) * 50).toFixed(1),
+                'success-rate': (99.97 + (Math.random() - 0.5) * 0.03).toFixed(2),
+                'avg-latency': Math.floor(124 + (Math.random() - 0.5) * 20),
+                'active-accounts': Math.floor(12847 + (Math.random() - 0.5) * 100)
+            };
+
+            Object.entries(metrics).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'active-accounts') {
+                        element.textContent = value.toLocaleString();
+                    } else {
+                        element.textContent = value;
+                    }
+                }
+            });
+        }
+
+        // Generate transaction hash
+        function generateTxHash() {
+            const chars = '0123456789abcdef';
+            let hash = '0x';
+            for (let i = 0; i < 64; i++) {
+                hash += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return hash;
         }
 
         // Utility function to format numbers
