@@ -19,10 +19,38 @@ Thumbs.db
 logs/
 *.log
 
-# Environment
+# CRITICAL - SENSITIVE FILES - NEVER COMMIT
 .env
 .env.local
 .env.production
+.env.development
+.env.*
+!.env.example
+
+# API Keys and Secrets - NEVER COMMIT
+**/api-keys/
+**/credentials/
+*.key
+*.pem
+*.cert
+*.crt
+*.p12
+*.pfx
+api-config.json
+secure-config.json
+private-keys.json
+
+# Private configuration
+config.production.js
+config.local.js
+secrets.js
+private-config.js
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+database.json
 
 # Build
 dist/
@@ -32,3 +60,35 @@ build/
 *.tmp
 *.temp
 .cache/
+*.backup
+*.bak
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Deployment files
+.vercel
+.netlify
+.serverless
+
+# Supervisor
+supervisord.log
+supervisord.pid
+supervisor.sock
+webserver.log
+webserver_error.log
+
+# Investor sensitive documents
+/investors/
+/nda/
+/contracts/
+/financial-reports/
+/private-docs/
+
+# Trading data
+/trading-history/
+/positions/
+/orders/
+*.csv
+*.xlsx
