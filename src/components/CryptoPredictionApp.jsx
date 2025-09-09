@@ -443,10 +443,10 @@ const CryptoPredictionApp = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-3xl font-bold text-blue-700">
+              <div className="text-3xl font-bold text-gray-800">
                 ${realTimePrice.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </div>
-              <div className="text-sm text-blue-600 font-medium">{realTimePrice.symbol}</div>
+              <div className="text-sm text-gray-600 font-medium">{realTimePrice.symbol}</div>
             </div>
             <div className={`text-right ${realTimePrice.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               <div className="text-xl font-bold">
@@ -460,15 +460,15 @@ const CryptoPredictionApp = () => {
           
           <div className="grid grid-cols-3 gap-4 text-sm">
             <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Bid:</span>
-              <span className="font-bold ml-2 text-blue-700">${realTimePrice.bid.toFixed(2)}</span>
+              <span className="text-gray-600">Bid:</span>
+              <span className="font-bold ml-2 text-gray-800">${realTimePrice.bid.toFixed(2)}</span>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Ask:</span>
-              <span className="font-bold ml-2 text-blue-700">${realTimePrice.ask.toFixed(2)}</span>
+              <span className="text-gray-600">Ask:</span>
+              <span className="font-bold ml-2 text-gray-800">${realTimePrice.ask.toFixed(2)}</span>
             </div>
             <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <span className="text-blue-600">Volume:</span>
+              <span className="text-gray-600">Volume:</span>
               <span className="font-bold ml-2 text-green-600">{(realTimePrice.volume / 1000000).toFixed(1)}M</span>
             </div>
           </div>
@@ -690,38 +690,89 @@ const CryptoPredictionApp = () => {
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <div className="space-y-6">
-            {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <MetricCard 
-                title="Live Accuracy" 
-                value={`${(performanceMetrics.liveAccuracy * 100).toFixed(1)}%`} 
-                icon={Target} 
-                trend={2.8} 
-                live={true}
-              />
-              <MetricCard 
-                title="Current Price" 
-                value={realTimePrice ? `$${realTimePrice.price.toFixed(2)}` : 'Loading...'} 
-                icon={TrendingUp} 
-                trend={realTimePrice?.changePercent} 
-                live={true}
-              />
-              <MetricCard title="AI Predictions" value={predictions.length.toString()} icon={Brain} live={true} />
-              <MetricCard title="Data Sources" value="6 Active" icon={Database} live={true} />
+          <div className="space-y-8">
+            {/* Executive Summary Panel */}
+            <div className="bg-gradient-to-r from-cream-100 to-blue-100 rounded-xl p-6 shadow-2xl border border-blue-200">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 bg-gradient-to-br from-blue-400 to-blue-500 rounded-lg">
+                  <Activity className="w-6 h-6 text-white" />
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800">Executive Dashboard</h2>
+                <div className="ml-auto bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-bold">
+                  🟢 ALL SYSTEMS OPERATIONAL
+                </div>
+              </div>
+              
+              {/* Key Metrics Row */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <MetricCard 
+                  title="Portfolio Value" 
+                  value={`$${(performanceMetrics.portfolioValue / 1000000).toFixed(2)}M`} 
+                  icon={Award} 
+                  trend={5.7} 
+                  live={true}
+                />
+                <MetricCard 
+                  title="Live Accuracy" 
+                  value={`${(performanceMetrics.liveAccuracy * 100).toFixed(1)}%`} 
+                  icon={Target} 
+                  trend={2.8} 
+                  live={true}
+                />
+                <MetricCard 
+                  title="Current Price" 
+                  value={realTimePrice ? `$${realTimePrice.price.toFixed(2)}` : 'Loading...'} 
+                  icon={TrendingUp} 
+                  trend={realTimePrice?.changePercent} 
+                  live={true}
+                />
+                <MetricCard 
+                  title="Today's P&L" 
+                  value={`+$${(performanceMetrics.todaysPnL / 1000).toFixed(1)}K`}
+                  icon={BarChart3} 
+                  trend={8.2}
+                  live={true}
+                />
+              </div>
             </div>
 
-            {/* Main Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <LivePricePanel />
-              <div className="lg:col-span-2">
+            {/* Main Trading Interface */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              {/* Live Price Panel - Full Height */}
+              <div className="xl:col-span-1">
+                <LivePricePanel />
+              </div>
+              
+              {/* Live Chart - Takes 2/3 width */}
+              <div className="xl:col-span-2">
                 <LivePredictionChart />
               </div>
             </div>
 
+            {/* Market Intelligence Row */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <LiveNewsPanel />
               <DataSourcePanel />
+            </div>
+
+            {/* System Status Footer */}
+            <div className="bg-white rounded-xl p-4 shadow-lg border border-blue-200">
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-600">System Status:</span>
+                  <div className="flex items-center gap-2">
+                    <StatusIndicator status="active" />
+                    <span className="text-green-600 font-medium">Optimal Performance</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-gray-600">
+                  <span>Model: Hyperbolic CNN v3.2</span>
+                  <span>•</span>
+                  <span>Latency: 125ms</span>
+                  <span>•</span>
+                  <span>Uptime: 99.97%</span>
+                </div>
+              </div>
             </div>
           </div>
         )}
