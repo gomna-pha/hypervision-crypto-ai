@@ -151,6 +151,10 @@
                         <i data-lucide="credit-card" class="w-4 h-4 inline mr-2"></i>
                         Payment Systems
                     </button>
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="agentic">
+                        <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
+                        Agentic AI Trading
+                    </button>
                 </div>
             </div>
         </div>
@@ -754,6 +758,345 @@
                             </thead>
                             <tbody id="payment-transactions">
                                 <!-- Transactions will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agentic AI Trading Tab -->
+            <div id="agentic-tab" class="tab-content hidden">
+                <!-- AI Agent Control Panel -->
+                <div class="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-xl shadow-lg mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-3 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl">
+                                <i data-lucide="cpu" class="w-8 h-8 text-white"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-2xl font-bold text-gray-900">Autonomous Trading Agent</h3>
+                                <p class="text-sm text-gray-600">AI-powered automated execution based on performance metrics</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div id="agent-status" class="px-4 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                                    <span>INACTIVE</span>
+                                </div>
+                            </div>
+                            <button id="agent-toggle" class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-lg">
+                                <i data-lucide="power" class="w-4 h-4 inline mr-2"></i>
+                                Activate Agent
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Configuration -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- Trading Strategy Selection -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="text-lg font-bold text-gray-900 mb-4">Trading Strategy</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-start gap-3 p-3 border-2 border-blue-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
+                                <input type="radio" name="strategy" value="conservative" class="mt-1" checked>
+                                <div>
+                                    <div class="font-semibold text-gray-800">Conservative</div>
+                                    <div class="text-sm text-gray-600">Low risk, steady returns (Sharpe > 2.0)</div>
+                                    <div class="text-xs text-gray-500 mt-1">Target: 15-20% APY, Max DD: 5%</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="strategy" value="balanced" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-gray-800">Balanced</div>
+                                    <div class="text-sm text-gray-600">Moderate risk/reward (Sharpe > 1.5)</div>
+                                    <div class="text-xs text-gray-500 mt-1">Target: 25-35% APY, Max DD: 10%</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                                <input type="radio" name="strategy" value="aggressive" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-gray-800">Aggressive</div>
+                                    <div class="text-sm text-gray-600">High risk, high reward (Sharpe > 1.0)</div>
+                                    <div class="text-xs text-gray-500 mt-1">Target: 40-60% APY, Max DD: 20%</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-purple-200 rounded-lg cursor-pointer hover:bg-purple-50 transition-colors">
+                                <input type="radio" name="strategy" value="custom" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-gray-800">Custom ML Strategy</div>
+                                    <div class="text-sm text-gray-600">AI optimized based on market regime</div>
+                                    <div class="text-xs text-gray-500 mt-1">Dynamic targets based on conditions</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Risk Parameters -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="text-lg font-bold text-gray-900 mb-4">Risk Parameters</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="text-sm font-semibold text-gray-700">Max Position Size</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="range" id="max-position" min="1" max="25" value="10" class="flex-1">
+                                    <span id="max-position-value" class="text-sm font-bold w-12">10%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-semibold text-gray-700">Stop Loss</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="range" id="stop-loss" min="1" max="10" value="3" class="flex-1">
+                                    <span id="stop-loss-value" class="text-sm font-bold w-12">3%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-semibold text-gray-700">Take Profit</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="range" id="take-profit" min="5" max="50" value="15" class="flex-1">
+                                    <span id="take-profit-value" class="text-sm font-bold w-12">15%</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-semibold text-gray-700">Max Daily Trades</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="range" id="max-trades" min="1" max="50" value="10" class="flex-1">
+                                    <span id="max-trades-value" class="text-sm font-bold w-12">10</span>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="text-sm font-semibold text-gray-700">Confidence Threshold</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="range" id="confidence" min="60" max="95" value="75" class="flex-1">
+                                    <span id="confidence-value" class="text-sm font-bold w-12">75%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Execution Rules -->
+                    <div class="bg-white p-6 rounded-xl shadow-lg">
+                        <h4 class="text-lg font-bold text-gray-900 mb-4">Execution Rules</h4>
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Execute only when Sharpe Ratio > 2.0</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Require ML confidence > 75%</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Use Kelly Criterion for sizing</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Enable hedging positions</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Auto-rebalance portfolio</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Trade during volatility spikes</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-2">
+                                <input type="checkbox" checked class="w-4 h-4 text-blue-600">
+                                <span class="text-sm">Pause on drawdown > 10%</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Performance Metrics -->
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Agent P&L</span>
+                            <i data-lucide="trending-up" class="w-4 h-4 text-green-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900">+$<span id="agent-pnl">48,732</span></div>
+                        <div class="text-xs text-green-600 mt-1">+18.4% today</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Win Rate</span>
+                            <i data-lucide="target" class="w-4 h-4 text-blue-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900"><span id="agent-winrate">76.3</span>%</div>
+                        <div class="text-xs text-gray-500 mt-1">312 wins / 97 losses</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Avg Trade</span>
+                            <i data-lucide="activity" class="w-4 h-4 text-purple-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900">$<span id="agent-avg">2,847</span></div>
+                        <div class="text-xs text-gray-500 mt-1">15 min avg hold</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Active Trades</span>
+                            <i data-lucide="zap" class="w-4 h-4 text-orange-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900"><span id="agent-active">7</span></div>
+                        <div class="text-xs text-gray-500 mt-1">$124K exposure</div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl shadow-lg">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold text-gray-600">Risk Level</span>
+                            <i data-lucide="shield" class="w-4 h-4 text-red-600"></i>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900"><span id="agent-risk">Low</span></div>
+                        <div class="text-xs text-gray-500 mt-1">VaR: $8,432</div>
+                    </div>
+                </div>
+
+                <!-- AI Decision Engine -->
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">AI Decision Engine</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Current Analysis -->
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Real-time Analysis</h4>
+                            <div class="space-y-3">
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Market Regime</span>
+                                        <span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">Trending Up</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        Detected bullish momentum with 87% confidence
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Sentiment Score</span>
+                                        <span class="text-sm font-bold text-green-600">+0.73</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 73%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="p-4 bg-gray-50 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium">Next Action</span>
+                                        <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">BUY SIGNAL</span>
+                                    </div>
+                                    <div class="text-sm text-gray-600">
+                                        ETH-USD: Entry at $3,124 | Target: $3,280
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Decision Factors -->
+                        <div>
+                            <h4 class="font-semibold text-gray-800 mb-3">Decision Factors</h4>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                    <span class="text-sm">Technical Indicators</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold">85%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                    <span class="text-sm">ML Prediction</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 91%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold">91%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-yellow-50 rounded">
+                                    <span class="text-sm">Order Book Imbalance</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 62%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold">62%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                    <span class="text-sm">Risk/Reward Ratio</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold">3.2:1</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-green-50 rounded">
+                                    <span class="text-sm">Portfolio Correlation</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                                        </div>
+                                        <span class="text-xs font-bold">0.45</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Automated Trades History -->
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Automated Execution History</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500">Auto-refresh</span>
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b">
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Time</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Asset</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Action</th>
+                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Price</th>
+                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Size</th>
+                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">P&L</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Strategy</th>
+                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Confidence</th>
+                                </tr>
+                            </thead>
+                            <tbody id="agent-trades-table">
+                                <!-- Automated trades will be inserted here -->
                             </tbody>
                         </table>
                     </div>
@@ -1460,6 +1803,7 @@
             updatePositions();
             updatePaymentTransactions();
             updatePaymentMetrics();
+            updateAgentTrades();
             
             // Set up intervals
             setInterval(updateLiveTrades, CONFIG.UPDATE_INTERVALS.TRADES);
@@ -1467,6 +1811,8 @@
             setInterval(updateCharts, CONFIG.UPDATE_INTERVALS.PREDICTIONS);
             setInterval(updatePaymentTransactions, 4000);
             setInterval(updatePaymentMetrics, 8000);
+            setInterval(updateAgentTrades, 5000);
+            setInterval(updateAgentMetrics, 10000);
         }
 
         // Update Live Trades
@@ -1717,8 +2063,213 @@
             });
         }
 
+        // Agentic AI Trading Functions
+        let agentActive = false;
+        let agentStrategy = 'conservative';
+        
+        // Initialize Agent Controls
+        function initializeAgentControls() {
+            // Agent toggle button
+            const toggleBtn = document.getElementById('agent-toggle');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    toggleAgent();
+                });
+            }
+
+            // Risk parameter sliders
+            const sliders = [
+                { id: 'max-position', suffix: '%' },
+                { id: 'stop-loss', suffix: '%' },
+                { id: 'take-profit', suffix: '%' },
+                { id: 'max-trades', suffix: '' },
+                { id: 'confidence', suffix: '%' }
+            ];
+
+            sliders.forEach(slider => {
+                const element = document.getElementById(slider.id);
+                const valueElement = document.getElementById(`${slider.id}-value`);
+                if (element && valueElement) {
+                    element.addEventListener('input', function() {
+                        valueElement.textContent = this.value + slider.suffix;
+                    });
+                }
+            });
+
+            // Strategy selection
+            document.querySelectorAll('input[name="strategy"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    agentStrategy = this.value;
+                    console.log('Strategy changed to:', agentStrategy);
+                });
+            });
+        }
+
+        // Toggle Agent Active/Inactive
+        function toggleAgent() {
+            agentActive = !agentActive;
+            const statusDiv = document.getElementById('agent-status');
+            const toggleBtn = document.getElementById('agent-toggle');
+            
+            if (agentActive) {
+                statusDiv.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span>ACTIVE</span>
+                    </div>
+                `;
+                statusDiv.className = 'px-4 py-2 rounded-full text-sm font-bold bg-green-100 text-green-800';
+                toggleBtn.innerHTML = '<i data-lucide="power" class="w-4 h-4 inline mr-2"></i>Deactivate Agent';
+                toggleBtn.className = 'px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-bold hover:from-red-600 hover:to-red-700 transition-all shadow-lg';
+                
+                // Start automated trading
+                console.log('Agent activated with strategy:', agentStrategy);
+                simulateAgentDecision();
+            } else {
+                statusDiv.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+                        <span>INACTIVE</span>
+                    </div>
+                `;
+                statusDiv.className = 'px-4 py-2 rounded-full text-sm font-bold bg-gray-100 text-gray-600';
+                toggleBtn.innerHTML = '<i data-lucide="power" class="w-4 h-4 inline mr-2"></i>Activate Agent';
+                toggleBtn.className = 'px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-lg';
+                
+                console.log('Agent deactivated');
+            }
+            
+            // Re-create Lucide icons
+            lucide.createIcons();
+        }
+
+        // Simulate Agent Decision Making
+        function simulateAgentDecision() {
+            if (!agentActive) return;
+
+            // Get current parameters
+            const maxPosition = document.getElementById('max-position').value;
+            const stopLoss = document.getElementById('stop-loss').value;
+            const takeProfit = document.getElementById('take-profit').value;
+            const confidence = document.getElementById('confidence').value;
+
+            // Simulate decision based on metrics
+            const decision = {
+                action: Math.random() > 0.5 ? 'BUY' : 'SELL',
+                confidence: (75 + Math.random() * 20).toFixed(1),
+                asset: ['BTC', 'ETH', 'SOL', 'ADA'][Math.floor(Math.random() * 4)],
+                size: (Math.random() * parseFloat(maxPosition) * 0.5 + 1).toFixed(2),
+                strategy: agentStrategy
+            };
+
+            console.log('Agent decision:', decision);
+
+            // Execute trade if confidence meets threshold
+            if (parseFloat(decision.confidence) >= parseFloat(confidence)) {
+                executeAgentTrade(decision);
+            }
+
+            // Schedule next decision
+            if (agentActive) {
+                setTimeout(simulateAgentDecision, 15000 + Math.random() * 30000); // 15-45 seconds
+            }
+        }
+
+        // Execute Agent Trade
+        function executeAgentTrade(decision) {
+            console.log('Executing trade:', decision);
+            // In production, this would send the trade to the exchange
+            // For demo, we'll just update the UI
+            updateAgentMetrics();
+        }
+
+        // Update Agent Trades Table
+        function updateAgentTrades() {
+            const tradesTable = document.getElementById('agent-trades-table');
+            if (!tradesTable) return;
+
+            const strategies = ['Conservative', 'Balanced', 'Aggressive', 'Custom ML'];
+            const assets = ['BTC', 'ETH', 'SOL', 'ADA', 'MATIC'];
+            const actions = ['BUY', 'SELL', 'CLOSE'];
+            
+            // Generate a new automated trade
+            const trade = {
+                time: new Date().toLocaleTimeString(),
+                asset: assets[Math.floor(Math.random() * assets.length)],
+                action: actions[Math.floor(Math.random() * actions.length)],
+                price: (Math.random() * 50000 + 20000).toFixed(2),
+                size: (Math.random() * 5 + 0.1).toFixed(4),
+                pnl: ((Math.random() - 0.3) * 2000).toFixed(2),
+                strategy: strategies[Math.floor(Math.random() * strategies.length)],
+                confidence: (70 + Math.random() * 25).toFixed(1)
+            };
+
+            const row = document.createElement('tr');
+            row.className = 'border-b hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="py-2 text-sm">${trade.time}</td>
+                <td class="py-2 text-sm font-medium">${trade.asset}</td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium ${
+                        trade.action === 'BUY' ? 'bg-green-100 text-green-800' : 
+                        trade.action === 'SELL' ? 'bg-red-100 text-red-800' :
+                        'bg-gray-100 text-gray-800'
+                    }">
+                        ${trade.action}
+                    </span>
+                </td>
+                <td class="py-2 text-sm text-right">$${formatNumber(parseFloat(trade.price))}</td>
+                <td class="py-2 text-sm text-right">${trade.size}</td>
+                <td class="py-2 text-sm text-right font-medium ${parseFloat(trade.pnl) >= 0 ? 'text-green-600' : 'text-red-600'}">
+                    ${parseFloat(trade.pnl) >= 0 ? '+' : ''}$${formatNumber(Math.abs(parseFloat(trade.pnl)))}
+                </td>
+                <td class="py-2 text-sm">
+                    <span class="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800">
+                        ${trade.strategy}
+                    </span>
+                </td>
+                <td class="py-2 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-16 bg-gray-200 rounded-full h-2">
+                            <div class="bg-green-500 h-2 rounded-full" style="width: ${trade.confidence}%"></div>
+                        </div>
+                        <span class="text-xs font-bold">${trade.confidence}%</span>
+                    </div>
+                </td>
+            `;
+
+            // Add to top and limit to 20 rows
+            tradesTable.insertBefore(row, tradesTable.firstChild);
+            while (tradesTable.children.length > 20) {
+                tradesTable.removeChild(tradesTable.lastChild);
+            }
+        }
+
+        // Update Agent Metrics
+        function updateAgentMetrics() {
+            const metrics = {
+                'agent-pnl': (48732 + (Math.random() - 0.3) * 5000).toFixed(0),
+                'agent-winrate': (76.3 + (Math.random() - 0.5) * 2).toFixed(1),
+                'agent-avg': (2847 + (Math.random() - 0.5) * 500).toFixed(0),
+                'agent-active': Math.floor(5 + Math.random() * 5),
+                'agent-risk': Math.random() > 0.5 ? 'Low' : Math.random() > 0.3 ? 'Medium' : 'High'
+            };
+
+            Object.entries(metrics).forEach(([id, value]) => {
+                const element = document.getElementById(id);
+                if (element) {
+                    if (id === 'agent-active' || id === 'agent-risk') {
+                        element.textContent = value;
+                    } else {
+                        element.textContent = formatNumber(parseFloat(value));
+                    }
+                }
+            });
+        }
+
         // Call initialization
         initializeTooltips();
+        initializeAgentControls();
     </script>
 </body>
 </html>
