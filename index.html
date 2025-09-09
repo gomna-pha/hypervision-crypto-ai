@@ -189,12 +189,12 @@
                             </div>
                             <div class="flex gap-4">
                                 <div class="flex items-center gap-2">
-                                    <div class="w-4 h-1 bg-green-500 rounded"></div>
-                                    <span class="text-sm font-medium text-gray-600">HyperVision AI</span>
+                                    <div class="w-4 h-2 bg-blue-500 rounded"></div>
+                                    <span class="text-sm font-semibold text-gray-700">HyperVision AI Return</span>
                                 </div>
                                 <div class="flex items-center gap-2">
-                                    <div class="w-4 h-1 bg-gray-400 rounded"></div>
-                                    <span class="text-sm font-medium text-gray-600">Benchmark (S&P Crypto)</span>
+                                    <div class="w-4 h-2 rounded" style="background: repeating-linear-gradient(90deg, #9ca3af, #9ca3af 3px, transparent 3px, transparent 6px); height: 8px;"></div>
+                                    <span class="text-sm font-semibold text-gray-700">Market Benchmark</span>
                                 </div>
                             </div>
                         </div>
@@ -270,10 +270,10 @@
                                     </div>
                                     
                                     <div class="space-y-3">
-                                        <div class="bg-green-50 p-3 rounded-lg border border-green-200">
-                                            <div class="text-xs text-gray-600 mb-1">AI Prediction (1h)</div>
-                                            <div class="text-xl font-bold text-green-600">$46,128.45</div>
-                                            <div class="text-sm text-green-600">+1.98% Expected</div>
+                                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                                            <div class="text-xs text-gray-600 mb-1">HyperVision AI Prediction (1h)</div>
+                                            <div class="text-xl font-bold text-blue-600">$46,128.45</div>
+                                            <div class="text-sm text-blue-600">+1.98% Expected</div>
                                         </div>
                                         
                                         <div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
@@ -330,19 +330,19 @@
                             </div>
                             
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
                                     <span class="font-medium text-gray-700">Prediction Accuracy</span>
-                                    <span class="font-bold text-green-600">91.4%</span>
+                                    <span class="font-bold text-blue-600">91.4%</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-cream-100 rounded-lg border border-cream-200">
                                     <span class="font-medium text-gray-700">F1 Score</span>
                                     <span class="font-bold text-blue-600">0.913</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
                                     <span class="font-medium text-gray-700">Information Ratio</span>
                                     <span class="font-bold text-purple-600">3.21</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-cream-100 rounded-lg border border-cream-200">
                                     <span class="font-medium text-gray-700">Model Latency</span>
                                     <span class="font-bold text-yellow-600">125ms</span>
                                 </div>
@@ -359,19 +359,19 @@
                             </div>
                             
                             <div class="space-y-4">
-                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-cream-100 rounded-lg border border-cream-200">
                                     <span class="font-medium text-gray-700">Total Trades Today</span>
                                     <span class="font-bold text-gray-800">47</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
                                     <span class="font-medium text-gray-700">Winning Trades</span>
-                                    <span class="font-bold text-green-600">41 (87.2%)</span>
+                                    <span class="font-bold text-blue-600">41 (87.2%)</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
                                     <span class="font-medium text-gray-700">Losing Trades</span>
                                     <span class="font-bold text-red-600">6 (12.8%)</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                <div class="flex items-center justify-between p-3 bg-cream-100 rounded-lg border border-cream-200">
                                     <span class="font-medium text-gray-700">Avg Trade Duration</span>
                                     <span class="font-bold text-blue-600">4h 23m</span>
                                 </div>
@@ -481,11 +481,11 @@
 
         // Chart configuration
         const chartColors = {
-            ai: 'rgb(34, 197, 94)', // green-500
-            benchmark: 'rgb(156, 163, 175)', // gray-400
-            prediction: 'rgb(147, 51, 234)', // purple-600
-            grid: 'rgb(229, 231, 235)', // gray-200
-            text: 'rgb(107, 114, 128)' // gray-500
+            ai: '#3b82f6', // blue-500 for HyperVision AI
+            benchmark: '#9ca3af', // gray-400 for Market Benchmark
+            prediction: '#9333ea', // purple-600
+            grid: '#e5e7eb', // gray-200
+            text: '#6b7280' // gray-500
         };
 
         // Generate mock data for charts
@@ -669,11 +669,11 @@
                     labels: data.labels,
                     datasets: [
                         {
-                            label: 'HyperVision AI Strategy',
+                            label: 'HyperVision AI Return',
                             data: data.aiData,
-                            borderColor: chartColors.ai,
-                            backgroundColor: 'rgba(34, 197, 94, 0.05)',
-                            borderWidth: 2,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.05)',
+                            borderWidth: 3,
                             tension: 0.1,
                             pointRadius: 0,
                             pointHoverRadius: 4
@@ -681,10 +681,10 @@
                         {
                             label: 'Market Benchmark',
                             data: data.benchmarkData,
-                            borderColor: chartColors.benchmark,
+                            borderColor: '#9ca3af',
                             backgroundColor: 'rgba(156, 163, 175, 0.05)',
-                            borderWidth: 1.5,
-                            borderDash: [3, 3],
+                            borderWidth: 2,
+                            borderDash: [5, 5],
                             tension: 0.1,
                             pointRadius: 0,
                             pointHoverRadius: 4
@@ -714,9 +714,20 @@
                             backgroundColor: 'rgba(255, 255, 255, 0.95)',
                             titleColor: '#111827',
                             bodyColor: '#374151',
-                            borderColor: '#e5e7eb',
+                            borderColor: '#3b82f6',
                             borderWidth: 1,
-                            padding: 10
+                            padding: 12,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    label += '$' + parseFloat(context.parsed.y).toFixed(2);
+                                    return label;
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -759,17 +770,17 @@
                     labels: data.labels,
                     datasets: [
                         {
-                            label: 'HyperVision AI',
+                            label: 'HyperVision AI Return',
                             data: data.aiReturns,
-                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
-                            borderColor: chartColors.ai,
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderColor: '#3b82f6',
                             borderWidth: 1
                         },
                         {
-                            label: 'Benchmark',
+                            label: 'Market Benchmark',
                             data: data.benchmarkReturns,
                             backgroundColor: 'rgba(156, 163, 175, 0.8)',
-                            borderColor: chartColors.benchmark,
+                            borderColor: '#9ca3af',
                             borderWidth: 1
                         }
                     ]
