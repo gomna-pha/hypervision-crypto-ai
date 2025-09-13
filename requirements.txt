@@ -36,6 +36,7 @@ plotly==5.15.0
 # API & Web
 requests==2.31.0
 websocket-client==1.6.1
+websockets==11.0.3
 ccxt==4.0.0
 
 # Cryptography & Security
@@ -54,3 +55,4 @@ nbconvert==7.7.3
 python-dotenv==1.0.0
 tqdm==4.65.0
 joblib==1.3.1
+psutil==5.9.5
