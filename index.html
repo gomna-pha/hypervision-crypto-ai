@@ -641,46 +641,7 @@
 
             <!-- Portfolio Tab -->
             <div id="portfolio-tab" class="tab-content hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Current Holdings -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Current Holdings</h3>
-                        <div class="chart-container">
-                            <canvas id="holdings-chart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Portfolio Optimization -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Efficient Frontier</h3>
-                        <div class="chart-container">
-                            <canvas id="efficient-frontier"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Position Details -->
-                <div class="bg-white p-6 rounded-xl shadow-lg mt-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Position Details</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b">
-                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Asset</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Quantity</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Avg Price</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Current Price</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Value</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">P&L</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Weight</th>
-                                </tr>
-                            </thead>
-                            <tbody id="positions-table">
-                                <!-- Positions will be inserted here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Hyperbolic Portfolio Optimization Container will be inserted here by JavaScript -->
             </div>
 
             <!-- Payment Systems Tab -->
@@ -3007,5 +2968,8 @@
         initializeAPIConnection();
         initializeAgentControls();
     </script>
+    
+    <!-- Hyperbolic Portfolio Optimization UI -->
+    <script src="hyperbolic_portfolio_ui.js"></script>
 </body>
 </html>
