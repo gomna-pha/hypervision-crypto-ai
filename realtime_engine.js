@@ -75,6 +75,10 @@ class RealTimeEngine {
             lastUpdate: Date.now()
         };
         
+        // Connection management
+        this.connectionAttempts = new Map(); // Track reconnection attempts per service
+        this.connectionTimeouts = new Map(); // Track timeout handles
+        
         // WebSocket connections
         this.connections = new Map();
         
@@ -173,8 +177,8 @@ class RealTimeEngine {
                 };
                 
                 ws.onclose = () => {
-                    console.log('🔌 Binance WebSocket disconnected, attempting reconnection...');
-                    setTimeout(() => this.connectToBinance().catch(err => console.warn('Reconnection failed:', err.message)), 5000);
+                    console.log('🔌 Binance WebSocket disconnected');
+                    this.scheduleReconnection('binance', () => this.connectToBinance());
                 };
                 
             } catch (error) {
@@ -229,8 +233,8 @@ class RealTimeEngine {
                 };
                 
                 ws.onclose = () => {
-                    console.log('🔌 Coinbase WebSocket disconnected, attempting reconnection...');
-                    setTimeout(() => this.connectToCoinbase().catch(err => console.warn('Coinbase reconnection failed:', err.message)), 5000);
+                    console.log('🔌 Coinbase WebSocket disconnected');
+                    this.scheduleReconnection('coinbase', () => this.connectToCoinbase());
                 };
                 
             } catch (error) {
@@ -307,6 +311,50 @@ class RealTimeEngine {
                 console.error('❌ On-chain data polling error:', error);
             }
         }, 120000); // Every 2 minutes
+    }
+    
+    scheduleReconnection(serviceName, reconnectFn) {
+        // Clear any existing timeout for this service
+        if (this.connectionTimeouts.has(serviceName)) {
+            clearTimeout(this.connectionTimeouts.get(serviceName));
+        }
+        
+        // Get current attempt count
+        const attempts = this.connectionAttempts.get(serviceName) || 0;
+        
+        // Check if we've exceeded max attempts
+        if (attempts >= 5) { // Max 5 attempts
+            console.warn(`⚠️ ${serviceName} max reconnection attempts reached, stopping reconnections`);
+            return;
+        }
+        
+        // Calculate exponential backoff delay
+        const baseDelay = 5000; // 5 seconds
+        const maxDelay = 300000; // 5 minutes
+        const delay = Math.min(baseDelay * Math.pow(2, attempts), maxDelay);
+        
+        console.log(`⏳ Scheduling ${serviceName} reconnection in ${delay/1000}s (attempt ${attempts + 1}/5)`);
+        
+        // Schedule reconnection
+        const timeoutId = setTimeout(async () => {
+            try {
+                await reconnectFn();
+                // Reset attempts on successful connection
+                this.connectionAttempts.set(serviceName, 0);
+                console.log(`✅ ${serviceName} reconnected successfully`);
+            } catch (error) {
+                // Increment attempts and schedule next try
+                this.connectionAttempts.set(serviceName, attempts + 1);
+                console.warn(`❌ ${serviceName} reconnection failed:`, error.message);
+            }
+            this.connectionTimeouts.delete(serviceName);
+        }, delay);
+        
+        // Store timeout ID
+        this.connectionTimeouts.set(serviceName, timeoutId);
+        
+        // Update attempt count
+        this.connectionAttempts.set(serviceName, attempts + 1);
     }
     
     processBinanceData(data) {
