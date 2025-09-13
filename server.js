@@ -139,6 +139,7 @@ apiRouter.get('/model/performance', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch model performance' });
     }
 });
+});
 
 // Historical data endpoint
 apiRouter.get('/historical/:symbol/:period', async (req, res) => {
