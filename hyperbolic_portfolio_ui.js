@@ -212,13 +212,13 @@ class HyperbolicPortfolioUI {
             </div>
         `;
         
-        // Insert after the main tabs content
-        const mainContent = document.querySelector('.tab-content');
-        if (mainContent) {
-            const portfolioTab = document.getElementById('portfolio');
-            if (portfolioTab) {
-                portfolioTab.innerHTML = container.outerHTML;
-            }
+        // Insert into the portfolio tab
+        const portfolioTab = document.getElementById('portfolio-tab');
+        if (portfolioTab) {
+            portfolioTab.appendChild(container);
+            console.log('✅ Portfolio container inserted into DOM');
+        } else {
+            console.error('❌ Portfolio tab not found');
         }
         
         // Initialize Lucide icons
@@ -978,9 +978,18 @@ class HyperbolicPortfolioUI {
 // Initialize the Hyperbolic Portfolio UI when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     // Check if we're on the portfolio tab
-    if (document.getElementById('portfolio') || document.querySelector('[data-tab="portfolio"]')) {
+    if (document.getElementById('portfolio-tab')) {
         console.log('🚀 Initializing Hyperbolic Portfolio UI...');
         window.hyperbolicPortfolioUI = new HyperbolicPortfolioUI();
+    } else {
+        console.log('Portfolio tab not found, waiting for tab system...');
+        // Wait for tab system to initialize and try again
+        setTimeout(() => {
+            if (document.getElementById('portfolio-tab')) {
+                console.log('🚀 Initializing Hyperbolic Portfolio UI (delayed)...');
+                window.hyperbolicPortfolioUI = new HyperbolicPortfolioUI();
+            }
+        }, 1000);
     }
 });
 
