@@ -1499,7 +1499,12 @@
 
             <!-- Model Transparency Tab -->
             <div id="transparency-tab" class="tab-content hidden">
-                <!-- Architecture Overview -->
+                <!-- Enhanced Model Transparency Container -->
+                <div id="model-transparency-container">
+                    <!-- Enhanced Model Transparency System will be loaded here -->
+                </div>
+                
+                <!-- Fallback Architecture Overview -->
                 <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">HyperVision AI Architecture</h3>
                     
@@ -1671,6 +1676,18 @@
             initializeCharts();
             startDataStreams();
             
+            // Initialize Enhanced Model Transparency System
+            if (window.EnhancedModelTransparency) {
+                window.enhancedTransparency = new EnhancedModelTransparency('model-transparency-container');
+                console.log('✅ Enhanced Model Transparency System initialized');
+            }
+            
+            // Initialize Real-Time Engine
+            if (window.RealTimeEngine) {
+                window.realTimeEngine = new RealTimeEngine();
+                console.log('✅ Real-Time Engine initialized');
+            }
+            
             // Initialize Lucide icons
             lucide.createIcons();
             
@@ -1678,6 +1695,9 @@
             if (window.MathJax) {
                 MathJax.typesetPromise();
             }
+            
+            // Initialize real-time WebSocket connection
+            initializeWebSocketConnection();
         });
 
         // UI Initialization
@@ -3069,6 +3089,154 @@
         // Initial market data load
         setTimeout(refreshMarketData, 1000);
         
+        // Initialize WebSocket Connection for Real-Time Updates
+        function initializeWebSocketConnection() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            try {
+                const ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    console.log('🔗 WebSocket connected for real-time updates');
+                    
+                    // Subscribe to real-time updates
+                    ws.send(JSON.stringify({
+                        type: 'subscribe_to_symbol',
+                        symbol: 'BTCUSD'
+                    }));
+                    
+                    ws.send(JSON.stringify({
+                        type: 'request_transparency_update',
+                        modelId: 'default'
+                    }));
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleRealTimeUpdate(data);
+                    } catch (error) {
+                        console.error('❌ WebSocket message parsing error:', error);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('❌ WebSocket error:', error);
+                };
+                
+                ws.onclose = function() {
+                    console.log('🔌 WebSocket disconnected, attempting reconnection...');
+                    setTimeout(initializeWebSocketConnection, 5000);
+                };
+                
+                // Store WebSocket globally
+                window.wsConnection = ws;
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize WebSocket:', error);
+            }
+        }
+        
+        // Handle real-time updates from WebSocket
+        function handleRealTimeUpdate(data) {
+            switch (data.type) {
+                case 'market_update':
+                    updateMarketData(data.symbol, data.data);
+                    break;
+                    
+                case 'model_transparency_update':
+                    if (window.enhancedTransparency) {
+                        window.enhancedTransparency.handleRealTimeUpdate(data);
+                    }
+                    break;
+                    
+                case 'system_health_update':
+                    updateSystemHealth(data.health);
+                    break;
+                    
+                case 'portfolio_optimization_update':
+                    updatePortfolioOptimization(data.optimization);
+                    break;
+                    
+                default:
+                    console.log('Unknown real-time update type:', data.type);
+            }
+        }
+        
+        // Update market data display
+        function updateMarketData(symbol, data) {
+            // Update price displays
+            const priceElements = document.querySelectorAll(`[data-symbol="${symbol}"] .price`);
+            priceElements.forEach(element => {
+                if (element) {
+                    element.textContent = `$${data.price.toLocaleString()}`;
+                }
+            });
+            
+            // Update change displays
+            const changeElements = document.querySelectorAll(`[data-symbol="${symbol}"] .change`);
+            changeElements.forEach(element => {
+                if (element) {
+                    const change = data.change24h || 0;
+                    element.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                    element.className = change >= 0 ? 'text-green-600' : 'text-red-600';
+                }
+            });
+            
+            // Update timestamp
+            const timestampElement = document.getElementById('market-update-time');
+            if (timestampElement) {
+                timestampElement.textContent = new Date().toLocaleTimeString();
+            }
+        }
+        
+        // Update system health display
+        function updateSystemHealth(health) {
+            // Update WebSocket client count
+            const clientCountElement = document.querySelector('.websocket-clients');
+            if (clientCountElement) {
+                clientCountElement.textContent = health.websocket?.connectedClients || 0;
+            }
+            
+            // Update overall health score
+            const healthScoreElement = document.querySelector('.health-score');
+            if (healthScoreElement) {
+                const score = health.overallHealth || 0;
+                healthScoreElement.textContent = `${(score * 100).toFixed(1)}%`;
+                
+                // Update color based on score
+                if (score > 0.9) {
+                    healthScoreElement.className = 'text-green-600 font-bold';
+                } else if (score > 0.7) {
+                    healthScoreElement.className = 'text-yellow-600 font-bold';
+                } else {
+                    healthScoreElement.className = 'text-red-600 font-bold';
+                }
+            }
+        }
+        
+        // Update portfolio optimization results
+        function updatePortfolioOptimization(optimization) {
+            console.log('📊 Portfolio optimization update received:', optimization);
+            
+            // Update portfolio metrics if elements exist
+            const sharpeElement = document.getElementById('portfolio-sharpe');
+            if (sharpeElement && optimization.sharpeRatio) {
+                sharpeElement.textContent = optimization.sharpeRatio.toFixed(2);
+            }
+            
+            const returnElement = document.getElementById('portfolio-return');
+            if (returnElement && optimization.expectedReturn) {
+                returnElement.textContent = `${(optimization.expectedReturn * 100).toFixed(1)}%`;
+            }
+            
+            const volatilityElement = document.getElementById('portfolio-volatility');
+            if (volatilityElement && optimization.volatility) {
+                volatilityElement.textContent = `${(optimization.volatility * 100).toFixed(1)}%`;
+            }
+        }
+        
         // Call initialization
         initializeTooltips();
         initializeAPIConnection();
@@ -3086,6 +3254,12 @@
     
     <!-- Platform Critical Fixes -->
     <script src="comprehensive_platform_fix.js"></script>
+    
+    <!-- Real-Time Engine -->
+    <script src="realtime_engine.js"></script>
+    
+    <!-- Enhanced Model Transparency System -->
+    <script src="enhanced_model_transparency.js"></script>
     
     <!-- Real-Time Validation System -->
     <script src="real_time_validation_ui.js"></script>
