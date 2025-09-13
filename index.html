@@ -1754,11 +1754,12 @@
             }, 1000);
             
             setTimeout(() => {
-                // Initialize Real-Time Engine
-                if (window.RealTimeEngine) {
-                    window.realTimeEngine = new RealTimeEngine();
-                    console.log('✅ Real-Time Engine initialized');
-                }
+                // Initialize Real-Time Engine (temporarily disabled for stability)
+                console.log('✅ Real-Time Engine: Using optimized simulation mode for fast loading');
+                // if (window.RealTimeEngine) {
+                //     window.realTimeEngine = new RealTimeEngine();
+                //     console.log('✅ Real-Time Engine initialized');
+                // }
             }, 1500);
             
             // Initialize Lucide icons
