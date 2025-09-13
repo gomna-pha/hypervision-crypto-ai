@@ -13,6 +13,8 @@
  * @date 2024-12-20
  */
 
+const WebSocket = require('ws');
+
 class RealTimeEngine {
     constructor() {
         this.config = {
@@ -156,22 +158,29 @@ class RealTimeEngine {
                 };
                 
                 ws.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    this.processBinanceData(data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        this.processBinanceData(data);
+                    } catch (parseError) {
+                        console.warn('⚠️ Failed to parse Binance data:', parseError.message);
+                    }
                 };
                 
                 ws.onerror = (error) => {
-                    console.error('❌ Binance WebSocket error:', error);
-                    reject(error);
+                    console.warn('⚠️ Binance WebSocket error (non-critical):', error.message || error.type);
+                    // Don't reject - resolve to continue with other services
+                    resolve();
                 };
                 
                 ws.onclose = () => {
                     console.log('🔌 Binance WebSocket disconnected, attempting reconnection...');
-                    setTimeout(() => this.connectToBinance(), 5000);
+                    setTimeout(() => this.connectToBinance().catch(err => console.warn('Reconnection failed:', err.message)), 5000);
                 };
                 
             } catch (error) {
-                reject(error);
+                console.warn('⚠️ Failed to create Binance WebSocket (non-critical):', error.message);
+                // Don't reject - resolve to continue with other services
+                resolve();
             }
         });
     }
@@ -205,22 +214,29 @@ class RealTimeEngine {
                 };
                 
                 ws.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    this.processCoinbaseData(data);
+                    try {
+                        const data = JSON.parse(event.data);
+                        this.processCoinbaseData(data);
+                    } catch (parseError) {
+                        console.warn('⚠️ Failed to parse Coinbase data:', parseError.message);
+                    }
                 };
                 
                 ws.onerror = (error) => {
-                    console.error('❌ Coinbase WebSocket error:', error);
-                    reject(error);
+                    console.warn('⚠️ Coinbase WebSocket error (non-critical):', error.message || error.type);
+                    // Don't reject - resolve to continue with other services
+                    resolve();
                 };
                 
                 ws.onclose = () => {
                     console.log('🔌 Coinbase WebSocket disconnected, attempting reconnection...');
-                    setTimeout(() => this.connectToCoinbase(), 5000);
+                    setTimeout(() => this.connectToCoinbase().catch(err => console.warn('Coinbase reconnection failed:', err.message)), 5000);
                 };
                 
             } catch (error) {
-                reject(error);
+                console.warn('⚠️ Failed to create Coinbase WebSocket (non-critical):', error.message);
+                // Don't reject - resolve to continue with other services
+                resolve();
             }
         });
     }

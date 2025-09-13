@@ -501,6 +501,25 @@ class ServerPerformanceMonitor {
             timestamp: now
         };
     }
+    
+    getTotalRequests() {
+        return this.metrics.requests;
+    }
+    
+    getErrorRate() {
+        return this.metrics.requests > 0 ? this.metrics.errors / this.metrics.requests : 0;
+    }
+    
+    getAverageResponseTime() {
+        const now = Date.now();
+        const recentResponseTimes = this.metrics.responseTime.filter(
+            rt => rt.timestamp > now - 3600000 // Last hour
+        ).map(rt => rt.duration);
+        
+        return recentResponseTimes.length > 0 
+            ? recentResponseTimes.reduce((a, b) => a + b, 0) / recentResponseTimes.length 
+            : 0;
+    }
 }
 
 module.exports = {

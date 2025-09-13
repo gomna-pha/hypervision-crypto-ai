@@ -30,7 +30,7 @@ try {
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 
 // Initialize comprehensive fixes
 const serverFixes = new ServerFixes();
@@ -1869,5 +1869,18 @@ process.on('SIGTERM', () => {
 
 process.on('SIGINT', () => {
     console.log('🔄 Received SIGINT, shutting down gracefully...');
+    process.emit('SIGTERM');
+});
+
+// Global error handlers to prevent crashes
+process.on('unhandledRejection', (reason, promise) => {
+    console.warn('⚠️ Unhandled Promise Rejection (non-critical):', reason?.message || reason);
+    // Don't crash the server - just log the warning
+});
+
+process.on('uncaughtException', (error) => {
+    console.error('🚨 Uncaught Exception:', error.message);
+    console.error('Stack:', error.stack);
+    // For uncaught exceptions, we should still exit gracefully
     process.emit('SIGTERM');
 });
