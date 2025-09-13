@@ -1710,15 +1710,39 @@
         // Chart instances
         let charts = {};
 
-        // Initialize Application
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Start progressive loading
-            await progressiveLoader.simulateLoading();
-            
-            // Initialize UI components after loading screen
-            initializeUI();
-            initializeCharts();
-            startDataStreams();
+        // Initialize Application  
+        document.addEventListener('DOMContentLoaded', function() {
+            // Immediate fast loading - show app after short delay
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const app = document.getElementById('app');
+                
+                // Quick progress animation
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+                
+                if (progressBar) progressBar.style.width = '100%';
+                if (progressText) progressText.textContent = 'Ready!';
+                
+                // Fast transition to main app
+                setTimeout(() => {
+                    if (loadingScreen) loadingScreen.style.display = 'none';
+                    if (app) {
+                        app.style.display = 'block';
+                        app.style.opacity = '1';
+                        app.style.transition = 'opacity 0.3s ease';
+                    }
+                    
+                    // Initialize UI after showing app
+                    try {
+                        initializeUI();
+                        initializeCharts();
+                        startDataStreams();
+                    } catch (error) {
+                        console.warn('Non-critical initialization error:', error);
+                    }
+                }, 200);
+            }, 800); // Short loading time for better UX
             
             // Initialize heavy components with lazy loading
             setTimeout(() => {

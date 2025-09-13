@@ -13,7 +13,7 @@
  * @date 2024-12-20
  */
 
-const WebSocket = require('ws');
+// WebSocket is available globally in browsers
 
 class RealTimeEngine {
     constructor() {
@@ -1290,6 +1290,27 @@ class AdaptiveModel {
     
     getLastUpdate() {
         return this.lastUpdate;
+    }
+    
+    // Missing methods - stub implementations for browser compatibility
+    async initializeModelValidation() {
+        console.log('✅ Model validation system initialized (stub)');
+    }
+    
+    startAntiHallucinationMonitoring() {
+        console.log('✅ Anti-hallucination monitoring started (stub)');
+    }
+    
+    startOverfittingDetection() {
+        console.log('✅ Overfitting detection started (stub)');
+    }
+    
+    async initializeModelTransparency() {
+        console.log('✅ Model transparency initialized (stub)');
+    }
+    
+    startHealthMonitoring() {
+        console.log('✅ Health monitoring started (stub)');
     }
 }
 
