@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gomna AI - Institutional Quantitative Trading & Payment Platform</title>
+    <title>Gomna™ AI - Institutional Quantitative Trading & Payment Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,7 +33,24 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="secure-config.js"></script>
     <script src="trading-api.js"></script>
+    
+    <!-- GOMNA 3D LOGO INTEGRATION -->
+    <link rel="stylesheet" href="logo_3d.css">
+    <script src="gomna_logo_3d.js"></script>
+    
     <style>
+        /* Header Logo Styling */
+        #header-logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80px;
+        }
+        
+        .header-logo .gomna-logo-3d {
+            margin: 0;
+        }
+        
         .gradient-bg {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
         }
@@ -111,23 +128,16 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <div class="p-2 bg-gradient-to-br from-amber-600 via-amber-700 to-amber-800 rounded-2xl shadow-2xl transform hover:scale-105 transition-transform">
-                                <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <!-- Gomna Custom Logo -->
-                                    <circle cx="24" cy="24" r="22" stroke="#fdf6e3" stroke-width="2" opacity="0.9"/>
-                                    <path d="M24 8 L16 20 L24 18 L32 20 Z" fill="#fdf6e3" opacity="0.9"/>
-                                    <path d="M12 24 Q24 16 36 24 Q30 32 24 28 Q18 32 12 24" fill="#fdf6e3" opacity="0.8"/>
-                                    <circle cx="20" cy="24" r="2" fill="#fdf6e3"/>
-                                    <circle cx="28" cy="24" r="2" fill="#fdf6e3"/>
-                                    <path d="M20 32 Q24 36 28 32" stroke="#fdf6e3" stroke-width="2" fill="none" stroke-linecap="round"/>
-                                    <text x="24" y="44" font-family="Arial Black" font-size="8" font-weight="bold" fill="#fdf6e3" text-anchor="middle">GOMNA</text>
-                                </svg>
+                            <!-- GOMNA 3D LOGO -->
+                            <div id="header-logo-container">
+                                <!-- 3D Logo will be inserted here by JavaScript -->
                             </div>
                             <div>
                                 <h1 class="text-3xl font-bold text-gray-900">
-                                    Gomna AI Trading
+                                    Gomna™ AI Trading
                                 </h1>
                                 <p class="text-sm text-gray-600">Institutional Quantitative Trading & Payment Platform</p>
+                                <p class="text-xs text-blue-600 font-medium">Powered by Advanced Hyperbolic Portfolio Optimization</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
