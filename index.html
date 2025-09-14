@@ -34,9 +34,15 @@
     <script src="secure-config.js"></script>
     <script src="trading-api.js"></script>
     
-    <!-- GOMNA 3D LOGO INTEGRATION -->
-    <link rel="stylesheet" href="logo_3d.css">
-    <script src="gomna_logo_3d.js"></script>
+    <!-- GOMNA 3D COCOA POD LOGO INTEGRATION -->
+    <link rel="stylesheet" href="cocoa_pod_logo_3d.css">
+    <script src="cocoa_pod_logo_3d.js">
+    
+    <!-- PAYMENT SYSTEM INTEGRATION -->
+    <script src="payment_system_integration.js"></script>
+    <script src="payment_ui_components.js"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script></script>
     
     <style>
         /* Header Logo Styling */
@@ -128,9 +134,9 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-6">
                         <div class="flex items-center gap-3">
-                            <!-- GOMNA 3D LOGO -->
-                            <div id="header-logo-container">
-                                <!-- 3D Logo will be inserted here by JavaScript -->
+                            <!-- GOMNA 3D COCOA POD LOGO -->
+                            <div id="header-logo-container" data-cocoa-logo data-cocoa-size="large" data-cocoa-premium="true" data-cocoa-text="GOMNA">
+                                <!-- 3D Cocoa Pod Logo will be inserted here by JavaScript -->
                             </div>
                             <div>
                                 <h1 class="text-3xl font-bold text-gray-900">
@@ -192,7 +198,7 @@
                     </button>
                     <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="payments">
                         <i data-lucide="credit-card" class="w-4 h-4 inline mr-2"></i>
-                        Payment Systems
+                        Payments & Wallet
                     </button>
                     <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="agentic">
                         <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
@@ -656,7 +662,7 @@
 
             <!-- Payment Systems Tab -->
             <div id="payments-tab" class="tab-content hidden">
-                <!-- Payment Gateway Integration -->
+                <!-- Payment System Dashboard Header -->
                 <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-6">Enterprise Payment Gateway Integration</h3>
                     
@@ -2984,5 +2990,204 @@
     
     <!-- Hyperbolic Portfolio Optimization UI -->
     <script src="hyperbolic_portfolio_ui.js"></script>
+    
+    <!-- Initialize Payment System and 3D Logo -->
+    <script>
+        // Initialize Payment System
+        let gomnaPaymentSystem;
+        let paymentUIManager;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Gomna Payment System
+            gomnaPaymentSystem = new GomnaPaymentSystem({
+                stripePublicKey: 'pk_test_your_stripe_key_here', // Replace with actual key
+                plaidPublicKey: 'your_plaid_public_key_here',     // Replace with actual key
+                environment: 'sandbox',
+                apiBaseUrl: '/api/payment'
+            });
+            
+            // Initialize Payment UI Manager
+            paymentUIManager = new PaymentUIManager(gomnaPaymentSystem);
+            
+            // Setup payment button handlers
+            setupPaymentHandlers();
+            
+            console.log('🌱 Gomna Payment System initialized successfully');
+        });
+        
+        function setupPaymentHandlers() {
+            // Onboarding button
+            const onboardingBtn = document.getElementById('start-onboarding-btn');
+            if (onboardingBtn) {
+                onboardingBtn.addEventListener('click', () => {
+                    const userData = {
+                        email: '',
+                        phone: '',
+                        firstName: '',
+                        lastName: '',
+                        dateOfBirth: ''
+                    };
+                    paymentUIManager.createOnboardingModal(userData);
+                });
+            }
+            
+            // Deposit button
+            const depositBtn = document.getElementById('deposit-funds-btn');
+            if (depositBtn) {
+                depositBtn.addEventListener('click', () => {
+                    paymentUIManager.createDepositModal('default-wallet-id');
+                });
+            }
+            
+            // Withdrawal button  
+            const withdrawBtn = document.getElementById('withdraw-funds-btn');
+            if (withdrawBtn) {
+                withdrawBtn.addEventListener('click', () => {
+                    paymentUIManager.createWithdrawalModal('default-wallet-id');
+                });
+            }
+            
+            // Add payment method button
+            const addPaymentBtn = document.getElementById('add-payment-method-btn');
+            if (addPaymentBtn) {
+                addPaymentBtn.addEventListener('click', () => {
+                    // Trigger bank account connection via Plaid
+                    gomnaPaymentSystem.connectBankAccount('default-user-id')
+                        .then(result => {
+                            if (result.success) {
+                                showNotification('Bank account connected successfully!', 'success');
+                                loadPaymentMethods();
+                            } else {
+                                showNotification('Failed to connect bank account', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            showNotification('Error: ' + error.message, 'error');
+                        });
+                });
+            }
+        }
+        
+        // Load and display payment methods
+        function loadPaymentMethods() {
+            // Simulate loading payment methods
+            const paymentMethodsList = document.getElementById('payment-methods-list');
+            if (paymentMethodsList) {
+                paymentMethodsList.innerHTML = `
+                    <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 bg-blue-100 rounded-lg">
+                                <i data-lucide="building-2" class="w-4 h-4 text-blue-600"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium text-blue-900">Chase Bank ****1234</div>
+                                <div class="text-sm text-blue-700">Checking Account • Verified</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">PRIMARY</span>
+                            <button class="text-gray-400 hover:text-gray-600">
+                                <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Re-initialize lucide icons for new content
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        }
+        
+        // Update wallet balance display
+        function updateWalletBalance() {
+            // Simulate balance updates
+            const balanceElement = document.getElementById('wallet-balance-display');
+            if (balanceElement) {
+                balanceElement.textContent = '$2,543.67';
+            }
+            
+            const availableBalance = document.getElementById('available-balance');
+            if (availableBalance) {
+                availableBalance.textContent = '$2,543.67';
+            }
+            
+            const pendingDeposits = document.getElementById('pending-deposits');
+            if (pendingDeposits) {
+                pendingDeposits.textContent = '$500.00';
+            }
+            
+            const portfolioValue = document.getElementById('portfolio-value');
+            if (portfolioValue) {
+                portfolioValue.textContent = '$3,043.67';
+            }
+        }
+        
+        // Load transaction history
+        function loadTransactionHistory() {
+            const transactionHistory = document.getElementById('transaction-history');
+            if (transactionHistory) {
+                // Simulate transaction data
+                const transactions = [
+                    {
+                        type: 'deposit',
+                        description: 'Bank Transfer Deposit',
+                        amount: '+$500.00',
+                        time: '2 hours ago',
+                        status: 'completed'
+                    },
+                    {
+                        type: 'trade',
+                        description: 'BTC Purchase',
+                        amount: '-$250.00',
+                        time: '1 day ago',
+                        status: 'completed'
+                    },
+                    {
+                        type: 'fee',
+                        description: 'Trading Fee',
+                        amount: '-$0.63',
+                        time: '1 day ago',
+                        status: 'completed'
+                    }
+                ];
+                
+                transactionHistory.innerHTML = transactions.map(tx => `
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div class="flex items-center gap-4">
+                            <div class="p-2 bg-${tx.type === 'deposit' ? 'green' : tx.type === 'trade' ? 'blue' : 'yellow'}-100 rounded-lg">
+                                <i data-lucide="${tx.type === 'deposit' ? 'arrow-down' : tx.type === 'trade' ? 'repeat' : 'receipt'}" class="w-4 h-4 text-${tx.type === 'deposit' ? 'green' : tx.type === 'trade' ? 'blue' : 'yellow'}-600"></i>
+                            </div>
+                            <div>
+                                <div class="font-medium">${tx.description}</div>
+                                <div class="text-sm text-gray-500">${tx.time}</div>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-semibold ${tx.amount.startsWith('+') ? 'text-green-600' : 'text-red-600'}">${tx.amount}</div>
+                            <div class="text-xs text-gray-500 capitalize">${tx.status}</div>
+                        </div>
+                    </div>
+                `).join('');
+                
+                // Re-initialize lucide icons
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        }
+        
+        // Auto-load data when payments tab is viewed
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('[data-tab="payments"]')) {
+                setTimeout(() => {
+                    updateWalletBalance();
+                    loadTransactionHistory();
+                    loadPaymentMethods();
+                }, 100);
+            }
+        });
+    </script>
 </body>
 </html>

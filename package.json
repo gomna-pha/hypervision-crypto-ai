@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "nodemon": "^3.0.1",
+    "pm2": "^6.0.10",
     "serve": "^14.2.0"
   },
   "engines": {
