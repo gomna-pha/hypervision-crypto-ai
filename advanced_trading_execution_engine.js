@@ -49,6 +49,15 @@ class GomnaTradeExecutionEngine {
      */
     async createTradingAccount(userData, tradingPreferences = {}) {
         try {
+            console.log('🔄 Creating trading account for:', userData);
+            console.log('🔧 Payment system available:', !!this.paymentSystem);
+            
+            // Check if payment system is available
+            if (!this.paymentSystem) {
+                console.warn('⚠️ Payment system not available, creating demo account');
+                return this.createDemoTradingAccount(userData, tradingPreferences);
+            }
+
             // Step 1: Create payment account through integrated system
             const paymentResult = await this.paymentSystem.startUserOnboarding(userData);
             
@@ -95,7 +104,53 @@ class GomnaTradeExecutionEngine {
 
         } catch (error) {
             console.error('Account creation failed:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: error.message, message: error.message };
+        }
+    }
+
+    async createDemoTradingAccount(userData, tradingPreferences = {}) {
+        try {
+            console.log('🎯 Creating demo trading account');
+            
+            // Create demo user profile
+            this.currentUser = {
+                userId: 'demo-' + Date.now(),
+                firstName: userData.firstName || 'Demo',
+                lastName: userData.lastName || 'User',
+                email: userData.email || 'demo@gomna.ai',
+                walletId: 'demo-wallet-' + Date.now(),
+                accountType: 'demo',
+                balance: 10000.00, // $10,000 demo balance
+                tradingProfile: {
+                    riskProfile: tradingPreferences.riskProfile || 'moderate',
+                    tradingStyle: tradingPreferences.tradingStyle || 'balanced',
+                    aiAssistance: tradingPreferences.aiAssistance !== false,
+                    autoRebalancing: tradingPreferences.autoRebalancing || false,
+                    maxDrawdown: tradingPreferences.maxDrawdown || 0.15,
+                    preferredAssets: tradingPreferences.preferredAssets || ['AAPL', 'GOOGL', 'MSFT', 'SPY']
+                }
+            };
+
+            // Initialize AI agents if requested
+            if (tradingPreferences.aiAssistance !== false) {
+                await this.initializeAIAgents();
+            }
+
+            console.log('✅ Demo trading account created successfully');
+            return {
+                success: true,
+                user: this.currentUser,
+                message: 'Demo trading account created successfully! You have $10,000 to practice with.',
+                accountType: 'demo'
+            };
+
+        } catch (error) {
+            console.error('Demo account creation failed:', error);
+            return { 
+                success: false, 
+                error: error.message,
+                message: 'Failed to create demo account: ' + error.message
+            };
         }
     }
 
@@ -215,16 +270,33 @@ class GomnaTradeExecutionEngine {
     async executeTrade(tradeData) {
         const { 
             symbol, 
-            side, 
+            action,
+            side = action, // Handle both 'action' and 'side' parameters
             quantity, 
             orderType = 'market', 
             price = null,
+            limitPrice = null,
             stopLoss = null,
             takeProfit = null,
             timeInForce = 'DAY'
         } = tradeData;
 
         try {
+            console.log('🔄 Executing trade:', { symbol, side: side || action, quantity, orderType });
+            
+            // Check if user has a trading account
+            if (!this.currentUser) {
+                return {
+                    success: false,
+                    error: 'No trading account found. Please create an account first.',
+                    message: 'Please create a trading account before executing trades.'
+                };
+            }
+            
+            // Handle demo trading
+            if (this.currentUser.accountType === 'demo') {
+                return this.executeDemoTrade({ symbol, side: side || action, quantity, orderType, price: price || limitPrice });
+            }
             // Pre-trade risk assessment
             const riskAssessment = await this.riskManager.assessTrade({
                 symbol,
@@ -271,7 +343,86 @@ class GomnaTradeExecutionEngine {
 
         } catch (error) {
             console.error('Trade execution failed:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: error.message, message: error.message };
+        }
+    }
+
+    async executeDemoTrade(tradeData) {
+        const { symbol, side, quantity, orderType, price } = tradeData;
+        
+        try {
+            console.log('🎯 Executing demo trade:', tradeData);
+            
+            // Simulate market price if not provided
+            const marketPrices = {
+                'AAPL': 175.23,
+                'GOOGL': 142.56,
+                'MSFT': 378.85,
+                'TSLA': 242.64,
+                'NVDA': 875.23,
+                'SPY': 437.12
+            };
+            
+            const executionPrice = price || marketPrices[symbol] || (100 + Math.random() * 300);
+            const tradeValue = quantity * executionPrice;
+            
+            // Check if user has sufficient balance for buy orders
+            if (side.toUpperCase() === 'BUY' && this.currentUser.balance < tradeValue) {
+                return {
+                    success: false,
+                    error: `Insufficient balance. Required: $${tradeValue.toFixed(2)}, Available: $${this.currentUser.balance.toFixed(2)}`,
+                    message: `Insufficient balance for this trade.`
+                };
+            }
+            
+            // Update demo balance
+            if (side.toUpperCase() === 'BUY') {
+                this.currentUser.balance -= tradeValue;
+            } else {
+                this.currentUser.balance += tradeValue;
+            }
+            
+            // Create demo trade record
+            const tradeRecord = {
+                id: 'demo-' + Date.now(),
+                symbol,
+                side: side.toUpperCase(),
+                quantity,
+                orderType,
+                executionPrice,
+                tradeValue,
+                timestamp: new Date().toISOString(),
+                status: 'FILLED',
+                source: 'manual-demo'
+            };
+            
+            // Store trade in demo portfolio (simplified)
+            if (!this.demoTrades) {
+                this.demoTrades = [];
+            }
+            this.demoTrades.push(tradeRecord);
+            
+            console.log('✅ Demo trade executed successfully');
+            
+            return {
+                success: true,
+                orderId: tradeRecord.id,
+                executionPrice,
+                quantity,
+                symbol,
+                side: side.toUpperCase(),
+                status: 'FILLED',
+                message: `Demo trade executed: ${side.toUpperCase()} ${quantity} ${symbol} @ $${executionPrice.toFixed(2)}`,
+                remainingBalance: this.currentUser.balance.toFixed(2)
+            };
+            
+        } catch (error) {
+            console.error('Demo trade execution failed:', error);
+            return { 
+                success: false, 
+                error: error.message,
+                message: 'Demo trade failed: ' + error.message
+            };
         }
     }
 
@@ -316,7 +467,37 @@ class GomnaTradeExecutionEngine {
 
         } catch (error) {
             console.error('Failed to enable automated trading:', error);
-            return { success: false, error: error.message };
+            return { success: false, error: error.message, message: error.message };
+        }
+    }
+
+    async startAutomatedTrading(agentId, config) {
+        // Alias for enableAutomatedTrading with specific agent configuration
+        console.log('🤖 Starting automated trading for agent:', agentId);
+        return this.enableAutomatedTrading(config);
+    }
+
+    async stopAutomatedTrading(agentId) {
+        try {
+            console.log('⏹️ Stopping automated trading for agent:', agentId);
+            
+            // Stop all AI agents
+            for (const [id, agent] of this.aiAgents) {
+                if (typeof agent.stopAutomation === 'function') {
+                    agent.stopAutomation();
+                }
+            }
+            
+            this.tradingEnabled = false;
+            
+            return {
+                success: true,
+                message: 'Automated trading stopped successfully'
+            };
+            
+        } catch (error) {
+            console.error('Failed to stop automated trading:', error);
+            return { success: false, error: error.message, message: error.message };
         }
     }
 
