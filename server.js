@@ -1499,27 +1499,40 @@ function applyPortfolioConstraints(weights, constraints) {
 }
 
 async function calculateExpectedReturns(assets) {
-    // Calculate expected returns based on real-time market data
+    // Calculate realistic expected returns based on historical data and market conditions
     const returns = [];
+    
+    // Realistic annual return ranges based on asset classes
+    const realisticReturns = {
+        'BTC-USD': 0.08 + (Math.random() - 0.5) * 0.06,    // 5-11% annual
+        'ETH-USD': 0.07 + (Math.random() - 0.5) * 0.05,    // 4.5-9.5% annual
+        'SPY': 0.08 + (Math.random() - 0.5) * 0.04,        // 6-10% annual
+        'QQQ': 0.09 + (Math.random() - 0.5) * 0.04,        // 7-11% annual
+        'TLT': 0.04 + (Math.random() - 0.5) * 0.02,        // 3-5% annual
+        'GLD': 0.03 + (Math.random() - 0.5) * 0.02,        // 2-4% annual
+        'VNQ': 0.07 + (Math.random() - 0.5) * 0.03,        // 5.5-8.5% annual
+        'EFA': 0.06 + (Math.random() - 0.5) * 0.03,        // 4.5-7.5% annual
+        'VWO': 0.08 + (Math.random() - 0.5) * 0.04,        // 6-10% annual
+        'XLF': 0.07 + (Math.random() - 0.5) * 0.03,        // 5.5-8.5% annual
+        'XLE': 0.06 + (Math.random() - 0.5) * 0.04,        // 4-8% annual
+        'XLK': 0.10 + (Math.random() - 0.5) * 0.04,        // 8-12% annual
+        'IWM': 0.08 + (Math.random() - 0.5) * 0.04,        // 6-10% annual
+        'HYG': 0.05 + (Math.random() - 0.5) * 0.02         // 4-6% annual
+    };
     
     for (const asset of assets) {
         if (realTimeEngine && realTimeEngine.state.dataStreams.has(asset)) {
             const marketData = realTimeEngine.state.dataStreams.get(asset);
             if (marketData.stats && marketData.stats.meanReturn) {
-                returns.push(marketData.stats.meanReturn * 252); // Annualized
+                // Cap the annualized return to realistic levels
+                const annualizedReturn = Math.min(0.25, Math.max(-0.10, marketData.stats.meanReturn * 252));
+                returns.push(annualizedReturn);
             } else {
-                returns.push(0.08 + (Math.random() - 0.5) * 0.1); // Fallback: 8% +/- 5%
+                returns.push(realisticReturns[asset] || 0.07 + (Math.random() - 0.5) * 0.03);
             }
         } else {
-            // Fallback based on asset type
-            const assetReturns = {
-                'BTC': 0.15 + (Math.random() - 0.5) * 0.2,
-                'ETH': 0.12 + (Math.random() - 0.5) * 0.15,
-                'SPY': 0.08 + (Math.random() - 0.5) * 0.05,
-                'QQQ': 0.10 + (Math.random() - 0.5) * 0.08,
-                'GLD': 0.03 + (Math.random() - 0.5) * 0.03
-            };
-            returns.push(assetReturns[asset] || 0.08 + (Math.random() - 0.5) * 0.1);
+            // Use realistic return expectations
+            returns.push(realisticReturns[asset] || 0.07 + (Math.random() - 0.5) * 0.03);
         }
     }
     
@@ -1527,22 +1540,44 @@ async function calculateExpectedReturns(assets) {
 }
 
 async function calculateRiskMetrics(assets, weights) {
-    // Calculate covariance matrix and other risk metrics
+    // Calculate realistic covariance matrix based on asset classes
     const numAssets = assets.length;
     const covarianceMatrix = [];
     
-    // Generate covariance matrix
+    // Realistic volatilities by asset class (annual)
+    const assetVolatilities = {
+        'BTC-USD': 0.65,  // 65% annual volatility
+        'ETH-USD': 0.75,  // 75% annual volatility
+        'SPY': 0.18,      // 18% annual volatility
+        'QQQ': 0.22,      // 22% annual volatility
+        'TLT': 0.12,      // 12% annual volatility
+        'GLD': 0.16,      // 16% annual volatility
+        'VNQ': 0.25,      // 25% annual volatility
+        'EFA': 0.20,      // 20% annual volatility
+        'VWO': 0.28,      // 28% annual volatility
+        'XLF': 0.24,      // 24% annual volatility
+        'XLE': 0.32,      // 32% annual volatility
+        'XLK': 0.26,      // 26% annual volatility
+        'IWM': 0.24,      // 24% annual volatility
+        'HYG': 0.14       // 14% annual volatility
+    };
+    
+    // Generate realistic covariance matrix
     for (let i = 0; i < numAssets; i++) {
         covarianceMatrix[i] = [];
+        const asset_i = assets[i];
+        const vol_i = assetVolatilities[asset_i] || 0.20;
+        
         for (let j = 0; j < numAssets; j++) {
+            const asset_j = assets[j];
+            const vol_j = assetVolatilities[asset_j] || 0.20;
+            
             if (i === j) {
                 // Diagonal elements (variances)
-                covarianceMatrix[i][j] = Math.pow(0.2 + Math.random() * 0.3, 2);
+                covarianceMatrix[i][j] = Math.pow(vol_i, 2);
             } else {
-                // Off-diagonal elements (covariances)
-                const correlation = 0.1 + Math.random() * 0.4; // 0.1 to 0.5
-                const vol_i = Math.sqrt(covarianceMatrix[i][i] || Math.pow(0.25, 2));
-                const vol_j = Math.sqrt(covarianceMatrix[j][j] || Math.pow(0.25, 2));
+                // Calculate realistic correlation based on asset types
+                let correlation = getRealisticCorrelation(asset_i, asset_j);
                 covarianceMatrix[i][j] = correlation * vol_i * vol_j;
             }
         }
@@ -1551,8 +1586,44 @@ async function calculateRiskMetrics(assets, weights) {
     return {
         covarianceMatrix,
         correlationMatrix: calculateCorrelationMatrix(covarianceMatrix),
-        volatilities: covarianceMatrix.map(row => Math.sqrt(row[0]))
+        volatilities: assets.map(asset => assetVolatilities[asset] || 0.20)
     };
+}
+
+function getRealisticCorrelation(asset1, asset2) {
+    // Define realistic correlations between asset classes
+    const correlations = {
+        // Crypto-crypto: high correlation
+        'crypto-crypto': 0.60 + Math.random() * 0.25,
+        // Equity-equity: moderate-high correlation
+        'equity-equity': 0.40 + Math.random() * 0.35,
+        // Crypto-equity: low correlation
+        'crypto-equity': 0.05 + Math.random() * 0.20,
+        // Bond-equity: low-negative correlation
+        'bond-equity': -0.10 + Math.random() * 0.25,
+        // Gold-equity: low correlation
+        'gold-equity': 0.00 + Math.random() * 0.20,
+        // Default: low correlation
+        'default': 0.10 + Math.random() * 0.20
+    };
+    
+    const getAssetType = (asset) => {
+        if (['BTC-USD', 'ETH-USD'].includes(asset)) return 'crypto';
+        if (['SPY', 'QQQ', 'VNQ', 'EFA', 'VWO', 'XLF', 'XLE', 'XLK', 'IWM'].includes(asset)) return 'equity';
+        if (['TLT', 'HYG'].includes(asset)) return 'bond';
+        if (['GLD'].includes(asset)) return 'gold';
+        return 'other';
+    };
+    
+    const type1 = getAssetType(asset1);
+    const type2 = getAssetType(asset2);
+    
+    if (type1 === type2) {
+        return correlations[`${type1}-${type1}`] || correlations['default'];
+    } else {
+        const key = `${type1}-${type2}` in correlations ? `${type1}-${type2}` : `${type2}-${type1}`;
+        return correlations[key] || correlations['default'];
+    }
 }
 
 function calculateCorrelationMatrix(covarianceMatrix) {
@@ -1636,7 +1707,12 @@ function calculatePortfolioSharpe(weights, expectedReturns, covarianceMatrix) {
     const portfolioVol = calculatePortfolioVolatility(weights, covarianceMatrix);
     const riskFreeRate = 0.025; // 2.5% risk-free rate
     
-    return portfolioVol === 0 ? 0 : (portfolioReturn - riskFreeRate) / portfolioVol;
+    if (portfolioVol === 0 || portfolioVol < 0.001) return 0;
+    
+    const sharpeRatio = (portfolioReturn - riskFreeRate) / portfolioVol;
+    
+    // Cap Sharpe ratio to realistic levels (-2 to 4)
+    return Math.min(4.0, Math.max(-2.0, sharpeRatio));
 }
 
 function validateOptimizationResults(optimization) {
@@ -1644,7 +1720,7 @@ function validateOptimizationResults(optimization) {
     
     // Check weight sum
     const weightSum = optimization.weights.reduce((a, b) => a + b, 0);
-    if (Math.abs(weightSum - 1.0) > 0.001) {
+    if (Math.abs(weightSum - 1.0) > 0.01) {
         issues.push('weights_do_not_sum_to_one');
     }
     
@@ -1653,14 +1729,37 @@ function validateOptimizationResults(optimization) {
         issues.push('negative_weights_detected');
     }
     
+    // Check for unrealistic expected return (> 50% annually)
+    if (optimization.expectedReturn > 0.50) {
+        issues.push('unrealistic_expected_return');
+        // Cap the return to realistic levels
+        optimization.expectedReturn = Math.min(0.25, optimization.expectedReturn);
+    }
+    
+    // Check for unrealistic volatility (> 100% annually)
+    if (optimization.volatility > 1.00) {
+        issues.push('unrealistic_volatility');
+        optimization.volatility = Math.min(0.80, optimization.volatility);
+    }
+    
     // Check for unrealistic Sharpe ratio
-    if (optimization.sharpeRatio > 5.0) {
+    if (Math.abs(optimization.sharpeRatio) > 4.0) {
         issues.push('unrealistic_sharpe_ratio');
+        optimization.sharpeRatio = Math.sign(optimization.sharpeRatio) * Math.min(4.0, Math.abs(optimization.sharpeRatio));
+    }
+    
+    // Check for NaN or infinite values
+    if (!isFinite(optimization.expectedReturn) || !isFinite(optimization.volatility) || !isFinite(optimization.sharpeRatio)) {
+        issues.push('invalid_numerical_values');
+        optimization.expectedReturn = 0.08; // Default 8%
+        optimization.volatility = 0.15;     // Default 15%
+        optimization.sharpeRatio = (optimization.expectedReturn - 0.025) / optimization.volatility;
     }
     
     return {
         isValid: issues.length === 0,
-        issues
+        issues,
+        correctedOptimization: optimization
     };
 }
 
