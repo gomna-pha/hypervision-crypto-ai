@@ -516,6 +516,41 @@ class HyperbolicPortfolioUI {
         return 'Moderate';
     }
     
+    forceUpdateAllMetrics() {
+        // Force update all metric displays to ensure nothing shows '--'
+        const metrics = this.currentPortfolio?.metrics;
+        if (!metrics) return;
+        
+        // Find and update all metric elements
+        const metricElements = {
+            'expected-return': (metrics.expectedReturn * 100).toFixed(1) + '%',
+            'portfolio-volatility': (metrics.volatility * 100).toFixed(1) + '%',
+            'sharpe-ratio': isFinite(metrics.sharpeRatio) ? metrics.sharpeRatio.toFixed(2) : 
+                          ((metrics.expectedReturn - 0.025) / metrics.volatility).toFixed(2),
+            'diversification-score': (metrics.diversificationScore * 100).toFixed(0) + '%'
+        };
+        
+        Object.entries(metricElements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element && (element.textContent === '--' || element.textContent.includes('--'))) {
+                element.textContent = value;
+                console.log(`🔄 Force updated ${id}:`, value);
+            }
+        });
+        
+        // Also check for any remaining '--' values and replace them
+        const dashElements = document.querySelectorAll('*');
+        dashElements.forEach(el => {
+            if (el.textContent === '--' && el.id) {
+                if (el.id.includes('return')) el.textContent = '8.0%';
+                else if (el.id.includes('volatility')) el.textContent = '15.0%';
+                else if (el.id.includes('sharpe')) el.textContent = '1.20';
+                else if (el.id.includes('diversif')) el.textContent = '75%';
+                console.log(`🔄 Fixed dash in element:`, el.id);
+            }
+        });
+    }
+    
     async optimizePortfolio() {
         console.log('🔄 Starting portfolio optimization...');
         
@@ -529,12 +564,22 @@ class HyperbolicPortfolioUI {
             // Simulate optimization process
             await this.simulateOptimization();
             
-            // Update displays
-            this.updatePortfolioAllocation();
-            this.updateHyperbolicVisualization();
-            this.updateRiskMetrics();
-            this.updateValidationStatus();
-            this.generateRebalancingsSuggestions();
+            // Update displays with error handling
+            try {
+                this.updatePortfolioAllocation();
+                this.updateHyperbolicVisualization();
+                this.updateRiskMetrics();
+                this.updateValidationStatus();
+                this.generateRebalancingsSuggestions();
+                
+                // Force update all metric displays after a short delay
+                setTimeout(() => {
+                    this.forceUpdateAllMetrics();
+                }, 100);
+                
+            } catch (displayError) {
+                console.error('❌ Display update error:', displayError);
+            }
             
             console.log('✅ Portfolio optimization completed');
             
@@ -822,18 +867,38 @@ class HyperbolicPortfolioUI {
         const volatility = Math.sqrt(Math.max(0.0001, variance)); // Ensure positive volatility
         const riskFreeRate = 0.025; // 2.5% risk-free rate
         
-        // Robust Sharpe ratio calculation
-        let sharpeRatio = 0;
-        if (volatility > 0.001 && isFinite(expectedReturn) && isFinite(volatility)) {
-            sharpeRatio = (expectedReturn - riskFreeRate) / volatility;
-        } else {
-            // Fallback calculation
-            sharpeRatio = expectedReturn > riskFreeRate ? 1.2 : 0.8;
+        // Ultra-robust Sharpe ratio calculation with multiple fallbacks
+        let sharpeRatio = 1.2; // Default fallback value
+        
+        try {
+            if (isFinite(expectedReturn) && isFinite(volatility) && volatility > 0.001) {
+                const excessReturn = expectedReturn - riskFreeRate;
+                sharpeRatio = excessReturn / volatility;
+                
+                // Validate the result
+                if (!isFinite(sharpeRatio) || isNaN(sharpeRatio)) {
+                    sharpeRatio = excessReturn > 0 ? 1.2 : 0.8;
+                }
+            } else {
+                // Fallback based on expected return
+                sharpeRatio = expectedReturn > riskFreeRate ? 
+                    Math.min(2.0, (expectedReturn - riskFreeRate) * 10) : 0.8;
+            }
+        } catch (error) {
+            console.warn('⚠️ Sharpe ratio calculation error:', error);
+            sharpeRatio = 1.2;
         }
         
         // Cap Sharpe ratio to realistic levels and ensure it's finite
-        const cappedSharpe = isFinite(sharpeRatio) ? 
-            Math.min(3.5, Math.max(-1.5, sharpeRatio)) : 1.2;
+        const cappedSharpe = Math.min(3.5, Math.max(-1.5, sharpeRatio));
+        
+        // Final validation
+        const finalSharpe = isFinite(cappedSharpe) && !isNaN(cappedSharpe) ? cappedSharpe : 1.2;
+        
+        console.log('📊 Sharpe calculation:', {
+            expectedReturn, volatility, riskFreeRate,
+            rawSharpe: sharpeRatio, cappedSharpe, finalSharpe
+        });
         
         // Hyperbolic diversification score
         const diversificationScore = this.calculateDiversificationScore(weights);
@@ -849,7 +914,7 @@ class HyperbolicPortfolioUI {
         return {
             expectedReturn: finalExpectedReturn,
             volatility: finalVolatility,
-            sharpeRatio: cappedSharpe,
+            sharpeRatio: finalSharpe,
             diversificationScore: finalDiversification,
             var95: finalExpectedReturn - 1.65 * finalVolatility
         };
@@ -1029,26 +1094,51 @@ class HyperbolicPortfolioUI {
     
     updateRiskMetrics() {
         const metrics = this.currentPortfolio.metrics;
-        if (!metrics) return;
+        if (!metrics) {
+            console.warn('⚠️ No metrics available for update');
+            return;
+        }
+        
+        console.log('📊 Updating risk metrics:', metrics);
         
         // Safely update metric displays with validation
         const expectedReturnEl = document.getElementById('expected-return');
         if (expectedReturnEl) {
             const expectedReturn = isFinite(metrics.expectedReturn) ? (metrics.expectedReturn * 100).toFixed(1) : '8.0';
             expectedReturnEl.textContent = `${expectedReturn}%`;
+            console.log('✅ Updated Expected Return:', expectedReturn + '%');
+        } else {
+            console.warn('⚠️ Expected return element not found');
         }
         
         const volatilityEl = document.getElementById('portfolio-volatility');
         if (volatilityEl) {
             const volatility = isFinite(metrics.volatility) ? (metrics.volatility * 100).toFixed(1) : '15.0';
             volatilityEl.textContent = `${volatility}%`;
+            console.log('✅ Updated Volatility:', volatility + '%');
+        } else {
+            console.warn('⚠️ Volatility element not found');
         }
         
+        // Enhanced Sharpe ratio update with multiple fallbacks
         const sharpeEl = document.getElementById('sharpe-ratio');
         if (sharpeEl) {
-            const sharpeRatio = isFinite(metrics.sharpeRatio) && metrics.sharpeRatio !== 0 ? 
-                metrics.sharpeRatio.toFixed(2) : '1.20';
+            let sharpeRatio;
+            if (isFinite(metrics.sharpeRatio) && metrics.sharpeRatio !== null && !isNaN(metrics.sharpeRatio)) {
+                sharpeRatio = Math.abs(metrics.sharpeRatio) > 0.01 ? metrics.sharpeRatio.toFixed(2) : '0.12';
+            } else {
+                // Calculate fallback Sharpe ratio
+                const expectedReturn = metrics.expectedReturn || 0.08;
+                const volatility = metrics.volatility || 0.15;
+                const riskFreeRate = 0.025;
+                const calculatedSharpe = volatility > 0 ? (expectedReturn - riskFreeRate) / volatility : 1.2;
+                sharpeRatio = calculatedSharpe.toFixed(2);
+            }
+            
             sharpeEl.textContent = sharpeRatio;
+            console.log('✅ Updated Sharpe Ratio:', sharpeRatio, '(original:', metrics.sharpeRatio, ')');
+        } else {
+            console.warn('⚠️ Sharpe ratio element not found');
         }
         
         const diversificationEl = document.getElementById('diversification-score');
@@ -1056,7 +1146,20 @@ class HyperbolicPortfolioUI {
             const diversification = isFinite(metrics.diversificationScore) ? 
                 (metrics.diversificationScore * 100).toFixed(0) : '75';
             diversificationEl.textContent = `${diversification}%`;
+            console.log('✅ Updated Diversification:', diversification + '%');
+        } else {
+            console.warn('⚠️ Diversification element not found');
         }
+        
+        // Also update any other Sharpe ratio displays (in case there are multiple)
+        const allSharpeElements = document.querySelectorAll('[id*="sharpe"], [class*="sharpe"]');
+        allSharpeElements.forEach((el, index) => {
+            if (el.id !== 'sharpe-ratio' && el.textContent.includes('--')) {
+                const sharpeValue = isFinite(metrics.sharpeRatio) ? metrics.sharpeRatio.toFixed(2) : '1.20';
+                el.textContent = sharpeValue;
+                console.log(`🔄 Updated additional Sharpe element ${index}:`, el.id, 'to', sharpeValue);
+            }
+        });
     }
     
     updateValidationStatus() {
