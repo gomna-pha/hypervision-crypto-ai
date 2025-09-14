@@ -4,11 +4,18 @@
  * Supports Stripe, Plaid, and modern fintech onboarding flows
  */
 
+// Browser compatibility fix
+if (typeof process === 'undefined') {
+    window.process = { env: {} };
+}
+
+console.log('🔄 Loading Gomna Payment System Integration...');
+
 class GomnaPaymentSystem {
     constructor(config = {}) {
         this.config = {
-            stripePublicKey: config.stripePublicKey || process.env.STRIPE_PUBLIC_KEY,
-            plaidPublicKey: config.plaidPublicKey || process.env.PLAID_PUBLIC_KEY,
+            stripePublicKey: config.stripePublicKey || (typeof process !== 'undefined' ? process.env.STRIPE_PUBLIC_KEY : null),
+            plaidPublicKey: config.plaidPublicKey || (typeof process !== 'undefined' ? process.env.PLAID_PUBLIC_KEY : null),
             environment: config.environment || 'sandbox',
             apiBaseUrl: config.apiBaseUrl || '/api',
             kycProvider: config.kycProvider || 'plaid-identity',
