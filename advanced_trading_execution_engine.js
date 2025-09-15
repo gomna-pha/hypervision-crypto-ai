@@ -5,8 +5,15 @@
  */
 
 class GomnaTradeExecutionEngine {
-    constructor(paymentSystem, config = {}) {
-        this.paymentSystem = paymentSystem;
+    constructor(config = {}) {
+        // Extract payment system from config
+        this.paymentSystem = config.paymentSystem || null;
+        
+        // Handle payment system validation
+        if (this.paymentSystem && typeof this.paymentSystem.startUserOnboarding !== 'function') {
+            console.warn('⚠️ Payment system does not have startUserOnboarding method, using demo mode');
+            this.paymentSystem = null;
+        }
         this.config = {
             apiBaseUrl: config.apiBaseUrl || '/api/trading',
             maxPositionSize: config.maxPositionSize || 0.25, // 25% max position
@@ -49,8 +56,6 @@ class GomnaTradeExecutionEngine {
      */
     async createTradingAccount(userData, tradingPreferences = {}) {
         try {
-            console.log('🔄 Creating trading account for:', userData);
-            console.log('🔧 Payment system available:', !!this.paymentSystem);
             
             // Check if payment system is available
             if (!this.paymentSystem) {
@@ -131,9 +136,14 @@ class GomnaTradeExecutionEngine {
                 }
             };
 
-            // Initialize AI agents if requested
+            // Initialize AI agents if requested (skip in demo for now)
             if (tradingPreferences.aiAssistance !== false) {
-                await this.initializeAIAgents();
+                try {
+                    await this.initializeAIAgents();
+                } catch (error) {
+                    console.warn('⚠️ AI agents not available in demo mode:', error.message);
+                    // Continue without AI agents for demo
+                }
             }
 
             console.log('✅ Demo trading account created successfully');
@@ -972,6 +982,70 @@ if (typeof module !== 'undefined' && module.exports) {
         MarketDataStream
     };
 }
+
+// AI Agent Stub Classes for Demo Mode
+class BaseAIAgent {
+    constructor(config) {
+        this.config = config;
+        this.id = config.id || 'base-agent';
+    }
+    
+    async initialize() {
+        console.log(`🤖 Demo AI Agent ${this.id} initialized`);
+        return true;
+    }
+    
+    startAutomation() {
+        console.log(`🤖 Demo AI Agent ${this.id} automation started`);
+    }
+    
+    stopAutomation() {
+        console.log(`🤖 Demo AI Agent ${this.id} automation stopped`);
+    }
+}
+
+class MarketAnalysisAgent extends BaseAIAgent {
+    constructor(config) {
+        super(config);
+        this.id = 'market-analysis';
+    }
+}
+
+class PortfolioOptimizationAgent extends BaseAIAgent {
+    constructor(config) {
+        super(config);
+        this.id = 'portfolio-optimization';
+    }
+}
+
+class RiskManagementAgent extends BaseAIAgent {
+    constructor(config) {
+        super(config);
+        this.id = 'risk-management';
+    }
+}
+
+class ExecutionOptimizationAgent extends BaseAIAgent {
+    constructor(config) {
+        super(config);
+        this.id = 'execution-optimization';
+    }
+}
+
+class OpportunityDetectionAgent extends BaseAIAgent {
+    constructor(config) {
+        super(config);
+        this.id = 'opportunity-detection';
+    }
+}
+
+// Make AI agents globally available
+window.BaseAIAgent = BaseAIAgent;
+window.MarketAnalysisAgent = MarketAnalysisAgent;
+window.PortfolioOptimizationAgent = PortfolioOptimizationAgent;
+window.RiskManagementAgent = RiskManagementAgent;
+window.ExecutionOptimizationAgent = ExecutionOptimizationAgent;
+window.OpportunityDetectionAgent = OpportunityDetectionAgent;
 
 // Global access
 window.GomnaTradeExecutionEngine = GomnaTradeExecutionEngine;

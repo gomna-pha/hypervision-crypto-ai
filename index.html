@@ -3238,7 +3238,7 @@
                     // Initialize Trading Execution Engine
                     if (typeof GomnaTradeExecutionEngine !== 'undefined') {
                         gomnaTradeExecutionEngine = new GomnaTradeExecutionEngine({
-                            paymentSystem: gomnaPaymentSystem,
+                            paymentSystem: gomnaPaymentSystem || null, // Allow null for demo mode
                             brokerageConfig: {
                                 apiKey: 'your_brokerage_api_key',
                                 apiSecret: 'your_brokerage_api_secret',
@@ -3327,11 +3327,12 @@
         function setupTradingHandlers() {
             // Create Trading Account Button
             const createAccountBtn = document.getElementById('create-trading-account-btn');
+            
             if (createAccountBtn) {
                 createAccountBtn.addEventListener('click', async () => {
                     try {
                         const userData = {
-                            userId: 'default-user-id',
+                            userId: 'demo-' + Date.now(),
                             firstName: 'Demo',
                             lastName: 'User',
                             email: 'demo@gomna.ai',
@@ -3342,7 +3343,7 @@
                         const tradingPreferences = {
                             defaultRiskLevel: 'moderate',
                             maxPositionSize: 0.05,
-                            preferredAssets: ['stocks', 'etfs'],
+                            preferredAssets: ['AAPL', 'GOOGL', 'MSFT', 'SPY'],
                             autoRebalancing: true
                         };
                         
