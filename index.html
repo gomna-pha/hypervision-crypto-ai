@@ -47,6 +47,9 @@
     <!-- TRADING EXECUTION ENGINE INTEGRATION -->
     <script src="advanced_trading_execution_engine.js"></script>
     
+    <!-- USER ONBOARDING SYSTEM INTEGRATION -->
+    <script src="user_onboarding_system.js"></script>
+    
     <style>
         /* Header Logo Styling */
         #header-logo-container {
@@ -3330,21 +3333,34 @@
             
             if (createAccountBtn) {
                 createAccountBtn.addEventListener('click', async () => {
+                    // Check if user is registered
+                    const userProfile = localStorage.getItem('gomna-user-profile');
+                    if (!userProfile) {
+                        showNotification('Please complete registration first', 'error');
+                        alert('You must complete the registration process before creating a trading account.');
+                        return;
+                    }
+                    
                     try {
+                        const profile = JSON.parse(userProfile);
+                        
                         const userData = {
-                            userId: 'demo-' + Date.now(),
-                            firstName: 'Demo',
-                            lastName: 'User',
-                            email: 'demo@gomna.ai',
-                            phone: '+1234567890',
-                            riskTolerance: 'moderate'
+                            userId: profile.userId || 'user-' + Date.now(),
+                            firstName: profile.firstName || 'Demo',
+                            lastName: profile.lastName || 'User',
+                            email: profile.email || 'demo@gomna.ai',
+                            phone: profile.phone || '+1234567890',
+                            riskTolerance: profile.riskTolerance || 'moderate'
                         };
                         
                         const tradingPreferences = {
-                            defaultRiskLevel: 'moderate',
+                            defaultRiskLevel: profile.riskTolerance || 'moderate',
                             maxPositionSize: 0.05,
-                            preferredAssets: ['AAPL', 'GOOGL', 'MSFT', 'SPY'],
-                            autoRebalancing: true
+                            preferredAssets: profile.preferredAssets || ['AAPL', 'GOOGL', 'MSFT', 'SPY'],
+                            autoRebalancing: true,
+                            experience: profile.experience,
+                            goals: profile.goals,
+                            timeline: profile.timeline
                         };
                         
                         showNotification('Creating trading account...', 'info');
