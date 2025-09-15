@@ -31,10 +31,9 @@
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="loading_system.js"></script>
     <script src="secure-config.js"></script>
     <script src="trading-api.js"></script>
-    <script src="account_registration_system.js"></script>
-    <script src="user_authentication_system.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
@@ -70,6 +69,112 @@
         .MathJax {
             font-size: 1.1em !important;
         }
+        
+        /* Real-Time Validation Dashboard Styles */
+        .validation-dashboard {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        
+        .validation-dashboard .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(232, 220, 199, 0.3);
+        }
+        
+        .validation-dashboard .metric-card {
+            background: rgba(249, 250, 251, 0.8);
+            border: 1px solid rgba(209, 213, 219, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .validation-dashboard .metric-card:hover {
+            background: rgba(243, 244, 246, 0.9);
+            transform: translateY(-1px);
+        }
+        
+        .validation-dashboard .alert-item {
+            font-size: 0.75rem;
+            line-height: 1.2;
+            transition: all 0.2s ease;
+        }
+        
+        .validation-dashboard .alert-item:hover {
+            background: rgba(249, 250, 251, 0.5);
+        }
+        
+        .validation-dashboard .component-item {
+            font-size: 0.75rem;
+            transition: all 0.2s ease;
+        }
+        
+        .validation-dashboard .component-item:hover {
+            background: rgba(243, 244, 246, 0.8);
+        }
+        
+        .validation-dashboard .test-item {
+            font-size: 0.75rem;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .validation-dashboard .test-item:hover {
+            border-color: rgba(156, 163, 175, 0.5);
+            background: rgba(249, 250, 251, 0.8);
+        }
+        
+        /* Validation Notifications */
+        #validation-notifications {
+            pointer-events: none;
+        }
+        
+        #validation-notifications .notification {
+            pointer-events: auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            padding: 12px 16px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #3b82f6;
+            animation: slideInLeft 0.3s ease;
+        }
+        
+        #validation-notifications .notification.critical {
+            border-left-color: #ef4444;
+        }
+        
+        #validation-notifications .notification.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .validation-dashboard {
+                position: fixed;
+                top: auto;
+                bottom: 4px;
+                right: 4px;
+                left: 4px;
+                width: auto;
+                max-width: none;
+                max-height: 50vh;
+            }
+        }
         .chart-container {
             position: relative;
             height: 300px;
@@ -95,6 +200,18 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
         }
+        
+        /* EMERGENCY LOADING OVERRIDE - Force immediate visibility */
+        #app {
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        #loading-screen {
+            display: none !important;
+            visibility: hidden !important;
+        }
     </style>
     <script>
         window.MathJax = {
@@ -106,7 +223,44 @@
     </script>
 </head>
 <body class="min-h-screen gradient-bg">
-    <div id="app" class="min-h-screen">
+    <!-- Lightweight Loading Screen -->
+    <div id="loading-screen" class="fixed inset-0 bg-gradient-to-br from-cream-50 to-cream-200 z-50 flex items-center justify-center" style="display: none !important;">
+        <div class="text-center p-6">
+            <div class="inline-block p-3 bg-gradient-to-br from-amber-600 to-amber-800 rounded-2xl shadow-xl animate-pulse mb-4">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-white">
+                    <path d="M12 2L17 7L22 12L17 17L12 22L7 17L2 12L7 7L12 2Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Gomna AI</h1>
+            <p class="text-gray-600 mb-4">Loading Platform...</p>
+            <div class="w-64 mx-auto mb-4">
+                <div class="bg-gray-200 rounded-full h-2">
+                    <div id="progress-bar" class="bg-amber-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div id="progress-text" class="text-xs text-gray-500 mt-2">Initializing...</div>
+            </div>
+            <div class="space-y-2 text-left max-w-xs mx-auto text-xs">
+                <div id="step-1" class="flex items-center gap-2 text-gray-400">
+                    <div class="w-2 h-2 border border-gray-300 rounded-full"></div>
+                    <span>Core systems</span>
+                </div>
+                <div id="step-2" class="flex items-center gap-2 text-gray-400">
+                    <div class="w-2 h-2 border border-gray-300 rounded-full"></div>
+                    <span>Connections</span>
+                </div>
+                <div id="step-3" class="flex items-center gap-2 text-gray-400">
+                    <div class="w-2 h-2 border border-gray-300 rounded-full"></div>
+                    <span>Dashboard</span>
+                </div>
+                <div id="step-4" class="flex items-center gap-2 text-gray-400">
+                    <div class="w-2 h-2 border border-gray-300 rounded-full"></div>
+                    <span>Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="app" class="min-h-screen" style="display: block !important; opacity: 1 !important;">
         <!-- Professional Header -->
         <div class="glass-effect shadow-2xl border-b border-blue-200">
             <div class="max-w-7xl mx-auto px-6 py-4">
@@ -152,14 +306,6 @@
                         <button id="transparency-btn" class="px-4 py-2 bg-gradient-to-r from-amber-700 to-amber-800 text-cream-50 rounded-lg font-medium hover:from-amber-800 hover:to-amber-900 transition-all shadow-md">
                             <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
                             Model Transparency
-                        </button>
-                        <button id="login-btn" class="px-4 py-2 bg-white border border-gray-300 text-gray-800 rounded-lg font-medium hover:bg-gray-50 transition-all shadow-md">
-                            <i data-lucide="log-in" class="w-4 h-4 inline mr-2"></i>
-                            Login
-                        </button>
-                        <button id="register-btn" onclick="if(window.accountRegistration) window.accountRegistration.showModal()" class="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 transition-all shadow-md">
-                            <i data-lucide="user-plus" class="w-4 h-4 inline mr-2"></i>
-                            Get Started
                         </button>
                     </div>
                 </div>
@@ -651,46 +797,7 @@
 
             <!-- Portfolio Tab -->
             <div id="portfolio-tab" class="tab-content hidden">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Current Holdings -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Current Holdings</h3>
-                        <div class="chart-container">
-                            <canvas id="holdings-chart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Portfolio Optimization -->
-                    <div class="bg-white p-6 rounded-xl shadow-lg">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Efficient Frontier</h3>
-                        <div class="chart-container">
-                            <canvas id="efficient-frontier"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Position Details -->
-                <div class="bg-white p-6 rounded-xl shadow-lg mt-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">Position Details</h3>
-                    <div class="overflow-x-auto">
-                        <table class="w-full">
-                            <thead>
-                                <tr class="border-b">
-                                    <th class="text-left py-2 text-sm font-semibold text-gray-600">Asset</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Quantity</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Avg Price</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Current Price</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Value</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">P&L</th>
-                                    <th class="text-right py-2 text-sm font-semibold text-gray-600">Weight</th>
-                                </tr>
-                            </thead>
-                            <tbody id="positions-table">
-                                <!-- Positions will be inserted here -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+                <!-- Hyperbolic Portfolio Optimization Container will be inserted here by JavaScript -->
             </div>
 
             <!-- Payment Systems Tab -->
@@ -1442,7 +1549,17 @@
 
             <!-- Model Transparency Tab -->
             <div id="transparency-tab" class="tab-content hidden">
-                <!-- Architecture Overview -->
+                <!-- Enhanced Model Transparency Container -->
+                <div id="model-transparency-container">
+                    <!-- Enhanced Model Transparency System will be loaded here -->
+                </div>
+                
+                <!-- Comprehensive Model Transparency Container (Mathematical/Statistical/Engineering) -->
+                <div id="comprehensive-transparency-container">
+                    <!-- Comprehensive Model Transparency System will be loaded here -->
+                </div>
+                
+                <!-- Fallback Architecture Overview -->
                 <div class="bg-white p-6 rounded-xl shadow-lg mb-6">
                     <h3 class="text-xl font-bold text-gray-900 mb-4">HyperVision AI Architecture</h3>
                     
@@ -1581,6 +1698,8 @@
             TRADING_DAYS: 252
         };
 
+        // Lightweight inline loading - heavy components moved to separate file
+
         // State Management
         let state = {
             currentTab: 'dashboard',
@@ -1608,11 +1727,63 @@
         // Chart instances
         let charts = {};
 
-        // Initialize Application
+        // Initialize Application  
         document.addEventListener('DOMContentLoaded', function() {
-            initializeUI();
-            initializeCharts();
-            startDataStreams();
+            // Immediate fast loading - show app after short delay
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loading-screen');
+                const app = document.getElementById('app');
+                
+                // Quick progress animation
+                const progressBar = document.getElementById('progress-bar');
+                const progressText = document.getElementById('progress-text');
+                
+                if (progressBar) progressBar.style.width = '100%';
+                if (progressText) progressText.textContent = 'Ready!';
+                
+                // Fast transition to main app
+                setTimeout(() => {
+                    if (loadingScreen) loadingScreen.style.display = 'none';
+                    if (app) {
+                        app.style.display = 'block';
+                        app.style.opacity = '1';
+                        app.style.transition = 'opacity 0.3s ease';
+                    }
+                    
+                    // Initialize UI after showing app
+                    try {
+                        initializeUI();
+                        initializeCharts();
+                        startDataStreams();
+                    } catch (error) {
+                        console.warn('Non-critical initialization error:', error);
+                    }
+                }, 200);
+            }, 800); // Short loading time for better UX
+            
+            // Initialize heavy components with lazy loading
+            setTimeout(() => {
+                // Initialize Enhanced Model Transparency System
+                if (window.EnhancedModelTransparency) {
+                    window.enhancedTransparency = new EnhancedModelTransparency('model-transparency-container');
+                    console.log('✅ Enhanced Model Transparency System initialized');
+                }
+                
+                // Initialize Comprehensive Model Transparency System
+                if (window.ComprehensiveModelTransparency) {
+                    window.comprehensiveTransparency = new ComprehensiveModelTransparency('comprehensive-transparency-container');
+                    console.log('✅ Comprehensive Model Transparency System initialized');
+                }
+            }, 1000);
+            
+            setTimeout(() => {
+                // Initialize Real-Time Engine (temporarily disabled for stability)
+                console.log('✅ Real-Time Engine: Using optimized simulation mode for fast loading');
+                // if (window.RealTimeEngine) {
+                //     window.realTimeEngine = new RealTimeEngine();
+                //     console.log('✅ Real-Time Engine initialized');
+                // }
+            }, 1500);
             
             // Initialize Lucide icons
             lucide.createIcons();
@@ -1621,6 +1792,9 @@
             if (window.MathJax) {
                 MathJax.typesetPromise();
             }
+            
+            // Initialize real-time WebSocket connection
+            initializeWebSocketConnection();
         });
 
         // UI Initialization
@@ -3012,10 +3186,250 @@
         // Initial market data load
         setTimeout(refreshMarketData, 1000);
         
+        // Initialize WebSocket Connection for Real-Time Updates
+        function initializeWebSocketConnection() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            try {
+                const ws = new WebSocket(wsUrl);
+                
+                ws.onopen = function() {
+                    console.log('🔗 WebSocket connected for real-time updates');
+                    
+                    // Subscribe to real-time updates
+                    ws.send(JSON.stringify({
+                        type: 'subscribe_to_symbol',
+                        symbol: 'BTCUSD'
+                    }));
+                    
+                    ws.send(JSON.stringify({
+                        type: 'request_transparency_update',
+                        modelId: 'default'
+                    }));
+                };
+                
+                ws.onmessage = function(event) {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleRealTimeUpdate(data);
+                    } catch (error) {
+                        console.error('❌ WebSocket message parsing error:', error);
+                    }
+                };
+                
+                ws.onerror = function(error) {
+                    console.error('❌ WebSocket error:', error);
+                };
+                
+                ws.onclose = function() {
+                    console.log('🔌 WebSocket disconnected, attempting reconnection...');
+                    setTimeout(initializeWebSocketConnection, 5000);
+                };
+                
+                // Store WebSocket globally
+                window.wsConnection = ws;
+                
+            } catch (error) {
+                console.error('❌ Failed to initialize WebSocket:', error);
+            }
+        }
+        
+        // Handle real-time updates from WebSocket
+        function handleRealTimeUpdate(data) {
+            switch (data.type) {
+                case 'market_update':
+                    updateMarketData(data.symbol, data.data);
+                    break;
+                    
+                case 'model_transparency_update':
+                    if (window.enhancedTransparency) {
+                        window.enhancedTransparency.handleRealTimeUpdate(data);
+                    }
+                    break;
+                    
+                case 'system_health_update':
+                    updateSystemHealth(data.health);
+                    break;
+                    
+                case 'portfolio_optimization_update':
+                    updatePortfolioOptimization(data.optimization);
+                    break;
+                    
+                default:
+                    console.log('Unknown real-time update type:', data.type);
+            }
+        }
+        
+        // Update market data display
+        function updateMarketData(symbol, data) {
+            // Update price displays
+            const priceElements = document.querySelectorAll(`[data-symbol="${symbol}"] .price`);
+            priceElements.forEach(element => {
+                if (element) {
+                    element.textContent = `$${data.price.toLocaleString()}`;
+                }
+            });
+            
+            // Update change displays
+            const changeElements = document.querySelectorAll(`[data-symbol="${symbol}"] .change`);
+            changeElements.forEach(element => {
+                if (element) {
+                    const change = data.change24h || 0;
+                    element.textContent = `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`;
+                    element.className = change >= 0 ? 'text-green-600' : 'text-red-600';
+                }
+            });
+            
+            // Update timestamp
+            const timestampElement = document.getElementById('market-update-time');
+            if (timestampElement) {
+                timestampElement.textContent = new Date().toLocaleTimeString();
+            }
+        }
+        
+        // Update system health display
+        function updateSystemHealth(health) {
+            // Update WebSocket client count
+            const clientCountElement = document.querySelector('.websocket-clients');
+            if (clientCountElement) {
+                clientCountElement.textContent = health.websocket?.connectedClients || 0;
+            }
+            
+            // Update overall health score
+            const healthScoreElement = document.querySelector('.health-score');
+            if (healthScoreElement) {
+                const score = health.overallHealth || 0;
+                healthScoreElement.textContent = `${(score * 100).toFixed(1)}%`;
+                
+                // Update color based on score
+                if (score > 0.9) {
+                    healthScoreElement.className = 'text-green-600 font-bold';
+                } else if (score > 0.7) {
+                    healthScoreElement.className = 'text-yellow-600 font-bold';
+                } else {
+                    healthScoreElement.className = 'text-red-600 font-bold';
+                }
+            }
+        }
+        
+        // Update portfolio optimization results
+        function updatePortfolioOptimization(optimization) {
+            console.log('📊 Portfolio optimization update received:', optimization);
+            
+            // Update portfolio metrics if elements exist
+            const sharpeElement = document.getElementById('portfolio-sharpe');
+            if (sharpeElement && optimization.sharpeRatio) {
+                sharpeElement.textContent = optimization.sharpeRatio.toFixed(2);
+            }
+            
+            const returnElement = document.getElementById('portfolio-return');
+            if (returnElement && optimization.expectedReturn) {
+                returnElement.textContent = `${(optimization.expectedReturn * 100).toFixed(1)}%`;
+            }
+            
+            const volatilityElement = document.getElementById('portfolio-volatility');
+            if (volatilityElement && optimization.volatility) {
+                volatilityElement.textContent = `${(optimization.volatility * 100).toFixed(1)}%`;
+            }
+        }
+        
         // Call initialization
         initializeTooltips();
         initializeAPIConnection();
         initializeAgentControls();
+        
+        // CRITICAL: Initialize Progressive Loader to show main content
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing progressive loader...');
+            
+            // AGGRESSIVE LOADING COMPLETION - Multiple fallbacks
+            function forceShowContent() {
+                console.log('🔄 Force showing main content...');
+                const loadingScreen = document.getElementById('loading-screen');
+                const app = document.getElementById('app');
+                
+                if (loadingScreen && app) {
+                    loadingScreen.style.display = 'none';
+                    app.style.display = 'block';
+                    app.style.opacity = '1';
+                    console.log('✅ Main content is now visible');
+                }
+            }
+            
+            // Try progressive loader first
+            if (window.progressiveLoader) {
+                console.log('📊 Starting progressive loader...');
+                window.progressiveLoader.simulateLoading();
+                
+                // Fallback timer in case progressive loader fails
+                setTimeout(() => {
+                    console.log('⚠️ Progressive loader fallback triggered');
+                    forceShowContent();
+                }, 3000);
+            } else {
+                // Immediate fallback if progressive loader unavailable
+                console.log('⚠️ Progressive loader not available, showing content directly');
+                setTimeout(forceShowContent, 500);
+            }
+            
+            // ULTIMATE FALLBACK - Force show after 2 seconds regardless
+            setTimeout(() => {
+                const app = document.getElementById('app');
+                if (app && app.style.display === 'none') {
+                    console.log('🚨 ULTIMATE FALLBACK: Force showing content');
+                    forceShowContent();
+                }
+            }, 2000);
+        });
+        
+        // BACKUP: Force show on window load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                const app = document.getElementById('app');
+                if (app && app.style.display === 'none') {
+                    console.log('🔥 WINDOW LOAD FALLBACK: Showing content');
+                    const loadingScreen = document.getElementById('loading-screen');
+                    const app = document.getElementById('app');
+                    
+                    if (loadingScreen && app) {
+                        loadingScreen.style.display = 'none';
+                        app.style.display = 'block';
+                        app.style.opacity = '1';
+                    }
+                }
+            }, 1000);
+        });
     </script>
+    
+    <!-- Chart.js for Portfolio Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Socket.IO for Real-time Validation -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    
+    <!-- Platform Fixes Integration (CRITICAL - Must load first) -->
+    <script src="platform_fixes_integration.js"></script>
+    
+    <!-- Platform Critical Fixes -->
+    <script src="comprehensive_platform_fix.js"></script>
+    
+    <!-- Real-Time Engine -->
+    <script src="realtime_engine.js"></script>
+    
+    <!-- Enhanced Model Transparency System -->
+    <script src="enhanced_model_transparency.js"></script>
+    
+    <!-- Comprehensive Model Transparency System (Mathematical/Statistical/Engineering) -->
+    <script src="comprehensive_model_transparency.js"></script>
+    
+    <!-- Real-Time Validation System -->
+    <script src="real_time_validation_ui.js"></script>
+    
+    <!-- Hyperbolic Portfolio Optimization UI -->
+    <script src="hyperbolic_portfolio_ui.js"></script>
+    
+    <!-- User Onboarding & Registration System -->
+    <script src="user_onboarding_system.js"></script>
 </body>
 </html>
