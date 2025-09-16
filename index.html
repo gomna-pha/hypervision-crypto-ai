@@ -222,6 +222,165 @@
         <div class="max-w-7xl mx-auto px-6 py-6">
             <!-- Dashboard Tab -->
             <div id="dashboard-tab" class="tab-content">
+                <!-- 🔥 ACCOUNT REGISTRATION & PAYMENT SECTION 🔥 -->
+                <div class="mb-8 bg-gradient-to-r from-green-900 via-amber-900 to-green-900 rounded-2xl p-8 shadow-2xl border-2 border-amber-500/50 relative overflow-hidden">
+                    <!-- Animated Background -->
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute inset-0 bg-repeat" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIyMCIgY3k9IjIwIiByPSIxMCIgZmlsbD0iI0ZGRkZGRiIgb3BhY2l0eT0iMC4xIi8+PC9zdmc+');"></div>
+                    </div>
+                    
+                    <div class="relative z-10">
+                        <!-- Main CTA -->
+                        <div class="flex items-center justify-between flex-wrap gap-6">
+                            <div class="flex items-center gap-6">
+                                <div class="w-24 h-24 bg-gradient-to-br from-amber-600 to-yellow-600 rounded-2xl flex items-center justify-center shadow-2xl animate-pulse-slow">
+                                    <svg class="w-16 h-16" viewBox="0 0 100 100" fill="white">
+                                        <ellipse cx="50" cy="50" rx="30" ry="40" fill="currentColor" opacity="0.3"/>
+                                        <ellipse cx="50" cy="50" rx="25" ry="35" fill="currentColor" opacity="0.6"/>
+                                        <ellipse cx="50" cy="50" rx="20" ry="30" fill="currentColor"/>
+                                        <circle cx="45" cy="45" r="4" fill="#654321"/>
+                                        <circle cx="55" cy="50" r="4" fill="#654321"/>
+                                        <circle cx="50" cy="60" r="4" fill="#654321"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-3xl font-bold text-white mb-2">Start Trading with Cocoa Trading AI</h2>
+                                    <p class="text-amber-200 text-lg">Open your professional account and execute trades instantly</p>
+                                    <div class="flex flex-wrap gap-4 mt-3">
+                                        <span class="text-sm text-green-300 flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                            SEC Registered
+                                        </span>
+                                        <span class="text-sm text-green-300 flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                            FINRA Member
+                                        </span>
+                                        <span class="text-sm text-green-300 flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                                            $250M Insurance
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-3">
+                                <button onclick="if(window.enhancedTrading) { window.enhancedTrading.showModal(); } else if(window.accountRegistration) { window.accountRegistration.showModal(); } else { alert('Registration system loading...'); }" 
+                                    class="px-10 py-4 bg-white text-green-900 rounded-xl font-black hover:bg-amber-50 transition-all shadow-2xl text-lg group hover:scale-105 transform">
+                                    <span>CREATE ACCOUNT</span>
+                                    <span class="ml-2 group-hover:translate-x-1 inline-block transition-transform">→</span>
+                                </button>
+                                <button onclick="if(window.userAuth) { window.userAuth.showLoginModal(); } else { alert('Login system loading...'); }" 
+                                    class="px-10 py-4 bg-green-700/80 backdrop-blur text-white rounded-xl font-bold hover:bg-green-600 transition-all shadow-xl border border-green-400">
+                                    SIGN IN
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Tiers Grid -->
+                        <div class="mt-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Starter Tier -->
+                            <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-amber-500/30 hover:border-amber-400 transition-all hover:transform hover:scale-105">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-amber-300 font-bold text-lg">STARTER</h4>
+                                    <span class="text-gray-400 text-xs">TIER 1</span>
+                                </div>
+                                <p class="text-4xl font-black text-white mb-2">$1,000</p>
+                                <p class="text-sm text-gray-400 mb-4">Minimum deposit</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        $100K daily limit
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        2:1 leverage
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        Basic AI signals
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Professional Tier -->
+                            <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6 border-2 border-green-500/50 hover:border-green-400 transition-all hover:transform hover:scale-105 relative">
+                                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                                    <span class="bg-gradient-to-r from-green-600 to-emerald-600 text-white text-xs px-4 py-1 rounded-full font-bold">MOST POPULAR</span>
+                                </div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-green-300 font-bold text-lg">PROFESSIONAL</h4>
+                                    <span class="text-gray-400 text-xs">TIER 2</span>
+                                </div>
+                                <p class="text-4xl font-black text-white mb-2">$10,000</p>
+                                <p class="text-sm text-gray-400 mb-4">Minimum deposit</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        $1M daily limit
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        10:1 leverage
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        Advanced AI suite
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Institutional Tier -->
+                            <div class="bg-black/40 backdrop-blur-sm rounded-xl p-6 border border-purple-500/30 hover:border-purple-400 transition-all hover:transform hover:scale-105">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h4 class="text-purple-300 font-bold text-lg">INSTITUTIONAL</h4>
+                                    <span class="text-gray-400 text-xs">TIER 3</span>
+                                </div>
+                                <p class="text-4xl font-black text-white mb-2">$25,000</p>
+                                <p class="text-sm text-gray-400 mb-4">Minimum deposit</p>
+                                <ul class="space-y-2 text-sm">
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        Unlimited trading
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        50:1 leverage
+                                    </li>
+                                    <li class="flex items-center text-gray-300">
+                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                        White-glove service
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Methods Footer -->
+                        <div class="mt-8 pt-6 border-t border-amber-500/20">
+                            <p class="text-center text-amber-200 text-sm mb-4">Accepted Payment Methods</p>
+                            <div class="flex items-center justify-center gap-8">
+                                <div class="flex items-center gap-2 text-gray-300">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                                    </svg>
+                                    <span>Credit/Debit</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-300">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/>
+                                    </svg>
+                                    <span>Bank/Wire</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-300">
+                                    <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                                    </svg>
+                                    <span>Cryptocurrency</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END ACCOUNT REGISTRATION SECTION -->
+                
                 <!-- Key Metrics Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                     <div class="metric-card p-6 rounded-xl shadow-lg">
@@ -1642,6 +1801,12 @@
             if (!window.userAuth) {
                 window.userAuth = new UserAuthenticationSystem();
                 console.log('✅ User Authentication System initialized');
+            }
+            
+            // Initialize Enhanced Trading Registration
+            if (!window.enhancedTrading) {
+                window.enhancedTrading = new EnhancedTradingRegistration();
+                console.log('✅ Enhanced Trading Registration initialized');
             }
             
             // Attach button event handlers
