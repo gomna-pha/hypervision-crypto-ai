@@ -144,8 +144,8 @@ class GomnaEnhancedPlatform {
         `;
         brandingContainer.innerHTML = `
             <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 28px; font-weight: bold; color: #3E2723; letter-spacing: 3px; font-family: 'Georgia', serif;">GOMNA</span>
-                <span style="font-size: 11px; color: #6B4423; text-transform: uppercase; letter-spacing: 1px; margin-top: -2px;">Trading Platform</span>
+                <span style="font-size: 32px; font-weight: bold; color: #3E2723; letter-spacing: 4px; font-family: 'Georgia', serif; font-style: italic;">GOMNA</span>
+                <span style="font-size: 12px; color: #6B4423; letter-spacing: 0.5px; margin-top: 2px; font-family: 'Georgia', serif;">Wall Street Grade Quantitative Trading Platform</span>
             </div>
         `;
         document.body.appendChild(brandingContainer);
