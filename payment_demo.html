@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomna AI - Payment System Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="account_registration_system.js"></script>
+    <script src="user_authentication_system.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-2xl w-full">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                    Gomna AI Payment System
+                </h1>
+                <p class="text-gray-600">Complete Account Registration & Payment Processing Demo</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Registration Card -->
+                <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200">
+                    <div class="mb-4">
+                        <svg class="w-12 h-12 text-blue-600 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/>
+                        </svg>
+                        <h2 class="text-xl font-bold text-gray-800">New User Registration</h2>
+                    </div>
+                    <p class="text-gray-600 mb-4">Create your account and choose a subscription plan</p>
+                    <button onclick="showRegistration()" 
+                        class="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg">
+                        Start Registration →
+                    </button>
+                </div>
+                
+                <!-- Login Card -->
+                <div class="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+                    <div class="mb-4">
+                        <svg class="w-12 h-12 text-green-600 mb-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                        </svg>
+                        <h2 class="text-xl font-bold text-gray-800">Existing User Login</h2>
+                    </div>
+                    <p class="text-gray-600 mb-4">Sign in to access your trading account</p>
+                    <button onclick="showLogin()" 
+                        class="w-full py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all shadow-lg">
+                        Sign In →
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="border-t pt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">✨ System Features</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        4-Step Wizard
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        3 Plans
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Card Payments
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Bank Transfer
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Crypto
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        2FA Auth
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Social Login
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Wallet Auth
+                    </div>
+                    <div class="flex items-center text-gray-600">
+                        <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        JWT Tokens
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subscription Plans -->
+            <div class="border-t pt-6 mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">💎 Subscription Plans</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <h4 class="font-semibold text-gray-800">Starter</h4>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">$99<span class="text-sm text-gray-500">/mo</span></p>
+                        <p class="text-xs text-gray-600 mt-2">Basic AI signals<br>5 strategies<br>$10K limit</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4 border-2 border-blue-500 relative">
+                        <span class="absolute -top-2 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white text-xs px-2 py-1 rounded-full">POPULAR</span>
+                        <h4 class="font-semibold text-gray-800">Professional</h4>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">$499<span class="text-sm text-gray-500">/mo</span></p>
+                        <p class="text-xs text-gray-600 mt-2">Advanced AI<br>20+ strategies<br>$100K limit</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <h4 class="font-semibold text-gray-800">Institutional</h4>
+                        <p class="text-2xl font-bold text-gray-900 mt-1">$2499<span class="text-sm text-gray-500">/mo</span></p>
+                        <p class="text-xs text-gray-600 mt-2">Enterprise suite<br>Unlimited<br>White-glove</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Back to Main Platform -->
+            <div class="mt-8 text-center">
+                <a href="index.html" class="text-blue-600 hover:text-blue-700 font-medium">
+                    ← Back to Main Platform
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize systems when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Registration System
+            if (typeof AccountRegistrationSystem !== 'undefined') {
+                window.accountRegistration = new AccountRegistrationSystem();
+                console.log('✅ Account Registration System loaded');
+            } else {
+                console.error('❌ AccountRegistrationSystem not found');
+            }
+            
+            // Initialize Authentication System
+            if (typeof UserAuthenticationSystem !== 'undefined') {
+                window.userAuth = new UserAuthenticationSystem();
+                console.log('✅ User Authentication System loaded');
+            } else {
+                console.error('❌ UserAuthenticationSystem not found');
+            }
+        });
+        
+        function showRegistration() {
+            if (window.accountRegistration) {
+                window.accountRegistration.showModal();
+            } else {
+                alert('Registration system is loading... Please try again in a moment.');
+                location.reload();
+            }
+        }
+        
+        function showLogin() {
+            if (window.userAuth) {
+                window.userAuth.showLoginModal();
+            } else {
+                alert('Login system is loading... Please try again in a moment.');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

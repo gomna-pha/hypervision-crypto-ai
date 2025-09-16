@@ -19,6 +19,15 @@ const http = require('http');
 const WebSocket = require('ws');
 const { ServerFixes } = require('./server_fixes.js');
 
+// Import payment processing API
+let paymentRouter;
+try {
+    paymentRouter = require('./payment_processing_api.js');
+} catch (error) {
+    console.warn('⚠️ Payment processing API not available');
+    paymentRouter = null;
+}
+
 // Import the new real-time engine
 let RealTimeEngine;
 try {
@@ -196,6 +205,12 @@ function handleTransparencyRequest(ws, data) {
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.'));
+
+// Add payment processing routes
+if (paymentRouter) {
+    app.use(paymentRouter);
+    console.log('💳 Payment processing API enabled');
+}
 
 // Anti-hallucination validation
 function validateAntiHallucination(data, symbol) {
