@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gomna AI - Wall Street Grade Quantitative Trading Platform</title>
+    <title>GOMNA - Wall Street Grade Quantitative Trading Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,14 +36,16 @@
     <script src="account_registration_system.js"></script>
     <script src="user_authentication_system.js"></script>
     <script src="enhanced_trading_registration.js"></script>
+    <link rel="stylesheet" href="cream_brown_theme.css">
+    <script src="apply_gomna_theme.js"></script>
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
+            background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 40%, #E8DCC7 100%);
         }
         .glass-effect {
-            background: rgba(253, 246, 227, 0.95);
+            background: rgba(250, 247, 240, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(232, 220, 199, 0.3);
+            border: 1px solid rgba(139, 111, 71, 0.3);
         }
         .animate-pulse-slow {
             animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -53,20 +55,20 @@
             50% { opacity: .7; }
         }
         .formula-box {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
-            border-left: 4px solid #8b7355;
+            background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 100%);
+            border-left: 4px solid #8B6F47;
             padding: 1rem;
             margin: 1rem 0;
             border-radius: 0.5rem;
         }
         .metric-card {
-            background: linear-gradient(135deg, #fefbf3 0%, #faf5ed 100%);
+            background: linear-gradient(135deg, #FEFDFB 0%, #FAF7F0 100%);
             transition: transform 0.2s;
-            border: 1px solid rgba(232, 220, 199, 0.2);
+            border: 1px solid rgba(139, 111, 71, 0.2);
         }
         .metric-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
+            box-shadow: 0 4px 12px rgba(107, 68, 35, 0.15);
         }
         .MathJax {
             font-size: 1.1em !important;
@@ -90,11 +92,11 @@
             max-height: 100% !important;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
-            color: white;
+            background: linear-gradient(135deg, #8B6F47 0%, #5D4037 100%);
+            color: #FAF7F0;
         }
         .btn-primary:hover {
-            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
+            background: linear-gradient(135deg, #6B4423 0%, #3E2723 100%);
         }
     </style>
     <script>
@@ -128,7 +130,7 @@
                             </div>
                             <div>
                                 <h1 class="text-3xl font-bold text-gray-900">
-                                    Cocoa Trading AI
+                                    GOMNA
                                 </h1>
                                 <p class="text-sm text-gray-600">Wall Street Grade Quantitative Trading Platform</p>
                             </div>
