@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gomna AI - Institutional Quantitative Trading & Payment Platform</title>
+    <title>Gomna AI - Wall Street Grade Quantitative Trading Platform</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,6 +35,7 @@
     <script src="trading-api.js"></script>
     <script src="account_registration_system.js"></script>
     <script src="user_authentication_system.js"></script>
+    <script src="enhanced_trading_registration.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
@@ -127,9 +128,9 @@
                             </div>
                             <div>
                                 <h1 class="text-3xl font-bold text-gray-900">
-                                    Gomna AI Trading
+                                    Cocoa Trading AI
                                 </h1>
-                                <p class="text-sm text-gray-600">Institutional Quantitative Trading & Payment Platform</p>
+                                <p class="text-sm text-gray-600">Wall Street Grade Quantitative Trading Platform</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
@@ -158,9 +159,9 @@
                             <i data-lucide="log-in" class="w-4 h-4 mr-1"></i>
                             Login
                         </button>
-                        <button id="register-btn" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all shadow-lg text-sm inline-flex items-center animate-pulse-slow" style="display: inline-flex !important; visibility: visible !important;">
-                            <i data-lucide="user-plus" class="w-4 h-4 mr-1"></i>
-                            Get Started
+                        <button id="register-btn" onclick="if(window.enhancedTrading) window.enhancedTrading.showModal(); else if(window.accountRegistration) window.accountRegistration.showModal();" class="px-6 py-2 bg-gradient-to-r from-green-600 to-yellow-600 text-white rounded-lg font-bold hover:from-green-700 hover:to-yellow-700 transition-all shadow-lg text-sm inline-flex items-center animate-pulse-slow" style="display: inline-flex !important; visibility: visible !important;">
+                            <i data-lucide="trending-up" class="w-4 h-4 mr-1"></i>
+                            Start Trading
                         </button>
                     </div>
                 </div>
