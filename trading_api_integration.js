@@ -287,9 +287,21 @@ class TradingAPIIntegration {
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="width: 8px; height: 8px; background: #10B981; border-radius: 50%; animation: pulse 2s infinite;"></div>
                     <span style="color: #10B981; font-size: 11px;">LIVE</span>
+                    <button onclick="minimizePanel('live-market-panel')" style="
+                        background: transparent;
+                        border: none;
+                        color: #5D4037;
+                        cursor: pointer;
+                        font-size: 18px;
+                        padding: 0;
+                        width: 20px;
+                        height: 20px;
+                        margin-left: 10px;
+                    ">−</button>
                 </div>
             </div>
             
+            <div class="panel-content">
             <div id="market-data-content" style="padding: 15px; max-height: 400px; overflow-y: auto;">
                 <!-- Market data will be displayed here -->
                 <div style="color: #8B6F47; text-align: center; padding: 20px;">
@@ -317,6 +329,7 @@ class TradingAPIIntegration {
                 <div style="font-size: 10px; color: #8B6F47;">
                     Updated: <span id="last-update">--:--:--</span>
                 </div>
+            </div>
             </div>
         `;
 
@@ -357,16 +370,28 @@ class TradingAPIIntegration {
                 <h3 style="color: #5D4037; font-size: 14px; margin: 0; font-weight: 600;">
                     Order Execution
                 </h3>
-                <span id="exchange-status" style="
-                    font-size: 10px;
-                    padding: 3px 8px;
-                    background: #8B6F47;
-                    color: #FAF7F0;
-                    border-radius: 4px;
-                ">DEMO MODE</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span id="exchange-status" style="
+                        font-size: 10px;
+                        padding: 3px 8px;
+                        background: #8B6F47;
+                        color: #3E2723;
+                        border-radius: 4px;
+                    ">DEMO MODE</span>
+                    <button onclick="minimizePanel('order-execution-panel')" style="
+                        background: transparent;
+                        border: none;
+                        color: #5D4037;
+                        cursor: pointer;
+                        font-size: 18px;
+                        padding: 0;
+                        width: 20px;
+                        height: 20px;
+                    ">−</button>
+                </div>
             </div>
             
-            <div style="padding: 15px;">
+            <div class="panel-content" style="padding: 15px;">
                 <!-- Exchange Selector -->
                 <div style="margin-bottom: 12px;">
                     <select id="order-exchange" style="

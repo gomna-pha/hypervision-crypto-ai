@@ -323,7 +323,7 @@ class GomnaDraggablePlatform {
         // Panel 6: Execute Trade Button
         this.createPanel({
             id: 'execute-panel',
-            title: '',
+            title: 'Execute Trade',
             position: { bottom: 30, right: 20 },
             content: `
                 <button onclick="executeAITrade()" style="
@@ -481,6 +481,26 @@ class GomnaDraggablePlatform {
     }
 
     initDragHandler() {
+        // Add global minimize function
+        window.minimizePanel = function(panelId) {
+            const panel = document.getElementById(panelId);
+            if (panel) {
+                const content = panel.querySelector('.panel-content');
+                const button = panel.querySelector('.panel-header button');
+                if (content) {
+                    if (content.style.display === 'none') {
+                        content.style.display = 'block';
+                        if (button) button.textContent = '−';
+                        panel.style.height = 'auto';
+                    } else {
+                        content.style.display = 'none';
+                        if (button) button.textContent = '+';
+                        panel.style.height = 'auto';
+                    }
+                }
+            }
+        };
+
         // Load saved positions
         const savedPositions = JSON.parse(localStorage.getItem('panelPositions') || '{}');
         Object.keys(savedPositions).forEach(panelId => {
@@ -548,13 +568,19 @@ class GomnaDraggablePlatform {
 // Global functions
 window.minimizePanel = (panelId) => {
     const panel = document.getElementById(panelId);
+    if (!panel) return;
+    
     const content = panel.querySelector('.panel-content');
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        panel.querySelector('button').textContent = '−';
-    } else {
-        content.style.display = 'none';
-        panel.querySelector('button').textContent = '+';
+    const button = panel.querySelector('.panel-header button');
+    
+    if (content) {
+        if (content.style.display === 'none') {
+            content.style.display = 'block';
+            if (button) button.textContent = '−';
+        } else {
+            content.style.display = 'none';
+            if (button) button.textContent = '+';
+        }
     }
 };
 
@@ -563,10 +589,44 @@ window.resetPanelPositions = () => {
     location.reload();
 };
 
+// Helper function to expand all panels
+window.expandAllPanels = () => {
+    document.querySelectorAll('.draggable-panel').forEach(panel => {
+        const content = panel.querySelector('.panel-content');
+        const button = panel.querySelector('.panel-header button');
+        if (content) {
+            content.style.display = 'block';
+            if (button) button.textContent = '−';
+        }
+    });
+};
+
+// Helper function to collapse all panels
+window.collapseAllPanels = () => {
+    document.querySelectorAll('.draggable-panel').forEach(panel => {
+        const content = panel.querySelector('.panel-content');
+        const button = panel.querySelector('.panel-header button');
+        if (content) {
+            content.style.display = 'none';
+            if (button) button.textContent = '+';
+        }
+    });
+};
+
 window.togglePanelsVisibility = () => {
     const panels = document.querySelectorAll('.draggable-panel');
     panels.forEach(panel => {
-        panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        const content = panel.querySelector('.panel-content');
+        const button = panel.querySelector('.panel-header button');
+        if (content) {
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                if (button) button.textContent = '−';
+            } else {
+                content.style.display = 'none';
+                if (button) button.textContent = '+';
+            }
+        }
     });
 };
 
