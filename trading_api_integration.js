@@ -82,8 +82,8 @@ class TradingAPIIntegration {
             left: 50%;
             transform: translateX(-50%);
             width: 500px;
-            background: linear-gradient(135deg, #1A1A1A, #2C1810);
-            border: 2px solid #D4AF37;
+            background: linear-gradient(135deg, #FAF7F0, #F5E6D3);
+            border: 2px solid #8B6F47;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             z-index: 3000;
@@ -92,21 +92,21 @@ class TradingAPIIntegration {
 
         panel.innerHTML = `
             <div class="panel-header" style="
-                background: linear-gradient(135deg, #2C1810, #3E2723);
+                background: linear-gradient(135deg, #F5E6D3, #E8DCC7);
                 padding: 15px;
-                border-bottom: 2px solid #D4AF37;
+                border-bottom: 2px solid #8B6F47;
                 cursor: move;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             ">
-                <h3 style="color: #D4AF37; font-size: 16px; margin: 0; font-weight: 600;">
+                <h3 style="color: #5D4037; font-size: 16px; margin: 0; font-weight: 600;">
                     Exchange API Configuration
                 </h3>
                 <button onclick="closeAPIPanel()" style="
                     background: transparent;
                     border: none;
-                    color: #D4AF37;
+                    color: #5D4037;
                     cursor: pointer;
                     font-size: 20px;
                 ">×</button>
@@ -264,8 +264,8 @@ class TradingAPIIntegration {
             bottom: 100px;
             left: 20px;
             width: 350px;
-            background: linear-gradient(135deg, #1A1A1A, #2C1810);
-            border: 2px solid #D4AF37;
+            background: linear-gradient(135deg, #FAF7F0, #F5E6D3);
+            border: 2px solid #8B6F47;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             z-index: 1000;
@@ -273,7 +273,7 @@ class TradingAPIIntegration {
 
         panel.innerHTML = `
             <div class="panel-header" style="
-                background: linear-gradient(135deg, #2C1810, #3E2723);
+                background: linear-gradient(135deg, #F5E6D3, #E8DCC7);
                 padding: 12px 15px;
                 border-bottom: 1px solid #D4AF37;
                 cursor: move;
@@ -281,7 +281,7 @@ class TradingAPIIntegration {
                 justify-content: space-between;
                 align-items: center;
             ">
-                <h3 style="color: #D4AF37; font-size: 14px; margin: 0; font-weight: 600;">
+                <h3 style="color: #5D4037; font-size: 14px; margin: 0; font-weight: 600;">
                     Live Market Data
                 </h3>
                 <div style="display: flex; align-items: center; gap: 10px;">
@@ -337,8 +337,8 @@ class TradingAPIIntegration {
             bottom: 100px;
             right: 20px;
             width: 320px;
-            background: linear-gradient(135deg, #1A1A1A, #2C1810);
-            border: 2px solid #D4AF37;
+            background: linear-gradient(135deg, #FAF7F0, #F5E6D3);
+            border: 2px solid #8B6F47;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             z-index: 1000;
@@ -346,7 +346,7 @@ class TradingAPIIntegration {
 
         panel.innerHTML = `
             <div class="panel-header" style="
-                background: linear-gradient(135deg, #2C1810, #3E2723);
+                background: linear-gradient(135deg, #F5E6D3, #E8DCC7);
                 padding: 12px 15px;
                 border-bottom: 1px solid #D4AF37;
                 cursor: move;
@@ -354,7 +354,7 @@ class TradingAPIIntegration {
                 justify-content: space-between;
                 align-items: center;
             ">
-                <h3 style="color: #D4AF37; font-size: 14px; margin: 0; font-weight: 600;">
+                <h3 style="color: #5D4037; font-size: 14px; margin: 0; font-weight: 600;">
                     Order Execution
                 </h3>
                 <span id="exchange-status" style="
@@ -525,7 +525,7 @@ class TradingAPIIntegration {
                     align-items: center;
                 ">
                     <div>
-                        <div style="color: #D4AF37; font-size: 14px; font-weight: 600; text-transform: uppercase;">
+                        <div style="color: #5D4037; font-size: 14px; font-weight: 600; text-transform: uppercase;">
                             ${coin.replace('-2', '')}
                         </div>
                         <div style="color: #FAF7F0; font-size: 18px; font-weight: bold;">
@@ -727,7 +727,7 @@ window.executeOrder = async (side) => {
     
     const statusDiv = document.getElementById('order-status');
     statusDiv.innerHTML = `
-        <span style="color: #D4AF37;">Processing ${side.toUpperCase()} order...</span>
+        <span style="color: #5D4037;">Processing ${side.toUpperCase()} order...</span>
     `;
     
     // Simulate order execution

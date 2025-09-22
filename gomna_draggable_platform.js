@@ -30,13 +30,13 @@ class GomnaDraggablePlatform {
             left: 0;
             right: 0;
             height: 60px;
-            background: linear-gradient(135deg, #1A0F0A 0%, #2C1810 50%, #1A0F0A 100%);
+            background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 50%, #FAF7F0 100%);
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.5);
             z-index: 10000;
             display: flex;
             align-items: center;
             padding: 0 20px;
-            border-bottom: 2px solid #D4AF37;
+            border-bottom: 2px solid #8B6F47;
         `;
 
         header.innerHTML = `
@@ -69,14 +69,14 @@ class GomnaDraggablePlatform {
                     <div style="
                         font-size: 28px;
                         font-weight: 300;
-                        color: #FAF7F0;
+                        color: #3E2723;
                         letter-spacing: 5px;
                         font-family: Georgia, serif;
                         font-style: italic;
                     ">GOMNA</div>
                     <div style="
                         font-size: 9px;
-                        color: #D4AF37;
+                        color: #6B4423;
                         letter-spacing: 1.5px;
                         text-transform: uppercase;
                         margin-top: -2px;
@@ -85,8 +85,8 @@ class GomnaDraggablePlatform {
 
                 <div style="margin-left: auto; display: flex; gap: 15px; align-items: center;">
                     <button onclick="resetPanelPositions()" style="
-                        background: linear-gradient(135deg, #D4AF37, #CD7F32);
-                        color: #2C1810;
+                        background: linear-gradient(135deg, #8B6F47, #6B4423);
+                        color: #FAF7F0;
                         border: none;
                         padding: 6px 12px;
                         border-radius: 15px;
@@ -97,7 +97,7 @@ class GomnaDraggablePlatform {
                     ">Reset Layout</button>
                     
                     <button onclick="togglePanelsVisibility()" style="
-                        background: linear-gradient(135deg, #8B6F47, #6B4423);
+                        background: linear-gradient(135deg, #6B4423, #5D4037);
                         color: #FAF7F0;
                         border: none;
                         padding: 6px 12px;
@@ -124,19 +124,19 @@ class GomnaDraggablePlatform {
             content: `
                 <div style="display: grid; gap: 10px; padding: 10px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FAF7F0; font-size: 12px;">Curvature:</span>
+                        <span style="color: #3E2723; font-size: 12px;">Curvature:</span>
                         <span style="color: #10B981; font-size: 13px; font-weight: bold;">-1.0</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FAF7F0; font-size: 12px;">Dimension:</span>
+                        <span style="color: #3E2723; font-size: 12px;">Dimension:</span>
                         <span style="color: #10B981; font-size: 13px; font-weight: bold;">128</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FAF7F0; font-size: 12px;">Accuracy:</span>
+                        <span style="color: #3E2723; font-size: 12px;">Accuracy:</span>
                         <span style="color: #10B981; font-size: 13px; font-weight: bold;" id="accuracy-value">94.7%</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #FAF7F0; font-size: 12px;">Latency:</span>
+                        <span style="color: #3E2723; font-size: 12px;">Latency:</span>
                         <span style="color: #D4AF37; font-size: 13px; font-weight: bold;">125ms</span>
                     </div>
                 </div>
@@ -153,35 +153,35 @@ class GomnaDraggablePlatform {
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <div style="width: 6px; height: 6px; background: #10B981; border-radius: 50%;"></div>
-                            <span style="color: #FAF7F0; font-size: 12px;">Equity Indices</span>
+                            <span style="color: #3E2723; font-size: 12px;">Equity Indices</span>
                         </div>
                         <span style="color: #8B6F47; font-size: 11px;">25%</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <div style="width: 6px; height: 6px; background: #10B981; border-radius: 50%;"></div>
-                            <span style="color: #FAF7F0; font-size: 12px;">Commodities</span>
+                            <span style="color: #3E2723; font-size: 12px;">Commodities</span>
                         </div>
                         <span style="color: #8B6F47; font-size: 11px;">20%</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <div style="width: 6px; height: 6px; background: #10B981; border-radius: 50%;"></div>
-                            <span style="color: #FAF7F0; font-size: 12px;">Cryptocurrency</span>
+                            <span style="color: #3E2723; font-size: 12px;">Cryptocurrency</span>
                         </div>
                         <span style="color: #8B6F47; font-size: 11px;">30%</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <div style="width: 6px; height: 6px; background: #10B981; border-radius: 50%;"></div>
-                            <span style="color: #FAF7F0; font-size: 12px;">Economic Data</span>
+                            <span style="color: #3E2723; font-size: 12px;">Economic Data</span>
                         </div>
                         <span style="color: #8B6F47; font-size: 11px;">15%</span>
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 6px;">
                             <div style="width: 6px; height: 6px; background: #D4AF37; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                            <span style="color: #FAF7F0; font-size: 12px;">Sentiment</span>
+                            <span style="color: #3E2723; font-size: 12px;">Sentiment</span>
                         </div>
                         <span style="color: #8B6F47; font-size: 11px;">10%</span>
                     </div>
@@ -206,14 +206,14 @@ class GomnaDraggablePlatform {
                         align-items: center;
                     ">
                         <div>
-                            <div style="color: #FAF7F0; font-size: 12px;">BTC/USD</div>
+                            <div style="color: #3E2723; font-size: 12px;">BTC/USD</div>
                             <div style="color: #10B981; font-size: 14px; font-weight: bold;">BUY</div>
                         </div>
-                        <div style="color: #FAF7F0; font-size: 11px;">92%</div>
+                        <div style="color: #3E2723; font-size: 11px;">92%</div>
                     </div>
                     <div style="
                         background: #D4AF3720;
-                        border: 1px solid #D4AF37;
+                        border: 1px solid #8B6F47;
                         border-radius: 6px;
                         padding: 10px;
                         display: flex;
@@ -221,10 +221,10 @@ class GomnaDraggablePlatform {
                         align-items: center;
                     ">
                         <div>
-                            <div style="color: #FAF7F0; font-size: 12px;">ETH/USD</div>
+                            <div style="color: #3E2723; font-size: 12px;">ETH/USD</div>
                             <div style="color: #D4AF37; font-size: 14px; font-weight: bold;">HOLD</div>
                         </div>
-                        <div style="color: #FAF7F0; font-size: 11px;">78%</div>
+                        <div style="color: #3E2723; font-size: 11px;">78%</div>
                     </div>
                 </div>
             `
@@ -276,7 +276,7 @@ class GomnaDraggablePlatform {
                             <div style="color: #8B6F47; font-size: 11px;">2.5 units</div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="color: #FAF7F0; font-size: 13px;">$168,581</div>
+                            <div style="color: #3E2723; font-size: 13px;">$168,581</div>
                             <div style="color: #10B981; font-size: 11px;">+12.4%</div>
                         </div>
                     </div>
@@ -294,7 +294,7 @@ class GomnaDraggablePlatform {
                             <div style="color: #8B6F47; font-size: 11px;">45.2 units</div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="color: #FAF7F0; font-size: 13px;">$159,252</div>
+                            <div style="color: #3E2723; font-size: 13px;">$159,252</div>
                             <div style="color: #10B981; font-size: 11px;">+8.7%</div>
                         </div>
                     </div>
@@ -312,7 +312,7 @@ class GomnaDraggablePlatform {
                             <div style="color: #8B6F47; font-size: 11px;">1,250 units</div>
                         </div>
                         <div style="text-align: right;">
-                            <div style="color: #FAF7F0; font-size: 13px;">$178,125</div>
+                            <div style="color: #3E2723; font-size: 13px;">$178,125</div>
                             <div style="color: #10B981; font-size: 11px;">+15.3%</div>
                         </div>
                     </div>
@@ -328,7 +328,7 @@ class GomnaDraggablePlatform {
             content: `
                 <button onclick="executeAITrade()" style="
                     width: 100%;
-                    background: linear-gradient(135deg, #D4AF37, #CD7F32);
+                    background: linear-gradient(135deg, #8B6F47, #6B4423);
                     color: #2C1810;
                     border: none;
                     padding: 15px 30px;
@@ -357,8 +357,8 @@ class GomnaDraggablePlatform {
         
         panel.style.cssText = positionStyle + `
             width: 280px;
-            background: linear-gradient(135deg, #1A1A1A, #2C1810);
-            border: 1px solid #D4AF37;
+            background: linear-gradient(135deg, #FAF7F0, #F5E6D3);
+            border: 1px solid #8B6F47;
             border-radius: 12px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
             z-index: 1000;
@@ -370,21 +370,21 @@ class GomnaDraggablePlatform {
         panel.innerHTML = `
             ${config.title ? `
                 <div class="panel-header" style="
-                    background: linear-gradient(135deg, #2C1810, #3E2723);
+                    background: linear-gradient(135deg, #F5E6D3, #E8DCC7);
                     padding: 10px 15px;
-                    border-bottom: 1px solid #D4AF37;
+                    border-bottom: 1px solid #8B6F47;
                     display: flex;
                     justify-content: space-between;
                     align-items: center;
                     cursor: move;
                 ">
-                    <h3 style="color: #D4AF37; font-size: 13px; margin: 0; font-weight: 600;">
+                    <h3 style="color: #5D4037; font-size: 13px; margin: 0; font-weight: 600;">
                         ${config.title}
                     </h3>
                     <button onclick="minimizePanel('${config.id}')" style="
                         background: transparent;
                         border: none;
-                        color: #D4AF37;
+                        color: #5D4037;
                         cursor: pointer;
                         font-size: 16px;
                         padding: 0;
@@ -534,10 +534,10 @@ class GomnaDraggablePlatform {
                         align-items: center;
                     ">
                         <div>
-                            <div style="color: #FAF7F0; font-size: 12px;">${signal.pair}</div>
+                            <div style="color: #3E2723; font-size: 12px;">${signal.pair}</div>
                             <div style="color: ${signal.color}; font-size: 14px; font-weight: bold;">${signal.action}</div>
                         </div>
-                        <div style="color: #FAF7F0; font-size: 11px;">${signal.confidence}%</div>
+                        <div style="color: #3E2723; font-size: 11px;">${signal.confidence}%</div>
                     </div>
                 `).join('');
             }
@@ -619,7 +619,7 @@ style.textContent = `
         to { transform: translate(-50%, -100px); opacity: 0; }
     }
     body {
-        background: linear-gradient(135deg, #0A0A0A, #1A1A1A) !important;
+        background: linear-gradient(135deg, #FAF7F0, #F5E6D3) !important;
         padding-top: 70px !important;
         margin: 0;
     }

@@ -1,0 +1,233 @@
+/* Light Cream Theme Override - Reduces dark colors, increases cream */
+
+/* Body and main app container */
+body {
+    background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 40%, #FAF7F0 100%) !important;
+    min-height: 100vh;
+}
+
+#app {
+    background: transparent !important;
+}
+
+/* Override dark backgrounds on all panels */
+.draggable-panel {
+    background: linear-gradient(135deg, #FAF7F0, #F5E6D3) !important;
+    border-color: #8B6F47 !important;
+}
+
+.panel-header {
+    background: linear-gradient(135deg, #F5E6D3, #E8DCC7) !important;
+    border-bottom-color: #8B6F47 !important;
+}
+
+/* Text color adjustments for light backgrounds */
+.draggable-panel h3,
+.draggable-panel label,
+.draggable-panel span,
+.draggable-panel div {
+    color: #3E2723 !important;
+}
+
+/* Keep success/accent colors visible */
+.draggable-panel .text-green-600,
+.draggable-panel [style*="color: #10B981"] {
+    color: #10B981 !important;
+}
+
+.draggable-panel .text-amber-600,
+.draggable-panel [style*="color: #D4AF37"] {
+    color: #8B6F47 !important;
+}
+
+/* Header adjustments */
+#gomna-draggable-header {
+    background: linear-gradient(135deg, #F5E6D3 0%, #E8DCC7 50%, #F5E6D3 100%) !important;
+    border-bottom: 2px solid #8B6F47 !important;
+}
+
+#gomna-draggable-header * {
+    color: #3E2723 !important;
+}
+
+/* Main header logo text */
+#gomna-draggable-header > div > div:nth-child(2) > div:first-child {
+    color: #3E2723 !important;
+}
+
+#gomna-draggable-header > div > div:nth-child(2) > div:last-child {
+    color: #6B4423 !important;
+}
+
+/* Glass effect panels with cream */
+.glass-effect {
+    background: rgba(250, 247, 240, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(139, 111, 71, 0.3) !important;
+}
+
+/* Metric cards */
+.metric-card {
+    background: linear-gradient(135deg, #FEFDFB 0%, #FAF7F0 100%) !important;
+}
+
+/* Tab buttons */
+.tab-btn {
+    background-color: #FAF7F0 !important;
+    color: #5D4037 !important;
+}
+
+.tab-btn:hover {
+    background-color: #F5E6D3 !important;
+}
+
+.tab-btn.active,
+.tab-btn[data-tab].bg-white {
+    background-color: #FFFFFF !important;
+    color: #5D4037 !important;
+    border-bottom-color: #8B6F47 !important;
+}
+
+/* Buttons */
+button {
+    transition: all 0.3s ease;
+}
+
+button[style*="background: linear-gradient"] {
+    filter: brightness(1.2);
+}
+
+/* Input fields */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+select,
+textarea {
+    background-color: #FFFFFF !important;
+    border-color: #D4C4A8 !important;
+    color: #3E2723 !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: #8B7355 !important;
+}
+
+/* Tables */
+table {
+    background-color: #FEFDFB !important;
+}
+
+thead {
+    background-color: #F5E6D3 !important;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #FAF7F0 !important;
+}
+
+tbody tr:hover {
+    background-color: #F5E6D3 !important;
+}
+
+/* Formula boxes */
+.formula-box {
+    background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 100%) !important;
+    border-left-color: #8B6F47 !important;
+}
+
+/* Chart containers */
+.chart-container,
+.chart-container-small,
+.chart-container-large {
+    background-color: #FFFFFF !important;
+}
+
+/* Remove dark overlays */
+[style*="background: rgba(0, 0, 0"] {
+    background: rgba(139, 111, 71, 0.1) !important;
+}
+
+/* Gradient backgrounds to cream */
+.gradient-bg {
+    background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 40%, #E8DCC7 100%) !important;
+}
+
+/* Success/Error/Warning colors adjusted for light background */
+.bg-green-100 {
+    background-color: #D4F4DD !important;
+    color: #14532D !important;
+}
+
+.bg-red-100 {
+    background-color: #FEE2E2 !important;
+    color: #7F1D1D !important;
+}
+
+.bg-yellow-100 {
+    background-color: #FEF3C7 !important;
+    color: #78350F !important;
+}
+
+/* Modal backgrounds */
+.modal-content,
+[id*="modal"] {
+    background: linear-gradient(135deg, #FAF7F0, #F5E6D3) !important;
+}
+
+/* Scrollbar styling for cream theme */
+::-webkit-scrollbar {
+    width: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F5E6D3;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #8B6F47;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6B4423;
+}
+
+/* Animation for cream theme */
+@keyframes pulse-cream {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.animate-pulse-cream {
+    animation: pulse-cream 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Ensure readability */
+* {
+    text-shadow: none !important;
+}
+
+/* High contrast text on cream backgrounds */
+h1, h2, h3, h4, h5, h6 {
+    color: #3E2723 !important;
+}
+
+p, span, div, label {
+    color: #5D4037 !important;
+}
+
+/* Links */
+a {
+    color: #6B4423 !important;
+}
+
+a:hover {
+    color: #8B6F47 !important;
+}
