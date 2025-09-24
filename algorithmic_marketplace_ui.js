@@ -7,6 +7,8 @@
 class AlgorithmicMarketplaceUI {
     constructor() {
         this.marketplace = null;
+        this.investorSystem = null; // Will be injected by platform manager
+        this.liveDataAPI = null;    // Will be injected by platform manager
         this.updateInterval = null;
         this.refreshRate = 1000; // 1 second updates
         this.isInitialized = false;
@@ -106,8 +108,19 @@ class AlgorithmicMarketplaceUI {
                     </p>
                 </div>
 
+                <!-- User Account Status -->
+                <div class="user-account-status glass-effect rounded-xl p-6 mb-8" id="user-account-status">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-cream-800">👤 Investor Account</h2>
+                        <button id="show-auth-panel" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                            Sign In / Register
+                        </button>
+                    </div>
+                    <p class="text-cream-600 mt-2">Please sign in to purchase algorithms and start live trading.</p>
+                </div>
+
                 <!-- Portfolio Overview -->
-                <div class="portfolio-overview glass-effect rounded-xl p-6 mb-8">
+                <div class="portfolio-overview glass-effect rounded-xl p-6 mb-8" id="portfolio-overview" style="display: none;">
                     <h2 class="text-2xl font-bold text-cream-800 mb-4">💼 Your Trading Portfolio</h2>
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div class="metric-card rounded-lg p-4">
@@ -274,9 +287,32 @@ class AlgorithmicMarketplaceUI {
             }
         });
 
+        // Show auth panel when requested
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('#show-auth-panel')) {
+                if (this.investorSystem) {
+                    this.investorSystem.showAuthPanel('register');
+                } else {
+                    this.showNotification('Account system not yet loaded, please wait...', 'info');
+                }
+            }
+        });
+
         // Algorithm purchase buttons
         document.addEventListener('click', (e) => {
             if (e.target.matches('.buy-algorithm-btn')) {
+                // Check if user is logged in through investor system
+                if (!this.investorSystem || !this.investorSystem.isLoggedIn()) {
+                    e.preventDefault();
+                    if (this.investorSystem) {
+                        this.investorSystem.showAuthPanel('register');
+                        this.showNotification('Please create an account to purchase algorithms', 'info');
+                    } else {
+                        this.showNotification('Account system loading...', 'info');
+                    }
+                    return;
+                }
+                
                 const algorithmId = e.target.getAttribute('data-algorithm');
                 this.purchaseAlgorithm(algorithmId);
             }
@@ -375,11 +411,48 @@ class AlgorithmicMarketplaceUI {
     updateUI() {
         if (!this.marketplace || !this.isInitialized) return;
 
+        this.updateUserAccountStatus();
         this.updatePortfolioOverview();
         this.updateAlgorithmsGrid();
         this.updateLiveSignals();
         this.updateActiveTrades();
         this.updateCharts();
+    }
+
+    updateUserAccountStatus() {
+        const accountStatus = document.getElementById('user-account-status');
+        const portfolioOverview = document.getElementById('portfolio-overview');
+        
+        if (this.investorSystem && this.investorSystem.isLoggedIn()) {
+            // User is logged in - show portfolio, hide login prompt
+            if (accountStatus) accountStatus.style.display = 'none';
+            if (portfolioOverview) portfolioOverview.style.display = 'block';
+            
+            // Update marketplace with user's portfolio data
+            const currentUser = this.investorSystem.getCurrentUser();
+            if (currentUser) {
+                this.marketplace.userPortfolio = {
+                    balance: currentUser.portfolioValue || 10000,
+                    ownedAlgorithms: new Set(currentUser.algorithmsOwned || []),
+                    activePositions: new Map(),
+                    totalPnL: 0,
+                    trades: []
+                };
+            }
+        } else {
+            // User not logged in - show login prompt, hide portfolio
+            if (accountStatus) accountStatus.style.display = 'block';
+            if (portfolioOverview) portfolioOverview.style.display = 'none';
+            
+            // Reset marketplace to demo mode
+            this.marketplace.userPortfolio = {
+                balance: 0,
+                ownedAlgorithms: new Set(),
+                activePositions: new Map(),
+                totalPnL: 0,
+                trades: []
+            };
+        }
     }
 
     updatePortfolioOverview() {
@@ -1023,36 +1096,65 @@ class AlgorithmicMarketplaceUI {
         // Simulate payment processing
         setTimeout(() => {
             if (paymentMethod === 'balance') {
-                // Use existing balance purchase
-                const result = this.marketplace.buyAlgorithm(algorithmId);
-                
-                if (result.success) {
-                    this.showNotification(`✅ ${result.message}`, 'success');
-                    this.showNotification(`🎯 Algorithm activated and ready for trading!`, 'success');
+                // Use investor system for purchase validation
+                if (this.investorSystem) {
+                    const algorithm = this.marketplace.getAlgorithm(algorithmId);
+                    const investorResult = this.investorSystem.purchaseAlgorithm(algorithmId, algorithm.price);
                     
-                    // Auto-activate the purchased algorithm
-                    setTimeout(() => {
-                        this.marketplace.activateAlgorithm(algorithmId);
-                    }, 1000);
+                    if (investorResult.success) {
+                        // Update marketplace
+                        const result = this.marketplace.buyAlgorithm(algorithmId);
+                        
+                        if (result.success) {
+                            this.showNotification(`✅ ${result.message}`, 'success');
+                            this.showNotification(`🎯 Algorithm activated and ready for trading!`, 'success');
+                            
+                            // Auto-activate the purchased algorithm
+                            setTimeout(() => {
+                                this.marketplace.activateAlgorithm(algorithmId);
+                                
+                                // If this is a data-dependent algorithm, prompt for API setup
+                                if (this.liveDataAPI && (algorithmId === 'finbert_news' || algorithmId.includes('exchange'))) {
+                                    setTimeout(() => {
+                                        this.showNotification('💡 Configure live data APIs for better performance!', 'info');
+                                    }, 2000);
+                                }
+                            }, 1000);
+                        } else {
+                            this.showNotification(`❌ ${result.error}`, 'error');
+                        }
+                    } else {
+                        this.showNotification(`❌ ${investorResult.error}`, 'error');
+                    }
                 } else {
-                    this.showNotification(`❌ ${result.error}`, 'error');
+                    this.showNotification('❌ Account system not available', 'error');
                 }
             } else {
                 // Simulate external payment processing
                 setTimeout(() => {
-                    // Add funds and then purchase
                     const algorithm = this.marketplace.getAlgorithm(algorithmId);
-                    this.marketplace.userPortfolio.balance += algorithm.price;
                     
-                    const result = this.marketplace.buyAlgorithm(algorithmId);
-                    if (result.success) {
-                        this.showNotification(`✅ Payment successful! ${result.message}`, 'success');
-                        this.showNotification(`🎯 Algorithm activated and ready for trading!`, 'success');
+                    // Update investor account
+                    if (this.investorSystem && this.investorSystem.getCurrentUser()) {
+                        const user = this.investorSystem.getCurrentUser();
+                        user.portfolioValue += algorithm.price; // Add funds
                         
-                        // Auto-activate the purchased algorithm
-                        setTimeout(() => {
-                            this.marketplace.activateAlgorithm(algorithmId);
-                        }, 1000);
+                        const investorResult = this.investorSystem.purchaseAlgorithm(algorithmId, algorithm.price);
+                        if (investorResult.success) {
+                            // Update marketplace
+                            this.marketplace.userPortfolio.balance += algorithm.price;
+                            const result = this.marketplace.buyAlgorithm(algorithmId);
+                            
+                            if (result.success) {
+                                this.showNotification(`✅ Payment successful! ${result.message}`, 'success');
+                                this.showNotification(`🎯 Algorithm activated and ready for trading!`, 'success');
+                                
+                                // Auto-activate the purchased algorithm
+                                setTimeout(() => {
+                                    this.marketplace.activateAlgorithm(algorithmId);
+                                }, 1000);
+                            }
+                        }
                     }
                 }, 2000);
             }

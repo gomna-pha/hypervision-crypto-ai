@@ -138,6 +138,11 @@
                             <div class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-bold">
                                 Alpha: +<span id="alpha-value">15.23</span>%
                             </div>
+                            <!-- Live API Status Indicator -->
+                            <div id="api-status-indicator" class="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
+                                <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                                <span id="api-status-text">APIs: Demo Mode</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -3243,5 +3248,101 @@
     
     <!-- Load FinBERT Sentiment Engine -->
     <script src="finbert_sentiment_engine.js"></script>
+    
+    <!-- Algorithmic Marketplace System -->
+    <script src="algorithmic_marketplace.js"></script>
+    <script src="algorithmic_marketplace_ui.js"></script>
+    
+    <!-- Investor Account & Live API Integration -->
+    <script src="investor_account_system.js"></script>
+    <script src="live_data_api_system.js"></script>
+    
+    <!-- Initialize Complete Trading Platform -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Initializing Complete GOMNA Trading Platform...');
+            
+            // Initialize systems in sequence for proper dependency loading
+            setTimeout(() => {
+                // Initialize investor accounts first
+                if (typeof InvestorAccountSystem !== 'undefined') {
+                    window.investorAccounts = new InvestorAccountSystem();
+                }
+                
+                // Initialize live data APIs
+                if (typeof LiveDataAPISystem !== 'undefined') {
+                    window.liveDataAPI = new LiveDataAPISystem();
+                }
+                
+                // Initialize marketplace (will use investor and API systems)
+                if (typeof AlgorithmicMarketplace !== 'undefined' && typeof AlgorithmicMarketplaceUI !== 'undefined') {
+                    window.marketplace = new AlgorithmicMarketplace();
+                    window.marketplaceUI = new AlgorithmicMarketplaceUI();
+                    
+                    // Connect investor system to marketplace
+                    if (window.investorAccounts) {
+                        window.marketplaceUI.investorSystem = window.investorAccounts;
+                    }
+                    
+                    // Connect live data system to marketplace
+                    if (window.liveDataAPI) {
+                        window.marketplaceUI.liveDataAPI = window.liveDataAPI;
+                        
+                        // Update API status indicator
+                        window.updateAPIStatusIndicator = function() {
+                            const indicator = document.getElementById('api-status-indicator');
+                            const statusText = document.getElementById('api-status-text');
+                            const statusDot = indicator?.querySelector('.w-2');
+                            
+                            if (!indicator || !statusText || !statusDot) return;
+                            
+                            const connectedAPIs = window.liveDataAPI.getConnectedAPIs();
+                            const totalAPIs = 6; // 3 exchanges + 3 social media platforms
+                            
+                            if (connectedAPIs.length === 0) {
+                                // No APIs connected - Demo mode
+                                indicator.className = 'bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
+                                statusDot.className = 'w-2 h-2 rounded-full bg-yellow-500';
+                                statusText.textContent = 'APIs: Demo Mode';
+                            } else if (connectedAPIs.length < totalAPIs / 2) {
+                                // Partial connection
+                                indicator.className = 'bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
+                                statusDot.className = 'w-2 h-2 rounded-full bg-orange-500 animate-pulse';
+                                statusText.textContent = `APIs: ${connectedAPIs.length}/${totalAPIs} Live`;
+                            } else {
+                                // Most/all APIs connected
+                                indicator.className = 'bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
+                                statusDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse-slow';
+                                statusText.textContent = `APIs: ${connectedAPIs.length}/${totalAPIs} Live`;
+                            }
+                            
+                            // Make indicator clickable to show API config
+                            indicator.style.cursor = 'pointer';
+                            indicator.onclick = () => {
+                                if (window.liveDataAPI) {
+                                    window.liveDataAPI.showAPIConfiguration();
+                                }
+                            };
+                        };
+                        
+                        // Update status every 10 seconds
+                        setInterval(window.updateAPIStatusIndicator, 10000);
+                        window.updateAPIStatusIndicator(); // Initial update
+                    }
+                }
+                
+                console.log('✅ Complete GOMNA Trading Platform initialized successfully!');
+                console.log('📊 Features available:');
+                console.log('  • 6 Professional Arbitrage Algorithms');
+                console.log('  • Real-time Performance Tracking');
+                console.log('  • Investor Account Registration & KYC');
+                console.log('  • Live Twitter/X Sentiment Analysis');
+                console.log('  • Cross-Exchange API Integration');
+                console.log('  • Secure Credential Management');
+                console.log('  • Testnet/Live Mode Support');
+                
+            }, 1000); // Delay to ensure DOM and dependencies are ready
+        });
+    </script>
 </body>
 </html>

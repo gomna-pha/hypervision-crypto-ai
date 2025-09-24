@@ -12,6 +12,8 @@ class CleanPlatformManager {
             arbitrage: false,
             payment: false,
             marketplace: false,
+            investor: false,
+            liveData: false,
             ui: false
         };
         this.panels = new Map();
@@ -361,6 +363,12 @@ class CleanPlatformManager {
         
         // Initialize marketplace system
         setTimeout(() => this.initMarketplaceSystem(), 2000);
+        
+        // Initialize investor account system
+        setTimeout(() => this.initInvestorSystem(), 2500);
+        
+        // Initialize live data API system
+        setTimeout(() => this.initLiveDataSystem(), 3000);
     }
 
     initDraggableFeatures() {
@@ -775,6 +783,66 @@ class CleanPlatformManager {
             
             // Initialize real-time updates for this tab
             window.marketplaceUI.showMarketplaceTab();
+        }
+    }
+
+    initInvestorSystem() {
+        if (this.components.investor) return;
+        
+        console.log('👤 Initializing Investor Account System...');
+        
+        try {
+            // Load investor system if available
+            if (typeof InvestorAccountSystem !== 'undefined') {
+                if (!window.investorAccounts) {
+                    window.investorAccounts = new InvestorAccountSystem();
+                }
+                
+                // Connect to marketplace if available
+                if (window.marketplaceUI) {
+                    window.marketplaceUI.investorSystem = window.investorAccounts;
+                }
+            } else {
+                console.log('⏳ InvestorAccountSystem not yet loaded, will retry...');
+                setTimeout(() => this.initInvestorSystem(), 500);
+                return;
+            }
+            
+            this.components.investor = true;
+            console.log('✅ Investor system initialized');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize investor system:', error);
+        }
+    }
+
+    initLiveDataSystem() {
+        if (this.components.liveData) return;
+        
+        console.log('📡 Initializing Live Data API System...');
+        
+        try {
+            // Load live data system if available
+            if (typeof LiveDataAPISystem !== 'undefined') {
+                if (!window.liveDataAPI) {
+                    window.liveDataAPI = new LiveDataAPISystem();
+                }
+                
+                // Connect to marketplace if available
+                if (window.marketplaceUI) {
+                    window.marketplaceUI.liveDataAPI = window.liveDataAPI;
+                }
+            } else {
+                console.log('⏳ LiveDataAPISystem not yet loaded, will retry...');
+                setTimeout(() => this.initLiveDataSystem(), 500);
+                return;
+            }
+            
+            this.components.liveData = true;
+            console.log('✅ Live data system initialized');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize live data system:', error);
         }
     }
 
