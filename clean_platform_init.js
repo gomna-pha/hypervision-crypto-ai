@@ -11,6 +11,7 @@ class CleanPlatformManager {
             draggable: false,
             arbitrage: false,
             payment: false,
+            marketplace: false,
             ui: false
         };
         this.panels = new Map();
@@ -324,6 +325,11 @@ class CleanPlatformManager {
                 if (tabName === 'arbitrage') {
                     this.initArbitrageFeatures();
                 }
+                
+                // Initialize marketplace when switching to marketplace tab
+                if (tabName === 'marketplace') {
+                    this.initMarketplaceFeatures();
+                }
             });
         });
     }
@@ -352,6 +358,9 @@ class CleanPlatformManager {
         
         // Initialize arbitrage system
         setTimeout(() => this.initArbitrageSystem(), 1500);
+        
+        // Initialize marketplace system
+        setTimeout(() => this.initMarketplaceSystem(), 2000);
     }
 
     initDraggableFeatures() {
@@ -718,6 +727,54 @@ class CleanPlatformManager {
         // Initialize arbitrage features when tab is opened
         if (!this.components.arbitrage) {
             this.initArbitrageSystem();
+        }
+    }
+
+    initMarketplaceSystem() {
+        if (this.components.marketplace) return;
+        
+        console.log('🏪 Initializing Algorithmic Marketplace System...');
+        
+        try {
+            // Load marketplace UI if available
+            if (typeof AlgorithmicMarketplaceUI !== 'undefined') {
+                if (!window.marketplaceUI) {
+                    window.marketplaceUI = new AlgorithmicMarketplaceUI();
+                }
+            } else {
+                console.log('⏳ AlgorithmicMarketplaceUI not yet loaded, will retry...');
+                setTimeout(() => this.initMarketplaceSystem(), 500);
+                return;
+            }
+            
+            this.components.marketplace = true;
+            console.log('✅ Marketplace system initialized');
+            
+        } catch (error) {
+            console.error('❌ Failed to initialize marketplace system:', error);
+        }
+    }
+
+    initMarketplaceFeatures() {
+        // Initialize marketplace features when tab is opened
+        if (!this.components.marketplace) {
+            this.initMarketplaceSystem();
+        }
+        
+        // Ensure marketplace UI is displayed
+        const marketplaceContainer = document.getElementById('marketplace-container');
+        if (marketplaceContainer && window.marketplaceUI) {
+            // Check if marketplace UI is already loaded
+            if (marketplaceContainer.querySelector('.algorithmic-marketplace')) {
+                // Already loaded, just show it
+                return;
+            }
+            
+            // Replace loading screen with actual marketplace
+            marketplaceContainer.innerHTML = window.marketplaceUI.getMarketplaceHTML();
+            
+            // Initialize real-time updates for this tab
+            window.marketplaceUI.showMarketplaceTab();
         }
     }
 

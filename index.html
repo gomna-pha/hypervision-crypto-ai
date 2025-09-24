@@ -39,6 +39,9 @@
     <!-- <script src="integrate_arbitrage_system.js"></script> -->
     <!-- Clean Platform Manager (replaces all conflicting scripts) -->
     <script src="clean_platform_init.js"></script>
+    <!-- Algorithmic Marketplace System -->
+    <script src="algorithmic_marketplace.js"></script>
+    <script src="algorithmic_marketplace_ui.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
@@ -263,6 +266,13 @@
                     <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="arbitrage">
                         <i data-lucide="zap" class="w-4 h-4 inline mr-2"></i>
                         HFT Arbitrage
+                    </button>
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="marketplace">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                            <span>Algorithm Marketplace</span>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -1820,6 +1830,18 @@
                             </div>
                             <div class="text-sm text-gray-600 mt-1">News analysis ready</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Algorithm Marketplace Tab -->
+            <div id="marketplace-tab" class="tab-content hidden">
+                <div id="marketplace-container">
+                    <!-- Marketplace content will be dynamically loaded here -->
+                    <div class="text-center py-12">
+                        <div class="animate-spin inline-block w-12 h-12 border-4 border-cream-600 border-t-transparent rounded-full mb-4"></div>
+                        <div class="text-xl font-semibold text-cream-700">Loading Revolutionary Algorithm Marketplace...</div>
+                        <div class="text-sm text-cream-600 mt-2">Preparing real-time trading algorithms for execution</div>
                     </div>
                 </div>
             </div>
@@ -3393,6 +3415,28 @@
         initializeAPIConnection();
         initializeAgentControls();
         // initializeArbitrageSystem(); // Handled by clean platform manager
+        
+        // Initialize Algorithmic Marketplace when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🏪 DOM ready - preparing marketplace initialization...');
+            
+            // Ensure marketplace scripts are loaded before initializing
+            const checkMarketplaceReady = () => {
+                if (typeof AlgorithmicMarketplace !== 'undefined' && typeof AlgorithmicMarketplaceUI !== 'undefined') {
+                    console.log('✅ Marketplace scripts loaded, initializing...');
+                    // CleanPlatformManager will handle the marketplace initialization
+                    if (window.cleanPlatform) {
+                        window.cleanPlatform.initMarketplaceSystem();
+                    }
+                } else {
+                    console.log('⏳ Waiting for marketplace scripts...');
+                    setTimeout(checkMarketplaceReady, 100);
+                }
+            };
+            
+            // Small delay to ensure clean platform is ready
+            setTimeout(checkMarketplaceReady, 500);
+        });
     </script>
 </body>
 </html>
