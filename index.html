@@ -1125,7 +1125,11 @@
                     <!-- Trading Strategy Selection -->
                     <div class="bg-white p-6 rounded-xl shadow-lg">
                         <h4 class="text-lg font-bold text-gray-900 mb-4">Trading Strategy</h4>
-                        <div class="space-y-3">
+                        <div class="space-y-2">
+                            <!-- Traditional Strategies -->
+                            <div class="border-b border-cream-200 pb-2 mb-2">
+                                <h5 class="text-sm font-semibold text-gray-700 mb-2">Traditional Strategies</h5>
+                            </div>
                             <label class="flex items-start gap-3 p-3 border-2 border-blue-200 rounded-lg cursor-pointer hover:bg-blue-50 transition-colors">
                                 <input type="radio" name="strategy" value="conservative" class="mt-1" checked>
                                 <div>
@@ -1153,14 +1157,90 @@
                                 </div>
                             </label>
                             
+                            <!-- HFT Arbitrage Strategies -->
+                            <div class="border-b border-cream-200 pb-2 mb-2 mt-4">
+                                <h5 class="text-sm font-semibold text-amber-700 mb-2">🚀 HFT Arbitrage Strategies</h5>
+                            </div>
+                            
                             <label class="flex items-start gap-3 p-3 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
-                                <input type="radio" name="strategy" value="custom" class="mt-1">
+                                <input type="radio" name="strategy" value="triangular-arbitrage" class="mt-1">
                                 <div>
-                                    <div class="font-semibold text-gray-800">Custom ML Strategy</div>
-                                    <div class="text-sm text-gray-600">AI optimized based on market regime</div>
-                                    <div class="text-xs text-gray-500 mt-1">Dynamic targets based on conditions</div>
+                                    <div class="font-semibold text-amber-800">Triangular Arbitrage</div>
+                                    <div class="text-sm text-amber-700">Cross-exchange price discrepancies</div>
+                                    <div class="text-xs text-amber-600 mt-1">Ultra low-latency execution < 50ms</div>
                                 </div>
                             </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
+                                <input type="radio" name="strategy" value="statistical-pairs" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-amber-800">Statistical Pairs Trading</div>
+                                    <div class="text-sm text-amber-700">Mean reversion + FinBERT sentiment</div>
+                                    <div class="text-xs text-amber-600 mt-1">ML-driven pair selection & timing</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
+                                <input type="radio" name="strategy" value="index-arbitrage" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-amber-800">Index/Futures Arbitrage</div>
+                                    <div class="text-sm text-amber-700">Spot vs futures price discrepancies</div>
+                                    <div class="text-xs text-amber-600 mt-1">Institutional-grade execution</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-amber-200 rounded-lg cursor-pointer hover:bg-amber-50 transition-colors">
+                                <input type="radio" name="strategy" value="news-sentiment-arbitrage" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-amber-800">News Sentiment Arbitrage</div>
+                                    <div class="text-sm text-amber-700">FinBERT + Twitter/X + Volume analysis</div>
+                                    <div class="text-xs text-amber-600 mt-1">Real-time social sentiment trading</div>
+                                </div>
+                            </label>
+                            
+                            <label class="flex items-start gap-3 p-3 border-2 border-amber-300 rounded-lg cursor-pointer hover:bg-amber-100 transition-colors">
+                                <input type="radio" name="strategy" value="custom-arbitrage" class="mt-1">
+                                <div>
+                                    <div class="font-semibold text-amber-900">Custom Arbitrage Suite</div>
+                                    <div class="text-sm text-amber-800">Hyperbolic CNN + Multi-strategy AI</div>
+                                    <div class="text-xs text-amber-700 mt-1">Investor-customizable algorithms</div>
+                                </div>
+                            </label>
+                        </div>
+                        
+                        <!-- Arbitrage-Specific Parameters -->
+                        <div id="arbitrage-params" class="mt-4 p-4 bg-gradient-to-r from-cream-50 to-amber-50 rounded-lg border border-amber-200 hidden">
+                            <h6 class="text-sm font-bold text-amber-800 mb-3">Arbitrage Parameters</h6>
+                            <div class="grid grid-cols-2 gap-3 text-xs">
+                                <div>
+                                    <label class="text-amber-700 font-semibold">Min Profit Threshold</label>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <input type="range" id="min-profit-threshold" min="0.1" max="2.0" step="0.1" value="0.5" class="flex-1">
+                                        <span id="min-profit-value" class="font-bold w-8">0.5%</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-amber-700 font-semibold">Max Latency (ms)</label>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <input type="range" id="max-latency" min="10" max="200" step="10" value="50" class="flex-1">
+                                        <span id="max-latency-value" class="font-bold w-8">50ms</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-amber-700 font-semibold">Sentiment Weight</label>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <input type="range" id="sentiment-weight" min="0" max="100" step="5" value="30" class="flex-1">
+                                        <span id="sentiment-weight-value" class="font-bold w-8">30%</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="text-amber-700 font-semibold">Volume Threshold</label>
+                                    <div class="flex items-center gap-1 mt-1">
+                                        <input type="range" id="volume-threshold" min="10" max="500" step="10" value="100" class="flex-1">
+                                        <span id="volume-threshold-value" class="font-bold w-12">100K</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1319,22 +1399,40 @@
                                     </div>
                                 </div>
                                 
-                                <div class="p-4 bg-gray-50 rounded-lg">
+                                <!-- Enhanced FinBERT Sentiment Analysis -->
+                                <div class="p-4 bg-gradient-to-r from-amber-50 to-cream-50 rounded-lg border border-amber-200">
                                     <div class="flex items-center justify-between mb-2">
-                                        <span class="font-medium">Sentiment Score</span>
+                                        <span class="font-medium text-amber-800">🧠 FinBERT Sentiment</span>
                                         <span class="text-sm font-bold text-green-600">+0.73</span>
                                     </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                                         <div class="bg-green-500 h-2 rounded-full" style="width: 73%"></div>
+                                    </div>
+                                    <div class="text-xs text-amber-700">
+                                        Twitter/X: 85% bullish | News: 68% positive | Volume sentiment: Strong
+                                    </div>
+                                </div>
+                                
+                                <!-- Arbitrage Opportunities -->
+                                <div class="p-4 bg-gradient-to-r from-cream-50 to-amber-50 rounded-lg border border-cream-200" id="arbitrage-opportunities">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-medium text-amber-800">⚡ Arbitrage Signal</span>
+                                        <span class="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded" id="arb-signal-status">SCANNING</span>
+                                    </div>
+                                    <div class="text-sm text-amber-700" id="arb-opportunity-text">
+                                        Cross-exchange analysis: BTC spread 0.23% (Binance vs Coinbase)
+                                    </div>
+                                    <div class="text-xs text-amber-600 mt-1" id="arb-latency">
+                                        Execution latency: 47ms | Profit threshold: 0.5%
                                     </div>
                                 </div>
                                 
                                 <div class="p-4 bg-gray-50 rounded-lg">
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="font-medium">Next Action</span>
-                                        <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">BUY SIGNAL</span>
+                                        <span class="text-sm bg-green-100 text-green-800 px-2 py-1 rounded" id="next-action-signal">BUY SIGNAL</span>
                                     </div>
-                                    <div class="text-sm text-gray-600">
+                                    <div class="text-sm text-gray-600" id="next-action-details">
                                         ETH-USD: Entry at $3,124 | Target: $3,280
                                     </div>
                                 </div>
@@ -1345,23 +1443,56 @@
                         <div>
                             <h4 class="font-semibold text-gray-800 mb-3">Decision Factors</h4>
                             <div class="space-y-2">
+                                <!-- Traditional Factors -->
                                 <div class="flex items-center justify-between p-2 bg-green-50 rounded">
                                     <span class="text-sm">Technical Indicators</span>
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%"></div>
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 85%" id="technical-bar"></div>
                                         </div>
-                                        <span class="text-xs font-bold">85%</span>
+                                        <span class="text-xs font-bold" id="technical-score">85%</span>
                                     </div>
                                 </div>
                                 
                                 <div class="flex items-center justify-between p-2 bg-green-50 rounded">
-                                    <span class="text-sm">ML Prediction</span>
+                                    <span class="text-sm">Hyperbolic CNN Prediction</span>
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: 91%"></div>
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 91%" id="ml-bar"></div>
                                         </div>
-                                        <span class="text-xs font-bold">91%</span>
+                                        <span class="text-xs font-bold" id="ml-score">91%</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- FinBERT & Sentiment Factors -->
+                                <div class="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-200">
+                                    <span class="text-sm text-amber-800">🧠 FinBERT Score</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-amber-500 h-2 rounded-full" style="width: 73%" id="finbert-bar"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-amber-700" id="finbert-score">73%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-amber-50 rounded border border-amber-200">
+                                    <span class="text-sm text-amber-800">🐦 Twitter/X Sentiment</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-amber-500 h-2 rounded-full" style="width: 85%" id="twitter-bar"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-amber-700" id="twitter-score">85%</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Arbitrage-Specific Factors -->
+                                <div class="flex items-center justify-between p-2 bg-cream-50 rounded border border-cream-200">
+                                    <span class="text-sm text-cream-800">⚡ Cross-Exchange Spread</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-amber-600 h-2 rounded-full" style="width: 67%" id="spread-bar"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-amber-800" id="spread-score">0.23%</span>
                                     </div>
                                 </div>
                                 
@@ -1369,9 +1500,19 @@
                                     <span class="text-sm">Order Book Imbalance</span>
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 62%"></div>
+                                            <div class="bg-yellow-500 h-2 rounded-full" style="width: 62%" id="orderbook-bar"></div>
                                         </div>
-                                        <span class="text-xs font-bold">62%</span>
+                                        <span class="text-xs font-bold" id="orderbook-score">62%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-2 bg-cream-50 rounded border border-cream-200">
+                                    <span class="text-sm text-cream-800">🚀 HFT Latency Score</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-20 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 94%" id="latency-bar"></div>
+                                        </div>
+                                        <span class="text-xs font-bold text-green-700" id="latency-score">47ms</span>
                                     </div>
                                 </div>
                                 
@@ -1379,9 +1520,9 @@
                                     <span class="text-sm">Risk/Reward Ratio</span>
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%"></div>
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 78%" id="risk-reward-bar"></div>
                                         </div>
-                                        <span class="text-xs font-bold">3.2:1</span>
+                                        <span class="text-xs font-bold" id="risk-reward-score">3.2:1</span>
                                     </div>
                                 </div>
                                 
@@ -1389,9 +1530,9 @@
                                     <span class="text-sm">Portfolio Correlation</span>
                                     <div class="flex items-center gap-2">
                                         <div class="w-20 bg-gray-200 rounded-full h-2">
-                                            <div class="bg-green-500 h-2 rounded-full" style="width: 45%"></div>
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 45%" id="correlation-bar"></div>
                                         </div>
-                                        <span class="text-xs font-bold">0.45</span>
+                                        <span class="text-xs font-bold" id="correlation-score">0.45</span>
                                     </div>
                                 </div>
                             </div>
@@ -3002,10 +3143,105 @@
         // Initial market data load
         setTimeout(refreshMarketData, 1000);
         
-        // Call initialization
+        // Initialize Arbitrage Engine Integration
+        function initializeArbitrageEngine() {
+            console.log('Initializing arbitrage engine integration...');
+            
+            // Strategy selection event listeners
+            const strategyRadios = document.querySelectorAll('input[name="strategy"]');
+            strategyRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    const arbitrageParams = document.getElementById('arbitrage-params');
+                    if (this.value.includes('arbitrage') || this.value === 'custom-arbitrage') {
+                        arbitrageParams?.classList.remove('hidden');
+                    } else {
+                        arbitrageParams?.classList.add('hidden');
+                    }
+                    
+                    // Update arbitrage engine configuration
+                    if (window.arbitrageEngine) {
+                        window.arbitrageEngine.updateConfig({ strategy: this.value });
+                    }
+                });
+            });
+            
+            // Arbitrage parameter sliders
+            const parameters = [
+                { id: 'min-profit-threshold', valueId: 'min-profit-value', suffix: '%', scale: 0.1 },
+                { id: 'max-latency', valueId: 'max-latency-value', suffix: 'ms', scale: 1 },
+                { id: 'sentiment-weight', valueId: 'sentiment-weight-value', suffix: '%', scale: 1 },
+                { id: 'volume-threshold', valueId: 'volume-threshold-value', suffix: 'K', scale: 1 }
+            ];
+            
+            parameters.forEach(param => {
+                const slider = document.getElementById(param.id);
+                const display = document.getElementById(param.valueId);
+                
+                if (slider && display) {
+                    slider.addEventListener('input', function() {
+                        const value = parseFloat(this.value);
+                        const scaledValue = value * param.scale;
+                        display.textContent = `${scaledValue}${param.suffix}`;
+                        
+                        // Update arbitrage engine config
+                        if (window.arbitrageEngine) {
+                            const configKey = param.id.replace(/-/g, '');
+                            const configValue = param.id === 'min-profit-threshold' ? 
+                                scaledValue / 100 : scaledValue;
+                            
+                            window.arbitrageEngine.updateConfig({
+                                [configKey.replace('minprofit', 'minProfit')
+                                          .replace('maxlatency', 'maxLatency')
+                                          .replace('sentimentweight', 'sentimentWeight')
+                                          .replace('volumethreshold', 'volumeThreshold')]: configValue
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Enhanced slider functionality for all range inputs
+        function initializeRangeSliders() {
+            const sliders = [
+                { id: 'max-position', valueId: 'max-position-value', suffix: '%' },
+                { id: 'stop-loss', valueId: 'stop-loss-value', suffix: '%' },
+                { id: 'take-profit', valueId: 'take-profit-value', suffix: '%' },
+                { id: 'max-trades', valueId: 'max-trades-value', suffix: '' },
+                { id: 'confidence', valueId: 'confidence-value', suffix: '%' }
+            ];
+            
+            sliders.forEach(slider => {
+                const element = document.getElementById(slider.id);
+                const display = document.getElementById(slider.valueId);
+                
+                if (element && display) {
+                    element.addEventListener('input', function() {
+                        display.textContent = `${this.value}${slider.suffix}`;
+                    });
+                }
+            });
+        }
+        
+        // Initialize all enhanced features
+        function initializeEnhancedFeatures() {
+            initializeArbitrageEngine();
+            initializeRangeSliders();
+            
+            console.log('Enhanced arbitrage features initialized');
+        }
+        
+        // Call all initialization functions
         initializeTooltips();
         initializeAPIConnection();
         initializeAgentControls();
+        initializeEnhancedFeatures();
     </script>
+    
+    <!-- Load Arbitrage Engine -->
+    <script src="arbitrage_engine.js"></script>
+    
+    <!-- Load FinBERT Sentiment Engine -->
+    <script src="finbert_sentiment_engine.js"></script>
 </body>
 </html>
