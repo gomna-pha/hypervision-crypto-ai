@@ -36,17 +36,28 @@ class ArbitrageEngine {
     async init() {
         console.log('🚀 Initializing Enhanced Arbitrage & HFT Engine...');
         
-        // Initialize core components
-        await this.initializeStrategies();
-        await this.setupExchangeConnections();
-        await this.initializeMarketDataFeeds();
-        await this.setupSentimentAnalysis();
-        
-        // Start monitoring loops
-        this.startArbitrageScanning();
-        this.startLatencyMonitoring();
-        
-        console.log('✅ Arbitrage Engine initialized successfully');
+        try {
+            // Initialize core components with performance optimization
+            await this.initializeStrategies();
+            
+            // Initialize other components in parallel for better performance
+            await Promise.all([
+                this.setupExchangeConnections(),
+                this.initializeMarketDataFeeds(),
+                this.setupSentimentAnalysis()
+            ]);
+            
+            // Start monitoring loops after initialization
+            this.startArbitrageScanning();
+            this.startLatencyMonitoring();
+            
+            console.log('✅ Arbitrage Engine initialized successfully');
+            
+        } catch (error) {
+            console.error('❌ Arbitrage Engine initialization failed:', error);
+            // Continue with limited functionality
+            this.handleInitializationError(error);
+        }
     }
 
     async initializeStrategies() {
@@ -659,6 +670,31 @@ class ArbitrageEngine {
     assessCorrelationRisk(opportunity) {
         // Assess correlation between assets
         return 0.05; // Placeholder
+    }
+
+    handleInitializationError(error) {
+        console.warn('⚠️ Arbitrage engine running in limited mode due to:', error.message);
+        
+        // Set up basic functionality even if full initialization failed
+        this.strategies.set('demo', {
+            isEnabled: () => true,
+            scan: async () => {
+                return [{
+                    type: 'demo',
+                    symbol: 'BTC/USD',
+                    profit: 0.001,
+                    status: 'simulated',
+                    timestamp: Date.now()
+                }];
+            }
+        });
+        
+        // Emit limited mode event
+        if (typeof document !== 'undefined') {
+            document.dispatchEvent(new CustomEvent('arbitrage:limited_mode', {
+                detail: { error: error.message }
+            }));
+        }
     }
 }
 

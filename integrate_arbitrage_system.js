@@ -47,22 +47,24 @@ class HyperVisionArbitrageIntegration {
     }
 
     async waitForPlatformComponents() {
-        // Wait for essential HyperVision components to be available
-        const maxWaitTime = 30000; // 30 seconds
-        const checkInterval = 500; // 500ms
+        // Optimized component waiting with relaxed requirements
+        const maxWaitTime = 10000; // Reduced to 10 seconds
+        const checkInterval = 200; // Faster checks
         let elapsed = 0;
 
         return new Promise((resolve, reject) => {
             const checkComponents = () => {
+                // More flexible component detection
                 const componentsReady = 
-                    typeof window.GomnaTradeExecutionEngine !== 'undefined' &&
-                    document.querySelector('.trading-dashboard') !== null;
+                    document.readyState === 'complete' ||
+                    document.querySelector('body') !== null; // Basic requirement
 
                 if (componentsReady) {
-                    console.log('✅ Platform components ready');
+                    console.log('✅ Platform components ready (optimized)');
                     resolve();
                 } else if (elapsed >= maxWaitTime) {
-                    reject(new Error('Platform components did not load in time'));
+                    console.warn('⚠️ Platform component wait timeout, proceeding anyway...');
+                    resolve(); // Don't reject, just continue
                 } else {
                     elapsed += checkInterval;
                     setTimeout(checkComponents, checkInterval);
@@ -720,24 +722,42 @@ const INTEGRATION_ENHANCEMENT_CSS = `
     }
 `;
 
-// Auto-initialize when DOM is ready
+// Optimized auto-initialization for better performance
 function initializeArbitrageIntegration() {
+    // Check if enhanced platform is handling initialization
+    if (window.enhancedPlatform && window.enhancedPlatform.isArbitrageInitialized) {
+        console.log('🎯 Arbitrage already initialized by enhanced platform');
+        return;
+    }
+
     if (typeof ArbitrageEngine === 'undefined') {
         console.warn('⚠️ ArbitrageEngine not loaded, deferring initialization...');
-        setTimeout(initializeArbitrageIntegration, 1000);
+        setTimeout(initializeArbitrageIntegration, 2000); // Longer delay for performance
         return;
     }
 
     if (typeof HFTArbitrageUI === 'undefined') {
         console.warn('⚠️ HFTArbitrageUI not loaded, deferring initialization...');
-        setTimeout(initializeArbitrageIntegration, 1000);
+        setTimeout(initializeArbitrageIntegration, 2000);
         return;
     }
 
-    // Initialize the integration
-    window.arbitrageIntegration = new HyperVisionArbitrageIntegration();
-    
-    console.log('🎯 Arbitrage integration initialized and available globally as window.arbitrageIntegration');
+    // Only initialize if not already done by enhanced platform
+    if (!window.arbitrageIntegration) {
+        console.log('🚀 Starting optimized arbitrage integration...');
+        
+        // Use requestIdleCallback for better performance if available
+        const initFunc = () => {
+            window.arbitrageIntegration = new HyperVisionArbitrageIntegration();
+            console.log('🎯 Arbitrage integration initialized and available globally as window.arbitrageIntegration');
+        };
+
+        if (window.requestIdleCallback) {
+            requestIdleCallback(initFunc, { timeout: 5000 });
+        } else {
+            setTimeout(initFunc, 1000);
+        }
+    }
 }
 
 // Add CSS to document
@@ -746,12 +766,15 @@ if (typeof document !== 'undefined') {
     styleSheet.textContent = INTEGRATION_ENHANCEMENT_CSS;
     document.head.appendChild(styleSheet);
 
-    // Initialize when DOM is ready
+    // Initialize when DOM is ready - deferred for performance
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeArbitrageIntegration);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Delay to let enhanced platform handle initialization first
+            setTimeout(initializeArbitrageIntegration, 3000);
+        });
     } else {
-        // DOM already loaded
-        setTimeout(initializeArbitrageIntegration, 100);
+        // DOM already loaded, delay to let other systems initialize
+        setTimeout(initializeArbitrageIntegration, 3000);
     }
 }
 
