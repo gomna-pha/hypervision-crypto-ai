@@ -457,9 +457,26 @@ class FinBERTSentimentEngine {
     
     // Update sentiment text descriptions
     updateSentimentText() {
-        const sentimentElements = document.querySelectorAll('[id*=\"sentiment\"]');\n        
+        const sentimentElements = document.querySelectorAll('[id*="sentiment"]');
+        
         // Update main sentiment display if exists
-        const mainSentimentElement = document.querySelector('.sentiment-display');\n        if (mainSentimentElement) {\n            const score = this.sentimentData.combined.score;\n            const signal = this.sentimentData.combined.signal;\n            \n            mainSentimentElement.innerHTML = `\n                <div class=\"sentiment-summary\">\n                    <span class=\"sentiment-score\">${(score * 100).toFixed(1)}%</span>\n                    <span class=\"sentiment-signal ${signal.toLowerCase()}\">${signal}</span>\n                </div>\n                <div class=\"sentiment-details\">\n                    Twitter: ${this.sentimentData.twitter.volume} tweets | \n                    News: ${this.sentimentData.news.articles} articles | \n                    Confidence: ${(this.sentimentData.combined.confidence * 100).toFixed(0)}%\n                </div>\n            `;\n        }
+        const mainSentimentElement = document.querySelector('.sentiment-display');
+        if (mainSentimentElement) {
+            const score = this.sentimentData.combined.score;
+            const signal = this.sentimentData.combined.signal;
+            
+            mainSentimentElement.innerHTML = `
+                <div class="sentiment-summary">
+                    <span class="sentiment-score">${(score * 100).toFixed(1)}%</span>
+                    <span class="sentiment-signal ${signal.toLowerCase()}">${signal}</span>
+                </div>
+                <div class="sentiment-details">
+                    Twitter: ${this.sentimentData.twitter.volume} tweets | 
+                    News: ${this.sentimentData.news.articles} articles | 
+                    Confidence: ${(this.sentimentData.combined.confidence * 100).toFixed(0)}%
+                </div>
+            `;
+        }
     }
     
     // Get appropriate color for sentiment score
