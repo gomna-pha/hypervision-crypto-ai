@@ -8,7 +8,7 @@ class AlgorithmicMarketplaceUI {
     constructor() {
         this.marketplace = null;
         this.investorSystem = null; // Will be injected by platform manager
-        this.liveDataAPI = null;    // Will be injected by platform manager
+        this.publicAPIs = null;     // Simple public APIs (no auth needed)
         this.updateInterval = null;
         this.refreshRate = 1000; // 1 second updates
         this.isInitialized = false;
@@ -110,13 +110,39 @@ class AlgorithmicMarketplaceUI {
 
                 <!-- User Account Status -->
                 <div class="user-account-status glass-effect rounded-xl p-6 mb-8" id="user-account-status">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold text-cream-800">👤 Investor Account</h2>
-                        <button id="show-auth-panel" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-                            Sign In / Register
-                        </button>
+                    <div class="text-center py-8">
+                        <div class="mb-6">
+                            <h2 class="text-3xl font-bold text-cream-800 mb-2">🎯 Start Your Algorithmic Trading Journey</h2>
+                            <p class="text-lg text-cream-600">Join thousands of investors using AI-powered trading strategies</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div class="text-2xl mb-2">🤖</div>
+                                <div class="font-semibold text-green-800">6 Professional Algorithms</div>
+                                <div class="text-sm text-green-600">From $299 to $1299</div>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div class="text-2xl mb-2">📊</div>
+                                <div class="font-semibold text-blue-800">Real-Time Performance</div>
+                                <div class="text-sm text-blue-600">Live market data feeds</div>
+                            </div>
+                            <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                <div class="text-2xl mb-2">💰</div>
+                                <div class="font-semibold text-purple-800">$10,000 Starting Balance</div>
+                                <div class="text-sm text-purple-600">Ready to invest immediately</div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <button id="show-auth-panel" class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-lg font-bold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors shadow-lg">
+                                🚀 Create Investor Account & Start Trading
+                            </button>
+                            <div class="text-sm text-cream-500">
+                                Already have an account? <button class="text-blue-500 hover:underline" onclick="document.getElementById('show-auth-panel').click()">Sign In</button>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-cream-600 mt-2">Please sign in to purchase algorithms and start live trading.</p>
                 </div>
 
                 <!-- Portfolio Overview -->
@@ -1113,12 +1139,14 @@ class AlgorithmicMarketplaceUI {
                             setTimeout(() => {
                                 this.marketplace.activateAlgorithm(algorithmId);
                                 
-                                // If this is a data-dependent algorithm, prompt for API setup
-                                if (this.liveDataAPI && (algorithmId === 'finbert_news' || algorithmId.includes('exchange'))) {
-                                    setTimeout(() => {
-                                        this.showNotification('💡 Configure live data APIs for better performance!', 'info');
-                                    }, 2000);
-                                }
+                                // Notify about live data connection
+                                setTimeout(() => {
+                                    if (this.publicAPIs && this.publicAPIs.isConnected()) {
+                                        this.showNotification('📡 Algorithm now using live market data feeds!', 'success');
+                                    } else {
+                                        this.showNotification('⚡ Algorithm activated with demo data', 'info');
+                                    }
+                                }, 2000);
                             }, 1000);
                         } else {
                             this.showNotification(`❌ ${result.error}`, 'error');

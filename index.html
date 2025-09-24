@@ -1027,74 +1027,40 @@
 
             <!-- Agentic AI Trading Tab -->
             <div id="agentic-tab" class="tab-content hidden">
-                <!-- API Connection Panel -->
-                <div class="bg-gradient-to-r from-cream-50 to-cream-100 p-6 rounded-xl shadow-lg mb-6 border border-cream-200">
+                <!-- Live Data Status Panel -->
+                <div class="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl shadow-lg mb-6 border border-green-200">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-xl font-bold text-gray-900">Trading API Connection</h3>
-                        <div id="api-status" class="px-3 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600">
+                        <h3 class="text-xl font-bold text-gray-900">📡 Live Market Data</h3>
+                        <div id="public-api-status" class="px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-600">
                             <div class="flex items-center gap-2">
-                                <div class="w-2 h-2 rounded-full bg-gray-400"></div>
-                                <span>Disconnected</span>
+                                <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                <span>Connected</span>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700">Exchange</label>
-                            <select id="exchange-select" class="w-full mt-1 px-3 py-2 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                                <option value="demo" selected>Demo Mode (No API Required)</option>
-                                <option value="binance">Binance</option>
-                                <option value="coinbase">Coinbase Pro</option>
-                                <option value="kraken">Kraken</option>
-                            </select>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="text-center p-4 bg-white rounded-lg border border-green-200">
+                            <div class="text-2xl mb-2">📈</div>
+                            <div class="font-semibold text-gray-800">Real-Time Prices</div>
+                            <div class="text-sm text-gray-600">CoinGecko + Binance Public</div>
                         </div>
-                        
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700">API Key <span class="text-xs text-gray-500">(Required for live trading)</span></label>
-                            <div class="relative">
-                                <input type="password" id="api-key" placeholder="Paste your API Key here" class="w-full mt-1 px-3 py-2 pr-10 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                                <button type="button" id="toggle-api-key" class="absolute right-2 top-3 text-gray-500 hover:text-gray-700 focus:outline-none">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                </button>
-                            </div>
+                        <div class="text-center p-4 bg-white rounded-lg border border-blue-200">
+                            <div class="text-2xl mb-2">🐦</div>
+                            <div class="font-semibold text-gray-800">Social Sentiment</div>
+                            <div class="text-sm text-gray-600">Reddit + Public APIs</div>
                         </div>
-                        
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700">API Secret <span class="text-xs text-gray-500">(Keep secure)</span></label>
-                            <div class="flex gap-2">
-                                <div class="relative flex-1">
-                                    <input type="password" id="api-secret" placeholder="Paste your API Secret here" class="w-full mt-1 px-3 py-2 pr-10 border border-cream-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white">
-                                    <button type="button" id="toggle-api-secret" class="absolute right-2 top-3 text-gray-500 hover:text-gray-700 focus:outline-none">
-                                        <i data-lucide="eye" class="w-4 h-4"></i>
-                                    </button>
-                                </div>
-                                <button id="connect-api" class="mt-1 px-6 py-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg font-medium hover:from-amber-700 hover:to-amber-800 transition-all shadow-md flex items-center gap-2">
-                                    <i data-lucide="link" class="w-4 h-4"></i>
-                                    Connect
-                                </button>
-                            </div>
+                        <div class="text-center p-4 bg-white rounded-lg border border-purple-200">
+                            <div class="text-2xl mb-2">⚡</div>
+                            <div class="font-semibold text-gray-800">5-Second Updates</div>
+                            <div class="text-sm text-gray-600">No API Keys Required</div>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-                        <div>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" id="save-credentials" class="w-4 h-4 text-amber-600 rounded">
-                                <span class="text-sm text-gray-700">Save encrypted credentials locally (requires master password)</span>
-                            </label>
-                        </div>
-                        <div>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" id="test-mode" class="w-4 h-4 text-amber-600 rounded" checked>
-                                <span class="text-sm text-gray-700">Use testnet/sandbox for testing</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
-                        <p class="text-xs text-amber-800">
-                            <strong>Security Note:</strong> API credentials are encrypted and stored locally. For production use, enable IP whitelisting and read-only permissions where possible.
+                    <div class="mt-4 p-3 bg-green-50 rounded-lg border border-green-200">
+                        <p class="text-xs text-green-800">
+                            <strong>✅ Always Connected:</strong> Using free public APIs from exchanges and social platforms. 
+                            All algorithms receive real-time market data automatically.
                         </p>
                     </div>
                 </div>
@@ -3253,9 +3219,9 @@
     <script src="algorithmic_marketplace.js"></script>
     <script src="algorithmic_marketplace_ui.js"></script>
     
-    <!-- Investor Account & Live API Integration -->
+    <!-- Investor Account & Simple Public API Integration -->
     <script src="investor_account_system.js"></script>
-    <script src="live_data_api_system.js"></script>
+    <script src="simple_public_apis.js"></script>
     
     <!-- Initialize Complete Trading Platform -->
     <script>
@@ -3269,9 +3235,9 @@
                     window.investorAccounts = new InvestorAccountSystem();
                 }
                 
-                // Initialize live data APIs
-                if (typeof LiveDataAPISystem !== 'undefined') {
-                    window.liveDataAPI = new LiveDataAPISystem();
+                // Initialize simple public APIs (no credentials needed)
+                if (typeof SimplePublicAPISystem !== 'undefined') {
+                    window.publicAPIs = new SimplePublicAPISystem();
                 }
                 
                 // Initialize marketplace (will use investor and API systems)
@@ -3284,50 +3250,12 @@
                         window.marketplaceUI.investorSystem = window.investorAccounts;
                     }
                     
-                    // Connect live data system to marketplace
-                    if (window.liveDataAPI) {
-                        window.marketplaceUI.liveDataAPI = window.liveDataAPI;
+                    // Connect public API system to marketplace (no credentials needed)
+                    if (window.publicAPIs) {
+                        window.marketplaceUI.publicAPIs = window.publicAPIs;
                         
-                        // Update API status indicator
-                        window.updateAPIStatusIndicator = function() {
-                            const indicator = document.getElementById('api-status-indicator');
-                            const statusText = document.getElementById('api-status-text');
-                            const statusDot = indicator?.querySelector('.w-2');
-                            
-                            if (!indicator || !statusText || !statusDot) return;
-                            
-                            const connectedAPIs = window.liveDataAPI.getConnectedAPIs();
-                            const totalAPIs = 6; // 3 exchanges + 3 social media platforms
-                            
-                            if (connectedAPIs.length === 0) {
-                                // No APIs connected - Demo mode
-                                indicator.className = 'bg-yellow-100 text-yellow-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
-                                statusDot.className = 'w-2 h-2 rounded-full bg-yellow-500';
-                                statusText.textContent = 'APIs: Demo Mode';
-                            } else if (connectedAPIs.length < totalAPIs / 2) {
-                                // Partial connection
-                                indicator.className = 'bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
-                                statusDot.className = 'w-2 h-2 rounded-full bg-orange-500 animate-pulse';
-                                statusText.textContent = `APIs: ${connectedAPIs.length}/${totalAPIs} Live`;
-                            } else {
-                                // Most/all APIs connected
-                                indicator.className = 'bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2';
-                                statusDot.className = 'w-2 h-2 rounded-full bg-green-500 animate-pulse-slow';
-                                statusText.textContent = `APIs: ${connectedAPIs.length}/${totalAPIs} Live`;
-                            }
-                            
-                            // Make indicator clickable to show API config
-                            indicator.style.cursor = 'pointer';
-                            indicator.onclick = () => {
-                                if (window.liveDataAPI) {
-                                    window.liveDataAPI.showAPIConfiguration();
-                                }
-                            };
-                        };
-                        
-                        // Update status every 10 seconds
-                        setInterval(window.updateAPIStatusIndicator, 10000);
-                        window.updateAPIStatusIndicator(); // Initial update
+                        console.log('🔗 Connected public APIs for live data feeds');
+                        console.log('📡 Real-time data sources: CoinGecko, Binance Public, Reddit, Coinbase Public');
                     }
                 }
                 

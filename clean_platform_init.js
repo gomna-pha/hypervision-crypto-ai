@@ -13,7 +13,7 @@ class CleanPlatformManager {
             payment: false,
             marketplace: false,
             investor: false,
-            liveData: false,
+            publicAPIs: false,
             ui: false
         };
         this.panels = new Map();
@@ -367,8 +367,8 @@ class CleanPlatformManager {
         // Initialize investor account system
         setTimeout(() => this.initInvestorSystem(), 2500);
         
-        // Initialize live data API system
-        setTimeout(() => this.initLiveDataSystem(), 3000);
+        // Initialize public API system (no complex credentials)
+        setTimeout(() => this.initPublicAPISystem(), 2500);
     }
 
     initDraggableFeatures() {
@@ -816,33 +816,33 @@ class CleanPlatformManager {
         }
     }
 
-    initLiveDataSystem() {
-        if (this.components.liveData) return;
+    initPublicAPISystem() {
+        if (this.components.publicAPIs) return;
         
-        console.log('📡 Initializing Live Data API System...');
+        console.log('📡 Initializing Public API System (no credentials needed)...');
         
         try {
-            // Load live data system if available
-            if (typeof LiveDataAPISystem !== 'undefined') {
-                if (!window.liveDataAPI) {
-                    window.liveDataAPI = new LiveDataAPISystem();
+            // Load public API system if available
+            if (typeof SimplePublicAPISystem !== 'undefined') {
+                if (!window.publicAPIs) {
+                    window.publicAPIs = new SimplePublicAPISystem();
                 }
                 
                 // Connect to marketplace if available
                 if (window.marketplaceUI) {
-                    window.marketplaceUI.liveDataAPI = window.liveDataAPI;
+                    window.marketplaceUI.publicAPIs = window.publicAPIs;
                 }
             } else {
-                console.log('⏳ LiveDataAPISystem not yet loaded, will retry...');
-                setTimeout(() => this.initLiveDataSystem(), 500);
+                console.log('⏳ SimplePublicAPISystem not yet loaded, will retry...');
+                setTimeout(() => this.initPublicAPISystem(), 500);
                 return;
             }
             
-            this.components.liveData = true;
-            console.log('✅ Live data system initialized');
+            this.components.publicAPIs = true;
+            console.log('✅ Public API system initialized with live data feeds');
             
         } catch (error) {
-            console.error('❌ Failed to initialize live data system:', error);
+            console.error('❌ Failed to initialize public API system:', error);
         }
     }
 
