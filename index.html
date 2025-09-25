@@ -931,8 +931,8 @@
                                             🛑 STOP
                                         </button>
                                     </div>
-                                    <button id="view-opportunities" class="w-full px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="showLiveOpportunities()">
-                                        🔍 View All Opportunities (6)
+                                    <button id="view-opportunities" class="w-full px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-xs font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="toggleOpportunitiesModal()">
+                                        🔍 View Live Opportunities (<span id="view-opps-count">6</span>)
                                     </button>
                                 </div>
                             </div>
@@ -1173,298 +1173,62 @@
                         </div>
                     </div>
 
-                    <!-- 🎯 COMPREHENSIVE LIVE ARBITRAGE OPPORTUNITIES DASHBOARD -->
-                    <div class="mt-12 p-8 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border-2 border-emerald-200 shadow-lg">
-                        <div class="flex items-center justify-between mb-8">
-                            <div class="flex items-center gap-4">
-                                <div class="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                                <h2 class="text-3xl font-bold text-gray-900">🎯 Live Arbitrage Opportunities</h2>
-                                <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-bold animate-pulse">LIVE SCANNING</span>
+                    <!-- 🌀 HYPERBOLIC SPACE ENGINE DASHBOARD -->
+                    <div class="mt-8 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border-2 border-indigo-200 shadow-lg">
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center gap-3">
+                                <div class="w-4 h-4 bg-indigo-500 rounded-full animate-pulse"></div>
+                                <h3 class="text-xl font-bold text-gray-900">🌀 Hyperbolic Space Engine</h3>
+                                <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-bold">ACTIVE</span>
                             </div>
-                            <div class="text-right">
-                                <div class="text-sm text-gray-600">Last Scan: <span id="live-scan-time" class="font-bold text-blue-600">12:44:23 PM</span></div>
-                                <div class="text-xs text-gray-500">Auto-refresh: 5 seconds</div>
-                            </div>
-                        </div>
-
-                        <!-- Filter & Control Panel -->
-                        <div class="bg-white p-6 rounded-lg shadow-sm border border-emerald-200 mb-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-gray-900">🔍 Customize Arbitrage Strategy Search</h3>
-                                <button id="reset-filters" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-300 transition-all" onclick="resetArbitrageFilters()">
-                                    Reset
-                                </button>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                                <!-- Strategy Type Filter -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Strategy Type:</label>
-                                    <select id="strategy-type-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                        <option value="all">All Types</option>
-                                        <option value="cross-exchange">Cross-Exchange</option>
-                                        <option value="triangular">Triangular</option>
-                                        <option value="statistical">Statistical Pairs</option>
-                                        <option value="sentiment">FinBERT Sentiment</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Min Profit Filter -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Min Profit (%):</label>
-                                    <input type="range" id="min-profit-filter" min="0.1" max="5.0" step="0.1" value="0.1" class="w-full">
-                                    <div class="text-xs text-gray-600 text-center mt-1"><span id="min-profit-value">0.1</span>%</div>
-                                </div>
-                                
-                                <!-- Max Risk Filter -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Max Risk (%):</label>
-                                    <input type="range" id="max-risk-filter" min="1.0" max="10.0" step="0.5" value="5.0" class="w-full">
-                                    <div class="text-xs text-gray-600 text-center mt-1"><span id="max-risk-value">5.0</span>%</div>
-                                </div>
-                                
-                                <!-- Min Volume Filter -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Min Volume ($):</label>
-                                    <select id="min-volume-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                        <option value="0">Any</option>
-                                        <option value="1000">$1,000+</option>
-                                        <option value="5000">$5,000+</option>
-                                        <option value="10000">$10,000+</option>
-                                        <option value="50000">$50,000+</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                                <!-- Max Latency Filter -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Max Latency (ms):</label>
-                                    <select id="max-latency-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                        <option value="1000">Any</option>
-                                        <option value="100">100ms</option>
-                                        <option value="50">50ms</option>
-                                        <option value="20">20ms</option>
-                                        <option value="5">5ms</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Sort Options -->
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Sort By:</label>
-                                    <select id="sort-by-filter" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm">
-                                        <option value="profit">Profit %</option>
-                                        <option value="volume">Volume</option>
-                                        <option value="risk">Risk Level</option>
-                                        <option value="latency">Latency</option>
-                                        <option value="confidence">Confidence</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Control Buttons -->
-                                <div class="flex flex-col gap-2">
-                                    <button id="apply-filters" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all" onclick="applyArbitrageFilters()">
-                                        Apply Filters
-                                    </button>
-                                    <button id="auto-optimize" class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all" onclick="autoOptimizeFilters()">
-                                        Auto-Optimize
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Results Summary -->
-                            <div class="flex items-center justify-between bg-gray-50 p-4 rounded-lg">
-                                <div class="flex items-center gap-4">
-                                    <span class="text-lg font-bold text-gray-900"><span id="filtered-opportunities-count">6</span> strategies found</span>
-                                    <span class="text-sm text-gray-600">Total Potential: <span id="total-potential-profit" class="font-bold text-green-600">$1,847</span></span>
-                                </div>
+                            <div class="text-sm text-gray-600">
+                                Poincaré Disk Model: <span class="font-bold text-indigo-600">OPERATIONAL</span>
                             </div>
                         </div>
 
-                        <!-- Live Performance Metrics -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <!-- Performance Dashboard -->
-                            <div class="bg-white p-6 rounded-lg shadow-sm border border-emerald-200">
-                                <h3 class="text-lg font-bold text-gray-900 mb-4">📊 Live Performance Metrics</h3>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="text-center">
-                                        <div id="live-total-pnl" class="text-xl font-bold text-green-600">+$1,247.50</div>
-                                        <div class="text-xs text-gray-500">Total P&L</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div id="live-total-trades" class="text-xl font-bold text-blue-600">47</div>
-                                        <div class="text-xs text-gray-500">Total Trades</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div id="live-win-rate" class="text-xl font-bold text-purple-600">89.3%</div>
-                                        <div class="text-xs text-gray-500">Win Rate</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div id="live-avg-profit" class="text-xl font-bold text-indigo-600">+$26.54</div>
-                                        <div class="text-xs text-gray-500">Avg Profit</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div id="live-sharpe-ratio" class="text-xl font-bold text-green-600">2.31</div>
-                                        <div class="text-xs text-gray-500">Sharpe Ratio</div>
-                                    </div>
-                                    <div class="text-center">
-                                        <div id="live-max-drawdown" class="text-xl font-bold text-red-600">2.1%</div>
-                                        <div class="text-xs text-gray-500">Max Drawdown</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- P&L Trend Chart Placeholder -->
-                                <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                                    <div class="text-sm font-semibold text-gray-700 mb-2">P&L Trend (Last 20 Updates)</div>
-                                    <div class="flex items-end justify-between h-16 border-b border-gray-300">
-                                        <div class="w-1 bg-green-500 h-8"></div>
-                                        <div class="w-1 bg-red-500 h-4"></div>
-                                        <div class="w-1 bg-green-500 h-12"></div>
-                                        <div class="w-1 bg-green-500 h-6"></div>
-                                        <div class="w-1 bg-red-500 h-3"></div>
-                                        <div class="w-1 bg-green-500 h-10"></div>
-                                        <div class="w-1 bg-green-500 h-14"></div>
-                                        <div class="w-1 bg-red-500 h-2"></div>
-                                        <div class="w-1 bg-green-500 h-9"></div>
-                                        <div class="w-1 bg-green-500 h-11"></div>
-                                        <div class="w-1 bg-green-500 h-7"></div>
-                                        <div class="w-1 bg-red-500 h-5"></div>
-                                        <div class="w-1 bg-green-500 h-13"></div>
-                                        <div class="w-1 bg-green-500 h-8"></div>
-                                        <div class="w-1 bg-red-500 h-4"></div>
-                                        <div class="w-1 bg-green-500 h-15"></div>
-                                        <div class="w-1 bg-green-500 h-12"></div>
-                                        <div class="w-1 bg-green-500 h-9"></div>
-                                        <div class="w-1 bg-red-500 h-6"></div>
-                                        <div class="w-1 bg-green-500 h-16"></div>
-                                    </div>
-                                    <div class="flex justify-between text-xs text-gray-500 mt-2">
-                                        <span>$-316</span>
-                                        <span>$281</span>
-                                    </div>
-                                </div>
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Geometry Model</div>
+                                <div class="font-bold text-indigo-600">Poincaré Disk</div>
                             </div>
-                            
-                            <!-- Auto Trading Controls -->
-                            <div class="bg-white p-6 rounded-lg shadow-sm border border-emerald-200">
-                                <h3 class="text-lg font-bold text-gray-900 mb-4">🤖 Auto Trading Controls</h3>
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center">
-                                        <span class="font-semibold text-gray-700">Auto Trading Status:</span>
-                                        <span id="auto-trading-status" class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-bold">DISABLED</span>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-2 gap-3">
-                                        <button id="enable-auto-trading-main" class="px-4 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md" onclick="enableAutoTrading()">
-                                            ✅ Enable Auto Trading
-                                        </button>
-                                        <button id="stop-auto-trading" class="px-4 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all shadow-md" onclick="stopAutoTrading()">
-                                            ⏹️ Stop Auto Trading
-                                        </button>
-                                    </div>
-                                    
-                                    <button id="emergency-stop-main" class="w-full px-4 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg font-bold text-lg hover:from-red-700 hover:to-red-800 transition-all shadow-lg animate-pulse" onclick="emergencyStop()">
-                                        🛑 EMERGENCY STOP
-                                    </button>
-                                    
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <div class="text-sm font-semibold text-gray-700 mb-2">Current Settings:</div>
-                                        <div class="text-xs text-gray-600 space-y-1">
-                                            <div>• Max position size: $10,000</div>
-                                            <div>• Risk per trade: 2.0%</div>
-                                            <div>• Min profit threshold: 0.5%</div>
-                                            <div>• Max concurrent trades: 3</div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Space Curvature</div>
+                                <div class="font-bold text-purple-600">-1.0</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Cached Geodesics</div>
+                                <div class="font-bold text-blue-600" id="cached-geodesics">312</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Path Efficiency</div>
+                                <div class="font-bold text-green-600" id="path-efficiency">2111.1%</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Today's P&L</div>
+                                <div class="font-bold text-emerald-600" id="hyperbolic-pnl">+$2,922.347</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Executed Today</div>
+                                <div class="font-bold text-orange-600" id="executed-today">28</div>
                             </div>
                         </div>
 
-                        <!-- Live Opportunities List -->
-                        <div class="bg-white rounded-lg shadow-sm border border-emerald-200 p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-gray-900">🎯 Live Arbitrage Opportunities (<span id="opportunities-header-count">6</span>)</h3>
-                                <div class="text-sm text-gray-600">Last Scan: <span id="opportunities-last-scan" class="font-bold text-blue-600">12:44:23 PM</span></div>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Avg Execution</div>
+                                <div class="font-bold text-red-600" id="avg-execution">29μs</div>
                             </div>
-                            
-                            <!-- Opportunities Grid -->
-                            <div id="live-opportunities-grid" class="space-y-4">
-                                <!-- Opportunity 1 -->
-                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-500">
-                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-                                        <div class="md:col-span-2">
-                                            <div class="flex items-center gap-3">
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">Cross-Exchange</span>
-                                                <span class="font-bold text-lg">SOL/USD</span>
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">active</span>
-                                            </div>
-                                            <div class="text-sm text-gray-600 mt-1">BUY SOL/USD @ Binance → SELL SOL/USD @ KuCoin</div>
-                                            <div class="text-xs text-gray-500">Buy: $102.21 | Sell: $104.84</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-lg font-bold text-green-600">2.54%</div>
-                                            <div class="text-xs text-gray-500">Profit</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-lg font-bold text-blue-600">$263.00</div>
-                                            <div class="text-xs text-gray-500">Est. Profit</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-sm text-orange-600">Risk: 1.5%</div>
-                                            <div class="text-sm text-purple-600">Confidence: 77%</div>
-                                        </div>
-                                        <div class="flex gap-2">
-                                            <button class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all" onclick="executeArbitrageOpportunity('SOL_BINANCE_KUCOIN')">
-                                                Execute Trade
-                                            </button>
-                                            <button class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all" onclick="analyzeOpportunity('SOL_BINANCE_KUCOIN')">
-                                                Analyze
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Opportunity 2 -->
-                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 rounded-lg border-l-4 border-blue-500">
-                                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
-                                        <div class="md:col-span-2">
-                                            <div class="flex items-center gap-3">
-                                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">Cross-Exchange</span>
-                                                <span class="font-bold text-lg">SOL/USD</span>
-                                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">active</span>
-                                            </div>
-                                            <div class="text-sm text-gray-600 mt-1">BUY SOL/USD @ Binance → SELL SOL/USD @ Kraken</div>
-                                            <div class="text-xs text-gray-500">Buy: $102.21 | Sell: $104.09</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-lg font-bold text-green-600">1.82%</div>
-                                            <div class="text-xs text-gray-500">Profit</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-lg font-bold text-blue-600">$188.00</div>
-                                            <div class="text-xs text-gray-500">Est. Profit</div>
-                                        </div>
-                                        <div class="text-center">
-                                            <div class="text-sm text-orange-600">Risk: 1.6%</div>
-                                            <div class="text-sm text-purple-600">Confidence: 77%</div>
-                                        </div>
-                                        <div class="flex gap-2">
-                                            <button class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all" onclick="executeArbitrageOpportunity('SOL_BINANCE_KRAKEN')">
-                                                Execute Trade
-                                            </button>
-                                            <button class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all" onclick="analyzeOpportunity('SOL_BINANCE_KRAKEN')">
-                                                Analyze
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Additional opportunities would be dynamically generated -->
-                                <div class="text-center py-4">
-                                    <button id="load-more-opportunities" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="loadMoreOpportunities()">
-                                        Load More Opportunities (4 more)
-                                    </button>
-                                </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Success Rate</div>
+                                <div class="font-bold text-green-600" id="success-rate-hyp">99.98</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Geodesic Paths</div>
+                                <div class="font-bold text-indigo-600" id="geodesic-paths">283</div>
+                            </div>
+                            <div class="text-center bg-white p-4 rounded-lg shadow-sm">
+                                <div class="text-xs text-gray-500 mb-1">Live Opportunities</div>
+                                <div class="font-bold text-green-600" id="hyp-live-opps">6</div>
                             </div>
                         </div>
                     </div>
@@ -7423,6 +7187,7 @@
                 });
 
                 this.renderOpportunities();
+                updateOpportunityCounts();
             }
 
             updatePerformanceMetrics() {
@@ -7710,11 +7475,98 @@
             alert('📈 Loading more opportunities...\n\nIn the full system, this would:\n• Scan additional exchanges\n• Check more asset pairs\n• Apply advanced ML filtering\n• Show historical performance data');
         }
 
+        // Modal Management Functions
+        function toggleOpportunitiesModal() {
+            const modal = document.getElementById('opportunities-modal');
+            if (modal) {
+                if (modal.classList.contains('hidden')) {
+                    showOpportunitiesModal();
+                } else {
+                    hideOpportunitiesModal();
+                }
+            }
+        }
+
+        function showOpportunitiesModal() {
+            const modal = document.getElementById('opportunities-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                loadModalOpportunities();
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function hideOpportunitiesModal() {
+            const modal = document.getElementById('opportunities-modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto'; // Restore scrolling
+            }
+        }
+
+        function loadModalOpportunities() {
+            if (!liveArbitrageSystem) return;
+
+            const modalList = document.getElementById('modal-opportunities-list');
+            const opportunities = liveArbitrageSystem.filterOpportunities();
+            
+            // Update modal summary
+            updateElementText('modal-total-opportunities', opportunities.length.toString());
+            updateElementText('modal-last-scan', new Date().toLocaleTimeString());
+            
+            const totalPotential = opportunities.reduce((sum, opp) => sum + opp.estimatedProfit, 0);
+            updateElementText('modal-total-potential', `$${totalPotential.toFixed(0)}`);
+
+            // Render all opportunities in modal
+            if (modalList) {
+                modalList.innerHTML = opportunities.map(opp => `
+                    <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-4 rounded-lg border-l-4 border-green-500">
+                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-center">
+                            <div class="md:col-span-2">
+                                <div class="flex items-center gap-3">
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">${opp.type.charAt(0).toUpperCase() + opp.type.slice(1).replace('-', '-')}</span>
+                                    <span class="font-bold text-lg">${opp.asset}</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">${opp.status}</span>
+                                </div>
+                                <div class="text-sm text-gray-600 mt-1">BUY ${opp.asset} @ ${opp.buyExchange} → SELL ${opp.asset} @ ${opp.sellExchange}</div>
+                                <div class="text-xs text-gray-500">Buy: $${opp.buyPrice.toFixed(2)} | Sell: $${opp.sellPrice.toFixed(2)} | Latency: ${opp.latency}ms</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-green-600">${opp.profitPercent.toFixed(2)}%</div>
+                                <div class="text-xs text-gray-500">Profit</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-blue-600">$${opp.estimatedProfit.toFixed(0)}</div>
+                                <div class="text-xs text-gray-500">Est. Profit</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-sm text-orange-600">Risk: ${opp.risk}%</div>
+                                <div class="text-sm text-purple-600">Confidence: ${opp.confidence.toFixed(0)}%</div>
+                                <div class="text-xs text-gray-500">Volume: $${opp.volume.toLocaleString()}</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all" onclick="executeArbitrageOpportunity('${opp.id}')">
+                                    Execute Trade
+                                </button>
+                                <button class="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-all" onclick="analyzeOpportunity('${opp.id}')">
+                                    Analyze
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
         function showLiveOpportunities() {
-            // Scroll to the opportunities section
-            const opportunitiesSection = document.querySelector('#live-opportunities-grid');
-            if (opportunitiesSection) {
-                opportunitiesSection.scrollIntoView({ behavior: 'smooth' });
+            toggleOpportunitiesModal();
+        }
+
+        // Update count displays
+        function updateOpportunityCounts() {
+            if (liveArbitrageSystem) {
+                const count = liveArbitrageSystem.opportunities.length;
+                updateElementText('view-opps-count', count.toString());
             }
         }
 
@@ -7767,5 +7619,47 @@
             console.log('  • Sub-25μs Arbitrage Execution Pipeline');
         });
     </script>
+
+    <!-- 🎯 Live Opportunities Modal -->
+    <div id="opportunities-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-screen overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                            <h2 class="text-2xl font-bold">🎯 Live Arbitrage Opportunities</h2>
+                            <span class="px-3 py-1 bg-white bg-opacity-20 rounded-full text-sm font-bold">SCANNING</span>
+                        </div>
+                        <button onclick="toggleOpportunitiesModal()" class="text-white hover:text-gray-300 text-xl font-bold">✕</button>
+                    </div>
+                    <div class="text-sm opacity-90 mt-2">Real-time opportunities • Auto-refresh: 5 seconds • Last scan: <span id="modal-last-scan">--</span></div>
+                </div>
+                
+                <div class="p-6 max-h-96 overflow-y-auto">
+                    <div id="modal-opportunities-list" class="space-y-4">
+                        <!-- Opportunities will be dynamically loaded here -->
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-4 border-t">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-gray-600">
+                            <span id="modal-total-opportunities">6</span> opportunities • 
+                            Total potential: <span class="font-bold text-green-600" id="modal-total-potential">$1,847</span>
+                        </div>
+                        <div class="flex gap-3">
+                            <button class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700 transition-all" onclick="enableAutoTrading()">
+                                ✅ Enable Auto Trading
+                            </button>
+                            <button class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-semibold hover:bg-red-700 transition-all" onclick="emergencyStop()">
+                                🛑 Emergency Stop
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
