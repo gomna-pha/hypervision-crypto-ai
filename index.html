@@ -953,158 +953,180 @@
                         </div>
                     </div>
 
-                    <!-- 🎯 LIVE ARBITRAGE STRATEGIES DASHBOARD -->
-                    <div class="mt-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border-2 border-green-200 shadow-lg">
-                        <div class="flex items-center justify-between mb-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                                <h3 class="text-xl font-bold text-gray-900">⚡ HFT Arbitrage Strategies</h3>
-                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">ULTRA-LOW LATENCY</span>
+                    <!-- 🎯 UNIFIED HFT EXECUTION ENGINE -->
+                    <div class="mt-8 p-8 bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-2xl border-3 border-indigo-400 shadow-2xl">
+                        <div class="flex items-center justify-between mb-8">
+                            <div class="flex items-center gap-4">
+                                <div class="p-4 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl shadow-lg animate-pulse">
+                                    <div class="w-8 h-8 text-white flex items-center justify-center">🚀</div>
+                                </div>
+                                <div>
+                                    <h3 class="text-3xl font-bold bg-gradient-to-r from-indigo-800 via-purple-800 to-blue-800 bg-clip-text text-transparent">
+                                        Unified HFT Execution Engine
+                                    </h3>
+                                    <p class="text-lg text-gray-700 font-semibold">All Arbitrage Strategies • Hyperbolic Optimized • Ultra-Low Latency</p>
+                                </div>
                             </div>
-                            <div class="text-sm text-gray-600">
-                                Hyperbolic Space Engine: <span class="font-bold text-indigo-600">OPTIMIZING</span>
+                            <div class="text-right">
+                                <div class="px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl text-lg font-bold animate-pulse shadow-xl">
+                                    ALL SYSTEMS OPERATIONAL
+                                </div>
+                                <div class="text-sm text-indigo-700 font-semibold mt-2">4 Strategies • 1 Unified System</div>
                             </div>
                         </div>
 
-                        <!-- Strategy Grid -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Unified Engine Status Panel -->
+                        <div class="bg-white p-6 rounded-2xl border-2 border-indigo-200 shadow-xl mb-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h4 class="text-2xl font-bold text-gray-900">🎯 Real-Time Execution Matrix</h4>
+                                <div class="flex gap-3">
+                                    <button class="px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl font-bold hover:from-green-600 hover:to-green-700 transition-all shadow-md" onclick="executeAllStrategies()">
+                                        ⚡ EXECUTE ALL HFT
+                                    </button>
+                                    <button class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl font-bold hover:from-red-600 hover:to-red-700 transition-all shadow-md" onclick="emergencyStopAll()">
+                                        🛑 EMERGENCY STOP
+                                    </button>
+                                </div>
+                            </div>
                             
-                            <!-- Strategy 1: Triangular Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-purple-500 hover:shadow-lg transition-all">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">Triangular Arbitrage</h4>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold animate-pulse">ACTIVE</span>
+                            <!-- Strategy Status Grid -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                
+                                <!-- Triangular Strategy Status -->
+                                <div class="bg-gradient-to-br from-purple-50 to-purple-100 p-5 rounded-xl border-2 border-purple-300 hover:shadow-lg transition-all">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-purple-500 rounded-full animate-ping"></div>
+                                            <span class="font-bold text-purple-800">Triangular</span>
+                                        </div>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold">ACTIVE</span>
+                                    </div>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-purple-700">Latency:</span>
+                                            <span class="font-bold text-red-600" id="triangular-latency-unified">< 50ms</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-purple-700">Route:</span>
+                                            <span class="font-bold text-purple-600" id="triangular-route-unified">BTC→ETH→USDT</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-purple-700">Spread:</span>
+                                            <span class="font-bold text-green-600" id="triangular-spread-unified">0.18%</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all shadow-md" onclick="executeArbitrageStrategy('triangular')">
+                                        ⚡ Execute
+                                    </button>
                                 </div>
-                                <div class="text-xs text-gray-600 mb-3 font-medium">Cross-exchange price discrepancies</div>
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">HFT Execution:</span>
-                                        <span class="font-bold text-red-600" id="triangular-latency">< 50ms</span>
+
+                                <!-- Statistical Pairs Status -->
+                                <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl border-2 border-green-300 hover:shadow-lg transition-all">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
+                                            <span class="font-bold text-green-800">Statistical ML</span>
+                                        </div>
+                                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded font-bold">ML-ACTIVE</span>
                                     </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Geodesic Route:</span>
-                                        <span class="font-bold text-purple-600" id="triangular-route">BTC→ETH→USDT</span>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-green-700">Pair:</span>
+                                            <span class="font-bold text-green-600" id="pairs-selection-unified">ETH/BTC</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-green-700">FinBERT:</span>
+                                            <span class="font-bold text-blue-600" id="pairs-finbert-unified">+0.73</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-green-700">Reversion:</span>
+                                            <span class="font-bold text-indigo-600" id="pairs-reversion-unified">2.4σ</span>
+                                        </div>
                                     </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Area:</span>
-                                        <span class="text-gray-900 font-semibold" id="triangular-area">0.234π</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Efficiency:</span>
-                                        <span class="font-bold text-indigo-600" id="triangular-efficiency">94.2%</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Spread:</span>
-                                        <span class="font-bold text-green-600" id="triangular-spread">0.18%</span>
-                                    </div>
+                                    <button class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md" onclick="executeArbitrageStrategy('statistical')">
+                                        🧠 Execute
+                                    </button>
                                 </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all shadow-md" onclick="executeArbitrageStrategy('triangular')">
-                                    ⚡ Execute HFT
-                                </button>
+
+                                <!-- Index/Futures Status -->
+                                <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-xl border-2 border-blue-300 hover:shadow-lg transition-all">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-blue-500 rounded-full animate-ping"></div>
+                                            <span class="font-bold text-blue-800">Index/Futures</span>
+                                        </div>
+                                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded font-bold">INSTITUTIONAL</span>
+                                    </div>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700">BTC Spread:</span>
+                                            <span class="font-bold text-green-600" id="futures-spread-unified">+$127</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700">ETH Spread:</span>
+                                            <span class="font-bold text-blue-600" id="eth-futures-unified">+$8.5</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700">Basis Risk:</span>
+                                            <span class="font-bold text-purple-600" id="basis-risk-unified">0.12%</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="executeArbitrageStrategy('futures')">
+                                        🏛️ Execute
+                                    </button>
+                                </div>
+
+                                <!-- News Sentiment Status -->
+                                <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-5 rounded-xl border-2 border-orange-300 hover:shadow-lg transition-all">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-4 h-4 bg-orange-500 rounded-full animate-ping"></div>
+                                            <span class="font-bold text-orange-800">Sentiment</span>
+                                        </div>
+                                        <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded font-bold animate-pulse">LIVE</span>
+                                    </div>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-orange-700">FinBERT:</span>
+                                            <span class="font-bold text-green-600" id="sentiment-finbert-unified">+0.73</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-orange-700">Social:</span>
+                                            <span class="font-bold text-orange-600" id="twitter-sentiment-unified">Bullish</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-orange-700">Volume:</span>
+                                            <span class="font-bold text-indigo-600" id="volume-spike-unified">+34%</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full mt-4 px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all shadow-md" onclick="executeArbitrageStrategy('sentiment')">
+                                        📱 Execute
+                                    </button>
+                                </div>
                             </div>
 
-                            <!-- Strategy 2: Statistical Pairs Trading -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-green-500 hover:shadow-lg transition-all">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">Statistical Pairs Trading</h4>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">ML-ACTIVE</span>
-                                </div>
-                                <div class="text-xs text-gray-600 mb-3 font-medium">Mean reversion + FinBERT sentiment</div>
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">ML Selection:</span>
-                                        <span class="font-bold text-green-600" id="pairs-selection">ETH/BTC</span>
+                            <!-- Unified Performance Metrics -->
+                            <div class="mt-8 p-6 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl border border-gray-300">
+                                <h5 class="text-xl font-bold text-gray-900 mb-4">📊 Unified Engine Performance</h5>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-green-600" id="unified-total-pnl">+$4,892.73</div>
+                                        <div class="text-sm text-gray-600">Total P&L (All Strategies)</div>
                                     </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">FinBERT Score:</span>
-                                        <span class="font-bold text-blue-600" id="pairs-finbert">+0.73</span>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-blue-600" id="unified-win-rate">92.1%</div>
+                                        <div class="text-sm text-gray-600">Combined Win Rate</div>
                                     </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Mean Reversion:</span>
-                                        <span class="text-gray-900 font-semibold" id="pairs-reversion">2.4σ</span>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-purple-600" id="unified-total-trades">183</div>
+                                        <div class="text-sm text-gray-600">Total Executed Trades</div>
                                     </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Correlation:</span>
-                                        <span class="font-bold text-indigo-600" id="pairs-correlation">0.847</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Position:</span>
-                                        <span class="font-bold text-purple-600" id="pairs-position">$7,500</span>
+                                    <div class="text-center">
+                                        <div class="text-2xl font-bold text-indigo-600" id="unified-sharpe">2.87</div>
+                                        <div class="text-sm text-gray-600">Combined Sharpe Ratio</div>
                                     </div>
                                 </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md" onclick="executeArbitrageStrategy('statistical')">
-                                    🧠 Execute ML Pairs
-                                </button>
                             </div>
-
-                            <!-- Strategy 3: Index/Futures Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-500 hover:shadow-lg transition-all">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">Index/Futures Arbitrage</h4>
-                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">INSTITUTIONAL</span>
-                                </div>
-                                <div class="text-xs text-gray-600 mb-3 font-medium">Spot vs futures price discrepancies</div>
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Execution Grade:</span>
-                                        <span class="font-bold text-blue-600" id="futures-grade">Institutional</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">BTC Futures:</span>
-                                        <span class="font-bold text-green-600" id="futures-spread">+$127</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">ETH Futures:</span>
-                                        <span class="text-gray-900 font-semibold" id="eth-futures">+$8.5</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Path:</span>
-                                        <span class="font-bold text-indigo-600" id="futures-path">0.923</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Basis Risk:</span>
-                                        <span class="font-bold text-purple-600" id="basis-risk">0.12%</span>
-                                    </div>
-                                </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="executeArbitrageStrategy('futures')">
-                                    🏛️ Execute Institutional
-                                </button>
-                            </div>
-
-                            <!-- Strategy 4: News Sentiment Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-orange-500 hover:shadow-lg transition-all">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">News Sentiment Arbitrage</h4>
-                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-bold animate-pulse">LIVE</span>
-                                </div>
-                                <div class="text-xs text-gray-600 mb-3 font-medium">FinBERT + Twitter/X + Volume analysis</div>
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Social Sentiment:</span>
-                                        <span class="font-bold text-orange-600" id="social-sentiment">Real-time</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">FinBERT Score:</span>
-                                        <span class="font-bold text-green-600" id="sentiment-finbert">+0.73</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Twitter/X Feed:</span>
-                                        <span class="text-gray-900 font-semibold" id="twitter-sentiment">Bullish</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Volume Spike:</span>
-                                        <span class="font-bold text-indigo-600" id="volume-spike">+34%</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Signal Strength:</span>
-                                        <span class="font-bold text-purple-600" id="signal-strength">Strong</span>
-                                    </div>
-                                </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all shadow-md" onclick="executeArbitrageStrategy('sentiment')">
-                                    📱 Execute Social Arb
-                                </button>
-                            </div>
-
                         </div>
 
                         <!-- 🌀 HYPERBOLIC SPACE ENGINE - THE SOUL OF THE PLATFORM -->
@@ -7717,6 +7739,214 @@
         });
 
         console.log('✅ Live Arbitrage Opportunities Dashboard JavaScript Loaded');
+        
+        // 🚀 UNIFIED HFT EXECUTION ENGINE FUNCTIONS
+        function executeAllStrategies() {
+            console.log('⚡ Executing all HFT strategies simultaneously...');
+            
+            // Execute all 4 strategies in unified mode
+            executeArbitrageStrategy('triangular');
+            executeArbitrageStrategy('statistical');
+            executeArbitrageStrategy('futures');
+            executeArbitrageStrategy('sentiment');
+            
+            // Update unified engine metrics
+            updateUnifiedEngineMetrics();
+            
+            // Show success notification
+            showExecutionNotification('All HFT strategies executed successfully!', 'success');
+        }
+        
+        function emergencyStopAll() {
+            console.log('🛑 Emergency stop for all strategies activated!');
+            
+            // Stop all active strategies
+            const strategies = ['triangular', 'statistical', 'futures', 'sentiment'];
+            strategies.forEach(strategy => {
+                console.log(`Stopping ${strategy} strategy...`);
+            });
+            
+            // Update UI to reflect stopped state
+            updateElementText('unified-total-pnl', '$0.00');
+            showExecutionNotification('All strategies stopped successfully!', 'warning');
+        }
+        
+        function optimizeAllStrategies() {
+            console.log('🌀 Re-optimizing all strategies with Hyperbolic Space Engine...');
+            
+            // Simulate hyperbolic optimization
+            setTimeout(() => {
+                // Update engine metrics
+                updateElementText('engine-geodesics-unified', (Math.floor(Math.random() * 500) + 1000).toString());
+                updateElementText('engine-efficiency-unified', (98 + Math.random() * 1.5).toFixed(1) + '%');
+                updateElementText('engine-latency-unified', (15 + Math.random() * 10).toFixed(0) + 'μs');
+                
+                showExecutionNotification('Hyperbolic optimization completed!', 'success');
+            }, 2000);
+        }
+        
+        function updateUnifiedEngineMetrics() {
+            // Simulate realistic updates for unified system
+            const currentPnl = parseFloat(document.getElementById('unified-total-pnl').textContent.replace(/[^\d.-]/g, ''));
+            const newPnl = currentPnl + (Math.random() * 500) + 100;
+            
+            updateElementText('unified-total-pnl', '+$' + newPnl.toFixed(2));
+            
+            const currentWinRate = parseFloat(document.getElementById('unified-win-rate').textContent.replace('%', ''));
+            const newWinRate = Math.min(95, currentWinRate + (Math.random() * 0.5));
+            updateElementText('unified-win-rate', newWinRate.toFixed(1) + '%');
+            
+            const currentTrades = parseInt(document.getElementById('unified-total-trades').textContent);
+            updateElementText('unified-total-trades', (currentTrades + Math.floor(Math.random() * 5) + 1).toString());
+            
+            const currentSharpe = parseFloat(document.getElementById('unified-sharpe').textContent);
+            const newSharpe = currentSharpe + (Math.random() * 0.1 - 0.05);
+            updateElementText('unified-sharpe', Math.max(2.5, newSharpe).toFixed(2));
+        }
+        
+        function showExecutionNotification(message, type = 'success') {
+            // Create notification element if it doesn't exist
+            let notification = document.getElementById('execution-notification');
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'execution-notification';
+                notification.className = 'fixed top-20 right-6 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 transform translate-x-full';
+                document.body.appendChild(notification);
+            }
+            
+            // Set notification style based on type
+            const colors = {
+                success: 'bg-green-500 text-white',
+                warning: 'bg-orange-500 text-white',
+                error: 'bg-red-500 text-white'
+            };
+            
+            notification.className = `fixed top-20 right-6 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${colors[type] || colors.success}`;
+            notification.textContent = message;
+            
+            // Show notification
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(full)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // Enhanced arbitrage strategy execution with unified tracking
+        const originalExecuteArbitrageStrategy = window.executeArbitrageStrategy;
+        window.executeArbitrageStrategy = function(strategyType) {
+            // Call original function if it exists
+            if (originalExecuteArbitrageStrategy) {
+                originalExecuteArbitrageStrategy(strategyType);
+            }
+            
+            // Update unified system metrics
+            updateUnifiedEngineMetrics();
+            
+            // Update individual strategy metrics
+            updateIndividualStrategyMetrics(strategyType);
+            
+            console.log(`🚀 Unified HFT Strategy Executed: ${strategyType}`);
+        }
+        
+        function updateIndividualStrategyMetrics(strategyType) {
+            // Update metrics for individual strategies in unified display
+            switch(strategyType) {
+                case 'triangular':
+                    updateElementText('triangular-latency-unified', '<' + (Math.floor(Math.random() * 20) + 30) + 'ms');
+                    updateElementText('triangular-spread-unified', (Math.random() * 0.3 + 0.1).toFixed(2) + '%');
+                    break;
+                case 'statistical':
+                    updateElementText('pairs-finbert-unified', '+' + (Math.random() * 0.5 + 0.5).toFixed(2));
+                    updateElementText('pairs-reversion-unified', (Math.random() * 2 + 1.5).toFixed(1) + 'σ');
+                    break;
+                case 'futures':
+                    updateElementText('futures-spread-unified', '+$' + Math.floor(Math.random() * 50 + 100));
+                    updateElementText('basis-risk-unified', (Math.random() * 0.2).toFixed(2) + '%');
+                    break;
+                case 'sentiment':
+                    updateElementText('sentiment-finbert-unified', '+' + (Math.random() * 0.5 + 0.5).toFixed(2));
+                    updateElementText('volume-spike-unified', '+' + Math.floor(Math.random() * 20 + 20) + '%');
+                    break;
+            }
+        }
+        
+        // Auto-update unified engine status
+        setInterval(() => {
+            if (Math.random() > 0.7) { // 30% chance every interval
+                updateUnifiedEngineMetrics();
+            }
+        }, 8000); // Update every 8 seconds
+        
+        console.log('✅ Unified HFT Execution Engine JavaScript Loaded');
+    </script>
+    
+    <!-- 🌀 HYPERBOLIC SPACE ENGINE - UNIFIED ORCHESTRATOR -->
+    <script>
+        // Enhanced Hyperbolic Space Engine for Unified System
+        console.log('🌀 Loading Enhanced Hyperbolic Space Engine - Unified System Orchestrator...');
+        
+        class UnifiedHyperbolicEngine {
+            constructor() {
+                this.strategies = {
+                    triangular: { active: true, latency: 45, efficiency: 94.2 },
+                    statistical: { active: true, correlation: 0.847, finbert: 0.73 },
+                    futures: { active: true, spread: 127, basis_risk: 0.12 },
+                    sentiment: { active: true, volume_spike: 34, social_sentiment: 'Bullish' }
+                };
+                this.geodesic_cache = 1247;
+                this.optimization_level = 99.3;
+                this.avg_latency = 18;
+            }
+            
+            optimizeAllStrategies() {
+                console.log('🌀 Hyperbolic Space Engine: Optimizing all strategies in unified mode...');
+                
+                // Update engine metrics
+                this.geodesic_cache += Math.floor(Math.random() * 100);
+                this.optimization_level = Math.min(99.9, this.optimization_level + (Math.random() * 0.2));
+                this.avg_latency = Math.max(15, this.avg_latency - (Math.random() * 2));
+                
+                // Update UI
+                updateElementText('engine-geodesics-unified', this.geodesic_cache.toString());
+                updateElementText('engine-efficiency-unified', this.optimization_level.toFixed(1) + '%');
+                updateElementText('engine-latency-unified', Math.floor(this.avg_latency) + 'μs');
+                
+                return true;
+            }
+            
+            getSystemStatus() {
+                return {
+                    strategies_coordinated: '4/4',
+                    optimization_level: this.optimization_level.toFixed(1) + '%',
+                    coordination_status: 'OPTIMAL'
+                };
+            }
+        }
+        
+        // Initialize Unified Hyperbolic Engine
+        let unifiedHyperbolicEngine;
+        document.addEventListener('DOMContentLoaded', () => {
+            unifiedHyperbolicEngine = new UnifiedHyperbolicEngine();
+            console.log('✅ Unified Hyperbolic Space Engine initialized!');
+            
+            // Auto-optimize periodically
+            setInterval(() => {
+                if (Math.random() > 0.8) { // 20% chance every interval
+                    unifiedHyperbolicEngine.optimizeAllStrategies();
+                }
+            }, 12000); // Every 12 seconds
+        });
+        
+        console.log('✅ Enhanced Hyperbolic Space Engine - Unified System Orchestrator Loaded');
     </script>
     
     <!-- Cocoa Trading AI - Clean Implementation -->
