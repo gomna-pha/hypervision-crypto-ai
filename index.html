@@ -2575,11 +2575,12 @@
         function initializeEmergencyCharts() {
             console.log('🚨 Emergency chart initialization starting...');
             try {
-                if (document.getElementById('performance-chart')) {
+                // Only initialize if charts don't already exist
+                if (document.getElementById('performance-chart') && !charts.performance) {
                     initializePerformanceChart();
                     console.log('✅ Performance chart restored');
                 }
-                if (document.getElementById('predictions-chart')) {
+                if (document.getElementById('predictions-chart') && !charts.predictions) {
                     initializePredictionsChart();
                     console.log('✅ Predictions chart restored');
                 }
@@ -4058,7 +4059,6 @@
             if (element) {
                 element.textContent = prefix + value;
             }
-        }
         }
         
         // Auto-refresh market data every 30 seconds
