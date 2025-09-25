@@ -34,6 +34,12 @@
     </script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Chart.js for Charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Force browser refresh -->
+    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="expires" content="0">
+    <meta http-equiv="pragma" content="no-cache">
     <script src="secure-config.js"></script>
     <script src="trading-api.js"></script>
     <script src="functional_agentic_trading_system.js"></script>
@@ -559,35 +565,35 @@
         <div class="glass-effect">
             <div class="max-w-7xl mx-auto px-6 py-4">
                 <div class="flex gap-1">
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 bg-white text-blue-600 border-b-2 border-blue-600" data-tab="dashboard">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 bg-white text-blue-600 border-b-2 border-blue-600" data-tab="dashboard" onclick="switchTab('dashboard')">
                         <i data-lucide="layout-dashboard" class="w-4 h-4 inline mr-2"></i>
                         Dashboard
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="performance">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="performance" onclick="switchTab('performance')">
                         <i data-lucide="trending-up" class="w-4 h-4 inline mr-2"></i>
                         Performance
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="analytics">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="analytics" onclick="switchTab('analytics')">
                         <i data-lucide="bar-chart-3" class="w-4 h-4 inline mr-2"></i>
                         Analytics
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="portfolio">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="portfolio" onclick="switchTab('portfolio')">
                         <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
                         Portfolio
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="transparency">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="transparency" onclick="switchTab('transparency')">
                         <i data-lucide="microscope" class="w-4 h-4 inline mr-2"></i>
                         Model Transparency
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="payments">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="payments" onclick="switchTab('payments')">
                         <i data-lucide="credit-card" class="w-4 h-4 inline mr-2"></i>
                         Payment Systems
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="agentic">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="agentic" onclick="switchTab('agentic')">
                         <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
                         Agentic AI Trading
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="marketplace">
+                    <button class="tab-btn px-6 py-3 rounded-t-lg font-semibold transition-all duration-200 text-gray-600 hover:bg-gray-50" data-tab="marketplace" onclick="switchTab('marketplace')">
                         <i data-lucide="shopping-cart" class="w-4 h-4 inline mr-2"></i>
                         Algorithm Marketplace
                     </button>
@@ -2405,17 +2411,46 @@
 
         // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
-            initializeUI();
-            initializeCharts();
-            startDataStreams();
-            initializeAlgorithmMarketplace();
-            
-            // Initialize Lucide icons
-            lucide.createIcons();
-            
-            // Render MathJax
-            if (window.MathJax && window.MathJax.typesetPromise) {
-                MathJax.typesetPromise();
+            console.log('🚀 Starting application initialization...');
+            try {
+                initializeUI();
+                console.log('✅ UI initialized');
+                
+                // Wait for Chart.js to load before initializing charts
+                if (typeof Chart !== 'undefined') {
+                    initializeCharts();
+                } else {
+                    console.warn('⚠️ Chart.js not loaded, retrying in 500ms...');
+                    setTimeout(() => {
+                        if (typeof Chart !== 'undefined') {
+                            initializeCharts();
+                        } else {
+                            console.error('❌ Chart.js failed to load');
+                        }
+                    }, 500);
+                }
+                
+                startDataStreams();
+                console.log('✅ Data streams started');
+                
+                initializeAlgorithmMarketplace();
+                console.log('✅ Algorithm marketplace initialized');
+                
+                // Initialize Lucide icons
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                    console.log('✅ Lucide icons initialized');
+                }
+                
+                // Render MathJax
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    MathJax.typesetPromise();
+                    console.log('✅ MathJax rendered');
+                }
+                
+                console.log('🎉 Application initialization complete!');
+            } catch (error) {
+                console.error('❌ Application initialization error:', error);
             }
         });
 
@@ -2502,15 +2537,30 @@
 
         // Initialize all charts
         function initializeCharts() {
-            initializePerformanceChart();
-            initializePredictionsChart();
-            initializeMonthlyReturnsChart();
-            initializeDrawdownChart();
-            initializeConfusionMatrix();
-            initializeFeatureImportance();
-            initializeCorrelationMatrix();
-            initializeHoldingsChart();
-            initializeEfficientFrontier();
+            console.log('🔄 Initializing all charts...');
+            try {
+                initializePerformanceChart();
+                console.log('✅ Performance chart initialized');
+                initializePredictionsChart();
+                console.log('✅ Predictions chart initialized');
+                initializeMonthlyReturnsChart();
+                console.log('✅ Monthly returns chart initialized');
+                initializeDrawdownChart();
+                console.log('✅ Drawdown chart initialized');
+                initializeConfusionMatrix();
+                console.log('✅ Confusion matrix initialized');
+                initializeFeatureImportance();
+                console.log('✅ Feature importance initialized');
+                initializeCorrelationMatrix();
+                console.log('✅ Correlation matrix initialized');
+                initializeHoldingsChart();
+                console.log('✅ Holdings chart initialized');
+                initializeEfficientFrontier();
+                console.log('✅ Efficient frontier initialized');
+                console.log('🎯 All charts initialized successfully!');
+            } catch (error) {
+                console.error('❌ Chart initialization error:', error);
+            }
         }
 
         // Performance Chart (Dashboard)
