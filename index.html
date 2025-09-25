@@ -11,6 +11,7 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+        console.log('🚨 SCRIPT PARSING TEST: First script tag is being parsed');
         tailwind.config = {
             theme: {
                 extend: {
@@ -40,22 +41,23 @@
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="expires" content="0">
     <meta http-equiv="pragma" content="no-cache">
-    <script src="secure-config.js"></script>
-    <script src="trading-api.js"></script>
-    <script src="functional_agentic_trading_system.js"></script>
-    <script src="complete_functional_agentic_system.js"></script>
-    <script src="tiered_pricing_dashboard.js"></script>
-    <script src="algorithm_verification_system.js"></script>
-    <script src="live_performance_monitor.js"></script>
-    <!-- Ultra-Low Latency HFT Optimization System -->
-    <script src="ultra_low_latency_hft_engine.js?v=2024.09.25.001"></script>
-    <script src="hft_wasm_optimizations.js?v=2024.09.25.001"></script>
-    <script src="gpu_accelerated_hft_engine.js?v=2024.09.25.001"></script>
-    <script src="ultra_low_latency_network.js?v=2024.09.25.001"></script>
-    <script src="hft_performance_monitor.js?v=2024.09.25.001"></script>
-    <script src="integrated_hft_optimization_system.js?v=2024.09.25.001"></script>
-    <script src="algorithm_marketplace.js?v=2024.09.25.001"></script>
-    <script src="hft_optimized_marketplace.js?v=2024.09.25.001"></script>
+    <!-- 🚨 EMERGENCY: Potentially problematic scripts disabled for debugging -->
+    <!-- <script src="secure-config.js"></script> -->
+    <!-- <script src="trading-api.js"></script> -->
+    <!-- <script src="functional_agentic_trading_system.js"></script> -->
+    <!-- <script src="complete_functional_agentic_system.js"></script> -->
+    <!-- <script src="tiered_pricing_dashboard.js"></script> -->
+    <!-- <script src="algorithm_verification_system.js"></script> -->
+    <!-- <script src="live_performance_monitor.js"></script> -->
+    <!-- 🚨 EMERGENCY: Ultra-Low Latency HFT Scripts DISABLED TO RESTORE PLATFORM FUNCTIONALITY -->
+    <!-- <script src="ultra_low_latency_hft_engine.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="hft_wasm_optimizations.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="gpu_accelerated_hft_engine.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="ultra_low_latency_network.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="hft_performance_monitor.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="integrated_hft_optimization_system.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="algorithm_marketplace.js?v=2024.09.25.001"></script> -->
+    <!-- <script src="hft_optimized_marketplace.js?v=2024.09.25.001"></script> -->
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
@@ -2409,6 +2411,40 @@
 
         // Global marketplace instance (initialized in algorithm_marketplace.js)
 
+        console.log('🔧 Main script is being parsed - before DOMContentLoaded listener');
+
+        // EMERGENCY INITIALIZATION - Run immediately to restore functionality
+        console.log('🚨 EMERGENCY: Restoring platform functionality immediately');
+        
+        // Force immediate initialization without waiting for DOMContentLoaded
+        setTimeout(function() {
+            console.log('🔄 Emergency initialization starting...');
+            try {
+                // Restore tab navigation immediately
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                console.log('📋 Found tab buttons:', tabButtons.length);
+                
+                // Initialize charts as soon as Chart.js is available
+                if (typeof Chart !== 'undefined') {
+                    console.log('📊 Chart.js available, initializing charts...');
+                    initializeEmergencyCharts();
+                } else {
+                    console.log('⏳ Waiting for Chart.js...');
+                    let chartCheckInterval = setInterval(() => {
+                        if (typeof Chart !== 'undefined') {
+                            console.log('📊 Chart.js now available, initializing charts...');
+                            clearInterval(chartCheckInterval);
+                            initializeEmergencyCharts();
+                        }
+                    }, 100);
+                }
+                
+                console.log('✅ Emergency initialization complete');
+            } catch (error) {
+                console.error('❌ Emergency initialization error:', error);
+            }
+        }, 100);
+
         // Initialize Application
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Starting application initialization...');
@@ -2532,6 +2568,24 @@
                         console.warn('⚠️ Error refreshing algorithm marketplace:', error);
                     }
                 }, 100);
+            }
+        }
+
+        // Emergency chart initialization
+        function initializeEmergencyCharts() {
+            console.log('🚨 Emergency chart initialization starting...');
+            try {
+                if (document.getElementById('performance-chart')) {
+                    initializePerformanceChart();
+                    console.log('✅ Performance chart restored');
+                }
+                if (document.getElementById('predictions-chart')) {
+                    initializePredictionsChart();
+                    console.log('✅ Predictions chart restored');
+                }
+                console.log('🎉 Emergency charts restored!');
+            } catch (error) {
+                console.error('❌ Emergency chart error:', error);
             }
         }
 
@@ -4108,15 +4162,15 @@
         initializeEnhancedFeatures();
     </script>
     
-    <!-- NautilusTrader Professional Components Integration -->
-    <script src="professional_message_bus.js"></script>
-    <script src="professional_data_engine.js"></script>
-    <script src="professional_risk_engine.js"></script>
-    <script src="professional_execution_engine.js"></script>
-    <script src="professional_portfolio_manager.js"></script>
-    <script src="professional_trading_strategy.js"></script>
-    <script src="professional_exchange_clients.js"></script>
-    <script src="professional_central_trader.js"></script>
+    <!-- 🚨 EMERGENCY: NautilusTrader Professional Components DISABLED TO RESTORE PLATFORM -->
+    <!-- <script src="professional_message_bus.js"></script> -->
+    <!-- <script src="professional_data_engine.js"></script> -->
+    <!-- <script src="professional_risk_engine.js"></script> -->
+    <!-- <script src="professional_execution_engine.js"></script> -->
+    <!-- <script src="professional_portfolio_manager.js"></script> -->
+    <!-- <script src="professional_trading_strategy.js"></script> -->
+    <!-- <script src="professional_exchange_clients.js"></script> -->
+    <!-- <script src="professional_central_trader.js"></script> -->
     
     <!-- NautilusTrader Platform Integration -->
     <script>
