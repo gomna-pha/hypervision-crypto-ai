@@ -958,161 +958,280 @@
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center gap-3">
                                 <div class="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                                <h3 class="text-xl font-bold text-gray-900">⚡ Live Arbitrage Strategies</h3>
-                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">ACTIVE</span>
+                                <h3 class="text-xl font-bold text-gray-900">⚡ HFT Arbitrage Strategies</h3>
+                                <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">ULTRA-LOW LATENCY</span>
                             </div>
                             <div class="text-sm text-gray-600">
-                                NautilusTrader Engine: <span class="font-bold text-green-600">ONLINE</span>
+                                Hyperbolic Space Engine: <span class="font-bold text-indigo-600">OPTIMIZING</span>
                             </div>
                         </div>
 
                         <!-- Strategy Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             
-                            <!-- Strategy 1: Cross-Exchange Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-500">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">Cross-Exchange Arb</h4>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">READY</span>
-                                </div>
-                                <div class="space-y-2 mb-4">
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Opportunity:</span>
-                                        <span class="font-bold text-blue-600" id="cross-exchange-spread">BTC: 0.23%</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Exchanges:</span>
-                                        <span class="text-gray-900 font-semibold">Binance ↔ Coinbase</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Distance:</span>
-                                        <span class="font-bold text-indigo-600" id="cross-hyp-distance">0.847</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Est. Profit:</span>
-                                        <span class="font-bold text-green-600" id="cross-profit">$147.50</span>
-                                    </div>
-                                    <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Geodesic Latency:</span>
-                                        <span class="font-bold text-purple-600" id="cross-latency">34μs</span>
-                                    </div>
-                                </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="executeArbitrageStrategy('cross-exchange')">
-                                    🚀 Execute Strategy
-                                </button>
-                            </div>
-
-                            <!-- Strategy 2: Triangular Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-purple-500">
+                            <!-- Strategy 1: Triangular Arbitrage -->
+                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-purple-500 hover:shadow-lg transition-all">
                                 <div class="flex items-center justify-between mb-3">
                                     <h4 class="font-bold text-lg text-gray-900">Triangular Arbitrage</h4>
-                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-bold">SCANNING</span>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold animate-pulse">ACTIVE</span>
                                 </div>
+                                <div class="text-xs text-gray-600 mb-3 font-medium">Cross-exchange price discrepancies</div>
                                 <div class="space-y-2 mb-4">
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Geodesic Route:</span>
-                                        <span class="font-bold text-purple-600">BTC→ETH→USDT→BTC</span>
+                                        <span class="text-gray-600">HFT Execution:</span>
+                                        <span class="font-bold text-red-600" id="triangular-latency">< 50ms</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Triangle Area:</span>
+                                        <span class="text-gray-600">Geodesic Route:</span>
+                                        <span class="font-bold text-purple-600" id="triangular-route">BTC→ETH→USDT</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Hyperbolic Area:</span>
                                         <span class="text-gray-900 font-semibold" id="triangular-area">0.234π</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Efficiency:</span>
-                                        <span class="font-bold text-indigo-600" id="triangular-efficiency">0.78</span>
+                                        <span class="text-gray-600">Efficiency:</span>
+                                        <span class="font-bold text-indigo-600" id="triangular-efficiency">94.2%</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Geodesic Cycle:</span>
-                                        <span class="font-bold text-purple-600" id="triangular-latency">89μs</span>
+                                        <span class="text-gray-600">Spread:</span>
+                                        <span class="font-bold text-green-600" id="triangular-spread">0.18%</span>
                                     </div>
                                 </div>
-                                <button class="w-full px-4 py-2 bg-gradient-to-r from-gray-400 to-gray-500 text-white rounded-lg font-semibold cursor-not-allowed" disabled>
-                                    ⏳ Awaiting Opportunity
+                                <button class="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all shadow-md" onclick="executeArbitrageStrategy('triangular')">
+                                    ⚡ Execute HFT
                                 </button>
                             </div>
 
-                            <!-- Strategy 3: Statistical Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-green-500">
+                            <!-- Strategy 2: Statistical Pairs Trading -->
+                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-green-500 hover:shadow-lg transition-all">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">Statistical Arbitrage</h4>
-                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">ACTIVE</span>
+                                    <h4 class="font-bold text-lg text-gray-900">Statistical Pairs Trading</h4>
+                                    <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-bold">ML-ACTIVE</span>
                                 </div>
+                                <div class="text-xs text-gray-600 mb-3 font-medium">Mean reversion + FinBERT sentiment</div>
                                 <div class="space-y-2 mb-4">
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Embedding:</span>
-                                        <span class="font-bold text-green-600">ETH/BTC Correlations</span>
+                                        <span class="text-gray-600">ML Selection:</span>
+                                        <span class="font-bold text-green-600" id="pairs-selection">ETH/BTC</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Gaussian Curvature:</span>
-                                        <span class="text-gray-900 font-semibold" id="stat-arb-curvature">-2.34</span>
+                                        <span class="text-gray-600">FinBERT Score:</span>
+                                        <span class="font-bold text-blue-600" id="pairs-finbert">+0.73</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Distance:</span>
-                                        <span class="font-bold text-indigo-600" id="stat-arb-distance">1.23</span>
+                                        <span class="text-gray-600">Mean Reversion:</span>
+                                        <span class="text-gray-900 font-semibold" id="pairs-reversion">2.4σ</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Position Size:</span>
-                                        <span class="font-bold text-purple-600">$5,000</span>
+                                        <span class="text-gray-600">Correlation:</span>
+                                        <span class="font-bold text-indigo-600" id="pairs-correlation">0.847</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Position:</span>
+                                        <span class="font-bold text-purple-600" id="pairs-position">$7,500</span>
                                     </div>
                                 </div>
                                 <button class="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md" onclick="executeArbitrageStrategy('statistical')">
-                                    📊 Execute Stat Arb
+                                    🧠 Execute ML Pairs
                                 </button>
                             </div>
 
-                            <!-- Strategy 4: FinBERT Sentiment Arbitrage -->
-                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-orange-500">
+                            <!-- Strategy 3: Index/Futures Arbitrage -->
+                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-blue-500 hover:shadow-lg transition-all">
                                 <div class="flex items-center justify-between mb-3">
-                                    <h4 class="font-bold text-lg text-gray-900">FinBERT Sentiment Arb</h4>
-                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-bold">ANALYZING</span>
+                                    <h4 class="font-bold text-lg text-gray-900">Index/Futures Arbitrage</h4>
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-bold">INSTITUTIONAL</span>
                                 </div>
+                                <div class="text-xs text-gray-600 mb-3 font-medium">Spot vs futures price discrepancies</div>
                                 <div class="space-y-2 mb-4">
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Sentiment Vector:</span>
-                                        <span class="font-bold text-orange-600" id="sentiment-vector">[-0.23, 0.78, -0.15]</span>
+                                        <span class="text-gray-600">Execution Grade:</span>
+                                        <span class="font-bold text-blue-600" id="futures-grade">Institutional</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Market Emotion:</span>
-                                        <span class="text-gray-900 font-semibold" id="market-emotion">Fear → Greed</span>
+                                        <span class="text-gray-600">BTC Futures:</span>
+                                        <span class="font-bold text-green-600" id="futures-spread">+$127</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Sentiment Divergence:</span>
-                                        <span class="font-bold text-indigo-600" id="sentiment-divergence">2.47σ</span>
+                                        <span class="text-gray-600">ETH Futures:</span>
+                                        <span class="text-gray-900 font-semibold" id="eth-futures">+$8.5</span>
                                     </div>
                                     <div class="flex justify-between text-sm">
-                                        <span class="text-gray-600">Hyperbolic Emotion:</span>
-                                        <span class="font-bold text-purple-600" id="hyperbolic-emotion">0.847</span>
+                                        <span class="text-gray-600">Hyperbolic Path:</span>
+                                        <span class="font-bold text-indigo-600" id="futures-path">0.923</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Basis Risk:</span>
+                                        <span class="font-bold text-purple-600" id="basis-risk">0.12%</span>
+                                    </div>
+                                </div>
+                                <button class="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md" onclick="executeArbitrageStrategy('futures')">
+                                    🏛️ Execute Institutional
+                                </button>
+                            </div>
+
+                            <!-- Strategy 4: News Sentiment Arbitrage -->
+                            <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-orange-500 hover:shadow-lg transition-all">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="font-bold text-lg text-gray-900">News Sentiment Arbitrage</h4>
+                                    <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded text-xs font-bold animate-pulse">LIVE</span>
+                                </div>
+                                <div class="text-xs text-gray-600 mb-3 font-medium">FinBERT + Twitter/X + Volume analysis</div>
+                                <div class="space-y-2 mb-4">
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Social Sentiment:</span>
+                                        <span class="font-bold text-orange-600" id="social-sentiment">Real-time</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">FinBERT Score:</span>
+                                        <span class="font-bold text-green-600" id="sentiment-finbert">+0.73</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Twitter/X Feed:</span>
+                                        <span class="text-gray-900 font-semibold" id="twitter-sentiment">Bullish</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Volume Spike:</span>
+                                        <span class="font-bold text-indigo-600" id="volume-spike">+34%</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm">
+                                        <span class="text-gray-600">Signal Strength:</span>
+                                        <span class="font-bold text-purple-600" id="signal-strength">Strong</span>
                                     </div>
                                 </div>
                                 <button class="w-full px-4 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg font-semibold hover:from-orange-600 hover:to-orange-700 transition-all shadow-md" onclick="executeArbitrageStrategy('sentiment')">
-                                    🧠 Execute Sentiment Arb
+                                    📱 Execute Social Arb
                                 </button>
                             </div>
 
                         </div>
 
-                        <!-- Hyperbolic Geometry Engine Status -->
-                        <div class="mt-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border-2 border-indigo-200">
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="font-bold text-lg text-gray-900">🌀 Hyperbolic Space Engine</h4>
-                                <span class="px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full text-xs font-bold">ACTIVE</span>
+                        <!-- 🌀 HYPERBOLIC SPACE ENGINE - THE SOUL OF THE PLATFORM -->
+                        <div class="mt-8 p-6 bg-gradient-to-br from-indigo-50 via-purple-50 to-blue-50 rounded-xl border-3 border-indigo-300 shadow-xl">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-4">
+                                    <div class="p-3 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-lg">
+                                        <div class="w-6 h-6 text-white">🌀</div>
+                                    </div>
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-gray-900">Hyperbolic Space Optimization Engine</h3>
+                                        <p class="text-sm text-gray-600 font-medium">The Soul of Ultra-Low Latency HFT Platform</p>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full text-sm font-bold animate-pulse shadow-lg">
+                                        OPTIMIZING ALL STRATEGIES
+                                    </span>
+                                    <div class="text-xs text-indigo-600 font-semibold mt-1">Poincaré Disk Model Active</div>
+                                </div>
                             </div>
-                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                                <div class="text-center">
-                                    <div class="font-bold text-indigo-600">Poincaré Disk</div>
-                                    <div class="text-gray-600">Geometry Model</div>
+                            
+                            <!-- Core Engine Metrics -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div class="bg-white p-4 rounded-xl shadow-md border border-indigo-200 hover:shadow-lg transition-all">
+                                    <div class="text-center">
+                                        <div class="text-xs text-indigo-600 font-semibold mb-1">GEOMETRY MODEL</div>
+                                        <div class="font-bold text-indigo-700">Poincaré Disk</div>
+                                        <div class="text-xs text-gray-500">Curvature: -1.0</div>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="font-bold text-purple-600" id="hyperbolic-curvature">-1.0</div>
-                                    <div class="text-gray-600">Space Curvature</div>
+                                <div class="bg-white p-4 rounded-xl shadow-md border border-purple-200 hover:shadow-lg transition-all">
+                                    <div class="text-center">
+                                        <div class="text-xs text-purple-600 font-semibold mb-1">GEODESIC PATHS</div>
+                                        <div class="font-bold text-purple-700" id="engine-geodesics">847</div>
+                                        <div class="text-xs text-gray-500">Cached routes</div>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="font-bold text-blue-600" id="geodesic-cache">247</div>
-                                    <div class="text-gray-600">Cached Geodesics</div>
+                                <div class="bg-white p-4 rounded-xl shadow-md border border-green-200 hover:shadow-lg transition-all">
+                                    <div class="text-center">
+                                        <div class="text-xs text-green-600 font-semibold mb-1">PATH EFFICIENCY</div>
+                                        <div class="font-bold text-green-700" id="engine-efficiency">98.7%</div>
+                                        <div class="text-xs text-gray-500">Optimization</div>
+                                    </div>
                                 </div>
-                                <div class="text-center">
-                                    <div class="font-bold text-green-600" id="hyperbolic-efficiency">94.2%</div>
-                                    <div class="text-gray-600">Path Efficiency</div>
+                                <div class="bg-white p-4 rounded-xl shadow-md border border-red-200 hover:shadow-lg transition-all">
+                                    <div class="text-center">
+                                        <div class="text-xs text-red-600 font-semibold mb-1">EXECUTION TIME</div>
+                                        <div class="font-bold text-red-700" id="engine-latency">23μs</div>
+                                        <div class="text-xs text-gray-500">Avg latency</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Strategy Optimization Status -->
+                            <div class="bg-white p-5 rounded-xl border border-indigo-200 shadow-md">
+                                <h4 class="font-bold text-lg text-gray-900 mb-4">🎯 Real-time Strategy Optimization</h4>
+                                    <!-- Triangular Arbitrage Optimization -->
+                                    <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold text-purple-700">Triangular Arbitrage</span>
+                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">OPTIMIZED</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <div>Geodesic Triangle: <span class="font-bold text-purple-600">0.234π</span></div>
+                                            <div>HFT Latency: <span class="font-bold text-red-600">&lt; 50ms</span></div>
+                                            <div>Path Efficiency: <span class="font-bold text-green-600">94.2%</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Statistical Pairs Optimization -->
+                                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold text-green-700">Statistical Pairs</span>
+                                            <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">ML-ACTIVE</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <div>Mean Reversion: <span class="font-bold text-green-600">2.4σ</span></div>
+                                            <div>FinBERT Score: <span class="font-bold text-blue-600">+0.73</span></div>
+                                            <div>Correlation: <span class="font-bold text-indigo-600">0.847</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Index/Futures Optimization -->
+                                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold text-blue-700">Index/Futures</span>
+                                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">INSTITUTIONAL</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <div>BTC Futures: <span class="font-bold text-green-600">+$127</span></div>
+                                            <div>Basis Risk: <span class="font-bold text-purple-600">0.12%</span></div>
+                                            <div>Hyperbolic Path: <span class="font-bold text-indigo-600">0.923</span></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- News Sentiment Optimization -->
+                                    <div class="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="font-semibold text-orange-700">News Sentiment</span>
+                                            <span class="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded animate-pulse">LIVE</span>
+                                        </div>
+                                        <div class="text-xs text-gray-600 space-y-1">
+                                            <div>Social Feed: <span class="font-bold text-orange-600">Real-time</span></div>
+                                            <div>Volume Spike: <span class="font-bold text-indigo-600">+34%</span></div>
+                                            <div>Signal: <span class="font-bold text-green-600">Strong</span></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ultra-Low Latency Features -->
+                                <div class="mt-6 bg-gradient-to-r from-red-50 to-orange-50 p-4 rounded-lg border border-red-200">
+                                    <h5 class="font-bold text-lg text-gray-900 mb-3">⚡ Ultra-Low Latency HFT Features</h5>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="font-semibold text-red-600">Custom Arbitrage Suite</div>
+                                            <div class="text-gray-600">Hyperbolic CNN + Multi-strategy AI</div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="font-semibold text-blue-600">Investor Customizable</div>
+                                            <div class="text-gray-600">Real-time algorithm parameters</div>
+                                        </div>
+                                        <div class="bg-white p-3 rounded border">
+                                            <div class="font-semibold text-green-600">Live Strategies</div>
+                                            <div class="text-gray-600">4 HFT arbitrage engines active</div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
