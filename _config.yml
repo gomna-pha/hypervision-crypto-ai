@@ -19,10 +19,9 @@ exclude:
   - MIT_PRESENTATION.md
   - PLATFORM_VERIFICATION.md
 
-# Include specific files
+# Include specific files  
 include:
   - index.html
-  - production.html
 
 # Force rebuild
 github: [metadata]
