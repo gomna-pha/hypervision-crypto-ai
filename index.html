@@ -506,10 +506,26 @@
                                     </div>
                                 </div>
 
-                                <!-- Hyperbolic Optimization Metrics -->
+                                <!-- Hyperbolic Dimensionality Reduction -->
                                 <div class="bg-cream-800 rounded-lg p-4">
-                                    <div class="text-cream-300 font-semibold text-sm mb-3">HYPERBOLIC OPTIMIZATION</div>
+                                    <div class="text-cream-300 font-semibold text-sm mb-3">DIMENSIONALITY REDUCTION</div>
                                     <div class="space-y-2 text-xs">
+                                        <div class="flex justify-between">
+                                            <span>Original Dimensions:</span>
+                                            <span class="text-cream-400 font-bold">768</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Reduced to:</span>
+                                            <span class="text-cream-200 font-bold">32</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Compression Ratio:</span>
+                                            <span class="text-green-400 font-bold">24:1</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Information Loss:</span>
+                                            <span class="text-cream-300 font-bold">2.1%</span>
+                                        </div>
                                         <div class="flex justify-between">
                                             <span>Geodesic Paths:</span>
                                             <span class="text-cream-200 font-bold" id="geodesic-count">1,247</span>
@@ -519,16 +535,8 @@
                                             <span class="text-cream-300 font-bold">-1.0</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span>Path Efficiency:</span>
-                                            <span class="text-cream-400 font-bold" id="path-efficiency">99.3%</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Embedding Dim:</span>
-                                            <span class="text-cream-400 font-bold">768</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Optimization Time:</span>
-                                            <span class="text-cream-300 font-bold" id="opt-time">18μs</span>
+                                            <span>Reduction Time:</span>
+                                            <span class="text-cream-300 font-bold" id="opt-time">12μs</span>
                                         </div>
                                     </div>
                                 </div>
@@ -644,28 +652,126 @@
                             </div>
                         </div>
 
-                        <!-- Recent Transactions -->
+                        <!-- Live Trading Execution History -->
                         <div class="portfolio-section rounded-lg shadow-lg p-6">
-                            <h3 class="text-lg font-bold text-cream-900 mb-4">Recent Transactions</h3>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center py-2 border-b border-cream-200">
-                                    <div>
-                                        <div class="font-semibold text-cream-900 text-sm">Cross-Exchange Arb</div>
-                                        <div class="text-xs text-cream-600">BTC 2.5 executed</div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="font-semibold text-cream-800">+$127</div>
-                                        <div class="text-xs text-cream-600">2 min ago</div>
-                                    </div>
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-cream-900">⚡ Live Execution History</h3>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                    <span class="text-xs text-cream-700">Real-time</span>
                                 </div>
-                                <div class="flex justify-between items-center py-2 border-b border-cream-200">
-                                    <div>
-                                        <div class="font-semibold text-cream-900 text-sm">Statistical Pairs</div>
-                                        <div class="text-xs text-cream-600">ETH/BTC pair</div>
+                            </div>
+                            
+                            <!-- Enhanced Trading Table with Hyperbolic Features -->
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-xs">
+                                    <thead>
+                                        <tr class="border-b border-cream-300 text-cream-800">
+                                            <th class="text-left py-2 font-semibold">Time</th>
+                                            <th class="text-left py-2 font-semibold">Asset</th>
+                                            <th class="text-left py-2 font-semibold">Action</th>
+                                            <th class="text-right py-2 font-semibold">Price</th>
+                                            <th class="text-right py-2 font-semibold">Size</th>
+                                            <th class="text-right py-2 font-semibold">P&L</th>
+                                            <th class="text-left py-2 font-semibold">Strategy</th>
+                                            <th class="text-right py-2 font-semibold">Confidence</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="space-y-1">
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:09:20</td>
+                                            <td class="py-2"><span class="font-semibold text-orange-600">BTC</span></td>
+                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
+                                            <td class="py-2 text-right text-cream-900">$29,316</td>
+                                            <td class="py-2 text-right text-cream-900">1.52</td>
+                                            <td class="py-2 text-right font-semibold text-cream-900">$224</td>
+                                            <td class="py-2"><span class="bg-cream-200 text-cream-800 px-2 py-1 rounded text-xs">Balanced</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">87.8%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:09:15</td>
+                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
+                                            <td class="py-2"><span class="text-gray-600 font-semibold">CLOSE</span></td>
+                                            <td class="py-2 text-right text-cream-900">$45,930</td>
+                                            <td class="py-2 text-right text-cream-900">3.65</td>
+                                            <td class="py-2 text-right font-semibold text-green-600">+$366</td>
+                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">84.7%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:09:10</td>
+                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
+                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
+                                            <td class="py-2 text-right text-cream-900">$59,682</td>
+                                            <td class="py-2 text-right text-cream-900">4.19</td>
+                                            <td class="py-2 text-right font-semibold text-green-600">+$859</td>
+                                            <td class="py-2"><span class="bg-cream-200 text-cream-800 px-2 py-1 rounded text-xs">Balanced</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">92.1%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:09:05</td>
+                                            <td class="py-2"><span class="font-semibold text-blue-600">ETH</span></td>
+                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
+                                            <td class="py-2 text-right text-cream-900">$39,744</td>
+                                            <td class="py-2 text-right text-cream-900">2.40</td>
+                                            <td class="py-2 text-right font-semibold text-cream-900">$345</td>
+                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">82.2%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:09:00</td>
+                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
+                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
+                                            <td class="py-2 text-right text-cream-900">$33,954</td>
+                                            <td class="py-2 text-right text-cream-900">1.02</td>
+                                            <td class="py-2 text-right font-semibold text-green-600">+$859</td>
+                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">91.1%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:04:54</td>
+                                            <td class="py-2"><span class="font-semibold text-indigo-600">MATIC</span></td>
+                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
+                                            <td class="py-2 text-right text-cream-900">$47,041</td>
+                                            <td class="py-2 text-right text-cream-900">1.97</td>
+                                            <td class="py-2 text-right font-semibold text-green-600">+$365</td>
+                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">93.0%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:04:48</td>
+                                            <td class="py-2"><span class="font-semibold text-blue-600">ETH</span></td>
+                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
+                                            <td class="py-2 text-right text-cream-900">$69,677</td>
+                                            <td class="py-2 text-right text-cream-900">0.25</td>
+                                            <td class="py-2 text-right font-semibold text-cream-900">$21</td>
+                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
+                                            <td class="py-2 text-right font-semibold text-green-600">84.7%</td>
+                                        </tr>
+                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
+                                            <td class="py-2 text-cream-700">1:04:42</td>
+                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
+                                            <td class="py-2"><span class="text-gray-600 font-semibold">CLOSE</span></td>
+                                            <td class="py-2 text-right text-cream-900">$68,044</td>
+                                            <td class="py-2 text-right text-cream-900">0.83</td>
+                                            <td class="py-2 text-right font-semibold text-cream-900">$51</td>
+                                            <td class="py-2"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Custom ML</span></td>
+                                            <td class="py-2 text-right font-semibold text-yellow-600">71.8%</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Hyperbolic Analysis Summary -->
+                            <div class="mt-4 bg-cream-100 rounded-lg p-4">
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="text-cream-800">
+                                        <span class="font-semibold">Hyperbolic Analysis:</span> 
+                                        <span class="text-cream-700">8 trades processed through 32D space compression</span>
                                     </div>
                                     <div class="text-right">
-                                        <div class="font-semibold text-cream-800">+$203</div>
-                                        <div class="text-xs text-cream-600">8 min ago</div>
+                                        <div class="text-green-600 font-bold">+$3,090 total P&L</div>
+                                        <div class="text-xs text-cream-600">85.2% avg confidence</div>
                                     </div>
                                 </div>
                             </div>
