@@ -137,13 +137,40 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
         }
+        .tab-content {
+            min-height: 400px !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        .tab-content.hidden {
+            display: none !important;
+        }
         .portfolio-section {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
-            border: 2px solid rgba(192, 172, 137, 0.3);
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%) !important;
+            border: 2px solid rgba(192, 172, 137, 0.3) !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         .transparency-panel {
-            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%);
-            border: 2px solid rgba(212, 196, 168, 0.4);
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%) !important;
+            border: 2px solid rgba(212, 196, 168, 0.4) !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        .cream-panel {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        .cream-card {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         .index-card {
             background: linear-gradient(135deg, #fefbf3 0%, #fdf6e3 100%);
@@ -2200,16 +2227,36 @@
             const targetTab = document.getElementById(tabName + '-tab');
             console.log(`Target tab element:`, targetTab);
             if (targetTab) {
+                // Force complete visibility
                 targetTab.classList.remove('hidden');
-                targetTab.style.display = 'block';
-                targetTab.style.visibility = 'visible';
-                targetTab.style.opacity = '1';
+                targetTab.style.display = 'block !important';
+                targetTab.style.visibility = 'visible !important';
+                targetTab.style.opacity = '1 !important';
+                targetTab.style.position = 'relative !important';
+                targetTab.style.zIndex = '1 !important';
+                targetTab.style.minHeight = '400px';
                 
-                // Force content visibility
-                const tabChildren = targetTab.querySelectorAll('*');
-                tabChildren.forEach(child => {
-                    if (child.style.display === 'none' && !child.classList.contains('hidden')) {
-                        child.style.display = '';
+                // Force all child elements to be visible
+                const allChildren = targetTab.querySelectorAll('*');
+                allChildren.forEach(child => {
+                    // Remove any hidden classes
+                    child.classList.remove('hidden');
+                    
+                    // Force visibility styles
+                    if (!child.style.display || child.style.display === 'none') {
+                        child.style.display = 'block';
+                    }
+                    child.style.visibility = 'visible';
+                    child.style.opacity = '1';
+                    
+                    // Special handling for specific classes
+                    if (child.classList.contains('portfolio-section') || 
+                        child.classList.contains('transparency-panel') ||
+                        child.classList.contains('cream-panel') ||
+                        child.classList.contains('cream-card')) {
+                        child.style.display = 'block !important';
+                        child.style.visibility = 'visible !important';
+                        child.style.opacity = '1 !important';
                     }
                 });
                 
@@ -2222,16 +2269,18 @@
                 
                 console.log(`✅ Successfully switched to ${tabName} tab`);
                 
-                // Debug: Check if tab has visible content
+                // Enhanced debugging
                 const hasVisibleContent = targetTab.offsetHeight > 0 && targetTab.offsetWidth > 0;
                 const childCount = targetTab.children.length;
-                console.log(`  Tab visibility: ${hasVisibleContent}, Children count: ${childCount}`);
+                const computedStyle = window.getComputedStyle(targetTab);
                 
-                if (!hasVisibleContent && childCount > 0) {
-                    console.warn(`⚠️ Tab ${tabName} exists but may not be properly visible`);
-                    // Force recalculation of layout
-                    targetTab.style.minHeight = '400px';
-                }
+                console.log(`  Tab visibility: ${hasVisibleContent}, Children count: ${childCount}`);
+                console.log(`  Computed display: ${computedStyle.display}, visibility: ${computedStyle.visibility}, opacity: ${computedStyle.opacity}`);
+                console.log(`  Tab dimensions: ${targetTab.offsetWidth}x${targetTab.offsetHeight}`);
+                
+                // Force layout recalculation
+                targetTab.offsetHeight; // Trigger reflow
+                
             } else {
                 console.error(`❌ Tab not found: ${tabName}-tab`);
             }
@@ -4414,9 +4463,59 @@
                 }
             };
             
-            // Add manual tab test
+            // Add manual tab test functions
             window.showInvestorPortal = function() {
                 switchTab('investor-portal');
+            };
+            
+            window.showPortfolio = function() {
+                switchTab('portfolio');
+            };
+            
+            window.showMarkets = function() {
+                switchTab('markets');
+            };
+            
+            window.showTransparency = function() {
+                switchTab('transparency');
+            };
+            
+            // Debug function to force show all tabs
+            window.debugShowAllTabs = function() {
+                const allTabs = document.querySelectorAll('.tab-content');
+                allTabs.forEach(tab => {
+                    tab.classList.remove('hidden');
+                    tab.style.display = 'block !important';
+                    tab.style.visibility = 'visible !important';
+                    tab.style.opacity = '1 !important';
+                    tab.style.minHeight = '400px';
+                    
+                    const allChildren = tab.querySelectorAll('*');
+                    allChildren.forEach(child => {
+                        child.style.display = 'block';
+                        child.style.visibility = 'visible';
+                        child.style.opacity = '1';
+                    });
+                });
+                console.log('🔧 All tabs forced visible');
+            };
+            
+            // Test specific tab content
+            window.debugTabContent = function(tabName) {
+                const tab = document.getElementById(tabName + '-tab');
+                if (tab) {
+                    console.log(`🔍 Debug ${tabName} tab:`, {
+                        element: tab,
+                        display: window.getComputedStyle(tab).display,
+                        visibility: window.getComputedStyle(tab).visibility,
+                        opacity: window.getComputedStyle(tab).opacity,
+                        dimensions: `${tab.offsetWidth}x${tab.offsetHeight}`,
+                        innerHTML: tab.innerHTML.substring(0, 200) + '...',
+                        childrenCount: tab.children.length
+                    });
+                } else {
+                    console.error(`❌ Tab ${tabName} not found`);
+                }
             };
         }
         
