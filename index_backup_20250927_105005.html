@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA | Institutional HFT Platform</title>
+    <style>
+        :root {
+            --cream-primary: #FFF8E7;
+            --cream-secondary: #FAF0DC;
+            --cream-tertiary: #F5E6D3;
+            --brown-accent: rgba(139, 90, 43, 0.2);
+            --brown-text: #5D4E37;
+            --brown-dark: #3E2E1F;
+            --success: #2D5F3F;
+            --danger: #8B4513;
+            --warning: #D2691E;
+            --info: #4682B4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--cream-primary) 0%, var(--cream-secondary) 100%);
+            color: var(--brown-dark);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Professional Header */
+        .header {
+            background: rgba(255, 248, 231, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--brown-accent);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(139, 90, 43, 0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0.75rem;
+            background: rgba(45, 95, 63, 0.1);
+            border: 1px solid rgba(45, 95, 63, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        .live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: var(--brown-text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            color: var(--brown-dark);
+        }
+
+        .nav-item.active {
+            color: var(--brown-dark);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--brown-dark);
+        }
+
+        /* Main Dashboard Container */
+        .dashboard-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        /* Professional Grid System */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Professional Cards */
+        .metric-card {
+            background: rgba(255, 248, 231, 0.95);
+            border: 1px solid var(--brown-accent);
+            border-radius: 8px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 90, 43, 0.1);
+        }
+
+        .panel-card {
+            background: rgba(255, 248, 231, 0.95);
+            border: 1px solid var(--brown-accent);
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid rgba(139, 90, 43, 0.1);
+        }
+
+        .card-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--brown-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-badge {
+            background: rgba(139, 90, 43, 0.1);
+            color: var(--brown-text);
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* Metrics Display */
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+            margin: 0.5rem 0;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: var(--brown-text);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .positive {
+            color: var(--success);
+            background: rgba(45, 95, 63, 0.1);
+        }
+
+        .negative {
+            color: var(--danger);
+            background: rgba(139, 69, 19, 0.1);
+        }
+
+        /* Professional Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 0.75rem;
+            color: var(--brown-text);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(139, 90, 43, 0.1);
+        }
+
+        .data-table td {
+            padding: 0.75rem;
+            color: var(--brown-dark);
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(139, 90, 43, 0.05);
+        }
+
+        .data-table tbody tr {
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(139, 90, 43, 0.03);
+        }
+
+        /* Professional Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--brown-dark);
+            color: var(--cream-primary);
+            border-color: var(--brown-dark);
+        }
+
+        .btn-primary:hover {
+            background: var(--brown-text);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #234a32;
+            transform: translateY(-1px);
+        }
+
+        .btn-execute {
+            background: linear-gradient(135deg, var(--success), #234a32);
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        /* Progress Bars */
+        .progress-bar {
+            height: 6px;
+            background: rgba(139, 90, 43, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success), #234a32);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        /* Status Indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: rgba(45, 95, 63, 0.1);
+            color: var(--success);
+            border: 1px solid rgba(45, 95, 63, 0.2);
+        }
+
+        .status-warning {
+            background: rgba(210, 105, 30, 0.1);
+            color: var(--warning);
+            border: 1px solid rgba(210, 105, 30, 0.2);
+        }
+
+        .status-danger {
+            background: rgba(139, 69, 19, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(139, 69, 19, 0.2);
+        }
+
+        /* Special Feature Cards */
+        .feature-highlight {
+            background: linear-gradient(135deg, rgba(255, 248, 231, 0.98), rgba(250, 240, 220, 0.98));
+            border: 2px solid rgba(139, 90, 43, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .esg-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--success), #234a32);
+            color: white;
+        }
+
+        .shap-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem;
+            background: rgba(255, 248, 231, 0.5);
+            border: 1px solid rgba(139, 90, 43, 0.1);
+            border-radius: 6px;
+            margin: 0.5rem 0;
+            transition: all 0.2s;
+        }
+
+        .shap-value:hover {
+            background: rgba(255, 248, 231, 0.8);
+        }
+
+        /* Order Book Styles */
+        .order-book {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .order-side {
+            padding: 0.75rem;
+            border-radius: 6px;
+        }
+
+        .bid-side {
+            background: rgba(45, 95, 63, 0.05);
+            border: 1px solid rgba(45, 95, 63, 0.1);
+        }
+
+        .ask-side {
+            background: rgba(139, 69, 19, 0.05);
+            border: 1px solid rgba(139, 69, 19, 0.1);
+        }
+
+        /* Loading Animation */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .loading {
+            background: linear-gradient(90deg, 
+                rgba(139, 90, 43, 0.05) 0%, 
+                rgba(139, 90, 43, 0.1) 50%, 
+                rgba(139, 90, 43, 0.05) 100%);
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .panel-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-menu {
+                display: none;
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid rgba(139, 90, 43, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            color: var(--brown-text);
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .tab:hover {
+            color: var(--brown-dark);
+        }
+
+        .tab.active {
+            color: var(--brown-dark);
+            border-bottom-color: var(--brown-dark);
+        }
+    </style>
+</head>
+<body>
+    <!-- Professional Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo">GOMNA</div>
+                <div class="status-badge">
+                    <span class="live-dot"></span>
+                    <span>INSTITUTIONAL TRADING</span>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <a class="nav-item active" onclick="switchTab('dashboard')">Dashboard</a>
+                <a class="nav-item" onclick="switchTab('portfolio')">Portfolio</a>
+                <a class="nav-item" onclick="switchTab('execution')">Execution</a>
+                <a class="nav-item" onclick="switchTab('risk')">Risk</a>
+                <a class="nav-item" onclick="switchTab('transparency')">Transparency</a>
+                <a class="nav-item" onclick="switchTab('esg')">ESG</a>
+                <a class="nav-item" onclick="switchTab('settings')">Settings</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Key Performance Metrics -->
+        <div class="metrics-grid">
+            <!-- Portfolio Value -->
+            <div class="metric-card">
+                <div class="metric-label">Portfolio Value</div>
+                <div class="metric-value" id="portfolio-value">$24,567,892</div>
+                <div class="metric-change positive" id="portfolio-change">
+                    ↑ 4.72% ($1,108,234)
+                </div>
+            </div>
+
+            <!-- Daily P&L -->
+            <div class="metric-card">
+                <div class="metric-label">Daily P&L</div>
+                <div class="metric-value" id="daily-pnl">+$89,345</div>
+                <div class="metric-change positive" id="pnl-change">
+                    ↑ 127.3% vs yesterday
+                </div>
+            </div>
+
+            <!-- Sharpe Ratio -->
+            <div class="metric-card">
+                <div class="metric-label">Sharpe Ratio</div>
+                <div class="metric-value" id="sharpe">2.89</div>
+                <div class="metric-change positive">
+                    Industry Avg: 1.5
+                </div>
+            </div>
+
+            <!-- Win Rate -->
+            <div class="metric-card">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value" id="win-rate">73.8%</div>
+                <div class="metric-change positive">
+                    847 / 1,148 trades
+                </div>
+            </div>
+
+            <!-- Execution Latency -->
+            <div class="metric-card">
+                <div class="metric-label">Execution Latency</div>
+                <div class="metric-value" id="latency">8.7μs</div>
+                <div class="metric-change positive">
+                    P99: 24.3μs
+                </div>
+            </div>
+
+            <!-- System Uptime -->
+            <div class="metric-card">
+                <div class="metric-label">System Uptime</div>
+                <div class="metric-value">99.98%</div>
+                <div class="metric-change positive">
+                    Zero incidents
+                </div>
+            </div>
+        </div>
+
+        <!-- Anti-Sniping Shield Status -->
+        <div class="panel-card full-width feature-highlight">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>🛡️</span>
+                    <span>Anti-Sniping Shield™</span>
+                </div>
+                <div class="status status-active">PROTECTION ACTIVE</div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div>
+                    <div class="metric-label">Sniping Attempts Blocked</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="sniping-blocked">1,247</div>
+                </div>
+                <div>
+                    <div class="metric-label">Saved Today</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="saved-today">$18,947</div>
+                </div>
+                <div>
+                    <div class="metric-label">Latency Randomization</div>
+                    <div style="font-size: 1.5rem; font-weight: 700;" id="latency-range">0-25ms</div>
+                </div>
+                <div>
+                    <div class="metric-label">Annual Savings Projection</div>
+                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">$1.87M</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Trading Panels -->
+        <div class="panel-grid">
+            <!-- Live Order Book -->
+            <div class="panel-card">
+                <div class="card-header">
+                    <div class="card-title">Cross-Exchange Order Book</div>
+                    <div class="card-badge" id="book-update">STREAMING</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Exchange</th>
+                            <th>Bid</th>
+                            <th>Ask</th>
+                            <th>Spread</th>
+                            <th>Opportunity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-book-data">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-execute" onclick="executeArbitrage('cross-exchange')">
+                        EXECUTE BEST OPPORTUNITY
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Strategies -->
+            <div class="panel-card">
+                <div class="card-header">
+                    <div class="card-title">Active Trading Strategies</div>
+                    <div class="status status-active">7 RUNNING</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Strategy</th>
+                            <th>P&L Today</th>
+                            <th>Trades</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="strategies-data">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div style="margin-top: 1rem;">
+                    <button class="btn btn-primary" onclick="configureStrategies()">
+                        CONFIGURE PARAMETERS
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Explainability Dashboard -->
+        <div class="panel-card full-width">
+            <div class="card-header">
+                <div class="card-title">
+                    <span>🧠</span>
+                    <span>AI Decision Transparency (SHAP Analysis)</span>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <div class="card-badge">MIFID III</div>
+                    <div class="card-badge">SEC CAT</div>
+                    <div class="card-badge">GDPR</div>
+                </div>
+            </div>
+            <div id="shap-analysis">
+                <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 248, 231, 0.5); border-radius: 6px;">
+                    <strong>Latest Decision:</strong> <span id="latest-decision">Long BTC/USD @ $67,234.50</span>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>Confidence:</strong> <span id="decision-confidence">87.3%</span> (95% CI: 82.1% - 91.5%)
+                    </div>
+                </div>
+                <div id="shap-values-container">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ESG Metrics -->
+        <div class="panel-grid">
+            <div class="panel-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>🌱</span>
+                        <span>ESG Alpha Engine™</span>
+                    </div>
+                    <div class="status status-active">CARBON NEUTRAL</div>
+                </div>
+                <div style="display: flex; gap: 2rem; align-items: center;">
+                    <div class="esg-badge" id="esg-rating">AA</div>
+                    <div style="flex: 1;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                            <div>
+                                <div class="metric-label">Environmental</div>
+                                <div style="font-size: 1.25rem; font-weight: 700;" id="esg-e">87</div>
+                            </div>
+                            <div>
+                                <div class="metric-label">Social</div>
+                                <div style="font-size: 1.25rem; font-weight: 700;" id="esg-s">82</div>
+                            </div>
+                            <div>
+                                <div class="metric-label">Governance</div>
+                                <div style="font-size: 1.25rem; font-weight: 700;" id="esg-g">91</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="metric-label">ESG Momentum Return</div>
+                            <div class="metric-change positive" id="esg-return">↑ 28.7% YTD</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Monitoring -->
+            <div class="panel-card">
+                <div class="card-header">
+                    <div class="card-title">Risk Management</div>
+                    <div class="status status-active">NORMAL</div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <div class="metric-label">VaR (95%, 1D)</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="var-value">$487,234</div>
+                    </div>
+                    <div>
+                        <div class="metric-label">Max Drawdown</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="drawdown">-3.2%</div>
+                    </div>
+                    <div>
+                        <div class="metric-label">Leverage</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="leverage">1.8x</div>
+                    </div>
+                    <div>
+                        <div class="metric-label">Correlation</div>
+                        <div style="font-size: 1.25rem; font-weight: 700;" id="correlation">0.67</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                        <span class="metric-label">Daily Loss Limit</span>
+                        <span id="loss-limit-value">$23,450 / $100,000</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="loss-limit-bar" style="width: 23.45%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Arbitrage Opportunities -->
+        <div class="panel-card full-width">
+            <div class="card-header">
+                <div class="card-title">Arbitrage Opportunities</div>
+                <div class="status status-active" id="arb-count">4 LIVE</div>
+            </div>
+            <div id="arbitrage-opportunities" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Integrated JavaScript -->
+    <script>
+        // Initialize WebSocket connection
+        let ws = null;
+        let reconnectInterval = null;
+        
+        // Real-time data storage
+        const marketData = {
+            exchanges: {
+                'Binance': { bid: 67234.50, ask: 67235.00, volume: 2847 },
+                'Coinbase': { bid: 67233.80, ask: 67234.90, volume: 1923 },
+                'Kraken': { bid: 67232.90, ask: 67234.20, volume: 892 },
+                'Gemini': { bid: 67233.45, ask: 67234.75, volume: 567 }
+            },
+            strategies: [
+                { name: 'Cross-Exchange Arbitrage', pnl: 34567, trades: 847, status: 'active' },
+                { name: 'Statistical Pairs', pnl: 28934, trades: 623, status: 'active' },
+                { name: 'Market Making', pnl: 19876, trades: 1247, status: 'active' },
+                { name: 'Momentum Ignition', pnl: 15234, trades: 423, status: 'monitoring' },
+                { name: 'ESG Momentum', pnl: 31245, trades: 187, status: 'active' },
+                { name: 'Index Arbitrage', pnl: 22876, trades: 234, status: 'active' },
+                { name: 'Options Flow', pnl: 8976, trades: 89, status: 'paused' }
+            ],
+            shapValues: [
+                { feature: 'Order Flow Imbalance', value: 0.287, contribution: 28.7 },
+                { feature: 'Cross-Exchange Spread', value: 0.234, contribution: 23.4 },
+                { feature: 'Market Microstructure', value: 0.189, contribution: 18.9 },
+                { feature: 'Sentiment Analysis', value: 0.156, contribution: 15.6 },
+                { feature: 'Technical Indicators', value: 0.098, contribution: 9.8 },
+                { feature: 'Hyperbolic Geometry', value: 0.076, contribution: 7.6 },
+                { feature: 'Macroeconomic Factors', value: -0.043, contribution: -4.3 }
+            ]
+        };
+
+        // Initialize real-time updates
+        function initializeRealTimeUpdates() {
+            // Update metrics every second
+            setInterval(updateMetrics, 1000);
+            
+            // Update order book every 500ms
+            setInterval(updateOrderBook, 500);
+            
+            // Update strategies every 2 seconds
+            setInterval(updateStrategies, 2000);
+            
+            // Update SHAP values every 5 seconds
+            setInterval(updateSHAPValues, 5000);
+            
+            // Update arbitrage opportunities every 3 seconds
+            setInterval(updateArbitrageOpportunities, 3000);
+            
+            // Initial load
+            updateOrderBook();
+            updateStrategies();
+            updateSHAPValues();
+            updateArbitrageOpportunities();
+        }
+
+        // Update portfolio metrics
+        function updateMetrics() {
+            // Portfolio value
+            const portfolioValue = 24567892 + (Math.random() - 0.5) * 100000;
+            document.getElementById('portfolio-value').textContent = 
+                '$' + portfolioValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            // Daily P&L
+            const dailyPnL = 89345 + (Math.random() - 0.45) * 5000;
+            const pnlElement = document.getElementById('daily-pnl');
+            pnlElement.textContent = 
+                (dailyPnL >= 0 ? '+$' : '-$') + 
+                Math.abs(dailyPnL).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            
+            // Sharpe Ratio
+            const sharpe = 2.89 + (Math.random() - 0.5) * 0.2;
+            document.getElementById('sharpe').textContent = sharpe.toFixed(2);
+            
+            // Win Rate
+            const winRate = 73.8 + (Math.random() - 0.5) * 2;
+            document.getElementById('win-rate').textContent = winRate.toFixed(1) + '%';
+            
+            // Latency
+            const latency = 8.7 + (Math.random() - 0.5) * 2;
+            document.getElementById('latency').textContent = latency.toFixed(1) + 'μs';
+            
+            // Anti-Sniping metrics
+            const blocked = parseInt(document.getElementById('sniping-blocked').textContent) + Math.floor(Math.random() * 3);
+            document.getElementById('sniping-blocked').textContent = blocked.toLocaleString();
+            
+            const saved = 18947 + Math.random() * 1000;
+            document.getElementById('saved-today').textContent = 
+                '$' + saved.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        }
+
+        // Update order book
+        function updateOrderBook() {
+            const tbody = document.getElementById('order-book-data');
+            tbody.innerHTML = '';
+            
+            for (const [exchange, data] of Object.entries(marketData.exchanges)) {
+                // Add random fluctuation
+                data.bid += (Math.random() - 0.5) * 2;
+                data.ask += (Math.random() - 0.5) * 2;
+                
+                const spread = (data.ask - data.bid).toFixed(2);
+                const spreadBps = ((data.ask - data.bid) / data.bid * 10000).toFixed(1);
+                
+                // Check for arbitrage opportunity
+                const avgPrice = (data.bid + data.ask) / 2;
+                const minPrice = Math.min(...Object.values(marketData.exchanges).map(e => e.bid));
+                const maxPrice = Math.max(...Object.values(marketData.exchanges).map(e => e.ask));
+                const hasOpportunity = (maxPrice - minPrice) / minPrice > 0.0001;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${exchange}</strong></td>
+                    <td style="color: var(--success);">$${data.bid.toFixed(2)}</td>
+                    <td style="color: var(--danger);">$${data.ask.toFixed(2)}</td>
+                    <td>$${spread} (${spreadBps}bps)</td>
+                    <td>${hasOpportunity ? 
+                        '<span class="status status-active">PROFITABLE</span>' : 
+                        '<span class="status status-warning">MONITORING</span>'}
+                    </td>
+                `;
+                tbody.appendChild(row);
+            }
+        }
+
+        // Update strategies
+        function updateStrategies() {
+            const tbody = document.getElementById('strategies-data');
+            tbody.innerHTML = '';
+            
+            marketData.strategies.forEach(strategy => {
+                // Update P&L
+                strategy.pnl += (Math.random() - 0.4) * 100;
+                strategy.trades += Math.floor(Math.random() * 3);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${strategy.name}</strong></td>
+                    <td style="color: ${strategy.pnl >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                        ${strategy.pnl >= 0 ? '+' : ''}$${Math.abs(strategy.pnl).toFixed(0).toLocaleString()}
+                    </td>
+                    <td>${strategy.trades.toLocaleString()}</td>
+                    <td>
+                        <span class="status status-${
+                            strategy.status === 'active' ? 'active' : 
+                            strategy.status === 'monitoring' ? 'warning' : 'danger'
+                        }">
+                            ${strategy.status.toUpperCase()}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update SHAP values
+        function updateSHAPValues() {
+            const container = document.getElementById('shap-values-container');
+            container.innerHTML = '';
+            
+            // Update decision
+            const decisions = ['Long BTC/USD', 'Short ETH/USD', 'Long SOL/USD', 'Neutral'];
+            const decision = decisions[Math.floor(Math.random() * decisions.length)];
+            const price = 67234 + Math.random() * 100;
+            document.getElementById('latest-decision').textContent = 
+                `${decision} @ $${price.toFixed(2)}`;
+            
+            const confidence = 80 + Math.random() * 15;
+            document.getElementById('decision-confidence').textContent = 
+                `${confidence.toFixed(1)}%`;
+            
+            // Sort and display SHAP values
+            marketData.shapValues.sort((a, b) => Math.abs(b.value) - Math.abs(a.value));
+            
+            marketData.shapValues.forEach(item => {
+                // Add small variation
+                item.value += (Math.random() - 0.5) * 0.01;
+                item.contribution = item.value * 100;
+                
+                const div = document.createElement('div');
+                div.className = 'shap-value';
+                div.innerHTML = `
+                    <span>${item.feature}</span>
+                    <span style="color: ${item.value > 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 600;">
+                        ${item.value > 0 ? '+' : ''}${item.contribution.toFixed(1)}%
+                    </span>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Update arbitrage opportunities
+        function updateArbitrageOpportunities() {
+            const container = document.getElementById('arbitrage-opportunities');
+            container.innerHTML = '';
+            
+            const opportunities = [
+                {
+                    type: 'Cross-Exchange',
+                    pair: 'BTC/USD',
+                    profit: 0.18 + Math.random() * 0.1,
+                    value: 1234 + Math.random() * 500,
+                    exchanges: 'Binance → Coinbase',
+                    confidence: 92
+                },
+                {
+                    type: 'Triangular',
+                    pair: 'BTC-ETH-USDT',
+                    profit: 0.24 + Math.random() * 0.1,
+                    value: 2345 + Math.random() * 500,
+                    exchanges: '3-leg arbitrage',
+                    confidence: 87
+                },
+                {
+                    type: 'Statistical',
+                    pair: 'ETH/BTC',
+                    profit: 0.31 + Math.random() * 0.1,
+                    value: 1876 + Math.random() * 500,
+                    exchanges: 'Mean reversion',
+                    confidence: 78
+                },
+                {
+                    type: 'ESG Momentum',
+                    pair: 'Clean Energy',
+                    profit: 0.42 + Math.random() * 0.1,
+                    value: 3456 + Math.random() * 500,
+                    exchanges: 'Sector rotation',
+                    confidence: 84
+                }
+            ];
+            
+            // Update count
+            document.getElementById('arb-count').textContent = `${opportunities.length} LIVE`;
+            
+            opportunities.forEach(opp => {
+                const card = document.createElement('div');
+                card.style.cssText = 'padding: 1rem; background: rgba(45, 95, 63, 0.05); border: 1px solid rgba(45, 95, 63, 0.2); border-radius: 8px;';
+                card.innerHTML = `
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">${opp.type}</div>
+                    <div style="font-size: 1.25rem; font-weight: 700; color: var(--success); margin-bottom: 0.5rem;">
+                        +${opp.profit.toFixed(2)}% ($${opp.value.toFixed(0)})
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--brown-text); margin-bottom: 0.5rem;">
+                        ${opp.pair} | ${opp.exchanges}
+                    </div>
+                    <div style="font-size: 0.85rem; margin-bottom: 0.75rem;">
+                        Confidence: ${opp.confidence}%
+                    </div>
+                    <button class="btn btn-execute" onclick="executeArbitrage('${opp.type}')">
+                        EXECUTE
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Execute arbitrage
+        function executeArbitrage(type) {
+            alert(`Executing ${type} arbitrage with Anti-Sniping Shield protection...`);
+            // In real implementation, this would trigger actual trading logic
+        }
+
+        // Configure strategies
+        function configureStrategies() {
+            alert('Opening strategy configuration panel...');
+            // In real implementation, this would open a configuration modal
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            console.log(`Switching to ${tab} tab`);
+            // In real implementation, this would switch dashboard views
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('GOMNA Platform initialized');
+            initializeRealTimeUpdates();
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'e':
+                        e.preventDefault();
+                        executeArbitrage('best');
+                        break;
+                    case 'd':
+                        e.preventDefault();
+                        switchTab('dashboard');
+                        break;
+                    case 'r':
+                        e.preventDefault();
+                        switchTab('risk');
+                        break;
+                }
+            }
+        });
+    </script>
+
+    <!-- Load additional components -->
+    <script src="anti_sniping_shield.js"></script>
+    <script src="enhanced_explainable_ai_dashboard.js"></script>
+    <script src="esg_alpha_engine.js"></script>
+    <script src="integrated_platform_features.js"></script>
+</body>
+</html>
