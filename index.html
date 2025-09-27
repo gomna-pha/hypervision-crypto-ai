@@ -2212,19 +2212,6 @@
                 console.log(`✅ Successfully switched to ${tabName} tab`);
             } else {
                 console.error(`❌ Tab not found: ${tabName}-tab`);
-                console.log(`✅ Successfully showed ${tabName}-tab`);
-            } else {
-                console.error(`❌ Tab ${tabName}-tab not found!`);
-            }
-            
-            // Update tab buttons
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100';
-            });
-            
-            const activeTabBtn = document.querySelector(`[data-tab="${tabName}"]`);
-            if (activeTabBtn) {
-                activeTabBtn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600';
             }
         }
 
