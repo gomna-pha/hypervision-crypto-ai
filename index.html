@@ -212,16 +212,26 @@
             
             <!-- Trading Dashboard Tab -->
             <div id="trading-tab" class="tab-content">
-                <div class="grid grid-cols-12 gap-6">
+                <div class="grid grid-cols-12 gap-4" id="dashboard-grid">
                     
                     <!-- Left Panel: Live Market Data Feeds -->
-                    <div class="col-span-3">
-                        <div class="market-feed rounded-lg p-4 h-full shadow-lg">
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-2 h-2 bg-cream-400 rounded-full animate-pulse"></div>
-                                <h3 class="font-bold text-cream-200">LIVE MARKET FEEDS</h3>
+                    <div class="col-span-2" id="left-panel">
+                        <div class="market-feed rounded-lg p-4 h-full shadow-lg draggable-panel" id="market-feed-panel">
+                            <div class="panel-header cursor-move flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-cream-400 rounded-full animate-pulse"></div>
+                                    <h3 class="font-bold text-cream-200">LIVE MARKET FEEDS</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="togglePanel('market-feed-panel')" class="panel-control-btn" title="Minimize/Maximize">
+                                        <span id="market-feed-toggle">−</span>
+                                    </button>
+                                    <div class="drag-handle" title="Drag to move">
+                                        <div class="drag-dots"></div>
+                                    </div>
+                                </div>
                             </div>
-                            
+                            <div class="panel-content" id="market-feed-content">
                             <!-- Real-time Price Feed -->
                             <div class="space-y-3">
                                 <div class="border-b border-cream-700 pb-2">
@@ -409,11 +419,12 @@
                                     </div>
                                 </div>
                             </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Center Panel: Live Arbitrage Opportunities + Strategy Performance -->
-                    <div class="col-span-6">
+                    <div class="col-span-8" id="center-panel">
                         <!-- 🔴 REAL-TIME P&L DASHBOARD - Institutional Grade -->
                         <div class="cream-card rounded-lg p-6 mb-6">
                             <div class="flex items-center justify-between mb-4">
@@ -1090,12 +1101,23 @@
                     </div>
 
                     <!-- Right Panel: Hyperbolic Space & Multimodal Data Fusion -->
-                    <div class="col-span-3">
-                        <div class="hyperbolic-space rounded-lg p-6 h-full shadow-lg">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-3 h-3 bg-cream-400 rounded-full animate-pulse"></div>
-                                <h3 class="font-bold text-cream-200">HYPERBOLIC SPACE ENGINE</h3>
+                    <div class="col-span-2" id="right-panel">
+                        <div class="hyperbolic-space rounded-lg p-6 h-full shadow-lg draggable-panel" id="hyperbolic-panel">
+                            <div class="panel-header cursor-move flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-3 h-3 bg-cream-400 rounded-full animate-pulse"></div>
+                                    <h3 class="font-bold text-cream-200">HYPERBOLIC SPACE ENGINE</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="togglePanel('hyperbolic-panel')" class="panel-control-btn" title="Minimize/Maximize">
+                                        <span id="hyperbolic-toggle">−</span>
+                                    </button>
+                                    <div class="drag-handle" title="Drag to move">
+                                        <div class="drag-dots"></div>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="panel-content" id="hyperbolic-content">
                             
                             <div class="text-center mb-6">
                                 <div class="text-sm text-gold-300 mb-2 font-semibold">
@@ -3719,6 +3741,22 @@
             // Add required CSS
             addInstitutionalFormCSS();
             
+            // Allow closing by clicking outside modal
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeInstitutionalForm();
+                }
+            });
+            
+            // Allow closing with Escape key
+            const escapeHandler = function(e) {
+                if (e.key === 'Escape') {
+                    closeInstitutionalForm();
+                }
+            };
+            document.addEventListener('keydown', escapeHandler);
+            modal.escapeHandler = escapeHandler;
+            
             // Initialize beneficial owner counter
             window.beneficialOwnerCount = 1;
         }
@@ -4367,6 +4405,219 @@
         console.log('✅ Task 3 COMPLETED: Multi-step onboarding workflow with validation');
         console.log('✅ Task 4 COMPLETED: Investment experience and suitability questionnaire sections');
         console.log('✅ Task 5 COMPLETED: Subscription confirmation and welcome workflow');
+        
+        // 🎯 DRAGGABLE PANELS SYSTEM
+        let dragData = {
+            isDragging: false,
+            currentElement: null,
+            startX: 0,
+            startY: 0,
+            startLeft: 0,
+            startTop: 0
+        };
+
+        // Initialize draggable functionality
+        function initializeDraggablePanels() {
+            const panels = document.querySelectorAll('.draggable-panel');
+            
+            panels.forEach(panel => {
+                const header = panel.querySelector('.panel-header');
+                
+                header.addEventListener('mousedown', function(e) {
+                    if (e.target.closest('.panel-control-btn')) return; // Don't drag when clicking buttons
+                    
+                    dragData.isDragging = true;
+                    dragData.currentElement = panel;
+                    
+                    const rect = panel.getBoundingClientRect();
+                    dragData.startX = e.clientX;
+                    dragData.startY = e.clientY;
+                    dragData.startLeft = rect.left;
+                    dragData.startTop = rect.top;
+                    
+                    panel.style.position = 'fixed';
+                    panel.style.zIndex = '9999';
+                    panel.style.left = dragData.startLeft + 'px';
+                    panel.style.top = dragData.startTop + 'px';
+                    panel.style.width = rect.width + 'px';
+                    
+                    document.body.classList.add('dragging');
+                    e.preventDefault();
+                });
+            });
+            
+            document.addEventListener('mousemove', function(e) {
+                if (!dragData.isDragging || !dragData.currentElement) return;
+                
+                const deltaX = e.clientX - dragData.startX;
+                const deltaY = e.clientY - dragData.startY;
+                
+                const newLeft = dragData.startLeft + deltaX;
+                const newTop = dragData.startTop + deltaY;
+                
+                dragData.currentElement.style.left = Math.max(0, Math.min(window.innerWidth - 300, newLeft)) + 'px';
+                dragData.currentElement.style.top = Math.max(0, Math.min(window.innerHeight - 100, newTop)) + 'px';
+            });
+            
+            document.addEventListener('mouseup', function(e) {
+                if (dragData.isDragging) {
+                    dragData.isDragging = false;
+                    document.body.classList.remove('dragging');
+                    
+                    // Optional: Snap back to grid or keep floating
+                    // For now, keep panels floating when dragged
+                    if (dragData.currentElement) {
+                        dragData.currentElement.classList.add('floating-panel');
+                    }
+                    
+                    dragData.currentElement = null;
+                }
+            });
+        }
+
+        // Toggle panel minimize/maximize
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            const content = panel.querySelector('.panel-content');
+            const toggleBtn = panel.querySelector('.panel-control-btn span');
+            
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggleBtn.textContent = '−';
+                panel.classList.remove('minimized');
+            } else {
+                content.style.display = 'none';
+                toggleBtn.textContent = '+';
+                panel.classList.add('minimized');
+            }
+        }
+
+        // Reset panel to original position
+        function resetPanelPosition(panelId) {
+            const panel = document.getElementById(panelId);
+            panel.style.position = '';
+            panel.style.left = '';
+            panel.style.top = '';
+            panel.style.width = '';
+            panel.style.zIndex = '';
+            panel.classList.remove('floating-panel');
+        }
+
+        // Add panel controls CSS
+        function addDraggablePanelCSS() {
+            const style = document.createElement('style');
+            style.textContent = `
+                .draggable-panel {
+                    transition: all 0.3s ease;
+                }
+                
+                .floating-panel {
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+                    border: 2px solid #d4c4a8 !important;
+                }
+                
+                .panel-header {
+                    user-select: none;
+                }
+                
+                .panel-control-btn {
+                    background: rgba(212, 196, 168, 0.2);
+                    border: 1px solid rgba(212, 196, 168, 0.4);
+                    color: #e8dcc7;
+                    width: 20px;
+                    height: 20px;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }
+                
+                .panel-control-btn:hover {
+                    background: rgba(212, 196, 168, 0.4);
+                    border-color: #d4c4a8;
+                    color: #d4c4a8;
+                }
+                
+                .drag-handle {
+                    cursor: move;
+                    padding: 4px;
+                }
+                
+                .drag-dots {
+                    width: 12px;
+                    height: 8px;
+                    background-image: 
+                        radial-gradient(circle, #e8dcc7 1px, transparent 1px),
+                        radial-gradient(circle, #e8dcc7 1px, transparent 1px);
+                    background-size: 4px 4px;
+                    background-position: 0 0, 2px 2px;
+                    opacity: 0.6;
+                }
+                
+                .drag-dots:hover {
+                    opacity: 1;
+                }
+                
+                body.dragging {
+                    cursor: move;
+                    user-select: none;
+                }
+                
+                .minimized .panel-content {
+                    display: none;
+                }
+                
+                .minimized {
+                    height: auto !important;
+                    min-height: auto !important;
+                }
+                
+                @media (max-width: 768px) {
+                    .draggable-panel {
+                        position: static !important;
+                        width: 100% !important;
+                        left: auto !important;
+                        top: auto !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // Fix close button functionality
+        function fixCloseButtonFunctionality() {
+            // Ensure the closeInstitutionalForm function is properly defined and accessible
+            if (typeof window.closeInstitutionalForm !== 'function') {
+                window.closeInstitutionalForm = function() {
+                    const modal = document.getElementById('institutional-subscription-modal');
+                    if (modal) {
+                        // Remove escape key listener
+                        if (modal.escapeHandler) {
+                            document.removeEventListener('keydown', modal.escapeHandler);
+                        }
+                        modal.remove();
+                    }
+                };
+            }
+        }
+
+        // Initialize all enhancements
+        function initializeEnhancements() {
+            addDraggablePanelCSS();
+            initializeDraggablePanels();
+            fixCloseButtonFunctionality();
+            
+            console.log('🎯 Draggable panels system initialized');
+            console.log('🔧 Close button functionality fixed');
+            console.log('📱 Layout optimized: 2-8-2 column distribution');
+        }
+
+        // Initialize when DOM is ready
+        setTimeout(initializeEnhancements, 1000);
         console.log('📊 Real-time P&L Attribution Engine: ACTIVE');
         console.log('🔬 Market Microstructure Monitor: ACTIVE');
         console.log('⚡ Network Latency & Topology Monitor: ACTIVE');
