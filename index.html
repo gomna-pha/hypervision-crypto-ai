@@ -865,13 +865,612 @@
         <!-- Investor Portal Tab -->
         <div class="tab-content" id="investor-tab">
             <div class="dashboard-grid">
+                <!-- Enhanced Account Overview -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">👤 Account Management</h3>
+                        <span class="badge">VERIFIED</span>
+                    </div>
+                    
+                    <!-- Account Details -->
+                    <div style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), var(--cream-secondary)); border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Account ID</div>
+                                <div style="font-weight: 700;">INV-2847563</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Account Type</div>
+                                <div style="font-weight: 700; color: var(--purple);">Premium</div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Member Since</div>
+                                <div style="font-weight: 600;">January 2024</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Verification Status</div>
+                                <div style="font-weight: 600; color: var(--success);">✓ KYC Complete</div>
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 1px solid var(--brown-light); padding-top: 1rem;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Total Account Balance</div>
+                            <div style="font-size: 1.8rem; font-weight: 700; color: var(--brown-dark);">$2,847,563</div>
+                            <div style="font-size: 0.8rem; color: var(--success);">+$342,891 (+13.7%) YTD</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Account Features & Benefits -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--brown-dark);">Account Features</h4>
+                    <div style="display: grid; gap: 0.5rem; font-size: 0.75rem; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Daily Withdrawal Limit</span>
+                            <strong>$500,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Monthly Withdrawal Limit</span>
+                            <strong>$5,000,000</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Trading Volume (30d)</span>
+                            <strong>$18,234,567</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Fee Tier</span>
+                            <strong style="color: var(--purple);">VIP 3 (0.08%)</strong>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                        <button style="padding: 0.5rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer;"
+                                onclick="alert('Opening account upgrade options...')">
+                            Upgrade Account
+                        </button>
+                        <button style="padding: 0.5rem; background: var(--purple); color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer;"
+                                onclick="alert('Opening account statements...')">
+                            View Statements
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Deposits & Withdrawals -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">💰 Deposits & Withdrawals</h3>
+                        <span style="font-size: 0.65rem; color: var(--success);">Instant Processing</span>
+                    </div>
+                    
+                    <!-- Balance Summary -->
+                    <div style="padding: 0.75rem; background: linear-gradient(135deg, var(--cream-light), var(--cream-secondary)); border-radius: 6px; margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; text-align: center;">
+                            <div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Available</div>
+                                <div style="font-weight: 700; color: var(--success);">$1,847,563</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">In Orders</div>
+                                <div style="font-weight: 700;">$750,000</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Pending</div>
+                                <div style="font-weight: 700; color: var(--warning);">$250,000</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Actions -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                        <button style="padding: 0.75rem; background: linear-gradient(135deg, var(--success), #2D7F4F); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: transform 0.2s;" 
+                                onmouseover="this.style.transform='scale(1.02)'" 
+                                onmouseout="this.style.transform='scale(1)'"
+                                onclick="alert('Opening deposit modal with multiple payment options...')">
+                            + New Deposit
+                        </button>
+                        <button style="padding: 0.75rem; background: linear-gradient(135deg, var(--info), #5692C4); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: transform 0.2s;"
+                                onmouseover="this.style.transform='scale(1.02)'" 
+                                onmouseout="this.style.transform='scale(1)'"
+                                onclick="alert('Opening withdrawal form with security verification...')">
+                            ↑ Withdraw Funds
+                        </button>
+                    </div>
+                    
+                    <!-- Recent Transactions -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--brown-dark);">Recent Transactions</h4>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--success);">↓ Deposit</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Wire Transfer - Bank of America</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">+$250,000</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Sep 25, 2025</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--info);">↑ Withdrawal</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">ACH Transfer - Chase</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">-$75,000</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Sep 20, 2025</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--success);">↓ Deposit</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Crypto Transfer - BTC</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700;">+$134,250</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Sep 15, 2025</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <div>
+                                    <div style="font-weight: 600; color: var(--success);">💸 Trading Profit</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Automated Arbitrage</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-weight: 700; color: var(--success);">+$12,847</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Sep 10, 2025</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Methods -->
+                    <h4 style="font-size: 0.85rem; margin: 1rem 0 0.5rem; color: var(--brown-dark);">Linked Payment Methods</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="margin-right: 0.5rem;">🏦</span>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.8rem;">Bank of America ****1234</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Primary Account</div>
+                                </div>
+                            </div>
+                            <span style="color: var(--success); font-size: 0.7rem;">✓ Verified</span>
+                        </div>
+                        
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <span style="margin-right: 0.5rem;">💳</span>
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.8rem;">Visa ****5678</div>
+                                    <div style="font-size: 0.65rem; color: var(--brown-text);">Backup Card</div>
+                                </div>
+                            </div>
+                            <span style="color: var(--success); font-size: 0.7rem;">✓ Verified</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Reports & Analytics -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 Reports & Analytics</h3>
+                        <button style="padding: 0.2rem 0.4rem; background: var(--purple); color: white; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+                            Generate Custom Report
+                        </button>
+                    </div>
+                    
+                    <!-- Performance Metrics Grid -->
+                    <div style="padding: 1rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(139, 90, 43, 0.05)); border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Performance Metrics</h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Total Return</div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--success);">+47.3%</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Since inception</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Annual Return</div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--success);">+18.7%</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Average</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Sharpe Ratio</div>
+                                <div style="font-size: 1.3rem; font-weight: 700;">2.34</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Risk-adjusted</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Win Rate</div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--success);">87.5%</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Last 30 days</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Available Reports -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--brown-dark);">Available Reports</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; cursor: pointer; transition: background 0.2s;"
+                             onmouseover="this.style.background='var(--cream-secondary)'" 
+                             onmouseout="this.style.background='var(--cream-light)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.85rem;">Monthly Statement</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">September 2025</div>
+                                </div>
+                                <button style="padding: 0.3rem 0.6rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                                    Download PDF
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; cursor: pointer; transition: background 0.2s;"
+                             onmouseover="this.style.background='var(--cream-secondary)'" 
+                             onmouseout="this.style.background='var(--cream-light)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.85rem;">Tax Report</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Form 1099 - 2024</div>
+                                </div>
+                                <button style="padding: 0.3rem 0.6rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                                    Download PDF
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; cursor: pointer; transition: background 0.2s;"
+                             onmouseover="this.style.background='var(--cream-secondary)'" 
+                             onmouseout="this.style.background='var(--cream-light)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.85rem;">Trade History</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Last 90 days</div>
+                                </div>
+                                <button style="padding: 0.3rem 0.6rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                                    Export CSV
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; cursor: pointer; transition: background 0.2s;"
+                             onmouseover="this.style.background='var(--cream-secondary)'" 
+                             onmouseout="this.style.background='var(--cream-light)'">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-weight: 600; font-size: 0.85rem;">Performance Analytics</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Detailed metrics</div>
+                                </div>
+                                <button style="padding: 0.3rem 0.6rem; background: var(--purple); color: white; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer;">
+                                    View Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Account Settings -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">⚙️ Account Settings</h3>
+                    </div>
+                    
+                    <!-- Security Settings -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--brown-dark);">Security Settings</h4>
+                    <div style="display: grid; gap: 0.5rem; margin-bottom: 1rem;">
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.8rem;">Two-Factor Authentication</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">Enhanced security</div>
+                            </div>
+                            <div style="padding: 0.2rem 0.4rem; background: var(--success); color: white; border-radius: 4px; font-size: 0.65rem;">
+                                Enabled
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.8rem;">Withdrawal Whitelist</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">3 addresses saved</div>
+                            </div>
+                            <button style="padding: 0.2rem 0.4rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+                                Manage
+                            </button>
+                        </div>
+                        
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.8rem;">API Keys</div>
+                                <div style="font-size: 0.65rem; color: var(--brown-text);">2 active keys</div>
+                            </div>
+                            <button style="padding: 0.2rem 0.4rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+                                Manage
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Notification Preferences -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem; color: var(--brown-dark);">Notification Preferences</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <label style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" checked style="margin-right: 0.5rem;">
+                            <span style="font-size: 0.8rem;">Email notifications for trades</span>
+                        </label>
+                        
+                        <label style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" checked style="margin-right: 0.5rem;">
+                            <span style="font-size: 0.8rem;">SMS alerts for withdrawals</span>
+                        </label>
+                        
+                        <label style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" style="margin-right: 0.5rem;">
+                            <span style="font-size: 0.8rem;">Weekly performance reports</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Support & Help -->
                 <div class="card span-4">
                     <div class="card-header">
-                        <h3 class="card-title">🏦 Investor Portal</h3>
+                        <h3 class="card-title">💬 Support & Help</h3>
                     </div>
-                    <div style="padding: 2rem; text-align: center;">
-                        <h2>Investor Portal Content</h2>
-                        <p>Account management, withdrawals, deposits, and reports</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;"
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📞</div>
+                            <div style="font-weight: 600; font-size: 0.85rem;">24/7 Support</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">1-800-GOMNA-AI</div>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;"
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">💬</div>
+                            <div style="font-weight: 600; font-size: 0.85rem;">Live Chat</div>
+                            <div style="font-size: 0.7rem; color: var(--success);">● Online Now</div>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;"
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📚</div>
+                            <div style="font-weight: 600; font-size: 0.85rem;">Documentation</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">User Guide</div>
+                        </div>
+                        
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px; text-align: center; cursor: pointer; transition: transform 0.2s;"
+                             onmouseover="this.style.transform='scale(1.05)'" 
+                             onmouseout="this.style.transform='scale(1)'">
+                            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">📧</div>
+                            <div style="font-weight: 600; font-size: 0.85rem;">Email Support</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">support@gomna.ai</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Advanced Portfolio Management -->
+                <div class="card span-4">
+                    <div class="card-header">
+                        <h3 class="card-title">📈 Advanced Portfolio Management</h3>
+                        <span class="badge">AI-POWERED</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                        <!-- Asset Allocation -->
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px;">
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Asset Allocation</h4>
+                            <div style="margin-bottom: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                    <span>Cryptocurrencies</span>
+                                    <strong>45%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--cream-tertiary); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: 45%; height: 100%; background: linear-gradient(90deg, var(--purple), var(--info));"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                    <span>Commodities</span>
+                                    <strong>30%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--cream-tertiary); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: 30%; height: 100%; background: linear-gradient(90deg, var(--success), #2D7F4F);"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 0.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                    <span>Forex</span>
+                                    <strong>15%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--cream-tertiary); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: 15%; height: 100%; background: linear-gradient(90deg, var(--warning), #E2791E);"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 0.25rem;">
+                                    <span>Cash Reserve</span>
+                                    <strong>10%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--cream-tertiary); border-radius: 3px; overflow: hidden;">
+                                    <div style="width: 10%; height: 100%; background: var(--brown-text);"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Risk Management -->
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px;">
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Risk Management</h4>
+                            <div style="display: grid; gap: 0.75rem; font-size: 0.75rem;">
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-secondary); border-radius: 4px;">
+                                    <span>Risk Score</span>
+                                    <strong style="color: var(--success);">Low (3/10)</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-secondary); border-radius: 4px;">
+                                    <span>Max Drawdown</span>
+                                    <strong>-8.2%</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-secondary); border-radius: 4px;">
+                                    <span>Value at Risk</span>
+                                    <strong>$142,378</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-secondary); border-radius: 4px;">
+                                    <span>Stop Loss Active</span>
+                                    <strong style="color: var(--success);">✓ Enabled</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Account Activity -->
+                        <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px;">
+                            <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Recent Activity</h4>
+                            <div style="max-height: 150px; overflow-y: auto;">
+                                <div style="font-size: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-tertiary);">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="color: var(--success);">✓ Login</span>
+                                        <span style="color: var(--brown-text);">2 min ago</span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-tertiary);">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Algorithm Started</span>
+                                        <span style="color: var(--brown-text);">15 min ago</span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-tertiary);">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Report Generated</span>
+                                        <span style="color: var(--brown-text);">1 hour ago</span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-tertiary);">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>Settings Updated</span>
+                                        <span style="color: var(--brown-text);">3 hours ago</span>
+                                    </div>
+                                </div>
+                                <div style="font-size: 0.7rem; padding: 0.5rem 0;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>2FA Verified</span>
+                                        <span style="color: var(--brown-text);">Yesterday</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Transaction Management -->
+                <div class="card span-4">
+                    <div class="card-header">
+                        <h3 class="card-title">💸 Transaction Management & History</h3>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button style="padding: 0.2rem 0.4rem; background: var(--success); color: white; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+                                Export All
+                            </button>
+                            <button style="padding: 0.2rem 0.4rem; background: var(--purple); color: white; border: none; border-radius: 4px; font-size: 0.65rem; cursor: pointer;">
+                                Filter
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Transaction Filters -->
+                    <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                        <select style="padding: 0.4rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; font-size: 0.75rem;">
+                            <option>All Types</option>
+                            <option>Deposits</option>
+                            <option>Withdrawals</option>
+                            <option>Trades</option>
+                            <option>Fees</option>
+                        </select>
+                        <select style="padding: 0.4rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; font-size: 0.75rem;">
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 90 Days</option>
+                            <option>This Year</option>
+                            <option>All Time</option>
+                        </select>
+                        <input type="text" placeholder="Search transactions..." style="flex: 1; padding: 0.4rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; font-size: 0.75rem;">
+                    </div>
+                    
+                    <!-- Transaction Table -->
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; font-size: 0.75rem; border-collapse: collapse;">
+                            <thead>
+                                <tr style="background: var(--cream-secondary);">
+                                    <th style="padding: 0.5rem; text-align: left; font-weight: 600;">Date</th>
+                                    <th style="padding: 0.5rem; text-align: left; font-weight: 600;">Type</th>
+                                    <th style="padding: 0.5rem; text-align: left; font-weight: 600;">Description</th>
+                                    <th style="padding: 0.5rem; text-align: right; font-weight: 600;">Amount</th>
+                                    <th style="padding: 0.5rem; text-align: center; font-weight: 600;">Status</th>
+                                    <th style="padding: 0.5rem; text-align: center; font-weight: 600;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid var(--cream-tertiary);">
+                                    <td style="padding: 0.5rem;">Sep 27, 2025</td>
+                                    <td style="padding: 0.5rem;"><span style="color: var(--success);">↓ Deposit</span></td>
+                                    <td style="padding: 0.5rem;">Wire Transfer - Bank of America</td>
+                                    <td style="padding: 0.5rem; text-align: right; font-weight: 600; color: var(--success);">+$250,000</td>
+                                    <td style="padding: 0.5rem; text-align: center;"><span style="padding: 0.2rem 0.4rem; background: var(--success); color: white; border-radius: 4px; font-size: 0.6rem;">Completed</span></td>
+                                    <td style="padding: 0.5rem; text-align: center;">
+                                        <button style="padding: 0.2rem 0.4rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.6rem; cursor: pointer;">View</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--cream-tertiary);">
+                                    <td style="padding: 0.5rem;">Sep 26, 2025</td>
+                                    <td style="padding: 0.5rem;"><span style="color: var(--purple);">⚡ Trade</span></td>
+                                    <td style="padding: 0.5rem;">Arbitrage - BTC/USDT</td>
+                                    <td style="padding: 0.5rem; text-align: right; font-weight: 600; color: var(--success);">+$3,847</td>
+                                    <td style="padding: 0.5rem; text-align: center;"><span style="padding: 0.2rem 0.4rem; background: var(--success); color: white; border-radius: 4px; font-size: 0.6rem;">Completed</span></td>
+                                    <td style="padding: 0.5rem; text-align: center;">
+                                        <button style="padding: 0.2rem 0.4rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.6rem; cursor: pointer;">Details</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--cream-tertiary);">
+                                    <td style="padding: 0.5rem;">Sep 25, 2025</td>
+                                    <td style="padding: 0.5rem;"><span style="color: var(--info);">↑ Withdrawal</span></td>
+                                    <td style="padding: 0.5rem;">ACH Transfer - Chase</td>
+                                    <td style="padding: 0.5rem; text-align: right; font-weight: 600; color: var(--danger);">-$75,000</td>
+                                    <td style="padding: 0.5rem; text-align: center;"><span style="padding: 0.2rem 0.4rem; background: var(--warning); color: white; border-radius: 4px; font-size: 0.6rem;">Processing</span></td>
+                                    <td style="padding: 0.5rem; text-align: center;">
+                                        <button style="padding: 0.2rem 0.4rem; background: var(--danger); color: white; border: none; border-radius: 4px; font-size: 0.6rem; cursor: pointer;">Cancel</button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--cream-tertiary);">
+                                    <td style="padding: 0.5rem;">Sep 24, 2025</td>
+                                    <td style="padding: 0.5rem;"><span style="color: var(--purple);">⚡ Trade</span></td>
+                                    <td style="padding: 0.5rem;">Arbitrage - ETH/BTC</td>
+                                    <td style="padding: 0.5rem; text-align: right; font-weight: 600; color: var(--success);">+$1,234</td>
+                                    <td style="padding: 0.5rem; text-align: center;"><span style="padding: 0.2rem 0.4rem; background: var(--success); color: white; border-radius: 4px; font-size: 0.6rem;">Completed</span></td>
+                                    <td style="padding: 0.5rem; text-align: center;">
+                                        <button style="padding: 0.2rem 0.4rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px; font-size: 0.6rem; cursor: pointer;">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.75rem;">
+                        <span>Showing 1-4 of 327 transactions</span>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button style="padding: 0.3rem 0.5rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; cursor: pointer;">Previous</button>
+                            <button style="padding: 0.3rem 0.5rem; background: var(--brown-dark); color: white; border: none; border-radius: 4px;">1</button>
+                            <button style="padding: 0.3rem 0.5rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; cursor: pointer;">2</button>
+                            <button style="padding: 0.3rem 0.5rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; cursor: pointer;">3</button>
+                            <button style="padding: 0.3rem 0.5rem; background: var(--cream-light); border: 1px solid var(--brown-accent); border-radius: 4px; cursor: pointer;">Next</button>
+                        </div>
                     </div>
                 </div>
             </div>
