@@ -550,18 +550,92 @@
                 </div>
             </div>
 
-            <!-- Arbitrage Opportunities -->
+            <!-- Enhanced Arbitrage Opportunities with Execution -->
             <div class="card span-4">
                 <div class="card-header">
                     <h3 class="card-title">Live Arbitrage Opportunities</h3>
-                    <span class="badge" style="background: var(--success);">AUTO-EXECUTE</span>
+                    <span class="badge" style="background: var(--success);">EXECUTABLE</span>
                 </div>
+                
+                <!-- Opportunity Type Filter -->
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                    <button class="filter-btn active" onclick="filterOpportunities('all')">All</button>
+                    <button class="filter-btn" onclick="filterOpportunities('sentiment')">Sentiment</button>
+                    <button class="filter-btn" onclick="filterOpportunities('cross_exchange')">Cross-Exchange</button>
+                    <button class="filter-btn" onclick="filterOpportunities('triangular')">Triangular</button>
+                    <button class="filter-btn" onclick="filterOpportunities('statistical')">Statistical</button>
+                </div>
+                
                 <div class="opportunity-list" id="opportunities">
-                    <!-- Opportunities will be populated here -->
+                    <!-- Opportunities will be populated here dynamically -->
                 </div>
+                
                 <div class="action-buttons">
-                    <button class="btn btn-success" onclick="executeAll()">Execute All</button>
-                    <button class="btn btn-danger" onclick="clearOpportunities()">Clear</button>
+                    <button class="btn btn-success" onclick="executeAll()">
+                        <span id="execute-all-text">Execute All Profitable</span>
+                        <span id="execute-count" style="margin-left: 5px;">(0)</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="autoExecuteToggle()">
+                        <span id="auto-execute-status">Enable Auto-Execute</span>
+                    </button>
+                </div>
+                
+                <!-- Execution Status -->
+                <div id="execution-status" style="margin-top: 1rem; padding: 0.75rem; background: rgba(0, 212, 170, 0.1); border-radius: 8px; display: none;">
+                    <div style="font-size: 0.8rem; font-weight: 600; margin-bottom: 0.5rem;">Execution Status</div>
+                    <div id="execution-log" style="font-size: 0.75rem; max-height: 100px; overflow-y: auto;"></div>
+                </div>
+            </div>
+            
+            <!-- Sentiment Analysis Dashboard -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <h3 class="card-title">🧠 Sentiment Analysis (FinBERT)</h3>
+                    <span class="badge" style="background: var(--purple);">AI-POWERED</span>
+                </div>
+                
+                <!-- Sentiment Overview -->
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                    <div style="padding: 0.75rem; background: rgba(103, 126, 234, 0.1); border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Market Sentiment</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;" id="market-sentiment">NEUTRAL</div>
+                        <div style="font-size: 0.75rem;" id="sentiment-score">Score: 0.00</div>
+                    </div>
+                    <div style="padding: 0.75rem; background: rgba(233, 69, 96, 0.1); border-radius: 8px;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Social Volume</div>
+                        <div style="font-size: 1.5rem; font-weight: 700;" id="social-volume">0</div>
+                        <div style="font-size: 0.75rem;" id="volume-change">+0% (1h)</div>
+                    </div>
+                </div>
+                
+                <!-- Sentiment Sources -->
+                <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem;">Live Sentiment Feed</h4>
+                <div id="sentiment-feed" style="max-height: 200px; overflow-y: auto;">
+                    <!-- Sentiment items will be populated here -->
+                </div>
+                
+                <!-- Sentiment Indicators -->
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 1rem;">
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+                        <div style="font-size: 1.2rem;">🐦</div>
+                        <div style="font-size: 0.65rem; color: var(--text-secondary);">Twitter</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="twitter-sentiment">0.0</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+                        <div style="font-size: 1.2rem;">📰</div>
+                        <div style="font-size: 0.65rem; color: var(--text-secondary);">News</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="news-sentiment">0.0</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+                        <div style="font-size: 1.2rem;">🗨️</div>
+                        <div style="font-size: 0.65rem; color: var(--text-secondary);">Reddit</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="reddit-sentiment">0.0</div>
+                    </div>
+                    <div style="text-align: center; padding: 0.5rem; background: rgba(255, 255, 255, 0.05); border-radius: 6px;">
+                        <div style="font-size: 1.2rem;">📈</div>
+                        <div style="font-size: 0.65rem; color: var(--text-secondary);">StockTwits</div>
+                        <div style="font-size: 0.8rem; font-weight: 600;" id="stocktwits-sentiment">0.0</div>
+                    </div>
                 </div>
             </div>
 
@@ -891,33 +965,395 @@
             document.getElementById('connections').textContent = 10 + Math.floor(Math.random() * 5);
         }
         
-        // Button actions
-        function executeAll() {
-            alert('Executing all profitable arbitrage opportunities...');
-            generateOpportunities();
+        // Enhanced button actions with real execution
+        let autoExecuteEnabled = false;
+        let executingOpportunities = new Set();
+        
+        async function executeOpportunity(opportunityId, button) {
+            if (executingOpportunities.has(opportunityId)) return;
+            
+            executingOpportunities.add(opportunityId);
+            button.textContent = 'Executing...';
+            button.disabled = true;
+            
+            try {
+                // Mock API call - in production, this would call the actual API
+                const response = await mockExecuteOpportunity(opportunityId);
+                
+                if (response.success) {
+                    button.textContent = '✓ Executed';
+                    button.style.background = 'var(--success)';
+                    logExecution(`✓ Executed opportunity ${opportunityId.substring(0, 8)}... Profit: $${response.profit}`);
+                    
+                    // Update metrics
+                    updateMetrics();
+                } else {
+                    button.textContent = '✗ Failed';
+                    button.style.background = 'var(--danger)';
+                    logExecution(`✗ Failed to execute ${opportunityId.substring(0, 8)}... Reason: ${response.reason}`);
+                }
+            } catch (error) {
+                button.textContent = '✗ Error';
+                button.style.background = 'var(--danger)';
+                logExecution(`✗ Error executing ${opportunityId.substring(0, 8)}...`);
+            } finally {
+                executingOpportunities.delete(opportunityId);
+            }
         }
         
-        function clearOpportunities() {
-            document.getElementById('opportunities').innerHTML = '';
+        async function executeAll() {
+            const opportunities = document.querySelectorAll('.opportunity-item');
+            let executeCount = 0;
+            
+            for (const opp of opportunities) {
+                const profit = parseFloat(opp.dataset.profit);
+                const probability = parseFloat(opp.dataset.probability);
+                
+                if (profit > 50 && probability > 70) {
+                    const button = opp.querySelector('.execute-btn');
+                    if (button && !button.disabled) {
+                        await executeOpportunity(opp.dataset.id, button);
+                        executeCount++;
+                        await new Promise(resolve => setTimeout(resolve, 500)); // Delay between executions
+                    }
+                }
+            }
+            
+            logExecution(`Batch execution complete: ${executeCount} opportunities executed`);
         }
+        
+        function autoExecuteToggle() {
+            autoExecuteEnabled = !autoExecuteEnabled;
+            const statusElement = document.getElementById('auto-execute-status');
+            
+            if (autoExecuteEnabled) {
+                statusElement.textContent = 'Disable Auto-Execute';
+                statusElement.parentElement.style.background = 'var(--danger)';
+                logExecution('⚡ Auto-execution enabled');
+                startAutoExecution();
+            } else {
+                statusElement.textContent = 'Enable Auto-Execute';
+                statusElement.parentElement.style.background = 'var(--primary)';
+                logExecution('⏸ Auto-execution disabled');
+            }
+        }
+        
+        async function startAutoExecution() {
+            while (autoExecuteEnabled) {
+                const opportunities = document.querySelectorAll('.opportunity-item:not([data-executed="true"])');
+                
+                for (const opp of opportunities) {
+                    if (!autoExecuteEnabled) break;
+                    
+                    const profit = parseFloat(opp.dataset.profit);
+                    const probability = parseFloat(opp.dataset.probability);
+                    const type = opp.dataset.type;
+                    
+                    // Auto-execute high-confidence opportunities
+                    if ((type === 'sentiment' && probability > 75) || 
+                        (profit > 100 && probability > 80)) {
+                        const button = opp.querySelector('.execute-btn');
+                        if (button && !button.disabled) {
+                            await executeOpportunity(opp.dataset.id, button);
+                            opp.dataset.executed = 'true';
+                        }
+                    }
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 5000)); // Check every 5 seconds
+            }
+        }
+        
+        function filterOpportunities(type) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter opportunities
+            const opportunities = document.querySelectorAll('.opportunity-item');
+            opportunities.forEach(opp => {
+                if (type === 'all' || opp.dataset.type === type) {
+                    opp.style.display = 'block';
+                } else {
+                    opp.style.display = 'none';
+                }
+            });
+        }
+        
+        function logExecution(message) {
+            const statusDiv = document.getElementById('execution-status');
+            const logDiv = document.getElementById('execution-log');
+            
+            statusDiv.style.display = 'block';
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.innerHTML = `<span style="color: var(--text-secondary);">${timestamp}</span> ${message}`;
+            
+            logDiv.insertBefore(logEntry, logDiv.firstChild);
+            
+            // Keep only last 5 entries
+            while (logDiv.children.length > 5) {
+                logDiv.removeChild(logDiv.lastChild);
+            }
+        }
+        
+        async function mockExecuteOpportunity(opportunityId) {
+            // Simulate API call delay
+            await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 500));
+            
+            // Simulate success/failure
+            const success = Math.random() > 0.1; // 90% success rate
+            
+            if (success) {
+                return {
+                    success: true,
+                    profit: (Math.random() * 500 + 50).toFixed(2),
+                    executionTime: (Math.random() * 10 + 2).toFixed(1)
+                };
+            } else {
+                return {
+                    success: false,
+                    reason: 'Insufficient liquidity'
+                };
+            }
+        }
+        
+        // Enhanced opportunity generation with sentiment arbitrage
+        function generateEnhancedOpportunities() {
+            const types = ['SENTIMENT', 'CROSS_EXCHANGE', 'TRIANGULAR', 'STATISTICAL', 'SPATIAL'];
+            const symbols = ['BTC/USD', 'ETH/USD', 'SOL/USD', 'AAPL', 'TSLA', 'NVDA'];
+            const exchanges = ['Binance', 'Coinbase', 'Kraken', 'FTX'];
+            const sentiments = ['STRONG_BULLISH', 'BULLISH', 'BEARISH', 'STRONG_BEARISH'];
+            
+            const opportunitiesDiv = document.getElementById('opportunities');
+            opportunitiesDiv.innerHTML = '';
+            
+            let profitableCount = 0;
+            
+            for (let i = 0; i < 8; i++) {
+                const type = types[Math.floor(Math.random() * types.length)];
+                const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+                const profit = (Math.random() * 800 - 100).toFixed(2);
+                const probability = (60 + Math.random() * 35).toFixed(1);
+                const latency = (5 + Math.random() * 95).toFixed(0);
+                const riskScore = (Math.random() * 0.8).toFixed(2);
+                
+                if (profit > 50 && probability > 70) profitableCount++;
+                
+                const oppItem = document.createElement('div');
+                oppItem.className = 'opportunity-item';
+                oppItem.dataset.id = `opp_${Date.now()}_${i}`;
+                oppItem.dataset.type = type.toLowerCase();
+                oppItem.dataset.profit = profit;
+                oppItem.dataset.probability = probability;
+                
+                let typeColor = 'var(--info)';
+                let typeIcon = '🔄';
+                
+                if (type === 'SENTIMENT') {
+                    typeColor = 'var(--purple)';
+                    typeIcon = '🧠';
+                    const sentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
+                    
+                    oppItem.innerHTML = `
+                        <div class="opportunity-header">
+                            <span class="opportunity-type" style="color: ${typeColor};">${typeIcon} ${type}</span>
+                            <span class="opportunity-profit" style="color: ${profit > 0 ? 'var(--success)' : 'var(--danger)'}">
+                                ${profit > 0 ? '+' : ''}$${Math.abs(profit)}
+                            </span>
+                        </div>
+                        <div class="opportunity-details">
+                            <div>Symbol: ${symbol}</div>
+                            <div>Sentiment: <span style="color: ${sentiment.includes('BULLISH') ? 'var(--success)' : 'var(--danger)'}">${sentiment}</span></div>
+                            <div>Confidence: ${probability}%</div>
+                            <div>Social Vol: <span style="color: var(--warning);">+${(Math.random() * 500).toFixed(0)}%</span></div>
+                            <div>Time Horizon: ${Math.floor(Math.random() * 60 + 10)}min</div>
+                            <div>Risk/Reward: ${(2 + Math.random() * 2).toFixed(1)}:1</div>
+                        </div>
+                        <button class="execute-btn" onclick="executeOpportunity('${oppItem.dataset.id}', this)" 
+                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: var(--purple); 
+                                       color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+                            Execute Sentiment Arb
+                        </button>
+                    `;
+                } else if (type === 'CROSS_EXCHANGE') {
+                    typeIcon = '🏦';
+                    oppItem.innerHTML = `
+                        <div class="opportunity-header">
+                            <span class="opportunity-type" style="color: ${typeColor};">${typeIcon} ${type}</span>
+                            <span class="opportunity-profit" style="color: ${profit > 0 ? 'var(--success)' : 'var(--danger)'}">
+                                ${profit > 0 ? '+' : ''}$${Math.abs(profit)}
+                            </span>
+                        </div>
+                        <div class="opportunity-details">
+                            <div>Pair: ${symbol}</div>
+                            <div>Buy: ${exchanges[0]} @ $${(50000 - Math.random() * 100).toFixed(2)}</div>
+                            <div>Sell: ${exchanges[1]} @ $${(50000 + Math.random() * 100).toFixed(2)}</div>
+                            <div>Probability: ${probability}%</div>
+                            <div>Latency: ${latency}ms</div>
+                            <div>Risk: <span style="color: ${riskScore < 0.3 ? 'var(--success)' : riskScore < 0.6 ? 'var(--warning)' : 'var(--danger)'}">
+                                ${riskScore < 0.3 ? 'LOW' : riskScore < 0.6 ? 'MEDIUM' : 'HIGH'}</span></div>
+                        </div>
+                        <button class="execute-btn" onclick="executeOpportunity('${oppItem.dataset.id}', this)" 
+                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: var(--success); 
+                                       color: var(--primary); border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+                            Execute Trade
+                        </button>
+                    `;
+                } else {
+                    oppItem.innerHTML = `
+                        <div class="opportunity-header">
+                            <span class="opportunity-type" style="color: ${typeColor};">${typeIcon} ${type}</span>
+                            <span class="opportunity-profit" style="color: ${profit > 0 ? 'var(--success)' : 'var(--danger)'}">
+                                ${profit > 0 ? '+' : ''}$${Math.abs(profit)}
+                            </span>
+                        </div>
+                        <div class="opportunity-details">
+                            <div>Symbol: ${symbol}</div>
+                            <div>Probability: ${probability}%</div>
+                            <div>Latency: ${latency}ms</div>
+                            <div>Exchange: ${exchanges[Math.floor(Math.random() * exchanges.length)]}</div>
+                            <div>Risk: <span style="color: ${probability > 80 ? 'var(--success)' : 'var(--warning)'}">
+                                ${probability > 80 ? 'LOW' : 'MEDIUM'}</span></div>
+                            <div>Volume: ${(Math.random() * 10).toFixed(2)} BTC</div>
+                        </div>
+                        <button class="execute-btn" onclick="executeOpportunity('${oppItem.dataset.id}', this)" 
+                                style="width: 100%; margin-top: 0.5rem; padding: 0.5rem; background: var(--success); 
+                                       color: var(--primary); border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600;">
+                            Execute Trade
+                        </button>
+                    `;
+                }
+                
+                opportunitiesDiv.appendChild(oppItem);
+            }
+            
+            // Update execute count
+            document.getElementById('execute-count').textContent = `(${profitableCount})`;
+        }
+        
+        // Generate sentiment data
+        function updateSentimentData() {
+            const sentiments = ['BULLISH', 'STRONG_BULLISH', 'NEUTRAL', 'BEARISH'];
+            const currentSentiment = sentiments[Math.floor(Math.random() * sentiments.length)];
+            
+            document.getElementById('market-sentiment').textContent = currentSentiment;
+            document.getElementById('market-sentiment').style.color = 
+                currentSentiment.includes('BULLISH') ? 'var(--success)' : 
+                currentSentiment.includes('BEARISH') ? 'var(--danger)' : 'var(--warning)';
+            
+            const score = currentSentiment.includes('STRONG') ? 0.75 : 
+                         currentSentiment.includes('BULLISH') ? 0.45 : 
+                         currentSentiment.includes('BEARISH') ? -0.35 : 0;
+            
+            document.getElementById('sentiment-score').textContent = `Score: ${score.toFixed(2)}`;
+            document.getElementById('social-volume').textContent = Math.floor(10000 + Math.random() * 50000).toLocaleString();
+            document.getElementById('volume-change').textContent = `+${(Math.random() * 200).toFixed(0)}% (1h)`;
+            
+            // Update individual sentiment scores
+            document.getElementById('twitter-sentiment').textContent = (Math.random() * 2 - 1).toFixed(2);
+            document.getElementById('news-sentiment').textContent = (Math.random() * 2 - 1).toFixed(2);
+            document.getElementById('reddit-sentiment').textContent = (Math.random() * 2 - 1).toFixed(2);
+            document.getElementById('stocktwits-sentiment').textContent = (Math.random() * 2 - 1).toFixed(2);
+            
+            // Update sentiment feed
+            updateSentimentFeed();
+        }
+        
+        function updateSentimentFeed() {
+            const feedDiv = document.getElementById('sentiment-feed');
+            
+            const sentimentItems = [
+                { source: '🐦 Twitter', text: '$BTC breaking out! Massive volume spike detected', score: 0.8 },
+                { source: '📰 Bloomberg', text: 'Federal Reserve hints at policy changes', score: -0.3 },
+                { source: '🗨️ Reddit', text: 'YOLO on ETH calls, literally can\'t go wrong', score: 0.6 },
+                { source: '📈 StockTwits', text: 'TSLA consolidating for next leg up', score: 0.4 },
+                { source: '📰 Reuters', text: 'Crypto regulations may tighten in Q4', score: -0.5 }
+            ];
+            
+            const newItem = sentimentItems[Math.floor(Math.random() * sentimentItems.length)];
+            
+            const itemDiv = document.createElement('div');
+            itemDiv.style.cssText = 'padding: 0.75rem; border-bottom: 1px solid rgba(255, 255, 255, 0.05);';
+            itemDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                    <span style="font-size: 0.75rem; font-weight: 600;">${newItem.source}</span>
+                    <span style="font-size: 0.7rem; color: ${newItem.score > 0 ? 'var(--success)' : 'var(--danger)'}">
+                        ${newItem.score > 0 ? '↑' : '↓'} ${Math.abs(newItem.score).toFixed(2)}
+                    </span>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary);">${newItem.text}</div>
+                <div style="font-size: 0.6rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                    ${new Date().toLocaleTimeString()} | FinBERT Confidence: ${(70 + Math.random() * 25).toFixed(0)}%
+                </div>
+            `;
+            
+            feedDiv.insertBefore(itemDiv, feedDiv.firstChild);
+            
+            // Keep only last 5 items
+            while (feedDiv.children.length > 5) {
+                feedDiv.removeChild(feedDiv.lastChild);
+            }
+        }
+        
+        // Add CSS for filter buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .filter-btn {
+                padding: 0.4rem 0.8rem;
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                color: var(--text-secondary);
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 0.75rem;
+                transition: all 0.3s;
+            }
+            
+            .filter-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .filter-btn.active {
+                background: var(--bg-gradient);
+                color: white;
+                border-color: transparent;
+            }
+            
+            .execute-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            }
+            
+            .execute-btn:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        `;
+        document.head.appendChild(style);
         
         // Initialize and start updates
         function init() {
             drawPoincareDisk();
             updateMetrics();
-            generateOpportunities();
+            generateEnhancedOpportunities();
             generateOrderBook();
             updateExecutionStats();
             updateRiskMetrics();
+            updateSentimentData();
             updateTime();
             
             // Set up periodic updates
             setInterval(updateTime, 1000);
             setInterval(updateMetrics, 3000);
-            setInterval(generateOpportunities, 5000);
+            setInterval(generateEnhancedOpportunities, 5000);
             setInterval(generateOrderBook, 2000);
             setInterval(updateExecutionStats, 4000);
             setInterval(updateRiskMetrics, 10000);
+            setInterval(updateSentimentData, 7000);
             setInterval(drawPoincareDisk, 5000);
         }
         
