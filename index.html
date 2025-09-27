@@ -72,28 +72,7 @@
             background: #8b7355;
             border-radius: 50%;
             animation: pulse 2s infinite;
-            transition: all 0.3s ease;
         }
-        .gold-300 { color: #ffd700; }
-        .gold-400 { color: #ffcc00; }
-        .green-300 { color: #86efac; }
-        .green-400 { color: #4ade80; }
-        .border-gold-400 { border-color: #ffcc00; }
-        .border-green-400 { border-color: #4ade80; }
-        .bg-gold-400 { background-color: #ffcc00; }
-        .text-gold-300 { color: #ffd700; }
-        .text-gold-400 { color: #ffcc00; }
-        .text-green-300 { color: #86efac; }
-        .text-green-400 { color: #4ade80; }
-        .text-yellow-100 { color: #fef3c7; }
-        .text-yellow-200 { color: #fde68a; }
-        .text-yellow-300 { color: #fcd34d; }
-        .text-yellow-400 { color: #f59e0b; }
-        .bg-yellow-400 { background-color: #f59e0b; }
-        .border-yellow-400 { border-color: #f59e0b; }
-        .border-yellow-600 { border-color: #d97706; }
-        .from-yellow-900 { --tw-gradient-from: #78350f; }
-        .to-yellow-800 { --tw-gradient-to: #92400e; }
         .opportunity-card {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
             border-left: 4px solid #8b7355;
@@ -481,174 +460,75 @@
                             </div>
                             
                             <div class="text-center mb-6">
-                                <div class="text-sm text-gold-300 mb-2 font-semibold">
-                                    🔴 LIVE Poincaré Disk Model
-                                    <span class="text-xs text-cream-400 ml-2" id="live-timestamp">Updated: --:--:--</span>
-                                </div>
-                                <div class="poincare-disk mx-auto relative border-4 border-gold-400 shadow-2xl">
-                                    <!-- Enhanced data fusion points with pulsing animation -->
-                                    <div class="data-fusion-point animate-pulse" style="top: 30%; left: 40%; background: #ffd700; box-shadow: 0 0 8px #ffd700;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 60%; left: 70%; background: #c0ac89; box-shadow: 0 0 6px #c0ac89; animation-delay: 0.5s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 50%; left: 30%; background: #a08968; box-shadow: 0 0 6px #a08968; animation-delay: 1s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 20%; left: 65%; background: #d4c4a8; box-shadow: 0 0 6px #d4c4a8; animation-delay: 1.5s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 75%; left: 45%; background: #8b7355; box-shadow: 0 0 6px #8b7355; animation-delay: 2s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 15%; left: 25%; background: #ff6b6b; box-shadow: 0 0 8px #ff6b6b; animation-delay: 0.8s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 85%; left: 75%; background: #4ecdc4; box-shadow: 0 0 8px #4ecdc4; animation-delay: 1.2s;"></div>
-                                    <div class="data-fusion-point animate-pulse" style="top: 40%; left: 80%; background: #45b7d1; box-shadow: 0 0 8px #45b7d1; animation-delay: 1.8s;"></div>
+                                <div class="text-sm text-cream-400 mb-2">Poincaré Disk Model</div>
+                                <div class="poincare-disk mx-auto relative">
+                                    <!-- Data fusion points representing multimodal data -->
+                                    <div class="data-fusion-point" style="top: 30%; left: 40%;"></div>
+                                    <div class="data-fusion-point" style="top: 60%; left: 70%; background: #c0ac89;"></div>
+                                    <div class="data-fusion-point" style="top: 50%; left: 30%; background: #a08968;"></div>
+                                    <div class="data-fusion-point" style="top: 20%; left: 65%; background: #d4c4a8;"></div>
+                                    <div class="data-fusion-point" style="top: 75%; left: 45%; background: #8b7355;"></div>
                                     
-                                    <!-- Advanced geodesic paths with enhanced visualization -->
+                                    <!-- Geodesic paths -->
                                     <svg class="absolute inset-0 w-full h-full">
-                                        <!-- Primary geodesics -->
-                                        <path d="M 40 60 Q 100 100 140 120" stroke="#ffd700" stroke-width="2" fill="none" opacity="0.9">
-                                            <animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/>
-                                        </path>
-                                        <path d="M 60 40 Q 120 80 100 140" stroke="#8b7355" stroke-width="2" fill="none" opacity="0.8">
-                                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.5s" repeatCount="indefinite"/>
-                                        </path>
-                                        <path d="M 80 80 Q 60 120 120 160" stroke="#a08968" stroke-width="2" fill="none" opacity="0.8">
-                                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
-                                        </path>
-                                        
-                                        <!-- Advanced optimization paths -->
-                                        <path d="M 30 30 Q 90 50 150 90" stroke="#ff6b6b" stroke-width="1.5" fill="none" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.2;0.7;0.2" dur="4s" repeatCount="indefinite"/>
-                                        </path>
-                                        <path d="M 170 60 Q 110 110 50 150" stroke="#4ecdc4" stroke-width="1.5" fill="none" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3.5s" repeatCount="indefinite"/>
-                                        </path>
-                                        <path d="M 80 20 Q 140 70 160 140" stroke="#45b7d1" stroke-width="1.5" fill="none" opacity="0.7">
-                                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="2.8s" repeatCount="indefinite"/>
-                                        </path>
-                                        
-                                        <!-- Hyperbolic curvature indicators -->
-                                        <circle cx="100" cy="100" r="80" stroke="#ffd700" stroke-width="1" fill="none" opacity="0.3">
-                                            <animate attributeName="r" values="75;85;75" dur="5s" repeatCount="indefinite"/>
-                                        </circle>
-                                        <circle cx="100" cy="100" r="120" stroke="#c0ac89" stroke-width="1" fill="none" opacity="0.2">
-                                            <animate attributeName="r" values="115;125;115" dur="6s" repeatCount="indefinite"/>
-                                        </circle>
+                                        <path d="M 40 60 Q 100 100 140 120" stroke="#c0ac89" stroke-width="1" fill="none" opacity="0.8"/>
+                                        <path d="M 60 40 Q 120 80 100 140" stroke="#8b7355" stroke-width="1" fill="none" opacity="0.8"/>
+                                        <path d="M 80 80 Q 60 120 120 160" stroke="#a08968" stroke-width="1" fill="none" opacity="0.8"/>
                                     </svg>
-                                    
-                                    <!-- Central optimization core -->
-                                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gold-400 rounded-full animate-spin" style="animation-duration: 8s;"></div>
-                                </div>
-                                
-                                <!-- LIVE Performance indicators -->
-                                <div class="mt-4 text-xs text-center">
-                                    <div class="text-green-400 font-semibold flex items-center justify-center gap-2">
-                                        <div class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                                        🔴 LIVE Performance Mode
-                                    </div>
-                                    <div class="text-cream-400">
-                                        <span id="live-geodesics">5,471</span> active geodesics | 
-                                        <span id="live-processing-time">7μs</span> processing
-                                    </div>
                                 </div>
                             </div>
 
-                            <!-- PEAK MULTIMODAL DATA FUSION METRICS -->
+                            <!-- Multimodal Data Fusion Metrics -->
                             <div class="space-y-4">
-                                <div class="bg-cream-800 rounded-lg p-4 border-2 border-green-400 shadow-xl">
-                                    <div class="text-cream-300 font-semibold text-sm mb-3 flex items-center gap-2">
-                                        <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                                        PEAK MULTIMODAL DATA FUSION
-                                    </div>
+                                <div class="bg-cream-800 rounded-lg p-4">
+                                    <div class="text-cream-300 font-semibold text-sm mb-3">MULTIMODAL DATA FUSION</div>
                                     <div class="space-y-2 text-xs">
                                         <div class="flex justify-between">
                                             <span class="text-cream-400">• Price Data:</span>
-                                            <span class="text-green-300 font-bold" id="live-price-quality">99.7% quality</span>
+                                            <span class="text-cream-200">98.7% quality</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-cream-400">• Volume Data:</span>
-                                            <span class="text-green-300 font-bold" id="live-volume-quality">99.8% quality</span>
+                                            <span class="text-cream-200">99.2% quality</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-cream-400">• Order Book:</span>
-                                            <span class="text-green-300 font-bold" id="live-orderbook-quality">99.4% quality</span>
+                                            <span class="text-cream-200">97.4% quality</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-cream-400">• News Sentiment:</span>
-                                            <span class="text-green-300 font-bold" id="live-sentiment-quality">98.9% quality</span>
+                                            <span class="text-cream-200">94.1% quality</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span class="text-cream-400">• Social Media:</span>
-                                            <span class="text-green-300 font-bold" id="live-social-quality">97.6% quality</span>
-                                        </div>
-                                        <div class="flex justify-between border-t border-cream-700 pt-2 mt-2">
-                                            <span class="text-cream-400">• Hyperbolic Fusion:</span>
-                                            <span class="text-gold-300 font-bold animate-pulse" id="live-hyperbolic-efficiency">99.1% efficiency</span>
+                                            <span class="text-cream-200">91.8% quality</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- PEAK HYPERBOLIC DIMENSIONALITY REDUCTION -->
-                                <div class="bg-cream-800 rounded-lg p-4 border-2 border-gold-400 shadow-2xl">
-                                    <div class="text-cream-300 font-semibold text-sm mb-3 flex items-center gap-2">
-                                        <div class="w-2 h-2 bg-gold-400 rounded-full animate-pulse"></div>
-                                        PEAK DIMENSIONALITY REDUCTION
-                                    </div>
+                                <!-- Hyperbolic Optimization Metrics -->
+                                <div class="bg-cream-800 rounded-lg p-4">
+                                    <div class="text-cream-300 font-semibold text-sm mb-3">HYPERBOLIC OPTIMIZATION</div>
                                     <div class="space-y-2 text-xs">
                                         <div class="flex justify-between">
-                                            <span>Original Dimensions:</span>
-                                            <span class="text-cream-400 font-bold">768</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Reduced to:</span>
-                                            <span class="text-gold-300 font-bold" id="live-reduced-dims">16</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Compression Ratio:</span>
-                                            <span class="text-green-400 font-bold animate-pulse" id="live-compression-ratio">48:1</span>
-                                        </div>
-                                        <div class="flex justify-between">
-                                            <span>Information Loss:</span>
-                                            <span class="text-green-300 font-bold" id="live-info-loss">0.8%</span>
-                                        </div>
-                                        <div class="flex justify-between">
                                             <span>Geodesic Paths:</span>
-                                            <span class="text-gold-300 font-bold" id="live-geodesic-paths">138</span>
+                                            <span class="text-cream-200 font-bold" id="geodesic-count">1,247</span>
                                         </div>
                                         <div class="flex justify-between">
                                             <span>Space Curvature:</span>
-                                            <span class="text-cream-300 font-bold" id="live-curvature">-1.0</span>
+                                            <span class="text-cream-300 font-bold">-1.0</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span>Reduction Time:</span>
-                                            <span class="text-green-400 font-bold animate-pulse" id="live-reduction-time">7μs</span>
+                                            <span>Path Efficiency:</span>
+                                            <span class="text-cream-400 font-bold" id="path-efficiency">99.3%</span>
                                         </div>
-                                        <div class="flex justify-between border-t border-cream-700 pt-2 mt-2">
-                                            <span>Efficiency Gain:</span>
-                                            <span class="text-gold-400 font-bold" id="live-efficiency-gain">+127%</span>
+                                        <div class="flex justify-between">
+                                            <span>Embedding Dim:</span>
+                                            <span class="text-cream-400 font-bold">768</span>
                                         </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- PEAK PERFORMANCE METRICS -->
-                                <div class="bg-gradient-to-r from-yellow-900 to-yellow-800 rounded-lg p-4 border-2 border-yellow-400 shadow-2xl mt-4">
-                                    <div class="text-yellow-200 font-semibold text-sm mb-3 flex items-center gap-2">
-                                        <div class="w-3 h-3 bg-yellow-400 rounded-full animate-ping"></div>
-                                        PEAK OPTIMIZATION METRICS
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-3 text-xs">
-                                        <div>
-                                            <div class="text-yellow-300 font-semibold">Throughput</div>
-                                            <div class="text-yellow-100 font-bold" id="live-throughput">142,857 ops/sec</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-yellow-300 font-semibold">Latency P99</div>
-                                            <div class="text-yellow-100 font-bold" id="live-latency-p99">9.2μs</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-yellow-300 font-semibold">Memory Usage</div>
-                                            <div class="text-yellow-100 font-bold" id="live-memory-usage">84.3 MB</div>
-                                        </div>
-                                        <div>
-                                            <div class="text-yellow-300 font-semibold">Cache Hit Rate</div>
-                                            <div class="text-yellow-100 font-bold" id="live-cache-rate">99.7%</div>
-                                        </div>
-                                        <div class="col-span-2 border-t border-yellow-600 pt-2 mt-2">
-                                            <div class="text-yellow-300 font-semibold">Hyperbolic Efficiency Score</div>
-                                            <div class="text-yellow-100 font-bold text-lg" id="live-efficiency-score">98.9/100</div>
+                                        <div class="flex justify-between">
+                                            <span>Optimization Time:</span>
+                                            <span class="text-cream-300 font-bold" id="opt-time">18μs</span>
                                         </div>
                                     </div>
                                 </div>
@@ -764,126 +644,28 @@
                             </div>
                         </div>
 
-                        <!-- Live Trading Execution History -->
+                        <!-- Recent Transactions -->
                         <div class="portfolio-section rounded-lg shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-cream-900">⚡ Live Execution History</h3>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-cream-700">Real-time</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Enhanced Trading Table with Hyperbolic Features -->
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-xs">
-                                    <thead>
-                                        <tr class="border-b border-cream-300 text-cream-800">
-                                            <th class="text-left py-2 font-semibold">Time</th>
-                                            <th class="text-left py-2 font-semibold">Asset</th>
-                                            <th class="text-left py-2 font-semibold">Action</th>
-                                            <th class="text-right py-2 font-semibold">Price</th>
-                                            <th class="text-right py-2 font-semibold">Size</th>
-                                            <th class="text-right py-2 font-semibold">P&L</th>
-                                            <th class="text-left py-2 font-semibold">Strategy</th>
-                                            <th class="text-right py-2 font-semibold">Confidence</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="space-y-1">
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:09:20</td>
-                                            <td class="py-2"><span class="font-semibold text-orange-600">BTC</span></td>
-                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
-                                            <td class="py-2 text-right text-cream-900">$29,316</td>
-                                            <td class="py-2 text-right text-cream-900">1.52</td>
-                                            <td class="py-2 text-right font-semibold text-cream-900">$224</td>
-                                            <td class="py-2"><span class="bg-cream-200 text-cream-800 px-2 py-1 rounded text-xs">Balanced</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">87.8%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:09:15</td>
-                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
-                                            <td class="py-2"><span class="text-gray-600 font-semibold">CLOSE</span></td>
-                                            <td class="py-2 text-right text-cream-900">$45,930</td>
-                                            <td class="py-2 text-right text-cream-900">3.65</td>
-                                            <td class="py-2 text-right font-semibold text-green-600">+$366</td>
-                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">84.7%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:09:10</td>
-                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
-                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
-                                            <td class="py-2 text-right text-cream-900">$59,682</td>
-                                            <td class="py-2 text-right text-cream-900">4.19</td>
-                                            <td class="py-2 text-right font-semibold text-green-600">+$859</td>
-                                            <td class="py-2"><span class="bg-cream-200 text-cream-800 px-2 py-1 rounded text-xs">Balanced</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">92.1%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:09:05</td>
-                                            <td class="py-2"><span class="font-semibold text-blue-600">ETH</span></td>
-                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
-                                            <td class="py-2 text-right text-cream-900">$39,744</td>
-                                            <td class="py-2 text-right text-cream-900">2.40</td>
-                                            <td class="py-2 text-right font-semibold text-cream-900">$345</td>
-                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">82.2%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:09:00</td>
-                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
-                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
-                                            <td class="py-2 text-right text-cream-900">$33,954</td>
-                                            <td class="py-2 text-right text-cream-900">1.02</td>
-                                            <td class="py-2 text-right font-semibold text-green-600">+$859</td>
-                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">91.1%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:04:54</td>
-                                            <td class="py-2"><span class="font-semibold text-indigo-600">MATIC</span></td>
-                                            <td class="py-2"><span class="text-green-600 font-semibold">BUY</span></td>
-                                            <td class="py-2 text-right text-cream-900">$47,041</td>
-                                            <td class="py-2 text-right text-cream-900">1.97</td>
-                                            <td class="py-2 text-right font-semibold text-green-600">+$365</td>
-                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">93.0%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:04:48</td>
-                                            <td class="py-2"><span class="font-semibold text-blue-600">ETH</span></td>
-                                            <td class="py-2"><span class="text-red-600 font-semibold">SELL</span></td>
-                                            <td class="py-2 text-right text-cream-900">$69,677</td>
-                                            <td class="py-2 text-right text-cream-900">0.25</td>
-                                            <td class="py-2 text-right font-semibold text-cream-900">$21</td>
-                                            <td class="py-2"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">Conservative</span></td>
-                                            <td class="py-2 text-right font-semibold text-green-600">84.7%</td>
-                                        </tr>
-                                        <tr class="border-b border-cream-100 hover:bg-cream-50">
-                                            <td class="py-2 text-cream-700">1:04:42</td>
-                                            <td class="py-2"><span class="font-semibold text-purple-600">SOL</span></td>
-                                            <td class="py-2"><span class="text-gray-600 font-semibold">CLOSE</span></td>
-                                            <td class="py-2 text-right text-cream-900">$68,044</td>
-                                            <td class="py-2 text-right text-cream-900">0.83</td>
-                                            <td class="py-2 text-right font-semibold text-cream-900">$51</td>
-                                            <td class="py-2"><span class="bg-purple-100 text-purple-800 px-2 py-1 rounded text-xs">Custom ML</span></td>
-                                            <td class="py-2 text-right font-semibold text-yellow-600">71.8%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            <!-- Hyperbolic Analysis Summary -->
-                            <div class="mt-4 bg-cream-100 rounded-lg p-4">
-                                <div class="flex items-center justify-between text-sm">
-                                    <div class="text-cream-800">
-                                        <span class="font-semibold">Hyperbolic Analysis:</span> 
-                                        <span class="text-cream-700">8 trades processed through 32D space compression</span>
+                            <h3 class="text-lg font-bold text-cream-900 mb-4">Recent Transactions</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center py-2 border-b border-cream-200">
+                                    <div>
+                                        <div class="font-semibold text-cream-900 text-sm">Cross-Exchange Arb</div>
+                                        <div class="text-xs text-cream-600">BTC 2.5 executed</div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-green-600 font-bold">+$3,090 total P&L</div>
-                                        <div class="text-xs text-cream-600">85.2% avg confidence</div>
+                                        <div class="font-semibold text-cream-800">+$127</div>
+                                        <div class="text-xs text-cream-600">2 min ago</div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center py-2 border-b border-cream-200">
+                                    <div>
+                                        <div class="font-semibold text-cream-900 text-sm">Statistical Pairs</div>
+                                        <div class="text-xs text-cream-600">ETH/BTC pair</div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="font-semibold text-cream-800">+$203</div>
+                                        <div class="text-xs text-cream-600">8 min ago</div>
                                     </div>
                                 </div>
                             </div>
@@ -1342,206 +1124,6 @@
         function toggleModelTransparency() {
             switchTab('transparency');
         }
-
-        // 🔴 LIVE HYPERBOLIC SPACE ENGINE - Real Mathematical Implementation
-        class LiveHyperbolicEngine {
-            constructor() {
-                this.arbitrageProfits = [224.27, 366.38, 858.78, 344.89, 859.08, 364.59, 21.22, 51.41, 375.06, 1339.86];
-                this.confidenceScores = [87.8, 84.7, 92.1, 82.2, 91.1, 93.0, 84.7, 71.8, 87.8, 84.5];
-                this.baseMetrics = {
-                    priceQuality: 99.7,
-                    volumeQuality: 99.8,
-                    orderBookQuality: 99.4,
-                    sentimentQuality: 98.9,
-                    socialQuality: 97.6
-                };
-                this.startTime = Date.now();
-                this.updateInterval = 500; // 500ms for smooth real-time updates
-                this.init();
-            }
-
-            // Poincaré Disk Mathematical Functions (from NeurIPS 2024 research)
-            hyperbolicDistance(r) {
-                // d_B(0, z) = log((1 + r)/(1 - r)) where r = ||z||
-                return Math.log((1 + r) / (1 - r));
-            }
-
-            radiusFromDistance(d) {
-                // r = (e^d - 1)/(e^d + 1) - inverse mapping
-                const exp_d = Math.exp(d);
-                return (exp_d - 1) / (exp_d + 1);
-            }
-
-            logLinkFunction(p) {
-                // ψ_LOG(p) = log(p/(1-p)) - canonical link for hyperbolic embedding
-                return Math.log(p / (1 - p));
-            }
-
-            // Real-time calculations based on actual arbitrage performance
-            calculateLiveMetrics() {
-                const currentTime = (Date.now() - this.startTime) / 1000;
-                
-                // Calculate dynamic performance based on real arbitrage data
-                const avgProfit = this.arbitrageProfits.reduce((a, b) => a + b, 0) / this.arbitrageProfits.length;
-                const avgConfidence = this.confidenceScores.reduce((a, b) => a + b, 0) / this.confidenceScores.length;
-                
-                // Hyperbolic embedding calculations
-                const confidenceP = avgConfidence / 100;
-                const logLink = Math.abs(this.logLinkFunction(confidenceP));
-                const hyperbolicRadius = this.radiusFromDistance(logLink);
-                
-                // Dynamic geodesic paths based on active arbitrage opportunities
-                const activeOpportunities = this.arbitrageProfits.filter(p => p > 50).length;
-                const geodesicPaths = Math.floor(138 + activeOpportunities * 15.7 + Math.sin(currentTime * 0.1) * 25);
-                
-                // Processing time varies with market volatility (simulated)
-                const marketVolatility = Math.sin(currentTime * 0.05) * 0.5 + 0.5;
-                const processingTime = (6.8 + marketVolatility * 0.4).toFixed(1);
-                
-                // Data quality fluctuates with real market conditions
-                const qualityVariation = Math.sin(currentTime * 0.03) * 0.002;
-                const priceQuality = (this.baseMetrics.priceQuality + qualityVariation).toFixed(1);
-                const volumeQuality = (this.baseMetrics.volumeQuality + qualityVariation * 0.5).toFixed(1);
-                const orderBookQuality = (this.baseMetrics.orderBookQuality + qualityVariation * 1.5).toFixed(1);
-                
-                // Hyperbolic fusion efficiency correlates with arbitrage success
-                const fusionEfficiency = (98.9 + (avgProfit / 100) * 0.1 + Math.sin(currentTime * 0.08) * 0.3).toFixed(1);
-                
-                // Compression metrics adapt to data complexity
-                const compressionRatio = Math.floor(47 + Math.sin(currentTime * 0.06) * 2) + ":1";
-                const informationLoss = (0.7 + Math.abs(Math.sin(currentTime * 0.07)) * 0.2).toFixed(1);
-                
-                // Performance metrics scale with arbitrage activity
-                const throughput = Math.floor(142000 + activeOpportunities * 100 + Math.sin(currentTime * 0.04) * 1000);
-                const latencyP99 = (9.1 + Math.sin(currentTime * 0.12) * 0.3).toFixed(1);
-                const memoryUsage = (84.0 + Math.sin(currentTime * 0.02) * 0.6).toFixed(1);
-                const cacheRate = (99.6 + Math.sin(currentTime * 0.09) * 0.2).toFixed(1);
-                
-                // Overall efficiency score based on Poincaré optimization
-                const efficiencyScore = (98.7 + hyperbolicRadius * 2 + Math.sin(currentTime * 0.05) * 0.4).toFixed(1);
-                
-                return {
-                    geodesicPaths,
-                    processingTime,
-                    priceQuality,
-                    volumeQuality,
-                    orderBookQuality,
-                    fusionEfficiency,
-                    compressionRatio,
-                    informationLoss,
-                    throughput,
-                    latencyP99,
-                    memoryUsage,
-                    cacheRate,
-                    efficiencyScore,
-                    timestamp: new Date().toLocaleTimeString()
-                };
-            }
-
-            updateLiveMetrics() {
-                const metrics = this.calculateLiveMetrics();
-                
-                // Update timestamp
-                const timestampEl = document.getElementById('live-timestamp');
-                if (timestampEl) {
-                    timestampEl.textContent = `🔴 LIVE: ${metrics.timestamp}`;
-                    timestampEl.style.color = '#4ade80'; // Green to show it's live
-                }
-
-                // Update Poincaré disk metrics
-                const geodesicsEl = document.getElementById('live-geodesics');
-                const processingEl = document.getElementById('live-processing-time');
-                if (geodesicsEl) geodesicsEl.textContent = metrics.geodesicPaths;
-                if (processingEl) processingEl.textContent = `${metrics.processingTime}μs`;
-
-                // Update multimodal data fusion
-                const priceEl = document.getElementById('live-price-quality');
-                const volumeEl = document.getElementById('live-volume-quality');
-                const orderbookEl = document.getElementById('live-orderbook-quality');
-                const fusionEl = document.getElementById('live-hyperbolic-efficiency');
-                
-                if (priceEl) priceEl.textContent = `${metrics.priceQuality}% quality`;
-                if (volumeEl) volumeEl.textContent = `${metrics.volumeQuality}% quality`;
-                if (orderbookEl) orderbookEl.textContent = `${metrics.orderBookQuality}% quality`;
-                if (fusionEl) fusionEl.textContent = `${metrics.fusionEfficiency}% efficiency`;
-
-                // Update dimensionality reduction
-                const geodesicPathsEl = document.getElementById('live-geodesic-paths');
-                const compressionEl = document.getElementById('live-compression-ratio');
-                const infoLossEl = document.getElementById('live-info-loss');
-                const reductionTimeEl = document.getElementById('live-reduction-time');
-                
-                if (geodesicPathsEl) geodesicPathsEl.textContent = metrics.geodesicPaths;
-                if (compressionEl) compressionEl.textContent = metrics.compressionRatio;
-                if (infoLossEl) infoLossEl.textContent = `${metrics.informationLoss}%`;
-                if (reductionTimeEl) reductionTimeEl.textContent = `${metrics.processingTime}μs`;
-
-                // Update performance metrics
-                const throughputEl = document.getElementById('live-throughput');
-                const latencyEl = document.getElementById('live-latency-p99');
-                const memoryEl = document.getElementById('live-memory-usage');
-                const cacheEl = document.getElementById('live-cache-rate');
-                const efficiencyEl = document.getElementById('live-efficiency-score');
-                
-                if (throughputEl) throughputEl.textContent = `${metrics.throughput.toLocaleString()} ops/sec`;
-                if (latencyEl) latencyEl.textContent = `${metrics.latencyP99}μs`;
-                if (memoryEl) memoryEl.textContent = `${metrics.memoryUsage} MB`;
-                if (cacheEl) cacheEl.textContent = `${metrics.cacheRate}%`;
-                if (efficiencyEl) efficiencyEl.textContent = `${metrics.efficiencyScore}/100`;
-
-                // Add visual feedback for live updates
-                this.addLiveVisualEffects();
-            }
-
-            addLiveVisualEffects() {
-                // Flash effect for live updates
-                const liveElements = document.querySelectorAll('[id^="live-"]');
-                liveElements.forEach(el => {
-                    if (Math.random() > 0.85) { // Random flashing to show live updates
-                        el.style.transition = 'color 0.3s ease';
-                        const originalColor = el.style.color;
-                        el.style.color = '#10b981'; // Green flash
-                        setTimeout(() => {
-                            el.style.color = originalColor;
-                        }, 300);
-                    }
-                });
-            }
-
-            // Add correlation indicator to show metrics reflect arbitrage performance
-            addArbitrageCorrelationIndicator() {
-                const totalProfit = this.arbitrageProfits.reduce((a, b) => a + b, 0);
-                const profitIndicator = document.createElement('div');
-                profitIndicator.className = 'mt-2 text-xs text-center text-green-400';
-                profitIndicator.innerHTML = `
-                    <div class="flex items-center justify-center gap-2">
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span>🔴 Metrics correlated with live arbitrage: $${totalProfit.toFixed(2)} total P&L</span>
-                    </div>
-                `;
-                
-                const targetEl = document.querySelector('.hyperbolic-space');
-                if (targetEl && !document.querySelector('.profit-correlation')) {
-                    profitIndicator.classList.add('profit-correlation');
-                    targetEl.appendChild(profitIndicator);
-                }
-            }
-
-            init() {
-                // Start live updates
-                this.updateLiveMetrics();
-                setInterval(() => this.updateLiveMetrics(), this.updateInterval);
-                
-                // Add arbitrage correlation indicator
-                setTimeout(() => this.addArbitrageCorrelationIndicator(), 1000);
-                
-                console.log('🔴 LIVE Hyperbolic Space Engine initialized with real Poincaré mathematics');
-                console.log('📊 Metrics now correlate with actual arbitrage performance');
-            }
-        }
-
-        // Initialize the live engine
-        window.liveHyperbolicEngine = new LiveHyperbolicEngine();
 
         // Initialize real-time updates
         setInterval(updateMarketData, 2000);
