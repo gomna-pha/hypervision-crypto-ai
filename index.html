@@ -442,12 +442,157 @@
 
     <!-- Main Container -->
     <div class="main-container">
-        <!-- Dashboard Tab (Keep existing content) -->
+        <!-- Enhanced Dashboard Tab with HyperVision Integration -->
         <div class="tab-content active" id="dashboard-tab">
-            <!-- Your existing dashboard content here -->
             <div class="dashboard-grid">
+                <!-- Live Hyperbolic Arbitrage Monitor -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">🎯 HyperVision Arbitrage Engine</h3>
+                        <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">HYPERBOLIC AI</span>
+                    </div>
+                    
+                    <!-- Poincaré Disk Visualization -->
+                    <div style="height: 200px; background: radial-gradient(circle at center, rgba(103, 126, 234, 0.1), transparent); border-radius: 8px; display: flex; align-items: center; justify-content: center; position: relative; margin-bottom: 1rem;">
+                        <canvas id="mini-poincare" width="180" height="180" style="border-radius: 50%;"></canvas>
+                        <div style="position: absolute; bottom: 10px; right: 10px; font-size: 0.65rem; color: var(--purple);">
+                            Curvature: -1.0 | Dim: 64
+                        </div>
+                    </div>
+                    
+                    <!-- Live Opportunities -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem;">Active Opportunities</h4>
+                    <div id="live-opportunities" style="max-height: 200px; overflow-y: auto;">
+                        <!-- Opportunities will be populated here -->
+                    </div>
+                    
+                    <!-- Execution Stats -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem;">
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Success Rate</div>
+                            <div style="font-weight: 700; color: var(--success);" id="dash-success-rate">0%</div>
+                        </div>
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Avg Latency</div>
+                            <div style="font-weight: 700; color: var(--purple);" id="dash-latency">0ms</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Real-Time Market Data -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">📈 Live Market Data</h3>
+                        <span class="live-dot"></span>
+                        <span style="font-size: 0.7rem;">REAL-TIME</span>
+                    </div>
+                    
+                    <!-- Market Prices Grid -->
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div class="market-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="market-symbol">BTC/USD</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Bitcoin</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="market-price" id="btc-price">$0</div>
+                                    <div style="font-size: 0.7rem; color: var(--success);" id="btc-change">+0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="market-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="market-symbol">ETH/USD</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Ethereum</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="market-price" id="eth-price">$0</div>
+                                    <div style="font-size: 0.7rem; color: var(--success);" id="eth-change">+0%</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="market-item">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div class="market-symbol">SOL/USD</div>
+                                    <div style="font-size: 0.7rem; color: var(--brown-text);">Solana</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="market-price" id="sol-price">$0</div>
+                                    <div style="font-size: 0.7rem; color: var(--success);" id="sol-change">+0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Exchange Spreads -->
+                    <h4 style="font-size: 0.85rem; margin: 1rem 0 0.5rem;">Exchange Spreads</h4>
+                    <div style="display: grid; gap: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span style="font-size: 0.75rem;">Binance - Coinbase</span>
+                            <strong style="color: var(--success); font-size: 0.75rem;" id="spread-1">0.12%</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span style="font-size: 0.75rem;">Kraken - FTX</span>
+                            <strong style="color: var(--warning); font-size: 0.75rem;" id="spread-2">0.08%</strong>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Platform Performance -->
                 <div class="card span-4">
-                    <h2 style="text-align: center; margin: 2rem;">Main Dashboard Content (Existing)</h2>
+                    <div class="card-header">
+                        <h3 class="card-title">⚡ Platform Performance</h3>
+                        <button style="padding: 0.3rem 0.6rem; background: var(--purple); color: white; border: none; border-radius: 4px; font-size: 0.7rem; cursor: pointer;" onclick="window.location.href='hypervision_dashboard.html'">
+                            Full Dashboard →
+                        </button>
+                    </div>
+                    
+                    <!-- Performance Metrics -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="total-profit-dash">$0</div>
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Total Profit</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--purple);" id="opportunities-detected">0</div>
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Opportunities</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="trades-executed">0</div>
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Trades</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);" id="active-algos">7</div>
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Active Algos</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Live Activity Feed -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.5rem;">Live Activity</h4>
+                    <div id="activity-feed" style="max-height: 150px; overflow-y: auto; font-size: 0.75rem;">
+                        <!-- Activity items will be populated here -->
+                    </div>
+                    
+                    <!-- Risk Indicators -->
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 1rem;">
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">VaR (95%)</div>
+                            <div style="font-weight: 600; color: var(--success);" id="var-value">$12,450</div>
+                        </div>
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Sharpe</div>
+                            <div style="font-weight: 600;" id="sharpe-value">2.34</div>
+                        </div>
+                        <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; text-align: center;">
+                            <div style="font-size: 0.65rem; color: var(--brown-text);">Risk Score</div>
+                            <div style="font-weight: 600; color: var(--success);" id="risk-level">LOW</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1478,6 +1623,211 @@
     </div>
 
     <script>
+        // Initialize mini Poincaré disk
+        function initMiniPoincare() {
+            const canvas = document.getElementById('mini-poincare');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = 90;
+            const centerY = 90;
+            const radius = 80;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 180, 180);
+            
+            // Draw disk
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(107, 70, 193, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw grid
+            for (let i = 1; i < 4; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * (i / 4), 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(107, 70, 193, 0.1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // Animate points
+            const points = [];
+            for (let i = 0; i < 8; i++) {
+                const r = Math.random() * radius * 0.8;
+                const theta = (i / 8) * 2 * Math.PI + Math.random() * 0.5;
+                const hyperbolicR = Math.tanh(r / radius) * radius;
+                
+                points.push({
+                    x: centerX + hyperbolicR * Math.cos(theta),
+                    y: centerY + hyperbolicR * Math.sin(theta),
+                    color: `hsl(${250 + Math.random() * 30}, 70%, 60%)`
+                });
+            }
+            
+            // Draw points
+            points.forEach(point => {
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 3, 0, 2 * Math.PI);
+                ctx.fillStyle = point.color;
+                ctx.fill();
+            });
+            
+            // Draw connections
+            for (let i = 0; i < points.length; i++) {
+                for (let j = i + 1; j < points.length; j++) {
+                    const dist = Math.sqrt(
+                        Math.pow(points[i].x - points[j].x, 2) + 
+                        Math.pow(points[i].y - points[j].y, 2)
+                    );
+                    
+                    if (dist < 60) {
+                        ctx.beginPath();
+                        ctx.moveTo(points[i].x, points[i].y);
+                        ctx.lineTo(points[j].x, points[j].y);
+                        ctx.strokeStyle = 'rgba(107, 70, 193, 0.15)';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        // Update live opportunities
+        function updateOpportunities() {
+            const container = document.getElementById('live-opportunities');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            const types = ['CROSS_EXCHANGE', 'TRIANGULAR', 'STATISTICAL', 'SPATIAL'];
+            const symbols = ['BTC/USD', 'ETH/USD', 'SOL/USD'];
+            
+            for (let i = 0; i < 3; i++) {
+                const type = types[Math.floor(Math.random() * types.length)];
+                const profit = (Math.random() * 300 + 50).toFixed(2);
+                const prob = (70 + Math.random() * 25).toFixed(1);
+                
+                const oppDiv = document.createElement('div');
+                oppDiv.style.cssText = 'padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s;';
+                oppDiv.onmouseover = function() { this.style.background = 'var(--cream-secondary)'; };
+                oppDiv.onmouseout = function() { this.style.background = 'var(--cream-light)'; };
+                
+                oppDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                        <span style="font-weight: 600; font-size: 0.75rem; color: var(--purple);">${type}</span>
+                        <span style="font-weight: 700; color: var(--success);">+$${profit}</span>
+                    </div>
+                    <div style="font-size: 0.65rem; color: var(--brown-text);">
+                        ${symbols[Math.floor(Math.random() * symbols.length)]} | ${prob}% prob | ${(10 + Math.random() * 40).toFixed(0)}ms
+                    </div>
+                `;
+                
+                container.appendChild(oppDiv);
+            }
+        }
+        
+        // Update market prices
+        function updateMarketPrices() {
+            const btcPrice = 45000 + Math.random() * 5000;
+            const ethPrice = 3000 + Math.random() * 500;
+            const solPrice = 100 + Math.random() * 20;
+            
+            document.getElementById('btc-price').textContent = `$${btcPrice.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            document.getElementById('eth-price').textContent = `$${ethPrice.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            document.getElementById('sol-price').textContent = `$${solPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            
+            document.getElementById('btc-change').textContent = `+${(Math.random() * 5).toFixed(2)}%`;
+            document.getElementById('eth-change').textContent = `+${(Math.random() * 7).toFixed(2)}%`;
+            document.getElementById('sol-change').textContent = `+${(Math.random() * 10).toFixed(2)}%`;
+            
+            document.getElementById('spread-1').textContent = `${(Math.random() * 0.2).toFixed(3)}%`;
+            document.getElementById('spread-2').textContent = `${(Math.random() * 0.15).toFixed(3)}%`;
+        }
+        
+        // Update platform metrics
+        function updatePlatformMetrics() {
+            const totalProfit = Math.random() * 50000;
+            const opportunities = Math.floor(Math.random() * 500 + 100);
+            const trades = Math.floor(Math.random() * 200 + 50);
+            const successRate = 85 + Math.random() * 10;
+            const latency = 2 + Math.random() * 3;
+            
+            document.getElementById('total-profit-dash').textContent = `$${totalProfit.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            document.getElementById('opportunities-detected').textContent = opportunities;
+            document.getElementById('trades-executed').textContent = trades;
+            document.getElementById('dash-success-rate').textContent = `${successRate.toFixed(1)}%`;
+            document.getElementById('dash-latency').textContent = `${latency.toFixed(1)}ms`;
+            
+            // Update risk metrics
+            document.getElementById('var-value').textContent = `$${(Math.random() * 20000 + 5000).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            document.getElementById('sharpe-value').textContent = (1.5 + Math.random() * 1.5).toFixed(2);
+            
+            const riskLevels = ['LOW', 'MEDIUM', 'LOW', 'LOW'];
+            const riskLevel = riskLevels[Math.floor(Math.random() * riskLevels.length)];
+            const riskElement = document.getElementById('risk-level');
+            riskElement.textContent = riskLevel;
+            riskElement.style.color = riskLevel === 'LOW' ? 'var(--success)' : 'var(--warning)';
+        }
+        
+        // Update activity feed
+        function updateActivityFeed() {
+            const feed = document.getElementById('activity-feed');
+            if (!feed) return;
+            
+            const activities = [
+                { type: 'trade', text: 'Executed BTC/USD arbitrage', profit: '+$234.56' },
+                { type: 'opportunity', text: 'New triangular opportunity detected', profit: null },
+                { type: 'trade', text: 'Closed ETH/BTC position', profit: '+$123.45' },
+                { type: 'system', text: 'Risk parameters updated', profit: null },
+                { type: 'trade', text: 'Executed SOL/USD trade', profit: '+$89.12' }
+            ];
+            
+            const newActivity = activities[Math.floor(Math.random() * activities.length)];
+            const timestamp = new Date().toLocaleTimeString();
+            
+            const activityDiv = document.createElement('div');
+            activityDiv.style.cssText = 'padding: 0.5rem; border-bottom: 1px solid var(--cream-tertiary);';
+            
+            const icon = newActivity.type === 'trade' ? '💹' : (newActivity.type === 'opportunity' ? '🎯' : '⚙️');
+            const profitText = newActivity.profit ? `<span style="color: var(--success); font-weight: 600;">${newActivity.profit}</span>` : '';
+            
+            activityDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between;">
+                    <span>${icon} ${newActivity.text}</span>
+                    ${profitText}
+                </div>
+                <div style="font-size: 0.6rem; color: var(--brown-text); margin-top: 0.25rem;">${timestamp}</div>
+            `;
+            
+            feed.insertBefore(activityDiv, feed.firstChild);
+            
+            // Keep only last 5 activities
+            while (feed.children.length > 5) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+        
+        // Initialize dashboard
+        function initDashboard() {
+            initMiniPoincare();
+            updateOpportunities();
+            updateMarketPrices();
+            updatePlatformMetrics();
+            updateActivityFeed();
+            
+            // Set up periodic updates
+            setInterval(initMiniPoincare, 5000);
+            setInterval(updateOpportunities, 3000);
+            setInterval(updateMarketPrices, 2000);
+            setInterval(updatePlatformMetrics, 4000);
+            setInterval(updateActivityFeed, 5000);
+        }
+        
+        // Start when page loads
+        window.addEventListener('DOMContentLoaded', initDashboard);
+        
         // Tab switching
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(tab => {

@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HyperVision | Professional Hyperbolic HFT Platform</title>
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #0f3460;
+            --highlight: #e94560;
+            --success: #00d4aa;
+            --warning: #ffa500;
+            --danger: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #a8b2d1;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--bg-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-indicators {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+
+        /* Main Container */
+        .main-container {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1920px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--bg-gradient);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .positive { color: var(--success); }
+        .negative { color: var(--danger); }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: var(--secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .span-3 { grid-column: span 3; }
+        .span-4 { grid-column: span 4; }
+        .span-6 { grid-column: span 6; }
+        .span-8 { grid-column: span 8; }
+        .span-12 { grid-column: span 12; }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            background: var(--bg-gradient);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Hyperbolic Visualization */
+        #hyperbolic-canvas {
+            width: 100%;
+            height: 400px;
+            background: radial-gradient(circle at center, rgba(103, 126, 234, 0.1), transparent);
+            border-radius: 8px;
+            position: relative;
+        }
+
+        /* Arbitrage Opportunities */
+        .opportunity-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .opportunity-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .opportunity-item:hover {
+            background: rgba(103, 126, 234, 0.1);
+            border-color: rgba(103, 126, 234, 0.3);
+            transform: translateX(5px);
+        }
+
+        .opportunity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .opportunity-type {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--highlight);
+        }
+
+        .opportunity-profit {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .opportunity-details {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Order Book */
+        .order-book {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .order-side {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .order-side-header {
+            padding: 0.75rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .bids .order-side-header {
+            background: rgba(0, 212, 170, 0.2);
+            color: var(--success);
+        }
+
+        .asks .order-side-header {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--danger);
+        }
+
+        .order-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 0.5rem;
+            font-size: 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+        }
+
+        .order-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Execution Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Performance Chart */
+        .chart-container {
+            height: 300px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            padding: 1rem;
+            position: relative;
+        }
+
+        /* Risk Indicators */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .risk-indicator {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .risk-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .risk-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        /* Trading Actions */
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background: var(--bg-gradient);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Loading Animation */
+        .loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--highlight);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+            .span-3 { grid-column: span 6; }
+            .span-4 { grid-column: span 6; }
+            .span-6 { grid-column: span 6; }
+            .span-8 { grid-column: span 6; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <svg width="30" height="30" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="url(#gradient)" stroke-width="2"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="url(#gradient)" stroke-width="2" opacity="0.7"/>
+                    <circle cx="50" cy="50" r="25" fill="none" stroke="url(#gradient)" stroke-width="2" opacity="0.5"/>
+                    <circle cx="50" cy="50" r="15" fill="none" stroke="url(#gradient)" stroke-width="2" opacity="0.3"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#667eea"/>
+                            <stop offset="100%" style="stop-color:#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                HyperVision
+            </div>
+            
+            <div class="status-indicators">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>System Online</span>
+                </div>
+                <div class="status-item">
+                    <span>Latency: <strong id="latency">2.3ms</strong></span>
+                </div>
+                <div class="status-item">
+                    <span>Connections: <strong id="connections">12</strong></span>
+                </div>
+                <div class="status-item">
+                    <span id="time">00:00:00</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Key Metrics -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Opportunities</div>
+                <div class="metric-value" id="total-opportunities">0</div>
+                <div class="metric-change positive">
+                    <span>↑</span>
+                    <span id="opp-change">+0%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Executed Trades</div>
+                <div class="metric-value" id="executed-trades">0</div>
+                <div class="metric-change positive">
+                    <span>↑</span>
+                    <span id="trades-change">+0%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Total Profit</div>
+                <div class="metric-value" id="total-profit">$0</div>
+                <div class="metric-change positive">
+                    <span>↑</span>
+                    <span id="profit-change">+0%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Success Rate</div>
+                <div class="metric-value" id="success-rate">0%</div>
+                <div class="metric-change positive">
+                    <span>↑</span>
+                    <span id="rate-change">+0%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Avg Latency</div>
+                <div class="metric-value" id="avg-latency">0ms</div>
+                <div class="metric-change positive">
+                    <span>↓</span>
+                    <span id="latency-change">-0%</span>
+                </div>
+            </div>
+            
+            <div class="metric-card">
+                <div class="metric-label">Active Positions</div>
+                <div class="metric-value" id="active-positions">0</div>
+                <div class="metric-change">
+                    <span id="positions-change">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Hyperbolic Space Visualization -->
+            <div class="card span-8">
+                <div class="card-header">
+                    <h3 class="card-title">Hyperbolic Market Embeddings</h3>
+                    <span class="badge">REAL-TIME</span>
+                </div>
+                <div id="hyperbolic-canvas">
+                    <canvas id="poincare-disk" width="800" height="400"></canvas>
+                </div>
+                <div class="risk-grid">
+                    <div class="risk-indicator">
+                        <div class="risk-label">Curvature</div>
+                        <div class="risk-value" style="color: var(--highlight);">-1.0</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Embedding Dim</div>
+                        <div class="risk-value" style="color: var(--warning);">64</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Clusters</div>
+                        <div class="risk-value" style="color: var(--success);">7</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Outliers</div>
+                        <div class="risk-value" style="color: var(--danger);">3</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Arbitrage Opportunities -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <h3 class="card-title">Live Arbitrage Opportunities</h3>
+                    <span class="badge" style="background: var(--success);">AUTO-EXECUTE</span>
+                </div>
+                <div class="opportunity-list" id="opportunities">
+                    <!-- Opportunities will be populated here -->
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-success" onclick="executeAll()">Execute All</button>
+                    <button class="btn btn-danger" onclick="clearOpportunities()">Clear</button>
+                </div>
+            </div>
+
+            <!-- Order Book -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <h3 class="card-title">Aggregated Order Book</h3>
+                    <select style="background: var(--accent); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px;">
+                        <option>BTC/USD</option>
+                        <option>ETH/USD</option>
+                        <option>SOL/USD</option>
+                    </select>
+                </div>
+                <div class="order-book">
+                    <div class="order-side bids">
+                        <div class="order-side-header">BIDS</div>
+                        <div id="bid-orders">
+                            <!-- Bid orders will be populated here -->
+                        </div>
+                    </div>
+                    <div class="order-side asks">
+                        <div class="order-side-header">ASKS</div>
+                        <div id="ask-orders">
+                            <!-- Ask orders will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Execution Statistics -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <h3 class="card-title">Execution Statistics</h3>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Orders/Sec</span>
+                        <span class="stat-value" id="orders-per-sec">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Fill Rate</span>
+                        <span class="stat-value" id="fill-rate">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Avg Slippage</span>
+                        <span class="stat-value" id="avg-slippage">0bp</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Failed Orders</span>
+                        <span class="stat-value" id="failed-orders" style="color: var(--danger);">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="card span-4">
+                <div class="card-header">
+                    <h3 class="card-title">P&L Performance</h3>
+                    <select style="background: var(--accent); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px;">
+                        <option>1H</option>
+                        <option>24H</option>
+                        <option>7D</option>
+                        <option>30D</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pnl-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Risk Management -->
+            <div class="card span-12">
+                <div class="card-header">
+                    <h3 class="card-title">Risk Management Dashboard</h3>
+                    <span class="badge" style="background: var(--warning);">MONITORING</span>
+                </div>
+                <div class="risk-grid" style="grid-template-columns: repeat(6, 1fr);">
+                    <div class="risk-indicator">
+                        <div class="risk-label">VaR (95%)</div>
+                        <div class="risk-value" id="var-95">$0</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Max Drawdown</div>
+                        <div class="risk-value" id="max-drawdown">0%</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Sharpe Ratio</div>
+                        <div class="risk-value" id="sharpe-ratio">0.0</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Position Limit</div>
+                        <div class="risk-value" id="position-limit">$1M</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Daily Loss</div>
+                        <div class="risk-value" id="daily-loss">$0</div>
+                    </div>
+                    <div class="risk-indicator">
+                        <div class="risk-label">Risk Score</div>
+                        <div class="risk-value" id="risk-score" style="color: var(--success);">LOW</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Poincaré disk visualization
+        const canvas = document.getElementById('poincare-disk');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = canvas.offsetWidth;
+        canvas.height = 400;
+        
+        // Draw Poincaré disk
+        function drawPoincareDisk() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 150;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw disk boundary
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = 'rgba(103, 126, 234, 0.3)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Draw hyperbolic grid lines
+            for (let i = 1; i < 5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius * (i / 5), 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(103, 126, 234, 0.1)';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+            
+            // Draw radial lines
+            for (let angle = 0; angle < 360; angle += 30) {
+                const rad = (angle * Math.PI) / 180;
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(
+                    centerX + radius * Math.cos(rad),
+                    centerY + radius * Math.sin(rad)
+                );
+                ctx.strokeStyle = 'rgba(103, 126, 234, 0.05)';
+                ctx.stroke();
+            }
+            
+            // Simulate embedded points
+            const points = generateHyperbolicPoints(20, radius, centerX, centerY);
+            points.forEach(point => {
+                // Draw point
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+                ctx.fillStyle = point.color;
+                ctx.fill();
+                
+                // Draw connections
+                if (point.connected) {
+                    point.connected.forEach(targetId => {
+                        const target = points.find(p => p.id === targetId);
+                        if (target) {
+                            ctx.beginPath();
+                            ctx.moveTo(point.x, point.y);
+                            ctx.lineTo(target.x, target.y);
+                            ctx.strokeStyle = 'rgba(103, 126, 234, 0.2)';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
+                    });
+                }
+            });
+        }
+        
+        function generateHyperbolicPoints(count, radius, centerX, centerY) {
+            const points = [];
+            for (let i = 0; i < count; i++) {
+                const r = Math.random() * radius * 0.9; // Keep points within disk
+                const theta = Math.random() * 2 * Math.PI;
+                
+                // Apply hyperbolic transformation
+                const hyperbolicR = Math.tanh(r / radius) * radius;
+                
+                points.push({
+                    id: i,
+                    x: centerX + hyperbolicR * Math.cos(theta),
+                    y: centerY + hyperbolicR * Math.sin(theta),
+                    color: `hsl(${Math.random() * 60 + 240}, 70%, 60%)`,
+                    connected: Math.random() > 0.7 ? [Math.floor(Math.random() * count)] : []
+                });
+            }
+            return points;
+        }
+        
+        // Update metrics
+        function updateMetrics() {
+            // Simulate metric updates
+            const metrics = {
+                totalOpportunities: Math.floor(Math.random() * 1000),
+                executedTrades: Math.floor(Math.random() * 500),
+                totalProfit: Math.random() * 100000,
+                successRate: 85 + Math.random() * 10,
+                avgLatency: 2 + Math.random() * 3,
+                activePositions: Math.floor(Math.random() * 20)
+            };
+            
+            document.getElementById('total-opportunities').textContent = metrics.totalOpportunities.toLocaleString();
+            document.getElementById('executed-trades').textContent = metrics.executedTrades.toLocaleString();
+            document.getElementById('total-profit').textContent = `$${metrics.totalProfit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            document.getElementById('success-rate').textContent = `${metrics.successRate.toFixed(1)}%`;
+            document.getElementById('avg-latency').textContent = `${metrics.avgLatency.toFixed(1)}ms`;
+            document.getElementById('active-positions').textContent = metrics.activePositions;
+            
+            // Update changes
+            document.getElementById('opp-change').textContent = `+${(Math.random() * 20).toFixed(1)}%`;
+            document.getElementById('trades-change').textContent = `+${(Math.random() * 15).toFixed(1)}%`;
+            document.getElementById('profit-change').textContent = `+${(Math.random() * 25).toFixed(1)}%`;
+            document.getElementById('rate-change').textContent = `+${(Math.random() * 5).toFixed(1)}%`;
+            document.getElementById('latency-change').textContent = `-${(Math.random() * 10).toFixed(1)}%`;
+        }
+        
+        // Generate arbitrage opportunities
+        function generateOpportunities() {
+            const types = ['CROSS_EXCHANGE', 'TRIANGULAR', 'STATISTICAL', 'SPATIAL'];
+            const symbols = ['BTC/USD', 'ETH/USD', 'SOL/USD', 'BNB/USD'];
+            const exchanges = ['Binance', 'Coinbase', 'Kraken', 'FTX'];
+            
+            const opportunitiesDiv = document.getElementById('opportunities');
+            opportunitiesDiv.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const type = types[Math.floor(Math.random() * types.length)];
+                const profit = (Math.random() * 500).toFixed(2);
+                const probability = (70 + Math.random() * 30).toFixed(1);
+                const latency = (10 + Math.random() * 90).toFixed(0);
+                
+                const oppItem = document.createElement('div');
+                oppItem.className = 'opportunity-item';
+                oppItem.innerHTML = `
+                    <div class="opportunity-header">
+                        <span class="opportunity-type">${type}</span>
+                        <span class="opportunity-profit">+$${profit}</span>
+                    </div>
+                    <div class="opportunity-details">
+                        <div>Symbol: ${symbols[Math.floor(Math.random() * symbols.length)]}</div>
+                        <div>Probability: ${probability}%</div>
+                        <div>Latency: ${latency}ms</div>
+                        <div>Exchange: ${exchanges[Math.floor(Math.random() * exchanges.length)]}</div>
+                        <div>Risk: <span style="color: ${probability > 80 ? 'var(--success)' : 'var(--warning)'}">
+                            ${probability > 80 ? 'LOW' : 'MEDIUM'}</span></div>
+                        <div>Volume: ${(Math.random() * 10).toFixed(2)} BTC</div>
+                    </div>
+                `;
+                opportunitiesDiv.appendChild(oppItem);
+            }
+        }
+        
+        // Generate order book
+        function generateOrderBook() {
+            const bidOrdersDiv = document.getElementById('bid-orders');
+            const askOrdersDiv = document.getElementById('ask-orders');
+            
+            bidOrdersDiv.innerHTML = '';
+            askOrdersDiv.innerHTML = '';
+            
+            const basePrice = 50000;
+            
+            // Generate bids
+            for (let i = 0; i < 10; i++) {
+                const price = basePrice - (i * 10);
+                const amount = (Math.random() * 5).toFixed(4);
+                const total = (price * amount).toFixed(2);
+                
+                const orderRow = document.createElement('div');
+                orderRow.className = 'order-row';
+                orderRow.innerHTML = `
+                    <span>${price.toLocaleString()}</span>
+                    <span>${amount}</span>
+                    <span>${total}</span>
+                `;
+                bidOrdersDiv.appendChild(orderRow);
+            }
+            
+            // Generate asks
+            for (let i = 0; i < 10; i++) {
+                const price = basePrice + ((i + 1) * 10);
+                const amount = (Math.random() * 5).toFixed(4);
+                const total = (price * amount).toFixed(2);
+                
+                const orderRow = document.createElement('div');
+                orderRow.className = 'order-row';
+                orderRow.innerHTML = `
+                    <span>${price.toLocaleString()}</span>
+                    <span>${amount}</span>
+                    <span>${total}</span>
+                `;
+                askOrdersDiv.appendChild(orderRow);
+            }
+        }
+        
+        // Update execution stats
+        function updateExecutionStats() {
+            document.getElementById('orders-per-sec').textContent = Math.floor(100 + Math.random() * 900);
+            document.getElementById('fill-rate').textContent = `${(85 + Math.random() * 10).toFixed(1)}%`;
+            document.getElementById('avg-slippage').textContent = `${(Math.random() * 5).toFixed(1)}bp`;
+            document.getElementById('failed-orders').textContent = Math.floor(Math.random() * 10);
+        }
+        
+        // Update risk metrics
+        function updateRiskMetrics() {
+            document.getElementById('var-95').textContent = `$${(Math.random() * 50000).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+            document.getElementById('max-drawdown').textContent = `${(Math.random() * 10).toFixed(1)}%`;
+            document.getElementById('sharpe-ratio').textContent = (1.5 + Math.random()).toFixed(2);
+            document.getElementById('daily-loss').textContent = `$${(Math.random() * 10000).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+        }
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('time').textContent = now.toLocaleTimeString();
+            document.getElementById('latency').textContent = `${(2 + Math.random() * 3).toFixed(1)}ms`;
+            document.getElementById('connections').textContent = 10 + Math.floor(Math.random() * 5);
+        }
+        
+        // Button actions
+        function executeAll() {
+            alert('Executing all profitable arbitrage opportunities...');
+            generateOpportunities();
+        }
+        
+        function clearOpportunities() {
+            document.getElementById('opportunities').innerHTML = '';
+        }
+        
+        // Initialize and start updates
+        function init() {
+            drawPoincareDisk();
+            updateMetrics();
+            generateOpportunities();
+            generateOrderBook();
+            updateExecutionStats();
+            updateRiskMetrics();
+            updateTime();
+            
+            // Set up periodic updates
+            setInterval(updateTime, 1000);
+            setInterval(updateMetrics, 3000);
+            setInterval(generateOpportunities, 5000);
+            setInterval(generateOrderBook, 2000);
+            setInterval(updateExecutionStats, 4000);
+            setInterval(updateRiskMetrics, 10000);
+            setInterval(drawPoincareDisk, 5000);
+        }
+        
+        // Start when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
