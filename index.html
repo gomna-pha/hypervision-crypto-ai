@@ -1722,8 +1722,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
             <!-- 🏦 INSTITUTIONAL INVESTOR PORTAL TAB -->
             <div id="investor-portal-tab" class="tab-content hidden">
@@ -2031,19 +2029,34 @@
 
         // Tab switching functionality
         function switchTab(tabName) {
+            console.log(`🔄 Switching to tab: ${tabName}`);
+            
             // Hide all tabs
-            document.querySelectorAll('.tab-content').forEach(tab => {
+            const allTabs = document.querySelectorAll('.tab-content');
+            console.log(`Found ${allTabs.length} tabs to hide`);
+            allTabs.forEach(tab => {
                 tab.classList.add('hidden');
             });
             
             // Show selected tab
-            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            const targetTab = document.getElementById(tabName + '-tab');
+            console.log(`Target tab element:`, targetTab);
+            if (targetTab) {
+                targetTab.classList.remove('hidden');
+                console.log(`✅ Successfully showed ${tabName}-tab`);
+            } else {
+                console.error(`❌ Tab ${tabName}-tab not found!`);
+            }
             
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100';
             });
-            document.querySelector(`[data-tab="${tabName}"]`).className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600';
+            
+            const activeTabBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            if (activeTabBtn) {
+                activeTabBtn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600';
+            }
         }
 
         // Live market data updates
@@ -2333,6 +2346,7 @@
         
         // Update strategy performance metrics in real-time
         function updateStrategyMarketplaceMetrics() {
+            console.log('🎨 Updating marketplace metrics...');
             // Strategy 1: Cross-Exchange Arbitrage
             const strategy1Return = 24.7 + (Math.random() - 0.5) * 0.4;
             const strategy1Sharpe = 2.84 + (Math.random() - 0.5) * 0.1;
@@ -3100,6 +3114,22 @@
             setInterval(updateLiveStatusIndicator, 3000);
             
             console.log('🎯 All live engines initialized successfully!');
+        
+        // Add a test function for investor portal
+        window.testInvestorPortal = function() {
+            console.log('🧪 Testing Investor Portal visibility...');
+            const investorTab = document.getElementById('investor-portal-tab');
+            console.log('Investor Portal Tab Element:', investorTab);
+            if (investorTab) {
+                investorTab.classList.remove('hidden');
+                console.log('✅ Investor Portal should now be visible!');
+            }
+        };
+        
+        // Add manual tab test
+        window.showInvestorPortal = function() {
+            switchTab('investor-portal');
+        };
         }
         
         // Wait for DOM to be ready before initializing engines
