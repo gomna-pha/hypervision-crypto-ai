@@ -2045,26 +2045,41 @@
 
         // Live market data updates
         function updateMarketData() {
-            // Simulate real-time price updates
-            const btcPrice = 67234.50 + (Math.random() - 0.5) * 100;
-            const ethPrice = 3456.78 + (Math.random() - 0.5) * 20;
-            
-            document.getElementById('btc-price').textContent = '$' + btcPrice.toFixed(2);
-            document.getElementById('eth-price').textContent = '$' + ethPrice.toFixed(2);
-            
-            // Update spreads
-            document.getElementById('spread-1').textContent = '+$' + (8.5 + Math.random() * 2).toFixed(2);
-            document.getElementById('spread-2').textContent = '+$' + (12.3 + Math.random() * 3).toFixed(2);
-            document.getElementById('spread-3').textContent = '+$' + (127 + Math.random() * 10).toFixed(2);
-            
-            // Update last scan time
-            const now = new Date();
-            document.getElementById('last-scan-time').textContent = now.toLocaleTimeString();
-            
-            // Update market update time if element exists
-            const marketUpdateEl = document.getElementById('market-update-time');
-            if (marketUpdateEl) {
-                marketUpdateEl.textContent = now.toLocaleTimeString();
+            try {
+                // Simulate real-time price updates
+                const btcPrice = 67234.50 + (Math.random() - 0.5) * 100;
+                const ethPrice = 3456.78 + (Math.random() - 0.5) * 20;
+                const now = new Date();
+                
+                // Safe element updates
+                const marketUpdates = {
+                    'btc-price': '$' + btcPrice.toFixed(2),
+                    'eth-price': '$' + ethPrice.toFixed(2),
+                    'spread-1': '+$' + (8.5 + Math.random() * 2).toFixed(2),
+                    'spread-2': '+$' + (12.3 + Math.random() * 3).toFixed(2),
+                    'spread-3': '+$' + (127 + Math.random() * 10).toFixed(2),
+                    'last-scan-time': now.toLocaleTimeString(),
+                    'market-update-time': now.toLocaleTimeString()
+                };
+                
+                Object.entries(marketUpdates).forEach(([id, value]) => {
+                    const el = document.getElementById(id);
+                    if (el) {
+                        el.textContent = value;
+                        // Add flash effect for price updates
+                        if (id.includes('price') && Math.random() > 0.7) {
+                            el.style.transition = 'color 0.3s ease';
+                            const originalColor = el.style.color;
+                            el.style.color = '#10b981'; // Green flash
+                            setTimeout(() => el.style.color = originalColor, 300);
+                        }
+                    }
+                });
+                
+                // Show update indicator
+                console.log('🔴 Market data updated:', now.toLocaleTimeString());
+            } catch (error) {
+                console.warn('Market data update error:', error.message);
             }
         }
 
@@ -2177,7 +2192,7 @@
                 `Investment Amount: $${amount.toLocaleString()}\n\n` +
                 `This will initiate the institutional onboarding process.\n` +
                 `Our team will contact you within 24 hours for verification.\n\n` +
-                `Proceed with purchase?"
+                `Proceed with purchase?`
             );
             
             if (confirmPurchase) {
@@ -2406,32 +2421,36 @@
             }
 
             updatePnLDisplay() {
-                const metrics = this.calculateRealTimePnL();
-                
-                // Update main P&L metrics
-                const totalRealizedEl = document.getElementById('total-realized-pnl');
-                const unrealizedPnlEl = document.getElementById('unrealized-pnl');
-                const sharpeRatioEl = document.getElementById('sharpe-ratio');
-                const winRateEl = document.getElementById('win-rate');
-                const tradesTodayEl = document.getElementById('trades-today');
-                const pnlTimestampEl = document.getElementById('pnl-timestamp');
-                const totalPnlChangeEl = document.getElementById('total-pnl-change');
-                const unrealizedChangeEl = document.getElementById('unrealized-change');
-                
-                if (totalRealizedEl) totalRealizedEl.textContent = `+$${metrics.totalRealized.toFixed(2)}`;
-                if (unrealizedPnlEl) unrealizedPnlEl.textContent = `+$${metrics.totalUnrealized.toFixed(2)}`;
-                if (sharpeRatioEl) sharpeRatioEl.textContent = metrics.sharpeRatio;
-                if (winRateEl) winRateEl.textContent = `${metrics.avgWinRate.toFixed(1)}%`;
-                if (tradesTodayEl) tradesTodayEl.textContent = `${metrics.totalTrades} trades today`;
-                if (pnlTimestampEl) pnlTimestampEl.textContent = metrics.timestamp;
-                if (totalPnlChangeEl) totalPnlChangeEl.textContent = `+$${metrics.pnlChange5min} (5min)`;
-                if (unrealizedChangeEl) unrealizedChangeEl.textContent = `+$${metrics.pnlChange1min} (1min)`;
+                try {
+                    const metrics = this.calculateRealTimePnL();
+                    
+                    // Update main P&L metrics with safe element access
+                    const elements = {
+                        'total-realized-pnl': `+$${metrics.totalRealized.toFixed(2)}`,
+                        'unrealized-pnl': `+$${metrics.totalUnrealized.toFixed(2)}`,
+                        'sharpe-ratio': metrics.sharpeRatio,
+                        'win-rate': `${metrics.avgWinRate.toFixed(1)}%`,
+                        'trades-today': `${metrics.totalTrades} trades today`,
+                        'pnl-timestamp': metrics.timestamp,
+                        'total-pnl-change': `+$${metrics.pnlChange5min} (5min)`,
+                        'unrealized-change': `+$${metrics.pnlChange1min} (1min)`
+                    };
+                    
+                    Object.entries(elements).forEach(([id, value]) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.textContent = value;
+                        }
+                    });
 
-                // Update strategy-specific P&L
-                this.updateStrategyPnL(metrics.strategies);
-                
-                // Add visual feedback for P&L changes
-                this.addPnLVisualEffects();
+                    // Update strategy-specific P&L
+                    this.updateStrategyPnL(metrics.strategies);
+                    
+                    // Add visual feedback for P&L changes
+                    this.addPnLVisualEffects();
+                } catch (error) {
+                    console.warn('P&L Display update error:', error.message);
+                }
             }
 
             updateStrategyPnL(strategies) {
@@ -2959,58 +2978,52 @@
             }
 
             updateLiveMetrics() {
-                // Update total P&L with realistic fluctuations
-                const pnlVariation = (Math.random() - 0.5) * 50;
-                this.baseMetrics.totalPnL += pnlVariation;
-                
-                // Update win rate
-                const winRateVariation = (Math.random() - 0.5) * 0.5;
-                this.baseMetrics.combinedWinRate = Math.max(75, Math.min(95, this.baseMetrics.combinedWinRate + winRateVariation));
-                
-                // Update execution count
-                if (Math.random() > 0.8) { // 20% chance of new execution
-                    this.baseMetrics.totalExecutions += Math.floor(Math.random() * 3) + 1;
-                }
-                
-                // Update execution time
-                const timeVariation = (Math.random() - 0.5) * 0.4;
-                this.baseMetrics.avgExecutionTime = Math.max(5.0, Math.min(8.0, this.baseMetrics.avgExecutionTime + timeVariation));
-                
-                // Update display elements
-                const livePnlEl = document.getElementById('live-strategy-pnl');
-                const liveWinRateEl = document.getElementById('live-strategy-win-rate');
-                const liveExecutionsEl = document.getElementById('live-strategy-executions');
-                const liveExecutionTimeEl = document.getElementById('live-strategy-execution-time');
-                
-                if (livePnlEl) {
-                    livePnlEl.textContent = `+$${this.baseMetrics.totalPnL.toFixed(2)}`;
-                    if (pnlVariation > 0) {
-                        livePnlEl.style.color = '#16a34a'; // Green flash for profit
+                try {
+                    // Update total P&L with realistic fluctuations
+                    const pnlVariation = (Math.random() - 0.5) * 50;
+                    this.baseMetrics.totalPnL += pnlVariation;
+                    
+                    // Update win rate
+                    const winRateVariation = (Math.random() - 0.5) * 0.5;
+                    this.baseMetrics.combinedWinRate = Math.max(75, Math.min(95, this.baseMetrics.combinedWinRate + winRateVariation));
+                    
+                    // Update execution count
+                    if (Math.random() > 0.8) { // 20% chance of new execution
+                        this.baseMetrics.totalExecutions += Math.floor(Math.random() * 3) + 1;
                     }
+                    
+                    // Update execution time
+                    const timeVariation = (Math.random() - 0.5) * 0.4;
+                    this.baseMetrics.avgExecutionTime = Math.max(5.0, Math.min(8.0, this.baseMetrics.avgExecutionTime + timeVariation));
+                    
+                    // Safe element updates
+                    const elements = {
+                        'live-strategy-pnl': `+$${this.baseMetrics.totalPnL.toFixed(2)}`,
+                        'live-strategy-win-rate': `${this.baseMetrics.combinedWinRate.toFixed(1)}%`,
+                        'live-strategy-executions': this.baseMetrics.totalExecutions.toString(),
+                        'live-strategy-execution-time': `${this.baseMetrics.avgExecutionTime.toFixed(1)}ms`,
+                        'pnl-live-change': `+$${Math.abs(pnlVariation * 2.5).toFixed(2)} (5min)`,
+                        'win-rate-live-trend': `${winRateVariation > 0 ? '↗' : '↘'} ${Math.abs(winRateVariation * 0.6).toFixed(1)}% (1hr)`,
+                        'execution-live-rate': `+${Math.floor(Math.random() * 4) + 1} (last min)`
+                    };
+                    
+                    Object.entries(elements).forEach(([id, value]) => {
+                        const el = document.getElementById(id);
+                        if (el) {
+                            el.textContent = value;
+                            // Add color coding for performance indicators
+                            if (id === 'live-strategy-pnl' && pnlVariation > 0) {
+                                el.style.color = '#16a34a'; // Green flash for profit
+                                setTimeout(() => el.style.color = '', 500);
+                            }
+                            if (id === 'live-strategy-execution-time') {
+                                el.style.color = this.baseMetrics.avgExecutionTime < 7 ? '#16a34a' : '#ea580c';
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.warn('Strategy Performance update error:', error.message);
                 }
-                if (liveWinRateEl) liveWinRateEl.textContent = `${this.baseMetrics.combinedWinRate.toFixed(1)}%`;
-                if (liveExecutionsEl) liveExecutionsEl.textContent = this.baseMetrics.totalExecutions.toString();
-                if (liveExecutionTimeEl) {
-                    liveExecutionTimeEl.textContent = `${this.baseMetrics.avgExecutionTime.toFixed(1)}ms`;
-                    // Color code based on performance
-                    if (this.baseMetrics.avgExecutionTime < 7) {
-                        liveExecutionTimeEl.style.color = '#16a34a'; // Green
-                    } else {
-                        liveExecutionTimeEl.style.color = '#ea580c'; // Orange
-                    }
-                }
-                
-                // Update change indicators
-                const pnlChangeEl = document.getElementById('pnl-live-change');
-                const winRateTrendEl = document.getElementById('win-rate-live-trend');
-                const executionRateEl = document.getElementById('execution-live-rate');
-                
-                if (pnlChangeEl) pnlChangeEl.textContent = `+$${Math.abs(pnlVariation * 2.5).toFixed(2)} (5min)`;
-                if (winRateTrendEl) {
-                    const trend = winRateVariation > 0 ? '↗' : '↘';
-                    winRateTrendEl.textContent = `${trend} ${Math.abs(winRateVariation * 0.6).toFixed(1)}% (1hr)`;
-                }
-                if (executionRateEl) executionRateEl.textContent = `+${Math.floor(Math.random() * 4) + 1} (last min)`;
             }
 
             init() {
@@ -3020,15 +3033,27 @@
             }
         }
 
-        // Initialize all live engines
-        window.realTimePnLEngine = new RealTimePnLEngine();
-        window.marketMicrostructureEngine = new MarketMicrostructureEngine();
-        window.latencyMonitorEngine = new LatencyMonitorEngine();
-        window.liveStrategyPerformanceEngine = new LiveStrategyPerformanceEngine();
-        window.liveHyperbolicEngine = new LiveHyperbolicEngine();
+        // Initialize all live engines with DOM ready check
+        function initializeLiveEngines() {
+            window.realTimePnLEngine = new RealTimePnLEngine();
+            window.marketMicrostructureEngine = new MarketMicrostructureEngine();
+            window.latencyMonitorEngine = new LatencyMonitorEngine();
+            window.liveStrategyPerformanceEngine = new LiveStrategyPerformanceEngine();
+            window.liveHyperbolicEngine = new LiveHyperbolicEngine();
+            
+            // Initialize marketplace metrics updates
+            setInterval(updateStrategyMarketplaceMetrics, 5000);
+            
+            console.log('🎯 All live engines initialized successfully!');
+        }
         
-        // Initialize marketplace metrics updates
-        setInterval(updateStrategyMarketplaceMetrics, 5000);
+        // Wait for DOM to be ready before initializing engines
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeLiveEngines);
+        } else {
+            // DOM is already loaded
+            setTimeout(initializeLiveEngines, 100);
+        }
         
         console.log('🔥 INSTITUTIONAL-GRADE HFT TRADING PLATFORM INITIALIZED');
         console.log('📊 Real-time P&L Attribution Engine: ACTIVE');
