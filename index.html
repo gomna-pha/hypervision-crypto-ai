@@ -138,15 +138,28 @@
             box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
         }
         .tab-content {
-            min-height: 400px !important;
+            min-height: 400px;
+        }
+        .tab-content.hidden {
+            display: none !important;
+        }
+        .tab-content.active {
             display: block !important;
             visibility: visible !important;
             opacity: 1 !important;
             position: relative !important;
             z-index: 1 !important;
+            min-height: 400px !important;
         }
-        .tab-content.hidden {
-            display: none !important;
+        .force-visible {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        .force-visible * {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
         .portfolio-section {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%) !important;
@@ -2213,7 +2226,7 @@
             console.log(`Found ${allTabs.length} tabs to hide`);
             allTabs.forEach(tab => {
                 tab.classList.add('hidden');
-                tab.style.display = 'none';
+                tab.classList.remove('active', 'force-visible');
             });
             
             // Remove active class from all tab buttons
@@ -2227,37 +2240,16 @@
             const targetTab = document.getElementById(tabName + '-tab');
             console.log(`Target tab element:`, targetTab);
             if (targetTab) {
-                // Force complete visibility
+                // Force complete visibility using CSS classes
                 targetTab.classList.remove('hidden');
-                targetTab.style.display = 'block !important';
-                targetTab.style.visibility = 'visible !important';
-                targetTab.style.opacity = '1 !important';
-                targetTab.style.position = 'relative !important';
-                targetTab.style.zIndex = '1 !important';
-                targetTab.style.minHeight = '400px';
+                targetTab.classList.add('active', 'force-visible');
                 
                 // Force all child elements to be visible
                 const allChildren = targetTab.querySelectorAll('*');
                 allChildren.forEach(child => {
                     // Remove any hidden classes
                     child.classList.remove('hidden');
-                    
-                    // Force visibility styles
-                    if (!child.style.display || child.style.display === 'none') {
-                        child.style.display = 'block';
-                    }
-                    child.style.visibility = 'visible';
-                    child.style.opacity = '1';
-                    
-                    // Special handling for specific classes
-                    if (child.classList.contains('portfolio-section') || 
-                        child.classList.contains('transparency-panel') ||
-                        child.classList.contains('cream-panel') ||
-                        child.classList.contains('cream-card')) {
-                        child.style.display = 'block !important';
-                        child.style.visibility = 'visible !important';
-                        child.style.opacity = '1 !important';
-                    }
+                    child.classList.add('force-visible');
                 });
                 
                 // Activate corresponding button
@@ -4485,16 +4477,12 @@
                 const allTabs = document.querySelectorAll('.tab-content');
                 allTabs.forEach(tab => {
                     tab.classList.remove('hidden');
-                    tab.style.display = 'block !important';
-                    tab.style.visibility = 'visible !important';
-                    tab.style.opacity = '1 !important';
-                    tab.style.minHeight = '400px';
+                    tab.classList.add('active', 'force-visible');
                     
                     const allChildren = tab.querySelectorAll('*');
                     allChildren.forEach(child => {
-                        child.style.display = 'block';
-                        child.style.visibility = 'visible';
-                        child.style.opacity = '1';
+                        child.classList.remove('hidden');
+                        child.classList.add('force-visible');
                     });
                 });
                 console.log('🔧 All tabs forced visible');
