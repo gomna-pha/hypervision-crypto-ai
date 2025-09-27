@@ -182,6 +182,10 @@
                             <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
                             Model Transparency
                         </button>
+                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-md ml-2" onclick="switchTab('investor-portal')">
+                            <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
+                            Investor Portal
+                        </button>
                     </div>
                 </div>
             </div>
@@ -3114,22 +3118,29 @@
             setInterval(updateLiveStatusIndicator, 3000);
             
             console.log('🎯 All live engines initialized successfully!');
-        
-        // Add a test function for investor portal
-        window.testInvestorPortal = function() {
-            console.log('🧪 Testing Investor Portal visibility...');
-            const investorTab = document.getElementById('investor-portal-tab');
-            console.log('Investor Portal Tab Element:', investorTab);
-            if (investorTab) {
-                investorTab.classList.remove('hidden');
-                console.log('✅ Investor Portal should now be visible!');
+            
+            // Verify Investor Portal tab exists
+            const investorPortalTab = document.getElementById('investor-portal-tab');
+            console.log('🏦 Investor Portal tab element:', investorPortalTab ? 'FOUND' : 'NOT FOUND');
+            if (investorPortalTab) {
+                console.log('✅ Investor Portal content is available');
             }
-        };
         
-        // Add manual tab test
-        window.showInvestorPortal = function() {
-            switchTab('investor-portal');
-        };
+            // Add test functions for debugging
+            window.testInvestorPortal = function() {
+                console.log('🧪 Testing Investor Portal visibility...');
+                const investorTab = document.getElementById('investor-portal-tab');
+                console.log('Investor Portal Tab Element:', investorTab);
+                if (investorTab) {
+                    investorTab.classList.remove('hidden');
+                    console.log('✅ Investor Portal should now be visible!');
+                }
+            };
+            
+            // Add manual tab test
+            window.showInvestorPortal = function() {
+                switchTab('investor-portal');
+            };
         }
         
         // Wait for DOM to be ready before initializing engines
