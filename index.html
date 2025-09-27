@@ -246,21 +246,144 @@
                                     </div>
                                 </div>
 
-                                <!-- Cross-Exchange Spreads -->
-                                <div class="mt-4">
-                                    <div class="text-cream-300 font-semibold text-xs mb-2">CROSS-EXCHANGE SPREADS</div>
+                                <!-- Social Media Sentiment Data -->
+                                <div class="border-b border-cream-700 pb-2">
+                                    <div class="text-cream-300 font-semibold text-xs mb-2">SOCIAL SENTIMENT</div>
                                     <div class="space-y-1 text-xs">
                                         <div class="flex justify-between">
-                                            <span>Binance-Coinbase:</span>
-                                            <span class="text-cream-200" id="spread-1">+$8.50</span>
+                                            <span>Twitter/X:</span>
+                                            <span class="text-green-400 font-semibold" id="twitter-sentiment">🔥 Bullish 78%</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span>Kraken-Bybit:</span>
-                                            <span class="text-cream-200" id="spread-2">+$12.30</span>
+                                            <span>Reddit:</span>
+                                            <span class="text-yellow-400 font-semibold" id="reddit-sentiment">⚡ Mixed 61%</span>
                                         </div>
                                         <div class="flex justify-between">
-                                            <span>Futures-Spot:</span>
-                                            <span class="text-cream-200" id="spread-3">+$127.00</span>
+                                            <span>News:</span>
+                                            <span class="text-green-400 font-semibold" id="news-sentiment">📈 Positive 84%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>FinBERT Score:</span>
+                                            <span class="text-blue-400 font-bold" id="finbert-score">0.752</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cross-Exchange Order Book & Fees -->
+                                <div class="mt-4">
+                                    <div class="text-cream-300 font-semibold text-xs mb-2">CROSS-EXCHANGE ORDER BOOK</div>
+                                    <div class="space-y-2 text-xs">
+                                        <!-- Binance -->
+                                        <div class="bg-cream-800 rounded p-2">
+                                            <div class="font-semibold text-cream-200 mb-1">Binance BTC/USD</div>
+                                            <div class="flex justify-between">
+                                                <span>Price:</span>
+                                                <span class="text-cream-200" id="binance-price">$67,242.96</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Volume:</span>
+                                                <span class="text-cream-400" id="binance-volume">2,847 BTC</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Fee:</span>
+                                                <span class="text-yellow-400" id="binance-fee">0.10%</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Spread:</span>
+                                                <span class="text-green-400" id="binance-spread">+$8.96</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Coinbase -->
+                                        <div class="bg-cream-800 rounded p-2">
+                                            <div class="font-semibold text-cream-200 mb-1">Coinbase BTC/USD</div>
+                                            <div class="flex justify-between">
+                                                <span>Price:</span>
+                                                <span class="text-cream-200" id="coinbase-price">$67,234.00</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Volume:</span>
+                                                <span class="text-cream-400" id="coinbase-volume">1,923 BTC</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Fee:</span>
+                                                <span class="text-yellow-400" id="coinbase-fee">0.25%</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Arbitrage:</span>
+                                                <span class="text-green-400" id="coinbase-arb">Profitable</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Futures vs Spot -->
+                                        <div class="bg-cream-800 rounded p-2">
+                                            <div class="font-semibold text-cream-200 mb-1">Futures-Spot Spread</div>
+                                            <div class="flex justify-between">
+                                                <span>Futures:</span>
+                                                <span class="text-cream-200" id="futures-price">$67,369.54</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Spot:</span>
+                                                <span class="text-cream-200" id="spot-price">$67,234.48</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Premium:</span>
+                                                <span class="text-green-400 font-bold" id="premium-spread">+$135.06</span>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <span>Funding Rate:</span>
+                                                <span class="text-blue-400" id="funding-rate">0.0128%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 💳 SUBSCRIPTION UPGRADE WIDGET -->
+                                <div class="mt-6 mb-4">
+                                    <div class="cream-accent rounded-lg p-4 border border-cream-600">
+                                        <div class="text-center mb-3">
+                                            <div class="text-sm font-bold brown-accent">🏆 CURRENT PLAN</div>
+                                            <div class="text-lg font-bold text-cream-900" id="current-plan">Professional Tier</div>
+                                            <div class="text-xs text-cream-700">$250K+ Investment</div>
+                                        </div>
+                                        
+                                        <div class="space-y-2 text-xs">
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-cream-700">Strategy Access:</span>
+                                                <span class="text-green-600 font-semibold">3/4 Strategies</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-cream-700">Execution Priority:</span>
+                                                <span class="text-yellow-600 font-semibold">Standard</span>
+                                            </div>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-cream-700">Support Level:</span>
+                                                <span class="text-blue-600 font-semibold">Email + Phone</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-3 pt-3 border-t border-cream-400">
+                                            <div class="text-center">
+                                                <div class="text-xs text-cream-600 mb-2">⬆️ Upgrade Available</div>
+                                                <div class="text-sm font-bold text-green-700">🏆 Institutional Tier</div>
+                                                <div class="text-xs text-green-600 mb-2">Unlock ALL 4 strategies + Priority execution</div>
+                                                <button onclick="upgradeSubscription()" 
+                                                        class="w-full bg-green-600 hover:bg-green-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all">
+                                                    ✨ Upgrade Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Usage Indicators -->
+                                        <div class="mt-3 pt-2 border-t border-cream-400">
+                                            <div class="text-xs text-cream-600 mb-1">Monthly Usage:</div>
+                                            <div class="flex items-center gap-2">
+                                                <div class="flex-1 bg-cream-200 rounded-full h-2">
+                                                    <div class="bg-green-500 h-2 rounded-full" style="width: 73%" id="usage-bar"></div>
+                                                </div>
+                                                <span class="text-xs font-semibold" id="usage-percent">73%</span>
+                                            </div>
+                                            <div class="text-xs text-cream-600 mt-1" id="usage-details">47 of 64 strategies executed</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2066,13 +2189,49 @@
                 const ethPrice = 3456.78 + (Math.random() - 0.5) * 20;
                 const now = new Date();
                 
+                // Generate social sentiment data
+                const twitterPercent = Math.floor(60 + Math.random() * 30);
+                const redditPercent = Math.floor(45 + Math.random() * 40);
+                const newsPercent = Math.floor(70 + Math.random() * 25);
+                const finbertScore = (0.5 + Math.random() * 0.4).toFixed(3);
+                
+                const twitterSentiment = twitterPercent > 70 ? '🔥 Bullish' : twitterPercent > 50 ? '⚡ Mixed' : '❄️ Bearish';
+                const redditSentiment = redditPercent > 65 ? '🚀 Very Bullish' : redditPercent > 45 ? '⚡ Mixed' : '⚠️ Cautious';
+                const newsSentiment = newsPercent > 75 ? '📈 Positive' : newsPercent > 55 ? '⚡ Neutral' : '📉 Negative';
+                
+                // Generate cross-exchange data
+                const binancePrice = btcPrice + (Math.random() - 0.5) * 20;
+                const coinbasePrice = btcPrice + (Math.random() - 0.5) * 15;
+                const futuresPrice = btcPrice + 100 + (Math.random() - 0.5) * 50;
+                
                 // Safe element updates
                 const marketUpdates = {
                     'btc-price': '$' + btcPrice.toFixed(2),
                     'eth-price': '$' + ethPrice.toFixed(2),
-                    'spread-1': '+$' + (8.5 + Math.random() * 2).toFixed(2),
+                    'btc-volume': (14.2 + (Math.random() - 0.5) * 2).toFixed(1) + 'K',
+                    'eth-volume': (23.8 + (Math.random() - 0.5) * 3).toFixed(1) + 'K',
+                    'btc-trades': Math.floor(892 + Math.random() * 10) + 'K',
+                    'eth-trades': Math.floor(654 + Math.random() * 8) + 'K',
+                    // Social sentiment updates
+                    'twitter-sentiment': `${twitterSentiment} ${twitterPercent}%`,
+                    'reddit-sentiment': `${redditSentiment} ${redditPercent}%`,
+                    'news-sentiment': `${newsSentiment} ${newsPercent}%`,
+                    'finbert-score': finbertScore,
+                    // Cross-exchange order book updates
+                    'binance-price': '$' + binancePrice.toFixed(2),
+                    'coinbase-price': '$' + coinbasePrice.toFixed(2),
+                    'futures-price': '$' + futuresPrice.toFixed(2),
+                    'spot-price': '$' + btcPrice.toFixed(2),
+                    'premium-spread': '+$' + (futuresPrice - btcPrice).toFixed(2),
+                    'binance-volume': Math.floor(2800 + Math.random() * 200) + ' BTC',
+                    'coinbase-volume': Math.floor(1900 + Math.random() * 100) + ' BTC',
+                    'binance-spread': '+$' + Math.abs(binancePrice - coinbasePrice).toFixed(2),
+                    'funding-rate': (0.01 + Math.random() * 0.02).toFixed(4) + '%',
+                    'coinbase-arb': Math.abs(binancePrice - coinbasePrice) > 5 ? 'Profitable' : 'Marginal',
+                    // Legacy spread updates
+                    'spread-1': '+$' + Math.abs(binancePrice - coinbasePrice).toFixed(2),
                     'spread-2': '+$' + (12.3 + Math.random() * 3).toFixed(2),
-                    'spread-3': '+$' + (127 + Math.random() * 10).toFixed(2),
+                    'spread-3': '+$' + (futuresPrice - btcPrice).toFixed(2),
                     'last-scan-time': now.toLocaleTimeString(),
                     'market-update-time': now.toLocaleTimeString()
                 };
@@ -2087,6 +2246,20 @@
                             const originalColor = el.style.color;
                             el.style.color = '#10b981'; // Green flash
                             setTimeout(() => el.style.color = originalColor, 300);
+                        }
+                        // Color code sentiment
+                        if (id.includes('sentiment')) {
+                            if (value.includes('Bullish') || value.includes('Positive')) {
+                                el.className = el.className.replace(/text-\w+-\d+/, 'text-green-400 font-semibold');
+                            } else if (value.includes('Mixed') || value.includes('Neutral')) {
+                                el.className = el.className.replace(/text-\w+-\d+/, 'text-yellow-400 font-semibold');
+                            } else {
+                                el.className = el.className.replace(/text-\w+-\d+/, 'text-red-400 font-semibold');
+                            }
+                        }
+                        // Color code arbitrage opportunities
+                        if (id.includes('arb') && value === 'Profitable') {
+                            el.className = el.className.replace(/text-\w+-\d+/, 'text-green-400');
                         }
                     }
                 });
@@ -4003,6 +4176,10 @@
         function closeInstitutionalForm() {
             const modal = document.getElementById('institutional-subscription-modal');
             if (modal) {
+                // Remove escape key listener
+                if (modal.escapeHandler) {
+                    document.removeEventListener('keydown', modal.escapeHandler);
+                }
                 modal.remove();
             }
         }
