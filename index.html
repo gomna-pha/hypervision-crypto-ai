@@ -178,14 +178,7 @@
                         <div class="text-sm text-cream-700">
                             Balance: <span class="font-bold text-cream-900">$2,847,563</span>
                         </div>
-                        <button class="brown-accent px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all shadow-md" onclick="toggleModelTransparency()">
-                            <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
-                            Model Transparency
-                        </button>
-                        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all shadow-md ml-2" onclick="switchTab('investor-portal')">
-                            <i data-lucide="briefcase" class="w-4 h-4 inline mr-2"></i>
-                            Investor Portal
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -2194,9 +2187,10 @@
             // Implementation for filtering strategy performance view
         }
 
-        // Toggle model transparency
+        // Toggle model transparency (now uses tab navigation)
         function toggleModelTransparency() {
             switchTab('transparency');
+            console.log('🔍 Switched to Model Transparency tab');
         }
 
         // 🏦 INSTITUTIONAL INVESTOR PORTAL FUNCTIONS
