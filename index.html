@@ -58,12 +58,15 @@
             color: #fefbf3;
         }
         .poincare-disk {
-            width: 200px;
-            height: 200px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             border: 2px solid #c0ac89;
             position: relative;
             background: radial-gradient(circle, rgba(192, 172, 137, 0.1) 0%, transparent 70%);
+            margin: 0 auto;
+            max-width: 100%;
+            overflow: hidden;
         }
         .data-fusion-point {
             position: absolute;
@@ -1124,7 +1127,8 @@
                                     🔴 LIVE Poincaré Disk Model
                                     <span class="text-xs text-cream-400 ml-2" id="live-timestamp">Updated: --:--:--</span>
                                 </div>
-                                <div class="poincare-disk mx-auto relative border-4 border-gold-400 shadow-2xl">
+                                <div class="w-full flex justify-center mb-4">
+                                    <div class="poincare-disk relative border-4 border-gold-400 shadow-2xl">
                                     <!-- Enhanced data fusion points with pulsing animation -->
                                     <div class="data-fusion-point animate-pulse" style="top: 30%; left: 40%; background: #ffd700; box-shadow: 0 0 8px #ffd700;"></div>
                                     <div class="data-fusion-point animate-pulse" style="top: 60%; left: 70%; background: #c0ac89; box-shadow: 0 0 6px #c0ac89; animation-delay: 0.5s;"></div>
@@ -1170,6 +1174,7 @@
                                     
                                     <!-- Central optimization core -->
                                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-gold-400 rounded-full animate-spin" style="animation-duration: 8s;"></div>
+                                    </div>
                                 </div>
                                 
                                 <!-- LIVE Performance indicators -->
@@ -2180,6 +2185,14 @@
             console.log(`Found ${allTabs.length} tabs to hide`);
             allTabs.forEach(tab => {
                 tab.classList.add('hidden');
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class from all tab buttons
+            const allButtons = document.querySelectorAll('.tab-btn');
+            allButtons.forEach(btn => {
+                btn.classList.remove('cream-panel', 'text-cream-800', 'border-b-2', 'border-cream-600');
+                btn.classList.add('text-cream-700', 'hover:bg-cream-100');
             });
             
             // Show selected tab
@@ -2187,6 +2200,18 @@
             console.log(`Target tab element:`, targetTab);
             if (targetTab) {
                 targetTab.classList.remove('hidden');
+                targetTab.style.display = 'block';
+                
+                // Activate corresponding button
+                const targetButton = document.querySelector(`[data-tab="${tabName}"]`);
+                if (targetButton) {
+                    targetButton.classList.remove('text-cream-700', 'hover:bg-cream-100');
+                    targetButton.classList.add('cream-panel', 'text-cream-800', 'border-b-2', 'border-cream-600');
+                }
+                
+                console.log(`✅ Successfully switched to ${tabName} tab`);
+            } else {
+                console.error(`❌ Tab not found: ${tabName}-tab`);
                 console.log(`✅ Successfully showed ${tabName}-tab`);
             } else {
                 console.error(`❌ Tab ${tabName}-tab not found!`);
@@ -4509,6 +4534,16 @@
             style.textContent = `
                 .draggable-panel {
                     transition: all 0.3s ease;
+                    overflow: hidden;
+                }
+                
+                .draggable-panel .panel-content {
+                    max-width: 100%;
+                    overflow: hidden;
+                }
+                
+                .hyperbolic-space .panel-content {
+                    padding: 0 10px;
                 }
                 
                 .floating-panel {
@@ -4610,10 +4645,26 @@
             addDraggablePanelCSS();
             initializeDraggablePanels();
             fixCloseButtonFunctionality();
+            initializeTabSystem();
             
             console.log('🎯 Draggable panels system initialized');
             console.log('🔧 Close button functionality fixed');
             console.log('📱 Layout optimized: 2-8-2 column distribution');
+            console.log('📋 Tab system initialized');
+        }
+        
+        // Initialize tab system
+        function initializeTabSystem() {
+            // Ensure trading tab is visible by default
+            switchTab('trading');
+            
+            // Test all tab elements existence
+            const tabTests = ['trading', 'portfolio', 'markets', 'transparency', 'investor-portal'];
+            tabTests.forEach(tabName => {
+                const tab = document.getElementById(tabName + '-tab');
+                const button = document.querySelector(`[data-tab="${tabName}"]`);
+                console.log(`Tab ${tabName}: Element=${!!tab}, Button=${!!button}`);
+            });
         }
 
         // Initialize when DOM is ready
