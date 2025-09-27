@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Arbitrage Opportunities | HyperVision</title>
+    <style>
+        :root {
+            --cream-primary: #FFF8E7;
+            --cream-secondary: #FAF0DC;
+            --cream-tertiary: #F5E6D3;
+            --cream-light: #FFFEF9;
+            --brown-accent: rgba(139, 90, 43, 0.2);
+            --brown-light: rgba(139, 90, 43, 0.1);
+            --brown-text: #5D4E37;
+            --brown-dark: #3E2E1F;
+            --success: #2D5F3F;
+            --danger: #8B4513;
+            --warning: #D2691E;
+            --info: #4682B4;
+            --purple: #6B46C1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--cream-primary) 0%, var(--cream-secondary) 50%, var(--cream-tertiary) 100%);
+            color: var(--brown-dark);
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--brown-dark), var(--brown-text));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--brown-text);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 248, 231, 0.95);
+            border: 1px solid var(--brown-accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(139, 90, 43, 0.05);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--brown-text);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--brown-dark);
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 0.6rem 1.2rem;
+            background: var(--cream-light);
+            border: 1px solid var(--brown-accent);
+            color: var(--brown-text);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover {
+            background: var(--cream-secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(139, 90, 43, 0.1);
+        }
+
+        .filter-btn.active {
+            background: var(--brown-dark);
+            color: var(--cream-primary);
+            border-color: var(--brown-dark);
+        }
+
+        .opportunities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .opportunity-card {
+            background: rgba(255, 248, 231, 0.95);
+            border: 1px solid var(--brown-accent);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(139, 90, 43, 0.05);
+        }
+
+        .opportunity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brown-text), var(--brown-dark));
+        }
+
+        .opportunity-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 90, 43, 0.15);
+            background: var(--cream-light);
+        }
+
+        .opp-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--brown-light);
+        }
+
+        .opp-type {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--brown-dark);
+        }
+
+        .opp-icon {
+            font-size: 1.2rem;
+        }
+
+        .opp-profit {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .profit-positive {
+            color: var(--success);
+        }
+
+        .profit-negative {
+            color: var(--danger);
+        }
+
+        .opp-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            font-size: 0.85rem;
+        }
+
+        .detail-label {
+            color: var(--brown-text);
+            margin-bottom: 0.2rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--brown-dark);
+        }
+
+        .execute-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--brown-dark);
+            color: var(--cream-primary);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .execute-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(62, 46, 31, 0.3);
+            background: var(--brown-text);
+        }
+
+        .execute-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .execute-btn.executing {
+            background: var(--warning);
+            color: white;
+        }
+
+        .execute-btn.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .execute-btn.failed {
+            background: var(--danger);
+            color: white;
+        }
+
+        .sentiment-badge {
+            display: inline-block;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .bullish {
+            background: rgba(45, 95, 63, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(45, 95, 63, 0.3);
+        }
+
+        .bearish {
+            background: rgba(139, 69, 19, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .neutral {
+            background: rgba(210, 105, 30, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 105, 30, 0.3);
+        }
+
+        .risk-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .risk-low {
+            background: rgba(45, 95, 63, 0.15);
+            color: var(--success);
+            border: 1px solid rgba(45, 95, 63, 0.3);
+        }
+
+        .risk-medium {
+            background: rgba(210, 105, 30, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(210, 105, 30, 0.3);
+        }
+
+        .risk-high {
+            background: rgba(139, 69, 19, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(139, 69, 19, 0.3);
+        }
+
+        .auto-execute-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: auto;
+            color: var(--brown-dark);
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 25px;
+            background: var(--cream-secondary);
+            border: 1px solid var(--brown-accent);
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--brown-dark);
+            border-color: var(--brown-dark);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 19px;
+            height: 19px;
+            background: var(--cream-light);
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 1px 3px rgba(139, 90, 43, 0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(25px);
+        }
+
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: rgba(45, 95, 63, 0.1);
+            border: 1px solid rgba(45, 95, 63, 0.3);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.3);
+            }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--brown-text);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 1rem;
+            border: 3px solid var(--brown-light);
+            border-top-color: var(--brown-dark);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Live Arbitrage Opportunities</h1>
+        <p class="subtitle">Real-Time Market Inefficiency Detection & Automated Execution Platform</p>
+    </div>
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-label">Total Opportunities</div>
+            <div class="stat-value" id="total-opportunities">0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Avg Profit</div>
+            <div class="stat-value profit-positive" id="avg-profit">$0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Best Opportunity</div>
+            <div class="stat-value profit-positive" id="best-opportunity">$0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Success Rate</div>
+            <div class="stat-value" id="success-rate">0%</div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <button class="filter-btn active" onclick="filterOpps('all')">All Strategies</button>
+        <button class="filter-btn" onclick="filterOpps('sentiment')">Sentiment Arbitrage</button>
+        <button class="filter-btn" onclick="filterOpps('cross-exchange')">Cross-Exchange</button>
+        <button class="filter-btn" onclick="filterOpps('triangular')">Triangular</button>
+        <button class="filter-btn" onclick="filterOpps('statistical')">Statistical</button>
+        
+        <div class="live-indicator">
+            <div class="live-dot"></div>
+            <span>LIVE</span>
+        </div>
+        
+        <div class="auto-execute-toggle">
+            <label>Auto-Execute</label>
+            <div class="toggle-switch" id="auto-execute-toggle" onclick="toggleAutoExecute()">
+                <div class="toggle-slider"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="opportunities-grid" id="opportunities-grid">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading opportunities...</p>
+        </div>
+    </div>
+
+    <script>
+        let autoExecute = false;
+        let executedOpportunities = new Set();
+        
+        // Generate realistic opportunities
+        function generateOpportunities() {
+            const opportunities = [];
+            
+            // Sentiment opportunities
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_1',
+                type: 'sentiment',
+                icon: '▸',
+                symbol: 'BTC/USD',
+                profit: 234.56,
+                probability: 78,
+                sentiment: 'STRONG_BULLISH',
+                socialVolume: '+245%',
+                timeHorizon: '45 min',
+                riskReward: '3.2:1',
+                exchange: 'Multiple',
+                risk: 'low',
+                news: 'Fed announces crypto-friendly policy'
+            });
+            
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_2',
+                type: 'sentiment',
+                icon: '▸',
+                symbol: 'ETH/USD',
+                profit: 189.23,
+                probability: 72,
+                sentiment: 'BULLISH',
+                socialVolume: '+180%',
+                timeHorizon: '60 min',
+                riskReward: '2.8:1',
+                exchange: 'Multiple',
+                risk: 'medium',
+                news: 'Ethereum upgrade successful'
+            });
+            
+            // Cross-exchange opportunities
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_3',
+                type: 'cross-exchange',
+                icon: '◆',
+                symbol: 'BTC/USD',
+                profit: 156.78,
+                probability: 85,
+                buyExchange: 'Binance',
+                buyPrice: 45123.45,
+                sellExchange: 'Coinbase',
+                sellPrice: 45280.23,
+                volume: '0.5 BTC',
+                latency: '15ms',
+                risk: 'low'
+            });
+            
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_4',
+                type: 'cross-exchange',
+                icon: '◆',
+                symbol: 'SOL/USD',
+                profit: 89.45,
+                probability: 82,
+                buyExchange: 'Kraken',
+                buyPrice: 98.45,
+                sellExchange: 'FTX',
+                sellPrice: 98.89,
+                volume: '200 SOL',
+                latency: '22ms',
+                risk: 'low'
+            });
+            
+            // Triangular arbitrage
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_5',
+                type: 'triangular',
+                icon: '△',
+                symbol: 'BTC-ETH-USD',
+                profit: 312.90,
+                probability: 75,
+                path: 'USD → BTC → ETH → USD',
+                exchange: 'Binance',
+                cycleTime: '3.2s',
+                risk: 'medium'
+            });
+            
+            // Statistical arbitrage
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_6',
+                type: 'statistical',
+                icon: '≈',
+                symbol: 'BTC/ETH',
+                profit: 145.67,
+                probability: 68,
+                strategy: 'Mean Reversion',
+                zscore: '-2.34',
+                correlation: '0.89',
+                risk: 'medium'
+            });
+            
+            // Add some negative/neutral opportunities for realism
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_7',
+                type: 'sentiment',
+                icon: '▸',
+                symbol: 'DOGE/USD',
+                profit: -45.23,
+                probability: 45,
+                sentiment: 'BEARISH',
+                socialVolume: '-120%',
+                timeHorizon: '30 min',
+                riskReward: '0.8:1',
+                exchange: 'Multiple',
+                risk: 'high',
+                news: 'Meme coin sell-off continues'
+            });
+            
+            opportunities.push({
+                id: 'opp_' + Date.now() + '_8',
+                type: 'cross-exchange',
+                icon: '◆',
+                symbol: 'AVAX/USD',
+                profit: 23.45,
+                probability: 62,
+                buyExchange: 'Bybit',
+                buyPrice: 35.23,
+                sellExchange: 'Huobi',
+                sellPrice: 35.29,
+                volume: '400 AVAX',
+                latency: '45ms',
+                risk: 'medium'
+            });
+            
+            return opportunities;
+        }
+        
+        // Render opportunities
+        function renderOpportunities(opportunities) {
+            const grid = document.getElementById('opportunities-grid');
+            grid.innerHTML = '';
+            
+            if (opportunities.length === 0) {
+                grid.innerHTML = '<div class="loading"><p>No opportunities available at the moment...</p></div>';
+                return;
+            }
+            
+            opportunities.forEach(opp => {
+                const card = document.createElement('div');
+                card.className = 'opportunity-card';
+                card.dataset.type = opp.type;
+                card.dataset.id = opp.id;
+                
+                let detailsHTML = '';
+                
+                if (opp.type === 'sentiment') {
+                    detailsHTML = `
+                        <div class="detail-item">
+                            <div class="detail-label">Sentiment</div>
+                            <div class="detail-value">
+                                <span class="sentiment-badge ${opp.sentiment.includes('BULL') ? 'bullish' : 'bearish'}">
+                                    ${opp.sentiment}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Social Volume</div>
+                            <div class="detail-value" style="color: ${opp.socialVolume.startsWith('+') ? '#00d4aa' : '#ff4757'}">
+                                ${opp.socialVolume}
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Time Horizon</div>
+                            <div class="detail-value">${opp.timeHorizon}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Risk/Reward</div>
+                            <div class="detail-value">${opp.riskReward}</div>
+                        </div>
+                        ${opp.news ? `
+                        <div class="detail-item" style="grid-column: span 2;">
+                            <div class="detail-label">News Catalyst</div>
+                            <div class="detail-value" style="font-size: 0.8rem;">${opp.news}</div>
+                        </div>` : ''}
+                    `;
+                } else if (opp.type === 'cross-exchange') {
+                    detailsHTML = `
+                        <div class="detail-item">
+                            <div class="detail-label">Buy</div>
+                            <div class="detail-value">${opp.buyExchange}: $${opp.buyPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Sell</div>
+                            <div class="detail-value">${opp.sellExchange}: $${opp.sellPrice.toLocaleString()}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Volume</div>
+                            <div class="detail-value">${opp.volume}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Latency</div>
+                            <div class="detail-value">${opp.latency}</div>
+                        </div>
+                    `;
+                } else if (opp.type === 'triangular') {
+                    detailsHTML = `
+                        <div class="detail-item" style="grid-column: span 2;">
+                            <div class="detail-label">Path</div>
+                            <div class="detail-value">${opp.path}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Exchange</div>
+                            <div class="detail-value">${opp.exchange}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Cycle Time</div>
+                            <div class="detail-value">${opp.cycleTime}</div>
+                        </div>
+                    `;
+                } else if (opp.type === 'statistical') {
+                    detailsHTML = `
+                        <div class="detail-item">
+                            <div class="detail-label">Strategy</div>
+                            <div class="detail-value">${opp.strategy}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Z-Score</div>
+                            <div class="detail-value">${opp.zscore}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Correlation</div>
+                            <div class="detail-value">${opp.correlation}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Probability</div>
+                            <div class="detail-value">${opp.probability}%</div>
+                        </div>
+                    `;
+                }
+                
+                const riskClass = opp.risk === 'low' ? 'risk-low' : opp.risk === 'high' ? 'risk-high' : 'risk-medium';
+                
+                card.innerHTML = `
+                    <div class="risk-indicator ${riskClass}">${opp.risk.toUpperCase()} RISK</div>
+                    
+                    <div class="opp-header">
+                        <div class="opp-type">
+                            <span class="opp-icon">${opp.icon}</span>
+                            <span>${opp.symbol}</span>
+                        </div>
+                        <div class="opp-profit ${opp.profit > 0 ? 'profit-positive' : 'profit-negative'}">
+                            ${opp.profit > 0 ? '+' : ''}$${Math.abs(opp.profit).toFixed(2)}
+                        </div>
+                    </div>
+                    
+                    <div class="opp-details">
+                        ${detailsHTML}
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                        <span style="font-size: 0.85rem; color: var(--brown-text); text-transform: uppercase; letter-spacing: 0.3px;">Execution Probability</span>
+                        <span style="font-weight: 600; color: ${opp.probability > 70 ? 'var(--success)' : opp.probability > 50 ? 'var(--warning)' : 'var(--danger)'}">
+                            ${opp.probability}%
+                        </span>
+                    </div>
+                    
+                    <button class="execute-btn" onclick="executeOpportunity('${opp.id}', this)">
+                        Execute Position
+                    </button>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            updateStats(opportunities);
+        }
+        
+        // Update statistics
+        function updateStats(opportunities) {
+            const total = opportunities.length;
+            const avgProfit = opportunities.reduce((sum, opp) => sum + opp.profit, 0) / total;
+            const bestOpp = Math.max(...opportunities.map(opp => opp.profit));
+            const successRate = opportunities.filter(opp => opp.probability > 70).length / total * 100;
+            
+            document.getElementById('total-opportunities').textContent = total;
+            document.getElementById('avg-profit').textContent = `$${avgProfit.toFixed(2)}`;
+            document.getElementById('best-opportunity').textContent = `$${bestOpp.toFixed(2)}`;
+            document.getElementById('success-rate').textContent = `${successRate.toFixed(0)}%`;
+        }
+        
+        // Execute opportunity
+        async function executeOpportunity(oppId, button) {
+            if (executedOpportunities.has(oppId)) return;
+            
+            executedOpportunities.add(oppId);
+            button.textContent = 'Executing...';
+            button.className = 'execute-btn executing';
+            button.disabled = true;
+            
+            // Simulate execution
+            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+            
+            const success = Math.random() > 0.15; // 85% success rate
+            
+            if (success) {
+                button.textContent = '✓ Executed';
+                button.className = 'execute-btn success';
+            } else {
+                button.textContent = '✗ Failed';
+                button.className = 'execute-btn failed';
+            }
+        }
+        
+        // Filter opportunities
+        function filterOpps(type) {
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Filter cards
+            const cards = document.querySelectorAll('.opportunity-card');
+            cards.forEach(card => {
+                if (type === 'all' || card.dataset.type === type) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+        // Toggle auto-execute
+        function toggleAutoExecute() {
+            const toggle = document.getElementById('auto-execute-toggle');
+            autoExecute = !autoExecute;
+            toggle.classList.toggle('active');
+            
+            if (autoExecute) {
+                startAutoExecution();
+            }
+        }
+        
+        // Auto-execution logic
+        async function startAutoExecution() {
+            while (autoExecute) {
+                const buttons = document.querySelectorAll('.execute-btn:not(:disabled)');
+                
+                for (const button of buttons) {
+                    if (!autoExecute) break;
+                    
+                    const card = button.closest('.opportunity-card');
+                    const profit = parseFloat(card.querySelector('.opp-profit').textContent.replace('$', ''));
+                    
+                    if (profit > 100) { // Auto-execute profitable opportunities
+                        await executeOpportunity(card.dataset.id, button);
+                    }
+                }
+                
+                await new Promise(resolve => setTimeout(resolve, 5000));
+            }
+        }
+        
+        // Initialize and refresh
+        function init() {
+            const opportunities = generateOpportunities();
+            renderOpportunities(opportunities);
+        }
+        
+        // Refresh opportunities every 5 seconds
+        setInterval(() => {
+            if (!autoExecute) {
+                const opportunities = generateOpportunities();
+                renderOpportunities(opportunities);
+            }
+        }, 5000);
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>
