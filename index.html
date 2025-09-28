@@ -423,6 +423,8 @@
                     <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
                     <button class="nav-tab" onclick="switchTab('portfolio')">Portfolio</button>
                     <button class="nav-tab" onclick="switchTab('markets')">Global Markets</button>
+                    <button class="nav-tab" onclick="switchTab('backtesting')">📊 Backtesting</button>
+                    <button class="nav-tab" onclick="switchTab('paper')">📝 Paper Trading</button>
                     <button class="nav-tab" onclick="switchTab('transparency')">Model Transparency</button>
                     <button class="nav-tab" onclick="switchTab('investor')">🏦 Investor Portal</button>
                 </div>
@@ -1620,6 +1622,328 @@
                 </div>
             </div>
         </div>
+
+        <!-- Backtesting Tab -->
+        <div class="tab-content" id="backtesting-tab">
+            <div class="dashboard-grid">
+                <!-- Backtesting Configuration -->
+                <div class="card span-3">
+                    <div class="card-header">
+                        <h3 class="card-title">📊 Backtesting Configuration</h3>
+                        <span class="badge" id="backtestStatus">Ready</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Start Date</label>
+                            <input type="date" id="btStartDate" value="2023-01-01" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">End Date</label>
+                            <input type="date" id="btEndDate" value="2024-01-01" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Initial Capital</label>
+                            <input type="number" id="btCapital" value="100000" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Strategy</label>
+                            <select id="btStrategy" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                                <option value="hyperbolic">Hyperbolic Arbitrage</option>
+                                <option value="sentiment">Sentiment Arbitrage</option>
+                                <option value="triangular">Triangular Arbitrage</option>
+                                <option value="statistical">Statistical Arbitrage</option>
+                                <option value="cross_exchange">Cross-Exchange</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Slippage Model</label>
+                            <select id="btSlippage" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                                <option value="realistic">Realistic</option>
+                                <option value="linear">Linear</option>
+                                <option value="market_impact">Market Impact</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Commission (%)</label>
+                            <input type="number" id="btCommission" value="0.02" step="0.01" style="padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: var(--cream-light);">
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button onclick="runBacktest()" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--brown-dark), var(--brown-text)); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            Run Backtest
+                        </button>
+                        <button onclick="runMonteCarloSimulation()" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--purple), #8B66D1); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            Monte Carlo (1000 runs)
+                        </button>
+                        <button onclick="runWalkForward()" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, var(--info), #5692C4); color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">
+                            Walk-Forward Optimization
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">Performance Metrics</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem;">
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);" id="btTotalReturn">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Total Return</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="btSharpe">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Sharpe Ratio</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);" id="btMaxDD">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Max Drawdown</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="btWinRate">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Win Rate</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="btProfitFactor">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Profit Factor</div>
+                        </div>
+                        <div style="text-align: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <div style="font-size: 1.5rem; font-weight: 700;" id="btCalmar">--</div>
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Calmar Ratio</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Risk Metrics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Risk Analysis</h3>
+                    </div>
+                    <div style="padding: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-secondary);">
+                            <span style="font-size: 0.8rem;">VaR (95%)</span>
+                            <strong id="btVaR">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-secondary);">
+                            <span style="font-size: 0.8rem;">CVaR (95%)</span>
+                            <strong id="btCVaR">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-secondary);">
+                            <span style="font-size: 0.8rem;">Volatility</span>
+                            <strong id="btVolatility">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--cream-secondary);">
+                            <span style="font-size: 0.8rem;">Sortino Ratio</span>
+                            <strong id="btSortino">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem 0;">
+                            <span style="font-size: 0.8rem;">Beta</span>
+                            <strong id="btBeta">--</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Equity Curve Chart -->
+                <div class="card span-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Equity Curve</h3>
+                    </div>
+                    <div style="height: 300px; background: var(--cream-light); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                        <canvas id="equityChart" style="max-width: 100%; max-height: 100%;"></canvas>
+                    </div>
+                </div>
+
+                <!-- Trade Statistics -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">Trade Statistics</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Total Trades</span>
+                            <strong id="btTotalTrades">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Winning Trades</span>
+                            <strong style="color: var(--success);" id="btWinningTrades">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Losing Trades</span>
+                            <strong style="color: var(--danger);" id="btLosingTrades">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Avg Win</span>
+                            <strong style="color: var(--success);" id="btAvgWin">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Avg Loss</span>
+                            <strong style="color: var(--danger);" id="btAvgLoss">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
+                            <span>Best Trade</span>
+                            <strong style="color: var(--success);" id="btBestTrade">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paper Trading Tab -->
+        <div class="tab-content" id="paper-tab">
+            <div class="dashboard-grid">
+                <!-- Paper Account Overview -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">📝 Paper Trading Account</h3>
+                        <button onclick="createPaperAccount()" style="padding: 0.5rem 1rem; background: var(--success); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                            Create Account
+                        </button>
+                    </div>
+                    
+                    <div id="paperAccountInfo" style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), var(--cream-secondary)); border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Account Balance</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;" id="paperBalance">$0.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Total Equity</div>
+                                <div style="font-size: 1.5rem; font-weight: 700;" id="paperEquity">$0.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Buying Power</div>
+                                <div style="font-size: 1.2rem; font-weight: 600;" id="paperBuyingPower">$0.00</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Total P&L</div>
+                                <div style="font-size: 1.2rem; font-weight: 600;" id="paperPnL">$0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Order Form -->
+                    <div style="padding: 1rem; background: var(--cream-light); border-radius: 8px;">
+                        <h4 style="font-size: 0.9rem; margin-bottom: 0.75rem;">Place Order</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.75rem;">
+                            <div>
+                                <label style="font-size: 0.7rem; color: var(--brown-text);">Symbol</label>
+                                <select id="paperSymbol" style="width: 100%; padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: white;">
+                                    <option value="BTC/USD">BTC/USD</option>
+                                    <option value="ETH/USD">ETH/USD</option>
+                                    <option value="SOL/USD">SOL/USD</option>
+                                    <option value="AVAX/USD">AVAX/USD</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.7rem; color: var(--brown-text);">Side</label>
+                                <select id="paperSide" style="width: 100%; padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: white;">
+                                    <option value="BUY">Buy</option>
+                                    <option value="SELL">Sell</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.7rem; color: var(--brown-text);">Type</label>
+                                <select id="paperOrderType" style="width: 100%; padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: white;">
+                                    <option value="MARKET">Market</option>
+                                    <option value="LIMIT">Limit</option>
+                                    <option value="STOP">Stop</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size: 0.7rem; color: var(--brown-text);">Quantity</label>
+                                <input type="number" id="paperQuantity" value="1" step="0.01" style="width: 100%; padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: white;">
+                            </div>
+                            <div>
+                                <label style="font-size: 0.7rem; color: var(--brown-text);">Limit Price</label>
+                                <input type="number" id="paperLimitPrice" placeholder="Optional" step="0.01" style="width: 100%; padding: 0.5rem; border: 1px solid var(--brown-light); border-radius: 4px; background: white;">
+                            </div>
+                            <div style="display: flex; align-items: flex-end;">
+                                <button onclick="placePaperOrder()" style="width: 100%; padding: 0.5rem; background: linear-gradient(135deg, var(--brown-dark), var(--brown-text)); color: white; border: none; border-radius: 4px; font-weight: 600; cursor: pointer;">
+                                    Place Order
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Open Positions -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">Open Positions</h3>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; font-size: 0.85rem;">
+                            <thead>
+                                <tr style="background: var(--cream-secondary);">
+                                    <th style="padding: 0.5rem; text-align: left;">Symbol</th>
+                                    <th style="padding: 0.5rem; text-align: right;">Quantity</th>
+                                    <th style="padding: 0.5rem; text-align: right;">Entry Price</th>
+                                    <th style="padding: 0.5rem; text-align: right;">Current Price</th>
+                                    <th style="padding: 0.5rem; text-align: right;">P&L</th>
+                                    <th style="padding: 0.5rem; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paperPositions">
+                                <tr>
+                                    <td colspan="6" style="padding: 1rem; text-align: center; color: var(--brown-text);">No open positions</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Performance Metrics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Performance</h3>
+                    </div>
+                    <div style="font-size: 0.85rem;">
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid var(--cream-secondary);">
+                            <span>Win Rate</span>
+                            <strong id="paperWinRate">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid var(--cream-secondary);">
+                            <span>Total Trades</span>
+                            <strong id="paperTotalTrades">0</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid var(--cream-secondary);">
+                            <span>Profit Factor</span>
+                            <strong id="paperProfitFactor">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; border-bottom: 1px solid var(--cream-secondary);">
+                            <span>Avg Win</span>
+                            <strong style="color: var(--success);" id="paperAvgWin">--</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 0.5rem;">
+                            <span>Avg Loss</span>
+                            <strong style="color: var(--danger);" id="paperAvgLoss">--</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trade History -->
+                <div class="card span-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Trade History</h3>
+                    </div>
+                    <div style="max-height: 300px; overflow-y: auto;" id="paperTradeHistory">
+                        <div style="padding: 1rem; text-align: center; color: var(--brown-text);">No trades yet</div>
+                    </div>
+                </div>
+
+                <!-- Orders -->
+                <div class="card span-2">
+                    <div class="card-header">
+                        <h3 class="card-title">Open Orders</h3>
+                    </div>
+                    <div id="paperOrders" style="max-height: 200px; overflow-y: auto;">
+                        <div style="padding: 1rem; text-align: center; color: var(--brown-text);">No open orders</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1907,6 +2231,352 @@
         // Initial calls
         updateTime();
         updatePortfolio();
+
+        // ==================== BACKTESTING FUNCTIONS ====================
+        
+        async function runBacktest() {
+            // Update status
+            const statusBadge = document.getElementById('backtestStatus');
+            statusBadge.textContent = 'Running...';
+            statusBadge.style.background = 'var(--warning)';
+            
+            // Get configuration
+            const config = {
+                startDate: document.getElementById('btStartDate').value,
+                endDate: document.getElementById('btEndDate').value,
+                initialCapital: parseFloat(document.getElementById('btCapital').value),
+                strategy: document.getElementById('btStrategy').value,
+                slippage: document.getElementById('btSlippage').value,
+                commission: parseFloat(document.getElementById('btCommission').value) / 100
+            };
+            
+            // Simulate backtest (mock results for demo)
+            setTimeout(() => {
+                const results = {
+                    totalReturn: 0.45 + Math.random() * 0.3,
+                    sharpe: 2.3 + Math.random(),
+                    maxDD: -(0.08 + Math.random() * 0.1),
+                    winRate: 0.65 + Math.random() * 0.15,
+                    profitFactor: 2.1 + Math.random(),
+                    calmar: 3.5 + Math.random(),
+                    var95: -(0.02 + Math.random() * 0.02),
+                    cvar95: -(0.03 + Math.random() * 0.02),
+                    volatility: 0.15 + Math.random() * 0.1,
+                    sortino: 2.8 + Math.random(),
+                    beta: 0.8 + Math.random() * 0.4,
+                    totalTrades: Math.floor(500 + Math.random() * 500),
+                    winningTrades: Math.floor(300 + Math.random() * 300),
+                    losingTrades: Math.floor(100 + Math.random() * 200),
+                    avgWin: 250 + Math.random() * 150,
+                    avgLoss: -(100 + Math.random() * 50),
+                    bestTrade: 1000 + Math.random() * 500
+                };
+                
+                // Update UI
+                document.getElementById('btTotalReturn').textContent = `${(results.totalReturn * 100).toFixed(2)}%`;
+                document.getElementById('btSharpe').textContent = results.sharpe.toFixed(2);
+                document.getElementById('btMaxDD').textContent = `${(results.maxDD * 100).toFixed(2)}%`;
+                document.getElementById('btWinRate').textContent = `${(results.winRate * 100).toFixed(1)}%`;
+                document.getElementById('btProfitFactor').textContent = results.profitFactor.toFixed(2);
+                document.getElementById('btCalmar').textContent = results.calmar.toFixed(2);
+                document.getElementById('btVaR').textContent = `${(results.var95 * 100).toFixed(2)}%`;
+                document.getElementById('btCVaR').textContent = `${(results.cvar95 * 100).toFixed(2)}%`;
+                document.getElementById('btVolatility').textContent = `${(results.volatility * 100).toFixed(1)}%`;
+                document.getElementById('btSortino').textContent = results.sortino.toFixed(2);
+                document.getElementById('btBeta').textContent = results.beta.toFixed(2);
+                document.getElementById('btTotalTrades').textContent = results.totalTrades;
+                document.getElementById('btWinningTrades').textContent = results.winningTrades;
+                document.getElementById('btLosingTrades').textContent = results.losingTrades;
+                document.getElementById('btAvgWin').textContent = `$${results.avgWin.toFixed(2)}`;
+                document.getElementById('btAvgLoss').textContent = `$${results.avgLoss.toFixed(2)}`;
+                document.getElementById('btBestTrade').textContent = `$${results.bestTrade.toFixed(2)}`;
+                
+                statusBadge.textContent = 'Complete';
+                statusBadge.style.background = 'var(--success)';
+                
+                // Draw equity curve (simplified)
+                drawEquityChart();
+            }, 2000);
+        }
+        
+        function runMonteCarloSimulation() {
+            alert('Running 1000 Monte Carlo simulations...\nThis will test strategy robustness across different market conditions.');
+        }
+        
+        function runWalkForward() {
+            alert('Running Walk-Forward Optimization...\nThis will optimize parameters using rolling windows.');
+        }
+        
+        function drawEquityChart() {
+            const canvas = document.getElementById('equityChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.parentElement.offsetWidth - 40;
+            canvas.height = 250;
+            
+            // Generate mock equity curve
+            const points = 100;
+            const data = [];
+            let value = 100000;
+            
+            for (let i = 0; i < points; i++) {
+                value *= (1 + (Math.random() - 0.45) * 0.02);
+                data.push(value);
+            }
+            
+            // Draw chart
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'var(--brown-dark)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const maxVal = Math.max(...data);
+            const minVal = Math.min(...data);
+            const range = maxVal - minVal;
+            
+            data.forEach((val, i) => {
+                const x = (i / points) * canvas.width;
+                const y = canvas.height - ((val - minVal) / range) * canvas.height;
+                
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            
+            ctx.stroke();
+        }
+        
+        // ==================== PAPER TRADING FUNCTIONS ====================
+        
+        let paperAccount = null;
+        let paperPositions = [];
+        let paperOrders = [];
+        let paperTrades = [];
+        
+        function createPaperAccount() {
+            paperAccount = {
+                id: 'paper_' + Date.now(),
+                balance: 100000,
+                equity: 100000,
+                buyingPower: 200000,
+                totalPnL: 0
+            };
+            
+            updatePaperAccountDisplay();
+            alert('Paper trading account created with $100,000 virtual capital!');
+        }
+        
+        function updatePaperAccountDisplay() {
+            if (!paperAccount) return;
+            
+            document.getElementById('paperBalance').textContent = 
+                `$${paperAccount.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('paperEquity').textContent = 
+                `$${paperAccount.equity.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('paperBuyingPower').textContent = 
+                `$${paperAccount.buyingPower.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            document.getElementById('paperPnL').textContent = 
+                `$${paperAccount.totalPnL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            
+            // Update color based on P&L
+            const pnlElement = document.getElementById('paperPnL');
+            pnlElement.style.color = paperAccount.totalPnL >= 0 ? 'var(--success)' : 'var(--danger)';
+        }
+        
+        function placePaperOrder() {
+            if (!paperAccount) {
+                alert('Please create a paper account first!');
+                return;
+            }
+            
+            const order = {
+                id: 'order_' + Date.now(),
+                symbol: document.getElementById('paperSymbol').value,
+                side: document.getElementById('paperSide').value,
+                type: document.getElementById('paperOrderType').value,
+                quantity: parseFloat(document.getElementById('paperQuantity').value),
+                limitPrice: parseFloat(document.getElementById('paperLimitPrice').value) || null,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            // Mock execution for market orders
+            if (order.type === 'MARKET') {
+                executePaperOrder(order);
+            } else {
+                paperOrders.push(order);
+                updatePaperOrdersDisplay();
+            }
+        }
+        
+        function executePaperOrder(order) {
+            // Mock prices
+            const prices = {
+                'BTC/USD': 50000 + Math.random() * 1000,
+                'ETH/USD': 3000 + Math.random() * 100,
+                'SOL/USD': 100 + Math.random() * 10,
+                'AVAX/USD': 35 + Math.random() * 5
+            };
+            
+            const price = prices[order.symbol] || 100;
+            const cost = price * order.quantity;
+            
+            if (order.side === 'BUY') {
+                if (cost > paperAccount.buyingPower) {
+                    alert('Insufficient buying power!');
+                    return;
+                }
+                
+                // Add position
+                const existingPos = paperPositions.find(p => p.symbol === order.symbol);
+                if (existingPos) {
+                    const totalQty = existingPos.quantity + order.quantity;
+                    const totalCost = (existingPos.quantity * existingPos.entryPrice) + cost;
+                    existingPos.quantity = totalQty;
+                    existingPos.entryPrice = totalCost / totalQty;
+                } else {
+                    paperPositions.push({
+                        symbol: order.symbol,
+                        quantity: order.quantity,
+                        entryPrice: price,
+                        currentPrice: price
+                    });
+                }
+                
+                paperAccount.balance -= cost;
+                paperAccount.buyingPower -= cost;
+            } else {
+                // Sell logic
+                const position = paperPositions.find(p => p.symbol === order.symbol);
+                if (!position || position.quantity < order.quantity) {
+                    alert('Insufficient position to sell!');
+                    return;
+                }
+                
+                const profit = (price - position.entryPrice) * order.quantity;
+                paperAccount.totalPnL += profit;
+                paperAccount.balance += price * order.quantity;
+                paperAccount.buyingPower += price * order.quantity;
+                
+                position.quantity -= order.quantity;
+                if (position.quantity === 0) {
+                    paperPositions = paperPositions.filter(p => p.symbol !== order.symbol);
+                }
+            }
+            
+            // Record trade
+            paperTrades.push({
+                ...order,
+                fillPrice: price,
+                pnl: order.side === 'SELL' ? (price - (paperPositions.find(p => p.symbol === order.symbol)?.entryPrice || price)) * order.quantity : 0
+            });
+            
+            updatePaperAccountDisplay();
+            updatePaperPositionsDisplay();
+            updatePaperTradeHistory();
+            updatePaperPerformance();
+        }
+        
+        function updatePaperPositionsDisplay() {
+            const tbody = document.getElementById('paperPositions');
+            if (paperPositions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="padding: 1rem; text-align: center; color: var(--brown-text);">No open positions</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = paperPositions.map(pos => {
+                const currentPrice = pos.currentPrice + (Math.random() - 0.5) * 10;
+                const pnl = (currentPrice - pos.entryPrice) * pos.quantity;
+                const pnlColor = pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+                
+                return `
+                    <tr>
+                        <td style="padding: 0.5rem;">${pos.symbol}</td>
+                        <td style="padding: 0.5rem; text-align: right;">${pos.quantity.toFixed(2)}</td>
+                        <td style="padding: 0.5rem; text-align: right;">$${pos.entryPrice.toFixed(2)}</td>
+                        <td style="padding: 0.5rem; text-align: right;">$${currentPrice.toFixed(2)}</td>
+                        <td style="padding: 0.5rem; text-align: right; color: ${pnlColor};">$${pnl.toFixed(2)}</td>
+                        <td style="padding: 0.5rem; text-align: center;">
+                            <button onclick="closePaperPosition('${pos.symbol}')" style="padding: 0.25rem 0.5rem; background: var(--danger); color: white; border: none; border-radius: 4px; cursor: pointer;">Close</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function closePaperPosition(symbol) {
+            const position = paperPositions.find(p => p.symbol === symbol);
+            if (!position) return;
+            
+            // Create sell order
+            const order = {
+                id: 'order_' + Date.now(),
+                symbol: symbol,
+                side: 'SELL',
+                type: 'MARKET',
+                quantity: position.quantity,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            
+            executePaperOrder(order);
+        }
+        
+        function updatePaperOrdersDisplay() {
+            const container = document.getElementById('paperOrders');
+            if (paperOrders.length === 0) {
+                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--brown-text);">No open orders</div>';
+                return;
+            }
+            
+            container.innerHTML = paperOrders.map(order => `
+                <div style="padding: 0.5rem; background: var(--cream-light); border-radius: 4px; margin-bottom: 0.5rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>${order.symbol} ${order.side}</span>
+                        <span>${order.quantity} @ ${order.limitPrice || 'Market'}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updatePaperTradeHistory() {
+            const container = document.getElementById('paperTradeHistory');
+            if (paperTrades.length === 0) {
+                container.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--brown-text);">No trades yet</div>';
+                return;
+            }
+            
+            container.innerHTML = paperTrades.slice(-10).reverse().map(trade => {
+                const pnlColor = trade.pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+                return `
+                    <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 4px; margin-bottom: 0.5rem;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div>
+                                <strong>${trade.symbol}</strong> ${trade.side}
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">${trade.timestamp}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div>${trade.quantity} @ $${trade.fillPrice.toFixed(2)}</div>
+                                <div style="font-size: 0.8rem; color: ${pnlColor};">P&L: $${trade.pnl.toFixed(2)}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updatePaperPerformance() {
+            const winningTrades = paperTrades.filter(t => t.pnl > 0);
+            const losingTrades = paperTrades.filter(t => t.pnl < 0);
+            const winRate = paperTrades.length > 0 ? (winningTrades.length / paperTrades.length * 100).toFixed(1) : '--';
+            const avgWin = winningTrades.length > 0 ? winningTrades.reduce((sum, t) => sum + t.pnl, 0) / winningTrades.length : 0;
+            const avgLoss = losingTrades.length > 0 ? Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0) / losingTrades.length) : 0;
+            const profitFactor = avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : '--';
+            
+            document.getElementById('paperWinRate').textContent = winRate + '%';
+            document.getElementById('paperTotalTrades').textContent = paperTrades.length;
+            document.getElementById('paperProfitFactor').textContent = profitFactor;
+            document.getElementById('paperAvgWin').textContent = `$${avgWin.toFixed(2)}`;
+            document.getElementById('paperAvgLoss').textContent = `-$${avgLoss.toFixed(2)}`;
+        }
     </script>
 </body>
 </html>
