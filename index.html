@@ -2577,6 +2577,151 @@
             document.getElementById('paperAvgWin').textContent = `$${avgWin.toFixed(2)}`;
             document.getElementById('paperAvgLoss').textContent = `-$${avgLoss.toFixed(2)}`;
         }
+        
+        // Add CSS for real-time status indicator
+        const realtimeStyles = document.createElement('style');
+        realtimeStyles.innerHTML = `
+            .ws-status-container {
+                position: fixed;
+                top: 70px;
+                right: 20px;
+                background: var(--cream-light);
+                padding: 0.5rem 1rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                z-index: 1000;
+            }
+            
+            .ws-status-indicator {
+                width: 10px;
+                height: 10px;
+                border-radius: 50%;
+                background: #ccc;
+                animation: pulse 2s infinite;
+            }
+            
+            .ws-status-indicator.connected {
+                background: #4CAF50;
+            }
+            
+            .ws-status-indicator.disconnected {
+                background: #f44336;
+                animation: none;
+            }
+            
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+            
+            .price-update {
+                animation: highlight 0.3s ease;
+            }
+            
+            @keyframes highlight {
+                0% { background-color: rgba(76, 175, 80, 0.2); }
+                100% { background-color: transparent; }
+            }
+            
+            .error-notification {
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background: #f44336;
+                color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            }
+            
+            @keyframes slideIn {
+                from { transform: translateX(100%); }
+                to { transform: translateX(0); }
+            }
+        `;
+        document.head.appendChild(realtimeStyles);
+        
+        // Add WebSocket status indicator
+        const statusContainer = document.createElement('div');
+        statusContainer.className = 'ws-status-container';
+        statusContainer.innerHTML = `
+            <div class="ws-status-indicator" id="wsStatusIndicator"></div>
+            <span id="wsStatus">Connecting...</span>
+        `;
+        document.body.appendChild(statusContainer);
+    </script>
+    
+    <!-- Load Real-time Integration -->
+    <script src="realtime_integration.js"></script>
+    <script>
+        // Override mock functions with real-time data
+        if (window.realtimeTrading) {
+            // Replace mock backtest with real-time backtest
+            window.runBacktest = function() {
+                const config = {
+                    initial_capital: parseFloat(document.getElementById('initialCapital').value),
+                    risk_per_trade: parseFloat(document.getElementById('riskPerTrade').value) / 100,
+                    symbols: ['BTC/USD', 'ETH/USD', 'SOL/USD'],
+                    strategy_type: document.getElementById('strategyType').value
+                };
+                
+                // Start real-time backtesting
+                window.realtimeTrading.startRealtimeBacktest('default_strategy', config);
+                
+                // Show loading state
+                document.getElementById('backtestStatus').textContent = 'Running...';
+                document.getElementById('backtestStatus').className = 'status-running';
+            };
+            
+            // Replace mock paper trading with real-time paper trading
+            const originalPlaceOrder = window.placePaperOrder;
+            window.placePaperOrder = function() {
+                const symbol = document.getElementById('paperSymbol').value;
+                const side = document.getElementById('paperSide').value;
+                const orderType = document.getElementById('paperOrderType').value;
+                const quantity = parseFloat(document.getElementById('paperQuantity').value);
+                
+                const order = {
+                    symbol: symbol,
+                    side: side,
+                    type: orderType,
+                    quantity: quantity,
+                    timestamp: new Date().toISOString()
+                };
+                
+                if (orderType === 'LIMIT') {
+                    order.limit_price = parseFloat(document.getElementById('paperLimitPrice').value);
+                }
+                
+                // Place order through WebSocket
+                window.realtimeTrading.placePaperOrder('default_account', order);
+            };
+            
+            // Create default paper trading account on load
+            window.addEventListener('load', () => {
+                window.realtimeTrading.createPaperTradingAccount({
+                    account_id: 'default_account',
+                    initial_balance: 100000,
+                    leverage: 1
+                });
+            });
+            
+            // Update connection status
+            window.realtimeTrading.on('connect', () => {
+                document.getElementById('wsStatusIndicator').className = 'ws-status-indicator connected';
+                document.getElementById('wsStatus').textContent = 'Connected';
+            });
+            
+            window.realtimeTrading.on('disconnect', () => {
+                document.getElementById('wsStatusIndicator').className = 'ws-status-indicator disconnected';
+                document.getElementById('wsStatus').textContent = 'Disconnected';
+            });
+        }
     </script>
 </body>
 </html>

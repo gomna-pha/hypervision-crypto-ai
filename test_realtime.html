@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Trading Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #FFF8E7;
+            color: #5D4E37;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .connected { background: #4CAF50; }
+        .disconnected { background: #f44336; }
+        .connecting { background: #FFC107; }
+        
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .price-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .price-card h3 {
+            margin: 0 0 10px 0;
+            color: #8B5A2B;
+        }
+        
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #5D4E37;
+        }
+        
+        .price-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #999;
+        }
+        
+        button {
+            background: #8B5A2B;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background: #5D4E37;
+        }
+        
+        .log-container {
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 5px;
+        }
+        
+        .log-entry.error { color: #f44336; }
+        .log-entry.success { color: #4CAF50; }
+        .log-entry.info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-Time Trading System Test</h1>
+        
+        <div class="status-card">
+            <h2>Connection Status</h2>
+            <div>
+                <span class="status-indicator disconnected" id="statusIndicator"></span>
+                <span id="connectionStatus">Disconnected</span>
+            </div>
+            <div style="margin-top: 10px;">
+                <small id="wsUrl"></small>
+            </div>
+        </div>
+        
+        <div class="status-card">
+            <h2>Controls</h2>
+            <button onclick="connectWebSocket()">Connect</button>
+            <button onclick="disconnectWebSocket()">Disconnect</button>
+            <button onclick="subscribeToMarketData()">Subscribe to Market Data</button>
+            <button onclick="startBacktest()">Start Backtest</button>
+            <button onclick="createPaperAccount()">Create Paper Account</button>
+            <button onclick="placePaperOrder()">Place Paper Order</button>
+        </div>
+        
+        <div class="price-grid" id="priceGrid">
+            <!-- Price cards will be added here dynamically -->
+        </div>
+        
+        <div class="status-card">
+            <h2>Event Log</h2>
+            <div class="log-container" id="eventLog"></div>
+        </div>
+    </div>
+    
+    <script>
+        let ws = null;
+        let isConnected = false;
+        const marketData = new Map();
+        
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('eventLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        function updateStatus(connected) {
+            const indicator = document.getElementById('statusIndicator');
+            const status = document.getElementById('connectionStatus');
+            
+            if (connected) {
+                indicator.className = 'status-indicator connected';
+                status.textContent = 'Connected';
+                isConnected = true;
+            } else {
+                indicator.className = 'status-indicator disconnected';
+                status.textContent = 'Disconnected';
+                isConnected = false;
+            }
+        }
+        
+        function connectWebSocket() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                addLog('Already connected', 'info');
+                return;
+            }
+            
+            const hostname = window.location.hostname;
+            let wsUrl;
+            
+            if (hostname.includes('e2b.dev')) {
+                // Sandbox environment
+                const wsHost = hostname.replace('8080', '9000').replace('8081', '9000').replace('8000', '9000');
+                wsUrl = `wss://${wsHost}/ws`;
+            } else {
+                // Local development
+                wsUrl = 'ws://localhost:9000/ws';
+            }
+            
+            document.getElementById('wsUrl').textContent = wsUrl;
+            addLog(`Connecting to ${wsUrl}...`, 'info');
+            
+            try {
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    addLog('WebSocket connected successfully', 'success');
+                    updateStatus(true);
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        handleMessage(data);
+                    } catch (error) {
+                        addLog(`Error parsing message: ${error.message}`, 'error');
+                    }
+                };
+                
+                ws.onerror = (error) => {
+                    addLog(`WebSocket error: ${error}`, 'error');
+                };
+                
+                ws.onclose = () => {
+                    addLog('WebSocket disconnected', 'info');
+                    updateStatus(false);
+                };
+            } catch (error) {
+                addLog(`Failed to connect: ${error.message}`, 'error');
+            }
+        }
+        
+        function disconnectWebSocket() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                addLog('Disconnected from WebSocket', 'info');
+            }
+        }
+        
+        function handleMessage(data) {
+            addLog(`Received: ${data.type}`, 'info');
+            
+            switch (data.type) {
+                case 'market_data':
+                    updateMarketData(data.data);
+                    break;
+                case 'backtest_update':
+                    addLog(`Backtest update: ${JSON.stringify(data.data.metrics)}`, 'success');
+                    break;
+                case 'paper_trading_update':
+                    addLog(`Paper trading update: Balance $${data.data.balance}`, 'success');
+                    break;
+                case 'order_execution':
+                    addLog(`Order executed: ${data.data.order_id} - ${data.data.status}`, 'success');
+                    break;
+                case 'error':
+                    addLog(`Server error: ${data.error}`, 'error');
+                    break;
+            }
+        }
+        
+        function updateMarketData(data) {
+            const { symbol, bid, ask, last, volume } = data;
+            marketData.set(symbol, data);
+            
+            // Update or create price card
+            let card = document.getElementById(`price-${symbol}`);
+            if (!card) {
+                card = document.createElement('div');
+                card.className = 'price-card';
+                card.id = `price-${symbol}`;
+                document.getElementById('priceGrid').appendChild(card);
+            }
+            
+            card.innerHTML = `
+                <h3>${symbol}</h3>
+                <div class="price">$${last.toFixed(2)}</div>
+                <div class="price-details">
+                    <span>Bid: $${bid.toFixed(2)}</span>
+                    <span>Ask: $${ask.toFixed(2)}</span>
+                </div>
+                <div class="price-details">
+                    <span>Volume: ${(volume / 1e6).toFixed(2)}M</span>
+                    <span>Spread: $${(ask - bid).toFixed(4)}</span>
+                </div>
+            `;
+        }
+        
+        function sendMessage(action, data) {
+            if (!ws || ws.readyState !== WebSocket.OPEN) {
+                addLog('WebSocket not connected', 'error');
+                return;
+            }
+            
+            const message = JSON.stringify({ action, data });
+            ws.send(message);
+            addLog(`Sent: ${action}`, 'info');
+        }
+        
+        function subscribeToMarketData() {
+            sendMessage('subscribe', {
+                type: 'market_data',
+                symbols: ['BTC/USD', 'ETH/USD', 'SOL/USD', 'AVAX/USD']
+            });
+        }
+        
+        function startBacktest() {
+            sendMessage('start_backtest', {
+                strategy_id: 'test_strategy',
+                config: {
+                    initial_capital: 100000,
+                    risk_per_trade: 0.02,
+                    symbols: ['BTC/USD', 'ETH/USD'],
+                    realtime: true
+                }
+            });
+        }
+        
+        function createPaperAccount() {
+            sendMessage('create_paper_account', {
+                account_id: 'test_account',
+                initial_balance: 100000,
+                leverage: 1
+            });
+        }
+        
+        function placePaperOrder() {
+            sendMessage('place_order', {
+                account_id: 'test_account',
+                order: {
+                    symbol: 'BTC/USD',
+                    side: 'BUY',
+                    type: 'MARKET',
+                    quantity: 0.01
+                }
+            });
+        }
+        
+        // Auto-connect on page load
+        window.addEventListener('load', () => {
+            setTimeout(connectWebSocket, 1000);
+        });
+    </script>
+</body>
+</html>

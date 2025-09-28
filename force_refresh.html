@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Force Refresh - Redirecting...</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #FFF8E7 0%, #FAF0DC 100%);
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 500px;
+        }
+        h1 {
+            color: #3E2E1F;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #6B5D4F;
+            margin-bottom: 1.5rem;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3E2E1F;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        a {
+            color: #3E2E1F;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            background: #FFF8E7;
+            border: 2px solid #3E2E1F;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+        a:hover {
+            background: #3E2E1F;
+            color: #FFF8E7;
+        }
+        .features {
+            text-align: left;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: #FFF8E7;
+            border-radius: 8px;
+        }
+        .features h3 {
+            color: #3E2E1F;
+            margin-bottom: 0.5rem;
+        }
+        .features ul {
+            margin: 0;
+            padding-left: 1.5rem;
+            color: #6B5D4F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h1>Loading Updated Platform...</h1>
+        <p>Redirecting you to the platform with all features including:</p>
+        
+        <div class="features">
+            <h3>✅ New Features Now Available:</h3>
+            <ul>
+                <li><strong>📊 Backtesting Tab</strong> - Full backtesting configuration and analysis</li>
+                <li><strong>📝 Paper Trading Tab</strong> - Virtual trading with $100,000 capital</li>
+                <li>Performance metrics (Sharpe, Sortino, Calmar ratios)</li>
+                <li>Risk analysis (VaR, CVaR, Beta)</li>
+                <li>Monte Carlo simulations</li>
+                <li>Walk-forward optimization</li>
+                <li>Real-time position tracking</li>
+            </ul>
+        </div>
+        
+        <p><strong>If not redirected automatically:</strong></p>
+        <a href="/index.html?v=2.0&cache=bust&timestamp=1735488000" id="manualLink">Click Here to Access Platform</a>
+    </div>
+
+    <script>
+        // Clear cache and redirect
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names)
+                    caches.delete(name);
+            });
+        }
+        
+        // Force refresh with cache-busting parameters
+        setTimeout(() => {
+            const timestamp = Date.now();
+            const newUrl = `/index.html?version=2.0&t=${timestamp}&nocache=true`;
+            
+            // Try to clear browser cache
+            if (window.location.reload) {
+                window.location.href = newUrl;
+                window.location.reload(true);
+            } else {
+                window.location.href = newUrl;
+            }
+        }, 2000);
+        
+        // Update manual link with current timestamp
+        document.getElementById('manualLink').href = `/index.html?v=2.0&t=${Date.now()}`;
+    </script>
+</body>
+</html>

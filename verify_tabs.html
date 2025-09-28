@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Platform Features Verification</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #FFF8E7 0%, #FAF0DC 100%);
+            padding: 20px;
+            color: #3E2E1F;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #3E2E1F;
+            border-bottom: 3px solid #3E2E1F;
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .status-card {
+            padding: 1rem;
+            background: #FFF8E7;
+            border-radius: 8px;
+            border-left: 4px solid #3E2E1F;
+        }
+        .status-card h3 {
+            margin: 0 0 0.5rem 0;
+            color: #3E2E1F;
+        }
+        .check {
+            color: #2D5F3F;
+            font-weight: bold;
+        }
+        .link-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .link-card {
+            display: block;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #3E2E1F, #6B5D4F);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .link-card:hover {
+            transform: translateY(-5px);
+        }
+        .link-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+        .link-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 2px solid #3E2E1F;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .code-block {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 HyperVision Platform - Feature Verification</h1>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>✅ Navigation Tabs Status</h3>
+                <p class="check">✓ Dashboard</p>
+                <p class="check">✓ Portfolio</p>
+                <p class="check">✓ Global Markets</p>
+                <p class="check" style="color: #8B6331; font-size: 1.1rem;">✓ 📊 Backtesting (NEW!)</p>
+                <p class="check" style="color: #8B6331; font-size: 1.1rem;">✓ 📝 Paper Trading (NEW!)</p>
+                <p class="check">✓ Model Transparency</p>
+                <p class="check">✓ 🏦 Investor Portal</p>
+            </div>
+            
+            <div class="status-card">
+                <h3>📊 Backtesting Features</h3>
+                <p>• Date range configuration</p>
+                <p>• Strategy selection (5 types)</p>
+                <p>• Slippage models</p>
+                <p>• Performance metrics</p>
+                <p>• Monte Carlo simulation</p>
+                <p>• Walk-forward optimization</p>
+            </div>
+            
+            <div class="status-card">
+                <h3>📝 Paper Trading Features</h3>
+                <p>• $100,000 virtual capital</p>
+                <p>• Market, Limit, Stop orders</p>
+                <p>• Real-time P&L tracking</p>
+                <p>• Position management</p>
+                <p>• Trade history</p>
+                <p>• Performance metrics</p>
+            </div>
+        </div>
+        
+        <h2>🚀 Access Points</h2>
+        
+        <div class="link-grid">
+            <a href="/index.html?nocache=true&v=2.0" class="link-card">
+                <h3>Main Platform (No Cache)</h3>
+                <p>Access with cache bypass</p>
+            </a>
+            
+            <a href="/index.html#backtesting" class="link-card">
+                <h3>Direct to Backtesting</h3>
+                <p>Jump to backtesting tab</p>
+            </a>
+            
+            <a href="/index.html#paper" class="link-card">
+                <h3>Direct to Paper Trading</h3>
+                <p>Jump to paper trading tab</p>
+            </a>
+            
+            <a href="/force_refresh.html" class="link-card">
+                <h3>Force Refresh</h3>
+                <p>Clear cache and reload</p>
+            </a>
+        </div>
+        
+        <h2>📋 Navigation Code Verification</h2>
+        <div class="code-block">
+&lt;div class="nav-tabs"&gt;<br>
+    &lt;button class="nav-tab active" onclick="switchTab('dashboard')"&gt;Dashboard&lt;/button&gt;<br>
+    &lt;button class="nav-tab" onclick="switchTab('portfolio')"&gt;Portfolio&lt;/button&gt;<br>
+    &lt;button class="nav-tab" onclick="switchTab('markets')"&gt;Global Markets&lt;/button&gt;<br>
+    <span style="color: yellow;">✅ &lt;button class="nav-tab" onclick="switchTab('backtesting')"&gt;📊 Backtesting&lt;/button&gt;</span><br>
+    <span style="color: yellow;">✅ &lt;button class="nav-tab" onclick="switchTab('paper')"&gt;📝 Paper Trading&lt;/button&gt;</span><br>
+    &lt;button class="nav-tab" onclick="switchTab('transparency')"&gt;Model Transparency&lt;/button&gt;<br>
+    &lt;button class="nav-tab" onclick="switchTab('investor')"&gt;🏦 Investor Portal&lt;/button&gt;<br>
+&lt;/div&gt;
+        </div>
+        
+        <h2>🔧 Troubleshooting Steps</h2>
+        <ol>
+            <li><strong>Hard Refresh:</strong> Press Ctrl+F5 (Windows/Linux) or Cmd+Shift+R (Mac)</li>
+            <li><strong>Clear Browser Cache:</strong> 
+                <ul>
+                    <li>Chrome: Settings → Privacy → Clear browsing data</li>
+                    <li>Firefox: Settings → Privacy → Clear Data</li>
+                    <li>Safari: Develop → Empty Caches</li>
+                </ul>
+            </li>
+            <li><strong>Try Incognito/Private Mode:</strong> Open the platform in a private browsing window</li>
+            <li><strong>Use Direct Links:</strong> Click the links above to access with cache-busting parameters</li>
+        </ol>
+        
+        <h2>👁️ Live Preview</h2>
+        <p>The platform below should show all 7 navigation tabs including Backtesting and Paper Trading:</p>
+        <iframe src="/index.html?preview=true&t=1735488000" title="Platform Preview"></iframe>
+    </div>
+    
+    <script>
+        // Auto-refresh iframe every 5 seconds to show latest version
+        setInterval(() => {
+            const iframe = document.querySelector('iframe');
+            iframe.src = `/index.html?preview=true&t=${Date.now()}`;
+        }, 5000);
+    </script>
+</body>
+</html>
