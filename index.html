@@ -611,58 +611,109 @@
                     </div>
                     <div style="text-align: center; padding: 1rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(139, 90, 43, 0.05)); border-radius: 8px; margin-bottom: 1rem;">
                         <div style="font-size: 0.8rem; color: var(--brown-text);">Total Portfolio Value</div>
-                        <div style="font-size: 2rem; font-weight: 700; color: var(--brown-dark);" id="total-value">$2,847,563</div>
+                        <div style="font-size: 2rem; font-weight: 700; color: var(--brown-dark);" id="total-value">$2,847,392</div>
                         <div style="font-size: 0.9rem; color: var(--success); font-weight: 600;">+12.4% MTD</div>
                     </div>
                     
-                    <!-- Asset Allocation -->
-                    <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Asset Allocation</h4>
-                    <div class="allocation-item">
-                        <div class="allocation-header">
-                            <div>
-                                <span class="allocation-percentage">45%</span>
-                                <span class="allocation-label"> Bitcoin (BTC)</span>
+                    <!-- Portfolio Holdings -->
+                    <h4 style="font-size: 0.85rem; margin-bottom: 0.75rem; color: var(--brown-dark);">Portfolio Overview</h4>
+                    
+                    <!-- BTC Holdings -->
+                    <div class="allocation-item" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--cream-light); border-radius: 8px; border-left: 4px solid #F7931A;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #F7931A; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: 700; font-size: 0.9rem;">₿</span>
+                                </div>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: var(--brown-dark);">BTC</span>
                             </div>
-                            <span class="allocation-value">$1,281,403</span>
+                            <span style="padding: 0.25rem 0.5rem; background: rgba(45, 95, 63, 0.1); border-radius: 4px; font-size: 0.8rem; color: var(--success); font-weight: 600;">+2.4%</span>
                         </div>
-                        <div class="allocation-bar">
-                            <div class="allocation-fill" style="width: 45%; background: #F7931A;"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.25rem;">$1,245,320</div>
+                                <div style="font-size: 0.85rem; color: var(--brown-text); font-weight: 500;">12.5 BTC</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="allocation-item">
-                        <div class="allocation-header">
-                            <div>
-                                <span class="allocation-percentage">30%</span>
-                                <span class="allocation-label"> Ethereum (ETH)</span>
+                    
+                    <!-- ETH Holdings -->
+                    <div class="allocation-item" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--cream-light); border-radius: 8px; border-left: 4px solid #627EEA;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #627EEA; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: 700; font-size: 0.9rem;">Ξ</span>
+                                </div>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: var(--brown-dark);">ETH</span>
                             </div>
-                            <span class="allocation-value">$854,269</span>
+                            <span style="padding: 0.25rem 0.5rem; background: rgba(45, 95, 63, 0.1); border-radius: 4px; font-size: 0.8rem; color: var(--success); font-weight: 600;">+1.8%</span>
                         </div>
-                        <div class="allocation-bar">
-                            <div class="allocation-fill" style="width: 30%; background: #627EEA;"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.25rem;">$892,450</div>
+                                <div style="font-size: 0.85rem; color: var(--brown-text); font-weight: 500;">258.3 ETH</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="allocation-item">
-                        <div class="allocation-header">
-                            <div>
-                                <span class="allocation-percentage">15%</span>
-                                <span class="allocation-label"> Stablecoins</span>
+                    
+                    <!-- USDT Holdings -->
+                    <div class="allocation-item" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--cream-light); border-radius: 8px; border-left: 4px solid #26A17B;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #26A17B; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: 700; font-size: 0.8rem;">₮</span>
+                                </div>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: var(--brown-dark);">USDT</span>
                             </div>
-                            <span class="allocation-value">$427,134</span>
+                            <span style="padding: 0.25rem 0.5rem; background: rgba(139, 90, 43, 0.1); border-radius: 4px; font-size: 0.8rem; color: var(--brown-text); font-weight: 600;">0.0%</span>
                         </div>
-                        <div class="allocation-bar">
-                            <div class="allocation-fill" style="width: 15%; background: #26A17B;"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.25rem;">$450,000</div>
+                                <div style="font-size: 0.85rem; color: var(--brown-text); font-weight: 500;">450,000 USDT</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="allocation-item">
-                        <div class="allocation-header">
-                            <div>
-                                <span class="allocation-percentage">10%</span>
-                                <span class="allocation-label"> Other Assets</span>
+                    
+                    <!-- SOL Holdings -->
+                    <div class="allocation-item" style="margin-bottom: 1rem; padding: 0.75rem; background: var(--cream-light); border-radius: 8px; border-left: 4px solid #9945FF;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: #9945FF; display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: white; font-weight: 700; font-size: 0.8rem;">◎</span>
+                                </div>
+                                <span style="font-weight: 700; font-size: 1.1rem; color: var(--brown-dark);">SOL</span>
                             </div>
-                            <span class="allocation-value">$284,757</span>
+                            <span style="padding: 0.25rem 0.5rem; background: rgba(139, 69, 19, 0.1); border-radius: 4px; font-size: 0.8rem; color: var(--danger); font-weight: 600;">-0.8%</span>
                         </div>
-                        <div class="allocation-bar">
-                            <div class="allocation-fill" style="width: 10%; background: var(--brown-text);"></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 1.3rem; font-weight: 700; color: var(--brown-dark); margin-bottom: 0.25rem;">$259,622</div>
+                                <div style="font-size: 0.85rem; color: var(--brown-text); font-weight: 500;">3,850 SOL</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Allocation Summary -->
+                    <div style="margin-top: 1.5rem; padding: 1rem; background: linear-gradient(135deg, rgba(103, 126, 234, 0.05), rgba(118, 75, 162, 0.05)); border-radius: 8px;">
+                        <h5 style="font-size: 0.9rem; font-weight: 600; color: var(--brown-dark); margin-bottom: 0.75rem;">Allocation Breakdown</h5>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--brown-text);">BTC:</span>
+                                <span style="font-weight: 600; color: var(--brown-dark);">43.7%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--brown-text);">ETH:</span>
+                                <span style="font-weight: 600; color: var(--brown-dark);">31.3%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--brown-text);">USDT:</span>
+                                <span style="font-weight: 600; color: var(--brown-dark);">15.8%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--brown-text);">SOL:</span>
+                                <span style="font-weight: 600; color: var(--brown-dark);">9.1%</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -701,39 +752,76 @@
                     </table>
                 </div>
 
-                <!-- Risk & Performance -->
+                <!-- Risk Metrics -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Risk & Performance</h3>
+                        <h3 class="card-title">📊 Risk Metrics</h3>
+                        <span class="badge" style="background: var(--info);">LIVE</span>
                     </div>
-                    <div style="display: grid; gap: 0.75rem;">
-                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--brown-text);">Sharpe Ratio</div>
-                                <div style="font-size: 1.2rem; font-weight: 700;">2.34</div>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; border-left: 3px solid var(--danger);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">VaR (95%)</div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">1-Day Risk</div>
                             </div>
-                            <div style="font-size: 0.65rem; color: var(--brown-text); align-self: center;">Risk-Adjusted Return</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--danger);">$142,350</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--brown-text);">Max Drawdown</div>
-                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--danger);">-3.2%</div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; border-left: 3px solid var(--success);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Sharpe Ratio</div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Risk-Adjusted</div>
                             </div>
-                            <div style="font-size: 0.65rem; color: var(--brown-text); align-self: center;">Last 30 Days</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);">2.98</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--brown-text);">VaR (95%)</div>
-                                <div style="font-size: 1.2rem; font-weight: 700;">$45,231</div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; border-left: 3px solid var(--warning);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Max Drawdown</div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">Peak to Trough</div>
                             </div>
-                            <div style="font-size: 0.65rem; color: var(--brown-text); align-self: center;">1-Day Risk</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--warning);">-8.2%</div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: var(--cream-light); border-radius: 4px;">
-                            <div>
-                                <div style="font-size: 0.7rem; color: var(--brown-text);">Beta</div>
-                                <div style="font-size: 1.2rem; font-weight: 700;">0.73</div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; border-left: 3px solid var(--info);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Beta</div>
+                                <div style="font-size: 0.7rem; color: var(--brown-text);">vs Market</div>
                             </div>
-                            <div style="font-size: 0.65rem; color: var(--brown-text); align-self: center;">vs BTC Market</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--info);">0.72</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- P&L Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💰 P&L Summary</h3>
+                        <span class="badge" style="background: var(--success);">PROFITABLE</span>
+                    </div>
+                    <div style="display: grid; gap: 1rem;">
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(45, 95, 63, 0.1)); border-radius: 6px; border-left: 3px solid var(--success);">
+                            <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">Today</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);">+$34,901</div>
+                            <div style="font-size: 0.7rem; color: var(--success); margin-top: 0.25rem;">+1.23% daily return</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(45, 95, 63, 0.1)); border-radius: 6px; border-left: 3px solid var(--success);">
+                            <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">This Week</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);">+$127,340</div>
+                            <div style="font-size: 0.7rem; color: var(--success); margin-top: 0.25rem;">+4.68% weekly return</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(45, 95, 63, 0.1)); border-radius: 6px; border-left: 3px solid var(--success);">
+                            <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">This Month</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);">+$485,220</div>
+                            <div style="font-size: 0.7rem; color: var(--success); margin-top: 0.25rem;">+20.5% monthly return</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(45, 95, 63, 0.05), rgba(45, 95, 63, 0.1)); border-radius: 6px; border-left: 3px solid var(--success);">
+                            <div style="font-size: 0.75rem; color: var(--brown-text); margin-bottom: 0.25rem;">YTD</div>
+                            <div style="font-size: 1.4rem; font-weight: 700; color: var(--success);">+$1,847,392</div>
+                            <div style="font-size: 0.7rem; color: var(--success); margin-top: 0.25rem;">+184.7% annual return</div>
                         </div>
                     </div>
                 </div>
