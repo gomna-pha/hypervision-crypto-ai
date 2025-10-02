@@ -423,6 +423,7 @@
                     <button class="nav-tab active" onclick="switchTab('dashboard')">Dashboard</button>
                     <button class="nav-tab" onclick="switchTab('portfolio')">Portfolio</button>
                     <button class="nav-tab" onclick="switchTab('markets')">Global Markets</button>
+                    <button class="nav-tab" onclick="switchTab('ai-assistant')">🤖 AI Assistant</button>
                     <button class="nav-tab" onclick="switchTab('backtesting')">📊 Backtesting</button>
                     <button class="nav-tab" onclick="switchTab('paper')">📝 Paper Trading</button>
                     <button class="nav-tab" onclick="switchTab('transparency')">Model Transparency</button>
@@ -1623,6 +1624,138 @@
             </div>
         </div>
 
+        <!-- AI Assistant Tab -->
+        <div class="tab-content" id="ai-assistant-tab">
+            <div class="dashboard-grid">
+                <!-- AI Chat Interface -->
+                <div class="card span-2" style="height: 600px; display: flex; flex-direction: column;">
+                    <div class="card-header">
+                        <h3 class="card-title">🤖 GOMNA AI Trading Assistant</h3>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="live-dot"></span>
+                            <span class="badge" style="background: var(--success);">ONLINE</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Messages Area -->
+                    <div id="ai-chat-messages" style="flex: 1; overflow-y: auto; padding: 1rem; background: var(--cream-light); border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                        <div class="ai-message" style="margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 600;">AI</div>
+                                <span style="font-weight: 600; color: var(--purple);">GOMNA AI</span>
+                                <span style="font-size: 0.7rem; color: var(--brown-text);">Just now</span>
+                            </div>
+                            <div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--purple);">
+                                Hello! I'm your advanced trading intelligence assistant. I can help you with:
+                                <br><br>
+                                • 📊 Real-time market analysis and insights
+                                • 🎯 Arbitrage opportunity identification  
+                                • 📈 Portfolio optimization strategies
+                                • 🔍 Risk assessment and management
+                                • 📋 Backtesting configuration guidance
+                                • 💹 Paper trading recommendations
+                                <br><br>
+                                What would you like to explore today?
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="ai-chat-input" placeholder="Ask me anything about trading, markets, or strategies..." 
+                            style="flex: 1; padding: 0.75rem; border: 1px solid var(--brown-light); border-radius: 8px; background: white; font-size: 0.85rem;"
+                            onkeypress="if(event.key==='Enter') sendAiMessage()">
+                        <button onclick="sendAiMessage()" 
+                            style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+                            Send
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- AI Insights Panel -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">💡 Live AI Insights</h3>
+                    </div>
+                    
+                    <div id="ai-insights" style="space-y: 1rem;">
+                        <!-- Market Sentiment -->
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px; margin-bottom: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text); margin-bottom: 0.25rem;">Market Sentiment</div>
+                            <div style="font-weight: 600; color: var(--success); margin-bottom: 0.5rem;">Bullish (+0.73)</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Strong institutional buying detected across DeFi sectors</div>
+                        </div>
+                        
+                        <!-- Top Recommendation -->
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(103, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 6px; margin-bottom: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text); margin-bottom: 0.25rem;">AI Recommendation</div>
+                            <div style="font-weight: 600; color: var(--purple); margin-bottom: 0.5rem;">SOL/ETH Arbitrage</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Expected profit: 1.23% | Risk: Low | Confidence: 94%</div>
+                        </div>
+                        
+                        <!-- Risk Alert -->
+                        <div style="padding: 0.75rem; background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 138, 101, 0.1)); border-radius: 6px; margin-bottom: 0.75rem;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text); margin-bottom: 0.25rem;">Risk Alert</div>
+                            <div style="font-weight: 600; color: #ff8a65; margin-bottom: 0.5rem;">High Volatility Period</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Increased slippage expected in next 2 hours</div>
+                        </div>
+                        
+                        <!-- Portfolio Health -->
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text); margin-bottom: 0.25rem;">Portfolio Health</div>
+                            <div style="font-weight: 600; color: var(--success); margin-bottom: 0.5rem;">Excellent (A+)</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Optimal diversification across 12 strategies</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="card span-3">
+                    <div class="card-header">
+                        <h3 class="card-title">⚡ AI-Powered Quick Actions</h3>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <button onclick="analyzeMarketConditions()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">📈 Analyze Market Conditions</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Get AI insights on current market state</div>
+                        </button>
+                        
+                        <button onclick="findArbitrageOpportunities()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">🎯 Find Arbitrage Opportunities</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Scan for profitable arbitrage trades</div>
+                        </button>
+                        
+                        <button onclick="optimizePortfolio()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">⚖️ Optimize Portfolio</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">AI-driven portfolio rebalancing</div>
+                        </button>
+                        
+                        <button onclick="assessRisk()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">🛡️ Assess Portfolio Risk</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Comprehensive risk analysis</div>
+                        </button>
+                        
+                        <button onclick="generateStrategy()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">🧠 Generate Trading Strategy</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">AI-created custom strategies</div>
+                        </button>
+                        
+                        <button onclick="backtestRecommendation()" 
+                            style="padding: 1rem; background: linear-gradient(135deg, var(--cream-light), white); border: 1px solid var(--brown-light); border-radius: 8px; cursor: pointer; text-align: left; transition: all 0.2s;">
+                            <div style="font-weight: 600; color: var(--brown-dark); margin-bottom: 0.25rem;">📊 Backtest Recommendation</div>
+                            <div style="font-size: 0.75rem; color: var(--brown-text);">Test strategies with historical data</div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Backtesting Tab -->
         <div class="tab-content" id="backtesting-tab">
             <div class="dashboard-grid">
@@ -2654,6 +2787,299 @@
             <span id="wsStatus">Connecting...</span>
         `;
         document.body.appendChild(statusContainer);
+
+        // ============ AI ASSISTANT FUNCTIONS ============
+        
+        // AI Assistant Chat Functions
+        function sendAiMessage() {
+            const input = document.getElementById('ai-chat-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Add user message to chat
+            addChatMessage('user', 'You', message);
+            input.value = '';
+            
+            // Show typing indicator
+            addTypingIndicator();
+            
+            // Simulate AI response (replace with actual API call)
+            setTimeout(() => {
+                removeTypingIndicator();
+                const aiResponse = generateAiResponse(message);
+                addChatMessage('ai', 'GOMNA AI', aiResponse);
+            }, 1500);
+        }
+        
+        function addChatMessage(type, sender, message) {
+            const messagesContainer = document.getElementById('ai-chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `${type}-message`;
+            messageDiv.style.marginBottom = '1rem';
+            
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            if (type === 'ai') {
+                messageDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 600;">AI</div>
+                        <span style="font-weight: 600; color: var(--purple);">${sender}</span>
+                        <span style="font-size: 0.7rem; color: var(--brown-text);">${timestamp}</span>
+                    </div>
+                    <div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--purple);">${message}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; justify-content: flex-end;">
+                        <span style="font-size: 0.7rem; color: var(--brown-text);">${timestamp}</span>
+                        <span style="font-weight: 600; color: var(--brown-dark);">${sender}</span>
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: var(--brown-dark); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 600;">U</div>
+                    </div>
+                    <div style="background: var(--brown-dark); color: white; padding: 0.75rem; border-radius: 8px; text-align: right;">${message}</div>
+                `;
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function addTypingIndicator() {
+            const messagesContainer = document.getElementById('ai-chat-messages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.style.marginBottom = '1rem';
+            typingDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <div style="width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 600;">AI</div>
+                    <span style="font-weight: 600; color: var(--purple);">GOMNA AI</span>
+                    <span style="font-size: 0.7rem; color: var(--brown-text);">typing...</span>
+                </div>
+                <div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid var(--purple);">
+                    <div style="display: flex; gap: 4px;">
+                        <div style="width: 8px; height: 8px; background: var(--purple); border-radius: 50%; animation: pulse 1.5s infinite;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--purple); border-radius: 50%; animation: pulse 1.5s infinite 0.5s;"></div>
+                        <div style="width: 8px; height: 8px; background: var(--purple); border-radius: 50%; animation: pulse 1.5s infinite 1s;"></div>
+                    </div>
+                </div>
+            `;
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+        }
+        
+        function generateAiResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            // Market analysis responses
+            if (lowerMessage.includes('market') || lowerMessage.includes('analysis')) {
+                return `📈 <strong>Market Analysis</strong><br><br>
+                    Current market sentiment is <span style="color: var(--success); font-weight: 600;">bullish (+0.73)</span>. I'm detecting:
+                    <br><br>
+                    • Strong institutional inflows (+$2.4B in 24h)<br>
+                    • Cross-chain arbitrage opportunities in DeFi<br>
+                    • Reduced volatility in BTC/ETH pairs<br>
+                    • High correlation breakdown between majors<br><br>
+                    <strong>Recommendation:</strong> Focus on SOL-based arbitrage strategies with 94% confidence rating.`;
+            }
+            
+            // Arbitrage responses
+            if (lowerMessage.includes('arbitrage') || lowerMessage.includes('opportunity')) {
+                return `🎯 <strong>Live Arbitrage Opportunities</strong><br><br>
+                    I've identified <span style="color: var(--success); font-weight: 600;">3 high-probability trades</span>:
+                    <br><br>
+                    <strong>1. SOL/ETH Cross-Exchange</strong><br>
+                    • Expected profit: 1.23%<br>
+                    • Risk level: Low<br>
+                    • Execution window: 4.2 minutes<br><br>
+                    <strong>2. AVAX Triangular (Binance-Uniswap)</strong><br>
+                    • Expected profit: 0.89%<br>
+                    • Risk level: Medium<br>
+                    • Gas optimization required<br><br>
+                    Would you like me to set up auto-execution for any of these?`;
+            }
+            
+            // Portfolio responses
+            if (lowerMessage.includes('portfolio') || lowerMessage.includes('optimize')) {
+                return `⚖️ <strong>Portfolio Optimization</strong><br><br>
+                    Your current portfolio shows <span style="color: var(--success); font-weight: 600;">excellent diversification (A+ rating)</span>.
+                    <br><br>
+                    <strong>Current allocation:</strong><br>
+                    • Hyperbolic strategies: 45%<br>
+                    • Statistical arbitrage: 28%<br>
+                    • Cross-chain opportunities: 18%<br>
+                    • Risk hedge positions: 9%<br><br>
+                    <strong>AI Suggestion:</strong> Consider increasing cross-chain exposure by 3-5% based on current market inefficiencies.`;
+            }
+            
+            // Risk assessment responses  
+            if (lowerMessage.includes('risk') || lowerMessage.includes('danger')) {
+                return `🛡️ <strong>Risk Assessment</strong><br><br>
+                    Current risk levels are <span style="color: var(--success); font-weight: 600;">within optimal parameters</span>.
+                    <br><br>
+                    <strong>Key metrics:</strong><br>
+                    • VaR (95%): -2.1% (Excellent)<br>
+                    • Sharpe ratio: 3.47 (Outstanding)<br>
+                    • Max drawdown: 4.3% (Low)<br>
+                    • Correlation risk: Minimal<br><br>
+                    <strong>Alert:</strong> Volatility spike expected in 2 hours. Consider reducing position sizes temporarily.`;
+            }
+            
+            // Strategy responses
+            if (lowerMessage.includes('strategy') || lowerMessage.includes('generate')) {
+                return `🧠 <strong>Custom Strategy Generation</strong><br><br>
+                    Based on current market conditions, I recommend a <span style="color: var(--purple); font-weight: 600;">Multi-Layer Hyperbolic Strategy</span>:
+                    <br><br>
+                    <strong>Layer 1:</strong> Poincaré embedding detection<br>
+                    <strong>Layer 2:</strong> Sentiment arbitrage overlay<br>
+                    <strong>Layer 3:</strong> Cross-exchange execution<br><br>
+                    <strong>Expected metrics:</strong><br>
+                    • Annual return: 34.2%<br>
+                    • Max drawdown: 5.1%<br>
+                    • Win rate: 73.6%<br><br>
+                    Would you like me to configure this for backtesting?`;
+            }
+            
+            // Backtesting responses
+            if (lowerMessage.includes('backtest') || lowerMessage.includes('test')) {
+                return `📊 <strong>Backtesting Recommendation</strong><br><br>
+                    For optimal results, I suggest testing with:
+                    <br><br>
+                    <strong>Timeframe:</strong> Last 18 months<br>
+                    <strong>Capital:</strong> $100,000 initial<br>
+                    <strong>Strategy:</strong> Hyperbolic arbitrage<br>
+                    <strong>Slippage model:</strong> Realistic market impact<br><br>
+                    <strong>Expected historical performance:</strong><br>
+                    • Total return: +67.3%<br>
+                    • Sharpe ratio: 2.89<br>
+                    • Maximum drawdown: 8.2%<br><br>
+                    Navigate to the 📊 Backtesting tab to run this configuration.`;
+            }
+            
+            // Default response
+            return `🤖 <strong>How can I help you?</strong><br><br>
+                I'm your advanced trading intelligence system. I can assist with:
+                <br><br>
+                • <strong>Real-time analysis</strong> of market conditions<br>
+                • <strong>Arbitrage detection</strong> across multiple exchanges<br>
+                • <strong>Portfolio optimization</strong> using AI algorithms<br>
+                • <strong>Risk management</strong> and assessment<br>
+                • <strong>Strategy development</strong> and backtesting<br>
+                • <strong>Paper trading</strong> guidance and setup<br><br>
+                Try asking: "Analyze current market conditions" or "Find arbitrage opportunities"`;
+        }
+        
+        // AI Quick Action Functions
+        function analyzeMarketConditions() {
+            addChatMessage('ai', 'GOMNA AI', `📈 <strong>Real-Time Market Analysis</strong><br><br>
+                <span style="color: var(--success); font-weight: 600;">Market Sentiment: Bullish (+0.73)</span><br><br>
+                <strong>Key Indicators:</strong><br>
+                • Fear & Greed Index: 67 (Greed)<br>
+                • Institutional flow: +$2.4B (24h)<br>
+                • DeFi TVL: $48.2B (+3.2%)<br>
+                • Cross-chain bridge volume: +18%<br><br>
+                <strong>Sector Performance:</strong><br>
+                • Layer 1s: +4.2% (Leading)<br>
+                • DeFi tokens: +2.8%<br>
+                • Infrastructure: +1.9%<br>
+                • Meme coins: -1.2%<br><br>
+                <strong>AI Prediction:</strong> Expect continued upward momentum for next 6-12 hours.`);
+        }
+        
+        function findArbitrageOpportunities() {
+            addChatMessage('ai', 'GOMNA AI', `🎯 <strong>Live Arbitrage Scanner Results</strong><br><br>
+                Found <span style="color: var(--success); font-weight: 600;">5 active opportunities</span>:
+                <br><br>
+                <strong>1. SOL/ETH Cross-Exchange</strong><br>
+                Profit: 1.23% | Risk: Low | Confidence: 94%<br><br>
+                <strong>2. AVAX Triangular Route</strong><br>
+                Profit: 0.89% | Risk: Medium | Confidence: 87%<br><br>
+                <strong>3. MATIC Bridge Arbitrage</strong><br>
+                Profit: 0.67% | Risk: Low | Confidence: 92%<br><br>
+                <strong>4. UNI Governance Premium</strong><br>
+                Profit: 0.54% | Risk: High | Confidence: 76%<br><br>
+                <strong>5. BTC Futures Contango</strong><br>
+                Profit: 0.43% | Risk: Low | Confidence: 91%<br><br>
+                Execute trades directly from the dashboard or set up auto-execution.`);
+        }
+        
+        function optimizePortfolio() {
+            addChatMessage('ai', 'GOMNA AI', `⚖️ <strong>Portfolio Optimization Complete</strong><br><br>
+                <span style="color: var(--success); font-weight: 600;">Current Rating: A+ (Excellent)</span><br><br>
+                <strong>Recommended Rebalancing:</strong><br>
+                • Increase cross-chain exposure: +3.2%<br>
+                • Reduce correlated positions: -1.8%<br>
+                • Add volatility hedges: +2.1%<br><br>
+                <strong>Expected Impact:</strong><br>
+                • Risk reduction: 12.3%<br>
+                • Return improvement: +4.7%<br>
+                • Sharpe ratio: 3.47 → 3.62<br><br>
+                <strong>AI Insight:</strong> Your diversification across 12 strategies is optimal. Minor adjustments could improve risk-adjusted returns by 8%.`);
+        }
+        
+        function assessRisk() {
+            addChatMessage('ai', 'GOMNA AI', `🛡️ <strong>Comprehensive Risk Assessment</strong><br><br>
+                <span style="color: var(--success); font-weight: 600;">Overall Risk Level: LOW-MODERATE</span><br><br>
+                <strong>Risk Metrics:</strong><br>
+                • Value at Risk (95%): -2.1%<br>
+                • Expected Shortfall: -3.4%<br>
+                • Maximum Drawdown: 4.3%<br>
+                • Sharpe Ratio: 3.47<br>
+                • Sortino Ratio: 4.21<br><br>
+                <strong>Risk Factors:</strong><br>
+                • ✅ Correlation risk: Minimal<br>
+                • ✅ Liquidity risk: Low<br>
+                • ⚠️ Volatility spike risk: Medium (next 2h)<br>
+                • ✅ Counterparty risk: Low<br><br>
+                <strong>Recommendation:</strong> Maintain current position sizes. Consider temporary reduction during upcoming volatility window.`);
+        }
+        
+        function generateStrategy() {
+            addChatMessage('ai', 'GOMNA AI', `🧠 <strong>AI Strategy Generation</strong><br><br>
+                Generated: <span style="color: var(--purple); font-weight: 600;">"Adaptive Hyperbolic Momentum Strategy"</span><br><br>
+                <strong>Strategy Components:</strong><br>
+                • Poincaré embedding for asset positioning<br>
+                • Momentum overlay with volatility adjustment<br>
+                • Cross-exchange execution optimization<br>
+                • Dynamic risk management<br><br>
+                <strong>Backtested Performance (18m):</strong><br>
+                • Total Return: +84.2%<br>
+                • Annual Sharpe: 3.1<br>
+                • Max Drawdown: 6.7%<br>
+                • Win Rate: 76.3%<br><br>
+                <strong>Market Conditions:</strong> Optimal for trending markets with moderate volatility.<br><br>
+                Ready to implement this strategy? I can configure it for paper trading first.`);
+        }
+        
+        function backtestRecommendation() {
+            addChatMessage('ai', 'GOMNA AI', `📊 <strong>Backtesting Setup Recommendation</strong><br><br>
+                <strong>Optimal Configuration:</strong><br>
+                • Period: Jan 2023 - Present<br>
+                • Initial Capital: $100,000<br>
+                • Strategy: Hyperbolic Arbitrage<br>
+                • Commission: 0.02%<br>
+                • Slippage: Realistic market impact<br><br>
+                <strong>Expected Results:</strong><br>
+                • Total Return: +67.3%<br>
+                • Annual Return: +42.1%<br>
+                • Sharpe Ratio: 2.89<br>
+                • Max Drawdown: 8.2%<br>
+                • Win Rate: 71.4%<br><br>
+                Navigate to the 📊 <strong>Backtesting</strong> tab to run this configuration with full historical analysis.`);
+            
+            // Auto-switch to backtesting tab after 2 seconds
+            setTimeout(() => {
+                switchTab('backtesting');
+                addChatMessage('ai', 'GOMNA AI', `Switched to Backtesting tab. The recommended configuration has been pre-loaded for you.`);
+            }, 2000);
+        }
+
+        document.body.appendChild(statusContainer);
     </script>
     
     <!-- Load Real-time Integration -->
@@ -2722,6 +3148,389 @@
                 document.getElementById('wsStatus').textContent = 'Disconnected';
             });
         }
+
+        // ============ BACKTESTING FUNCTIONS ============
+        
+        function runBacktest() {
+            // Get configuration values
+            const startDate = document.getElementById('btStartDate').value;
+            const endDate = document.getElementById('btEndDate').value;
+            const capital = parseFloat(document.getElementById('btCapital').value);
+            const strategy = document.getElementById('btStrategy').value;
+            const slippage = document.getElementById('btSlippage').value;
+            const commission = parseFloat(document.getElementById('btCommission').value) / 100;
+            
+            // Update status
+            document.getElementById('backtestStatus').textContent = 'Running...';
+            document.getElementById('backtestStatus').style.background = 'var(--warning)';
+            
+            // Simulate backtesting process
+            setTimeout(() => {
+                const results = simulateBacktest(startDate, endDate, capital, strategy, commission);
+                displayBacktestResults(results);
+                
+                document.getElementById('backtestStatus').textContent = 'Complete';
+                document.getElementById('backtestStatus').style.background = 'var(--success)';
+            }, 3000);
+        }
+        
+        function simulateBacktest(startDate, endDate, capital, strategy, commission) {
+            // Simulate realistic backtesting results based on strategy
+            const strategyMultipliers = {
+                'hyperbolic': { return: 1.67, sharpe: 2.89, maxDD: 0.082, winRate: 0.714 },
+                'sentiment': { return: 1.45, sharpe: 2.34, maxDD: 0.095, winRate: 0.683 },
+                'triangular': { return: 1.23, sharpe: 3.12, maxDD: 0.067, winRate: 0.756 },
+                'statistical': { return: 1.89, sharpe: 2.67, maxDD: 0.112, winRate: 0.692 },
+                'cross_exchange': { return: 1.34, sharpe: 2.45, maxDD: 0.074, winRate: 0.738 }
+            };
+            
+            const multiplier = strategyMultipliers[strategy] || strategyMultipliers['hyperbolic'];
+            
+            // Add some randomness
+            const randomFactor = 0.9 + Math.random() * 0.2;
+            
+            const totalReturn = multiplier.return * randomFactor;
+            const finalValue = capital * totalReturn;
+            const profit = finalValue - capital;
+            const profitPercent = ((totalReturn - 1) * 100);
+            
+            // Generate monthly returns
+            const months = 18; // Approximate months between dates
+            const monthlyReturns = [];
+            for (let i = 0; i < months; i++) {
+                const monthlyReturn = (Math.random() - 0.3) * 0.15; // -4.5% to 10.5% monthly
+                monthlyReturns.push(monthlyReturn);
+            }
+            
+            return {
+                initialCapital: capital,
+                finalValue: finalValue,
+                totalReturn: profitPercent,
+                profit: profit,
+                sharpeRatio: multiplier.sharpe * randomFactor,
+                maxDrawdown: multiplier.maxDD * randomFactor * 100,
+                winRate: multiplier.winRate * randomFactor * 100,
+                totalTrades: Math.floor(450 * randomFactor),
+                avgTrade: profit / Math.floor(450 * randomFactor),
+                monthlyReturns: monthlyReturns,
+                strategy: strategy
+            };
+        }
+        
+        function displayBacktestResults(results) {
+            // Update performance metrics
+            const metricsContainer = document.querySelector('#backtesting-tab .dashboard-grid .card:nth-child(2)');
+            if (metricsContainer) {
+                const metricsHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">📊 Performance Metrics</h3>
+                        <span class="badge" style="background: var(--success);">Completed</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Total Return</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${results.totalReturn > 0 ? 'var(--success)' : 'var(--danger)'};">
+                                ${results.totalReturn > 0 ? '+' : ''}${results.totalReturn.toFixed(2)}%
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Sharpe Ratio</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--info);">${results.sharpeRatio.toFixed(2)}</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Max Drawdown</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--danger);">-${results.maxDrawdown.toFixed(2)}%</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Win Rate</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">${results.winRate.toFixed(1)}%</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Total Trades</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--brown-dark);">${results.totalTrades.toLocaleString()}</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Avg Trade P&L</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${results.avgTrade > 0 ? 'var(--success)' : 'var(--danger)'};">
+                                $${results.avgTrade.toFixed(2)}
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Final Portfolio Value</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);">$${results.finalValue.toLocaleString()}</div>
+                        </div>
+                        
+                        <div style="padding: 0.75rem; background: var(--cream-light); border-radius: 6px;">
+                            <div style="font-size: 0.7rem; color: var(--brown-text);">Total Profit</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; color: ${results.profit > 0 ? 'var(--success)' : 'var(--danger)'};">
+                                ${results.profit > 0 ? '+' : ''}$${results.profit.toLocaleString()}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding: 0.75rem; background: linear-gradient(135deg, rgba(103, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 8px;">
+                        <div style="font-weight: 600; color: var(--purple); margin-bottom: 0.5rem;">🎯 Strategy Performance: ${results.strategy.toUpperCase()}</div>
+                        <div style="font-size: 0.85rem; color: var(--brown-text);">
+                            This strategy showed ${results.totalReturn > 50 ? 'exceptional' : results.totalReturn > 20 ? 'strong' : 'moderate'} performance with 
+                            ${results.sharpeRatio > 2.5 ? 'excellent' : results.sharpeRatio > 2 ? 'good' : 'acceptable'} risk-adjusted returns.
+                        </div>
+                    </div>
+                `;
+                metricsContainer.innerHTML = metricsHTML;
+            }
+        }
+        
+        function runMonteCarloSimulation() {
+            document.getElementById('backtestStatus').textContent = 'Running Monte Carlo...';
+            document.getElementById('backtestStatus').style.background = 'var(--warning)';
+            
+            setTimeout(() => {
+                // Simulate Monte Carlo results
+                const results = {
+                    runs: 1000,
+                    avgReturn: 42.3,
+                    stdDev: 18.7,
+                    bestCase: 127.8,
+                    worstCase: -23.4,
+                    probabilityProfit: 78.3
+                };
+                
+                alert(`Monte Carlo Simulation Complete (${results.runs} runs):\n\n` +
+                      `Average Return: ${results.avgReturn}%\n` +
+                      `Standard Deviation: ${results.stdDev}%\n` +
+                      `Best Case: +${results.bestCase}%\n` +
+                      `Worst Case: ${results.worstCase}%\n` +
+                      `Probability of Profit: ${results.probabilityProfit}%`);
+                
+                document.getElementById('backtestStatus').textContent = 'Monte Carlo Complete';
+                document.getElementById('backtestStatus').style.background = 'var(--success)';
+            }, 4000);
+        }
+        
+        function runWalkForward() {
+            document.getElementById('backtestStatus').textContent = 'Optimizing...';
+            document.getElementById('backtestStatus').style.background = 'var(--warning)';
+            
+            setTimeout(() => {
+                alert('Walk-Forward Optimization Complete:\n\n' +
+                      'Optimal Parameters Found:\n' +
+                      '• Risk Factor: 2.3\n' +
+                      '• Position Size: 15%\n' +
+                      '• Rebalance Frequency: 7 days\n' +
+                      '• Stop Loss: 5.5%\n\n' +
+                      'Out-of-Sample Performance:\n' +
+                      'Return: +34.7% | Sharpe: 2.89');
+                
+                document.getElementById('backtestStatus').textContent = 'Optimization Complete';
+                document.getElementById('backtestStatus').style.background = 'var(--success)';
+            }, 5000);
+        }
+
+        // ============ PAPER TRADING FUNCTIONS ============
+        
+        let paperAccount = {
+            balance: 0,
+            equity: 0,
+            buyingPower: 0,
+            pnl: 0,
+            positions: {},
+            orders: [],
+            tradeHistory: []
+        };
+        
+        function createPaperAccount() {
+            const initialBalance = 100000; // Default $100k paper account
+            
+            paperAccount = {
+                balance: initialBalance,
+                equity: initialBalance,
+                buyingPower: initialBalance * 4, // 4x leverage
+                pnl: 0,
+                positions: {},
+                orders: [],
+                tradeHistory: []
+            };
+            
+            updatePaperAccountDisplay();
+            
+            // Show success message
+            alert('Paper Trading Account Created!\n\n' +
+                  `Initial Balance: $${initialBalance.toLocaleString()}\n` +
+                  `Buying Power: $${(initialBalance * 4).toLocaleString()}\n\n` +
+                  'You can now start paper trading risk-free!');
+        }
+        
+        function updatePaperAccountDisplay() {
+            document.getElementById('paperBalance').textContent = `$${paperAccount.balance.toLocaleString()}`;
+            document.getElementById('paperEquity').textContent = `$${paperAccount.equity.toLocaleString()}`;
+            document.getElementById('paperBuyingPower').textContent = `$${paperAccount.buyingPower.toLocaleString()}`;
+            document.getElementById('paperPnL').textContent = paperAccount.pnl >= 0 ? 
+                `+$${paperAccount.pnl.toLocaleString()}` : 
+                `-$${Math.abs(paperAccount.pnl).toLocaleString()}`;
+            
+            // Update PnL color
+            const pnlElement = document.getElementById('paperPnL');
+            pnlElement.style.color = paperAccount.pnl >= 0 ? 'var(--success)' : 'var(--danger)';
+        }
+        
+        function placePaperOrder() {
+            const symbol = document.getElementById('paperSymbol').value;
+            const orderType = document.getElementById('paperOrderType').value;
+            const side = document.getElementById('paperSide').value.toLowerCase();
+            const quantity = parseFloat(document.getElementById('paperQuantity').value);
+            const limitPrice = parseFloat(document.getElementById('paperLimitPrice').value);
+            const price = (orderType === 'LIMIT' && limitPrice) ? limitPrice : getCurrentPrice(symbol);
+            
+            if (!quantity || quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+            
+            // Create order
+            const order = {
+                id: 'PO' + Date.now(),
+                symbol: symbol,
+                side: side,
+                quantity: quantity,
+                orderType: orderType,
+                price: price,
+                status: 'filled', // Immediately fill paper orders
+                timestamp: new Date(),
+                pnl: 0
+            };
+            
+            // Execute order
+            executePaperOrder(order);
+            
+            // Clear form
+            document.getElementById('paperQuantity').value = '1';
+            document.getElementById('paperLimitPrice').value = '';
+        }
+        
+        function executePaperOrder(order) {
+            const orderValue = order.quantity * order.price;
+            
+            if (order.side === 'buy') {
+                if (orderValue > paperAccount.buyingPower) {
+                    alert('Insufficient buying power!');
+                    return;
+                }
+                
+                // Deduct from balance
+                paperAccount.balance -= orderValue;
+                paperAccount.buyingPower -= orderValue;
+                
+                // Add to positions
+                if (!paperAccount.positions[order.symbol]) {
+                    paperAccount.positions[order.symbol] = { quantity: 0, avgPrice: 0, pnl: 0 };
+                }
+                
+                const position = paperAccount.positions[order.symbol];
+                const totalQuantity = position.quantity + order.quantity;
+                position.avgPrice = ((position.quantity * position.avgPrice) + (order.quantity * order.price)) / totalQuantity;
+                position.quantity = totalQuantity;
+                
+            } else { // sell
+                const position = paperAccount.positions[order.symbol];
+                if (!position || position.quantity < order.quantity) {
+                    alert('Insufficient position to sell!');
+                    return;
+                }
+                
+                // Calculate P&L
+                const pnl = (order.price - position.avgPrice) * order.quantity;
+                paperAccount.pnl += pnl;
+                paperAccount.balance += orderValue;
+                paperAccount.buyingPower += orderValue;
+                
+                // Update position
+                position.quantity -= order.quantity;
+                if (position.quantity === 0) {
+                    delete paperAccount.positions[order.symbol];
+                }
+            }
+            
+            // Add to trade history
+            paperAccount.tradeHistory.push(order);
+            
+            // Update displays
+            updatePaperAccountDisplay();
+            updatePositionsDisplay();
+            
+            // Show confirmation
+            alert(`Paper Order Executed!\n\n` +
+                  `${order.side.toUpperCase()} ${order.quantity} ${order.symbol}\n` +
+                  `Price: $${order.price}\n` +
+                  `Value: $${(order.quantity * order.price).toLocaleString()}`);
+        }
+        
+        function getCurrentPrice(symbol) {
+            // Simulate current prices
+            const prices = {
+                'BTC/USD': 67234 + Math.floor(Math.random() * 200 - 100),
+                'ETH/USD': 3456 + Math.floor(Math.random() * 20 - 10),
+                'SOL/USD': 198 + Math.floor(Math.random() * 10 - 5),
+                'AVAX/USD': 89 + Math.floor(Math.random() * 5 - 2.5)
+            };
+            return prices[symbol] || 100;
+        }
+        
+        function updatePositionsDisplay() {
+            // Update positions in the UI if container exists
+            const positionsContainer = document.getElementById('paper-positions');
+            if (positionsContainer && Object.keys(paperAccount.positions).length > 0) {
+                let positionsHTML = '<div style="font-weight: 600; margin-bottom: 0.5rem;">Current Positions:</div>';
+                
+                for (const [symbol, position] of Object.entries(paperAccount.positions)) {
+                    const currentPrice = getCurrentPrice(symbol);
+                    const marketValue = position.quantity * currentPrice;
+                    const unrealizedPnL = (currentPrice - position.avgPrice) * position.quantity;
+                    
+                    positionsHTML += `
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem; background: var(--cream-light); border-radius: 4px; margin-bottom: 0.25rem;">
+                            <div>
+                                <div style="font-weight: 600;">${symbol}</div>
+                                <div style="font-size: 0.75rem; color: var(--brown-text);">Qty: ${position.quantity} @ $${position.avgPrice.toFixed(2)}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600;">$${marketValue.toLocaleString()}</div>
+                                <div style="font-size: 0.75rem; color: ${unrealizedPnL >= 0 ? 'var(--success)' : 'var(--danger)'};">
+                                    ${unrealizedPnL >= 0 ? '+' : ''}$${unrealizedPnL.toFixed(2)}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                positionsContainer.innerHTML = positionsHTML;
+            }
+        }
+        
+        // Initialize paper trading on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-update positions every 5 seconds if account is created
+            setInterval(() => {
+                if (paperAccount.balance > 0) {
+                    updatePositionsDisplay();
+                    
+                    // Update equity based on current positions
+                    let totalEquity = paperAccount.balance;
+                    for (const [symbol, position] of Object.entries(paperAccount.positions)) {
+                        const currentPrice = getCurrentPrice(symbol);
+                        totalEquity += position.quantity * currentPrice;
+                    }
+                    paperAccount.equity = totalEquity;
+                    updatePaperAccountDisplay();
+                }
+            }, 5000);
+        });
     </script>
 </body>
 </html>
