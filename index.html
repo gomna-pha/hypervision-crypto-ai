@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- AI Assistant Update: 2025-10-03 00:15:00 UTC - GitHub Pages Deployment -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,38 +12,17 @@
             theme: {
                 extend: {
                     colors: {
-                        // PDF-based Professional Color Scheme
-                        primary: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a'
-                        },
-                        accent: {
-                            50: '#ecfdf5',
-                            100: '#d1fae5',
-                            200: '#a7f3d0',
-                            300: '#6ee7b7',
-                            400: '#34d399',
-                            500: '#10b981',
-                            600: '#059669',
-                            700: '#047857',
-                            800: '#065f46',
-                            900: '#064e3b'
-                        },
-                        warning: {
-                            500: '#f59e0b',
-                            600: '#d97706'
-                        },
-                        danger: {
-                            500: '#ef4444',
-                            600: '#dc2626'
+                        cream: {
+                            50: '#fefbf3',
+                            100: '#fdf6e3',
+                            200: '#f5e6d3',
+                            300: '#e8dcc7',
+                            400: '#d4c4a8',
+                            500: '#c0ac89',
+                            600: '#a08968',
+                            700: '#8b7355',
+                            800: '#6d5d48',
+                            900: '#5a4d3b'
                         }
                     }
                 }
@@ -52,317 +30,87 @@
         }
     </script>
     <style>
-        /* PDF-Inspired Professional Design System */
         .gradient-bg {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+            background: linear-gradient(135deg, #fefbf3 0%, #f5e6d3 40%, #e8dcc7 100%);
         }
-        
         .glass-effect {
-            background: rgba(248, 250, 252, 0.95);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.05);
-        }
-        
-        .professional-header {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border-bottom: 1px solid rgba(148, 163, 184, 0.15);
-            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-        }
-        
-        .professional-main {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-            min-height: 100vh;
-        }
-        
-        .trading-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
-            transition: all 0.3s ease;
-        }
-        
-        .trading-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.12);
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-        
-        .profit-positive {
-            color: #10b981;
-            background: rgba(16, 185, 129, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-        
-        .profit-negative {
-            color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-weight: 600;
-        }
-        
-        .account-tier {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-        }
-        
-        .live-indicator {
-            width: 8px;
-            height: 8px;
-            background: #10b981;
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        
-        .market-data-card {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.3);
-        }
-        
-        .performance-metric {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(253, 246, 227, 0.95);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 16px;
-            text-align: center;
+            border: 1px solid rgba(232, 220, 199, 0.3);
+        }
+        .cream-panel {
+            background: linear-gradient(135deg, #fefbf3 0%, #fdf6e3 100%);
+            border: 1px solid rgba(232, 220, 199, 0.3);
+        }
+        .cream-card {
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
+            border: 1px solid rgba(212, 196, 168, 0.3);
+        }
+        .cream-dark {
+            background: linear-gradient(135deg, #e8dcc7 0%, #d4c4a8 100%);
+        }
+        .brown-accent {
+            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
+            color: #fefbf3;
         }
         .hyperbolic-space {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #10b981;
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.3);
+            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
+            color: #fefbf3;
         }
-        
         .poincare-disk {
-            width: 240px;
-            height: 240px;
+            width: 200px;
+            height: 200px;
             border-radius: 50%;
-            border: 3px solid #10b981;
+            border: 2px solid #c0ac89;
             position: relative;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(15, 23, 42, 0.95) 70%);
-            box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+            background: radial-gradient(circle, rgba(192, 172, 137, 0.1) 0%, transparent 70%);
         }
-        
         .data-fusion-point {
             position: absolute;
-            width: 12px;
-            height: 12px;
-            background: #10b981;
+            width: 8px;
+            height: 8px;
+            background: #8b7355;
             border-radius: 50%;
-            border: 2px solid #0f172a;
             animation: pulse 2s infinite;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.5);
         }
         .opportunity-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
+            border-left: 4px solid #8b7355;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
-            border-radius: 8px;
         }
-        
         .opportunity-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.15);
-            background: linear-gradient(135ds, #f8fafc 0%, #f1f5f9 100%);
-            border-left-width: 6px;
-        }
-        
-        .market-feed {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #10b981;
-            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', monospace;
-            font-size: 14px;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 8px;
-            padding: 16px;
-        }
-        
-        .execute-btn {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
-            border: none;
-            font-weight: 600;
-            padding: 12px 24px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        
-        .execute-btn:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 8px 25px rgba(139, 115, 85, 0.2);
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%);
         }
-        
-        .trading-signal {
-            padding: 6px 12px;
-            border-radius: 20px;
+        .market-feed {
+            background: linear-gradient(135deg, #5a4d3b 0%, #4a3f32 100%);
+            color: #fefbf3;
+            font-family: 'Monaco', 'Menlo', monospace;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
-        
-        .signal-buy {
-            background: rgba(16, 185, 129, 0.15);
-            color: #059669;
-            border: 1px solid rgba(16, 185, 129, 0.3);
+        .execute-btn {
+            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
+            color: #fefbf3;
+            box-shadow: 0 4px 14px 0 rgba(139, 115, 85, 0.39);
         }
-        
-        .signal-sell {
-            background: rgba(239, 68, 68, 0.15);
-            color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-        
-        .signal-hold {
-            background: rgba(245, 158, 11, 0.15);
-            color: #d97706;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
+        .execute-btn:hover {
+            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
+            transform: translateY(-1px);
             box-shadow: 0 6px 20px rgba(139, 115, 85, 0.5);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
         }
-        
-        /* PDF-Inspired Professional AI Assistant Styling */
-        .ai-chat-container {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
-            border-radius: 16px;
-        }
-        
-        .ai-message-user {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border-radius: 18px 18px 4px 18px;
-            padding: 12px 18px;
-            margin-left: 25%;
-            box-shadow: 0 4px 16px rgba(16, 185, 129, 0.25);
-            font-weight: 500;
-        }
-        
-        .ai-message-bot {
-            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            color: #334155;
-            border-radius: 18px 18px 18px 4px;
-            padding: 12px 18px;
-            margin-right: 25%;
-            border-left: 4px solid #10b981;
-            box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
-            font-weight: 500;
-        }
-        
-        .professional-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(148, 163, 184, 0.12);
-            border-radius: 16px;
-            box-shadow: 0 6px 24px rgba(15, 23, 42, 0.06);
-            transition: all 0.3s ease;
-        }
-        
-        .professional-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.12);
-            border-color: rgba(16, 185, 129, 0.2);
-        }
-        
-        .dashboard-stat {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-        
-        .dashboard-stat:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
-        }
-        
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #0f172a;
-            line-height: 1;
-        }
-        
-        .stat-label {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 8px;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-out;
-        }
-        
-        /* PDF-Inspired Tab Styling */
-        .tab-btn {
-            background: transparent;
-            border: none;
-            border-bottom: 3px solid transparent;
-            color: #64748b;
-            font-weight: 600;
-            transition: all 0.25s ease;
-            padding: 16px 24px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .tab-btn:hover {
-            color: #334155;
-            border-bottom-color: rgba(16, 185, 129, 0.3);
-            transform: translateY(-1px);
-        }
-        
-        .tab-btn.active {
-            color: #10b981;
-            border-bottom-color: #10b981;
-            background: rgba(16, 185, 129, 0.05);
-        }
         .metric-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(148, 163, 184, 0.12);
-            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
-            border-radius: 16px;
+            background: linear-gradient(135deg, #fefbf3 0%, #faf5ed 100%);
+            transition: transform 0.2s;
+            border: 1px solid rgba(232, 220, 199, 0.2);
         }
         .metric-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
-            border-color: rgba(16, 185, 129, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.1);
         }
         .portfolio-section {
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
@@ -381,95 +129,43 @@
             background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
             box-shadow: 0 6px 20px rgba(139, 115, 85, 0.15);
         }
-        .ai-chat-container {
-            background: linear-gradient(135deg, #fefbf3 0%, #fdf6e3 100%);
-            border: 2px solid rgba(192, 172, 137, 0.3);
-            max-height: 600px;
-        }
-        .ai-message {
-            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%);
-            border-left: 3px solid #8b7355;
-        }
-        .user-message {
-            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
-            color: #fefbf3;
-        }
-        .ai-input {
-            background: linear-gradient(135deg, #fefbf3 0%, #fdf6e3 100%);
-            border: 2px solid rgba(212, 196, 168, 0.5);
-        }
-        .ai-input:focus {
-            border-color: #8b7355;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.1);
-        }
-        .floating-assistant {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-        .assistant-bubble {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.3);
-            color: #fefbf3;
-        }
-        .assistant-bubble:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 115, 85, 0.4);
-        }
-        .quick-actions {
-            background: linear-gradient(135deg, #e8dcc7 0%, #d4c4a8 100%);
-            border: 1px solid rgba(192, 172, 137, 0.4);
-        }
-        .quick-action-btn {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
-            border: 1px solid rgba(212, 196, 168, 0.3);
-            transition: all 0.2s ease;
-        }
-        .quick-action-btn:hover {
-            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%);
-            transform: translateY(-1px);
-        }
     </style>
 </head>
-<body class="professional-main min-h-screen font-sans antialiased text-primary-800">
+<body class="gradient-bg min-h-screen">
     <div id="app" class="min-h-screen">
         <!-- Professional Header with Original Cream Theme -->
-        <div class="professional-header shadow-lg">
+        <div class="glass-effect shadow-2xl border-b border-cream-300">
             <div class="max-w-7xl mx-auto px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-3">
-                            <div class="w-16 h-16 bg-gradient-to-r from-accent-500 to-accent-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                <span class="text-white font-bold text-2xl">G</span>
+                            <div class="w-12 h-12 brown-accent rounded-xl flex items-center justify-center shadow-lg">
+                                <span class="text-cream-50 font-bold text-xl">G</span>
                             </div>
                             <div>
-                                <h1 class="text-3xl font-bold bg-gradient-to-r from-primary-800 via-primary-700 to-primary-800 bg-clip-text text-transparent">
+                                <h1 class="text-2xl font-bold bg-gradient-to-r from-cream-800 via-cream-700 to-cream-800 bg-clip-text text-transparent">
                                     GOMNA AI Trading
                                 </h1>
-                                <p class="text-sm text-primary-500 font-medium uppercase tracking-wide">Hyperbolic CNN Quantitative Trading Platform</p>
+                                <p class="text-sm text-cream-700 font-medium">Professional Arbitrage & Hyperbolic Analytics</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <div class="flex items-center bg-gradient-to-r from-accent-500 to-accent-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                            <span class="live-indicator"></span>
-                            LIVE TRADING
+                        <div class="bg-cream-200 text-cream-800 px-3 py-1 rounded-full text-sm font-semibold border border-cream-400">
+                            🟢 LIVE TRADING
                         </div>
-                        <div class="text-sm text-primary-600">
-                            Portfolio Value: <span class="font-bold text-2xl text-primary-800 portfolio-value">$2,855,020</span>
-                            <div class="text-xs text-accent-600 font-semibold mtd-change">+12.4% MTD</div>
+                        <div class="text-sm text-cream-700">
+                            Balance: <span class="font-bold text-cream-900" id="portfolio-balance">$2,847,563</span>
                         </div>
-                        <button class="execute-btn px-6 py-3 rounded-lg font-semibold transition-all shadow-lg" onclick="toggleModelTransparency()">
+                        <button class="brown-accent px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all shadow-md" onclick="openAIAssistant()">
+                            <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
+                            AI Assistant
+                        </button>
+                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all shadow-md" onclick="openMicrostructure()">
+                            <i data-lucide="microscope" class="w-4 h-4 inline mr-2"></i>
+                            🔬 Microstructure
+                        </button>
+                        <button class="brown-accent px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all shadow-md" onclick="toggleModelTransparency()">
                             <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
                             Model Transparency
                         </button>
@@ -482,25 +178,20 @@
         <div class="glass-effect">
             <div class="max-w-7xl mx-auto px-6 py-3">
                 <div class="flex gap-1">
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200 active" data-tab="trading" onclick="switchTab('trading')">
+                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600" data-tab="trading" onclick="switchTab('trading')">
                         Trading Dashboard
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="portfolio" onclick="switchTab('portfolio')">
+                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="portfolio" onclick="switchTab('portfolio')">
                         Portfolio
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="markets" onclick="switchTab('markets')">
+                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="markets" onclick="switchTab('markets')">
                         Global Markets
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="transparency" onclick="switchTab('transparency')">
+                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="transparency" onclick="switchTab('transparency')">
                         Model Transparency
                     </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="assistant" onclick="switchTab('assistant')">
-                        <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
-                        AI Assistant
-                    </button>
-                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="microstructure" onclick="switchTab('microstructure')">
-                        <i data-lucide="bar-chart-3" class="w-4 h-4 inline mr-2"></i>
-                        🔬 Microstructure
+                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="assistant" onclick="switchTab('assistant')">
+                        🤖 AI Assistant
                     </button>
                 </div>
             </div>
@@ -593,8 +284,8 @@
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-3 h-3 bg-cream-600 rounded-full animate-pulse"></div>
-                                    <h2 class="text-2xl font-bold text-primary-800">🎯 Live Arbitrage Opportunities</h2>
-                                    <span class="bg-accent-500 text-white px-3 py-1 rounded-full text-xs font-bold">6 ACTIVE</span>
+                                    <h2 class="text-xl font-bold text-cream-900">🎯 Live Arbitrage Opportunities</h2>
+                                    <span class="bg-cream-200 text-cream-800 px-2 py-1 rounded-full text-xs font-semibold">6 ACTIVE</span>
                                 </div>
                                 <div class="text-sm text-cream-700">
                                     Last scan: <span id="last-scan-time" class="font-semibold">12:44:23</span>
@@ -640,7 +331,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('cross-exchange-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('cross-exchange-1')">
+                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('cross-exchange-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -683,7 +374,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('triangular-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('triangular-1')">
+                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('triangular-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -726,7 +417,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('statistical-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('statistical-1')">
+                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('statistical-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -771,86 +462,30 @@
                         </div>
                     </div>
 
-                    <!-- Right Panel: Live Market Data & Hyperbolic Space -->
-                    <div class="col-span-3 space-y-4">
-                        <!-- Live Market Data Feed -->
-                        <div class="market-data-card rounded-lg p-4">
-                            <div class="flex items-center gap-2 mb-4">
-                                <div class="w-2 h-2 bg-accent-400 rounded-full animate-pulse"></div>
-                                <h3 class="font-bold text-white text-sm">LIVE MARKET DATA</h3>
-                                <div class="ml-auto text-xs font-mono text-accent-300 live-timestamp">--:--:--</div>
-                            </div>
-                            
-                            <div class="space-y-2">
-                                <div id="live-market-btc" class="flex justify-between items-center p-2 bg-primary-800 rounded">
-                                    <div>
-                                        <span class="text-white font-semibold">BTC/USD</span>
-                                        <span class="trading-signal signal-buy ml-2">BUY</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-accent-400 font-mono" id="btc-price">$67,561</div>
-                                        <div class="text-xs text-accent-300" id="btc-change">+0.45%</div>
-                                    </div>
-                                </div>
-                                
-                                <div id="live-market-eth" class="flex justify-between items-center p-2 bg-primary-800 rounded">
-                                    <div>
-                                        <span class="text-white font-semibold">ETH/USD</span>
-                                        <span class="trading-signal signal-hold ml-2">HOLD</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-accent-400 font-mono" id="eth-price">$3,450</div>
-                                        <div class="text-xs text-accent-300" id="eth-change">+0.44%</div>
-                                    </div>
-                                </div>
-                                
-                                <div id="live-market-sol" class="flex justify-between items-center p-2 bg-primary-800 rounded">
-                                    <div>
-                                        <span class="text-white font-semibold">SOL/USD</span>
-                                        <span class="trading-signal signal-buy ml-2">BUY</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-accent-400 font-mono" id="sol-price">$206</div>
-                                        <div class="text-xs text-accent-300" id="sol-change">+4.56%</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-4 pt-3 border-t border-primary-700">
-                                <div class="text-xs text-accent-200 mb-2">Hyperbolic Processing Status:</div>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex-1 bg-primary-800 rounded-full h-2">
-                                        <div class="bg-accent-500 h-2 rounded-full w-4/5 animate-pulse"></div>
-                                    </div>
-                                    <span class="text-xs text-accent-300">95.6%</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Hyperbolic Space Engine -->
-                        <div class="hyperbolic-space rounded-lg p-6 shadow-lg">
+                    <!-- Right Panel: Hyperbolic Space & Multimodal Data Fusion -->
+                    <div class="col-span-3">
+                        <div class="hyperbolic-space rounded-lg p-6 h-full shadow-lg">
                             <div class="flex items-center gap-3 mb-6">
-                                <div class="w-3 h-3 bg-accent-400 rounded-full animate-pulse"></div>
-                                <h3 class="font-bold text-white">🔴 LIVE HYPERBOLIC SPACE ENGINE</h3>
-                                <div class="ml-auto text-xs font-mono text-accent-300 live-timestamp">--:--:--</div>
+                                <div class="w-3 h-3 bg-cream-400 rounded-full animate-pulse"></div>
+                                <h3 class="font-bold text-cream-200">HYPERBOLIC SPACE ENGINE</h3>
                             </div>
                             
                             <div class="text-center mb-6">
-                                <div class="text-sm text-accent-300 mb-2 flex items-center justify-center gap-2">
-                                    <span class="live-indicator"></span>
-                                    LIVE Poincaré Disk Model
-                                </div>
+                                <div class="text-sm text-cream-400 mb-2">Poincaré Disk Model</div>
                                 <div class="poincare-disk mx-auto relative">
-                                    <!-- Real-time data fusion points will be populated by JavaScript -->
+                                    <!-- Data fusion points representing multimodal data -->
+                                    <div class="data-fusion-point" style="top: 30%; left: 40%;"></div>
+                                    <div class="data-fusion-point" style="top: 60%; left: 70%; background: #c0ac89;"></div>
+                                    <div class="data-fusion-point" style="top: 50%; left: 30%; background: #a08968;"></div>
+                                    <div class="data-fusion-point" style="top: 20%; left: 65%; background: #d4c4a8;"></div>
+                                    <div class="data-fusion-point" style="top: 75%; left: 45%; background: #8b7355;"></div>
+                                    
                                     <!-- Geodesic paths -->
                                     <svg class="absolute inset-0 w-full h-full">
-                                        <path d="M 40 60 Q 100 100 140 120" stroke="#10b981" stroke-width="2" fill="none" opacity="0.6"/>
-                                        <path d="M 60 40 Q 120 80 100 140" stroke="#10b981" stroke-width="2" fill="none" opacity="0.6"/>
-                                        <path d="M 80 80 Q 60 120 120 160" stroke="#10b981" stroke-width="2" fill="none" opacity="0.6"/>
+                                        <path d="M 40 60 Q 100 100 140 120" stroke="#c0ac89" stroke-width="1" fill="none" opacity="0.8"/>
+                                        <path d="M 60 40 Q 120 80 100 140" stroke="#8b7355" stroke-width="1" fill="none" opacity="0.8"/>
+                                        <path d="M 80 80 Q 60 120 120 160" stroke="#a08968" stroke-width="1" fill="none" opacity="0.8"/>
                                     </svg>
-                                </div>
-                                <div class="text-xs text-accent-200 mt-2">
-                                    Real-time market data mapped to hyperbolic coordinates
                                 </div>
                             </div>
 
@@ -1069,31 +704,53 @@
                                 <div class="index-card p-3 rounded-lg">
                                     <div class="flex justify-between items-center">
                                         <span class="font-semibold text-cream-900">Bitcoin (BTC)</span>
-                                        <span class="font-bold text-cream-800">$67,234</span>
+                                        <span class="font-bold text-cream-800" id="global-btc-price">$67,234</span>
                                     </div>
                                     <div class="flex justify-between text-sm mt-1">
                                         <span class="text-cream-600">24h Change</span>
-                                        <span class="text-cream-700">+2.34%</span>
+                                        <span class="text-cream-700" id="global-btc-change">+2.34%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs mt-1">
+                                        <span class="text-cream-500">Volume:</span>
+                                        <span class="text-cream-600" id="global-btc-volume">$24.5B</span>
                                     </div>
                                 </div>
                                 <div class="index-card p-3 rounded-lg">
                                     <div class="flex justify-between items-center">
                                         <span class="font-semibold text-cream-900">Ethereum (ETH)</span>
-                                        <span class="font-bold text-cream-800">$3,456</span>
+                                        <span class="font-bold text-cream-800" id="global-eth-price">$3,456</span>
                                     </div>
                                     <div class="flex justify-between text-sm mt-1">
                                         <span class="text-cream-600">24h Change</span>
-                                        <span class="text-cream-700">+1.87%</span>
+                                        <span class="text-cream-700" id="global-eth-change">+1.87%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs mt-1">
+                                        <span class="text-cream-500">Volume:</span>
+                                        <span class="text-cream-600" id="global-eth-volume">$12.3B</span>
                                     </div>
                                 </div>
                                 <div class="index-card p-3 rounded-lg">
                                     <div class="flex justify-between items-center">
                                         <span class="font-semibold text-cream-900">Solana (SOL)</span>
-                                        <span class="font-bold text-cream-800">$123</span>
+                                        <span class="font-bold text-cream-800" id="global-sol-price">$123</span>
                                     </div>
                                     <div class="flex justify-between text-sm mt-1">
                                         <span class="text-cream-600">24h Change</span>
-                                        <span class="text-cream-700">+4.56%</span>
+                                        <span class="text-cream-700" id="global-sol-change">+4.56%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs mt-1">
+                                        <span class="text-cream-500">Volume:</span>
+                                        <span class="text-cream-600" id="global-sol-volume">$1.8B</span>
+                                    </div>
+                                </div>
+                                <div class="index-card p-3 rounded-lg">
+                                    <div class="flex justify-between items-center">
+                                        <span class="font-semibold text-cream-900">Cardano (ADA)</span>
+                                        <span class="font-bold text-cream-800" id="global-ada-price">$0.42</span>
+                                    </div>
+                                    <div class="flex justify-between text-sm mt-1">
+                                        <span class="text-cream-600">24h Change</span>
+                                        <span class="text-cream-700" id="global-ada-change">+1.23%</span>
                                     </div>
                                 </div>
                             </div>
@@ -1251,6 +908,88 @@
                 </div>
             </div>
 
+            <!-- AI Assistant Tab -->
+            <div id="assistant-tab" class="tab-content hidden">
+                <div class="cream-panel rounded-lg shadow-lg p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-cream-900">🤖 AI Trading Assistant</h2>
+                        <div class="flex items-center gap-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-sm text-cream-700">Online & Learning</span>
+                        </div>
+                    </div>
+
+                    <!-- Chat Interface -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="cream-card rounded-lg p-4 h-96 overflow-y-auto mb-4" id="assistant-chat">
+                                <div class="space-y-4">
+                                    <div class="flex gap-3">
+                                        <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <span class="text-cream-50 text-sm">🤖</span>
+                                        </div>
+                                        <div class="cream-panel p-3 rounded-lg flex-1">
+                                            <p class="text-cream-800">Welcome! I'm analyzing your portfolio and current market conditions. Here are some insights:</p>
+                                            <ul class="list-disc list-inside text-sm text-cream-700 mt-2">
+                                                <li>Your BTC position shows strong momentum (+2.8%)</li>
+                                                <li>ETH correlation suggests potential arbitrage opportunity</li>
+                                                <li>Market volatility is optimal for our strategies</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <input type="text" id="assistant-input" placeholder="Ask about markets, strategies, or portfolio optimization..." 
+                                       class="flex-1 cream-card border border-cream-400 rounded-lg px-4 py-2 text-cream-800">
+                                <button onclick="sendAssistantMessage()" class="brown-accent px-4 py-2 rounded-lg">
+                                    <i data-lucide="send" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- AI Analysis Panel -->
+                        <div class="space-y-4">
+                            <div class="cream-card rounded-lg p-4">
+                                <h3 class="font-bold text-cream-900 mb-3">🧠 Current Analysis</h3>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-cream-700">Market Sentiment:</span>
+                                        <span class="font-semibold text-green-600" id="ai-sentiment">Bullish</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-cream-700">Volatility Forecast:</span>
+                                        <span class="font-semibold text-cream-900" id="ai-volatility">Medium</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-cream-700">Optimal Strategy:</span>
+                                        <span class="font-semibold text-cream-900" id="ai-strategy">Cross-Exchange</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="cream-card rounded-lg p-4">
+                                <h3 class="font-bold text-cream-900 mb-3">🎯 Recommendations</h3>
+                                <div class="space-y-2 text-xs" id="ai-recommendations">
+                                    <div class="bg-cream-200 p-2 rounded">Consider increasing BTC allocation by 2%</div>
+                                    <div class="bg-cream-200 p-2 rounded">Monitor ETH/BTC ratio for mean reversion</div>
+                                    <div class="bg-cream-200 p-2 rounded">Reduce exposure during US market open</div>
+                                </div>
+                            </div>
+
+                            <div class="cream-card rounded-lg p-4">
+                                <h3 class="font-bold text-cream-900 mb-3">⚠️ Risk Alerts</h3>
+                                <div class="space-y-1 text-xs" id="ai-alerts">
+                                    <div class="text-yellow-600">• High correlation detected in crypto pairs</div>
+                                    <div class="text-green-600">• Portfolio within risk limits</div>
+                                    <div class="text-blue-600">• Good liquidity conditions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Model Transparency Tab -->
             <div id="transparency-tab" class="tab-content hidden">
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1385,369 +1124,200 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- AI Assistant Tab -->
-            <div id="assistant-tab" class="tab-content hidden">
-                <div class="grid grid-cols-12 gap-6">
-                    
-                    <!-- Main Chat Interface -->
-                    <div class="col-span-8">
-                        <div class="ai-chat-container rounded-lg shadow-lg p-6">
-                            <div class="flex items-center justify-between mb-6">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 brown-accent rounded-xl flex items-center justify-center">
-                                        <i data-lucide="bot" class="w-6 h-6 text-cream-50"></i>
-                                    </div>
-                                    <div>
-                                        <h2 class="text-xl font-bold text-cream-900">GOMNA AI Assistant</h2>
-                                        <p class="text-sm text-cream-700">Advanced Trading Intelligence & Analysis</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span class="text-sm text-cream-700">Online</span>
-                                </div>
-                            </div>
-
-                            <!-- Chat Messages -->
-                            <div id="chat-messages" class="space-y-4 mb-6" style="height: 400px; overflow-y: auto;">
-                                <!-- Welcome Message -->
-                                <div class="ai-message p-4 rounded-lg">
-                                    <div class="flex items-start gap-3">
-                                        <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                            <i data-lucide="bot" class="w-4 h-4 text-cream-50"></i>
-                                        </div>
-                                        <div>
-                                            <div class="font-semibold text-cream-900 mb-1">GOMNA AI</div>
-                                            <div class="text-cream-800">
-                                                Welcome to your advanced trading assistant! I can help you with:
-                                                <ul class="list-disc list-inside mt-2 space-y-1">
-                                                    <li>Real-time market analysis and insights</li>
-                                                    <li>Arbitrage opportunity evaluation</li>
-                                                    <li>Risk assessment and portfolio optimization</li>
-                                                    <li>Trading strategy recommendations</li>
-                                                    <li>Hyperbolic CNN model explanations</li>
-                                                </ul>
-                                                Ask me anything about your trading platform or market conditions!
-                                            </div>
-                                            <div class="text-xs text-cream-600 mt-2">
-                                                <i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>
-                                                Just now
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Message Input -->
-                            <div class="flex gap-3">
-                                <input 
-                                    type="text" 
-                                    id="ai-input" 
-                                    class="ai-input flex-1 px-4 py-3 rounded-lg text-cream-900 placeholder-cream-600" 
-                                    placeholder="Ask me about market conditions, trading strategies, or platform features..."
-                                    onkeypress="handleAIInput(event)"
-                                >
-                                <button 
-                                    class="brown-accent px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition-all flex items-center gap-2"
-                                    onclick="sendAIMessage()"
-                                >
-                                    <i data-lucide="send" class="w-4 h-4"></i>
-                                    Send
-                                </button>
-                            </div>
+    <!-- Enhanced Real-Time AI Assistant Chat Interface -->
+    <div id="ai-assistant-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="cream-panel rounded-lg shadow-xl w-full max-w-2xl mx-4 max-h-[80vh]">
+            <div class="p-6 border-b border-cream-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center">
+                            <span class="text-cream-50 font-bold">🤖</span>
                         </div>
+                        <h3 class="text-xl font-bold text-cream-900">GOMNA AI Assistant</h3>
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     </div>
-
-                    <!-- AI Assistant Controls & Analytics -->
-                    <div class="col-span-4 space-y-6">
-                        
-                        <!-- Quick Actions -->
-                        <div class="quick-actions rounded-lg p-4">
-                            <h3 class="font-bold text-cream-900 mb-4">Quick Analysis</h3>
-                            <div class="space-y-2">
-                                <button class="quick-action-btn w-full text-left px-3 py-2 rounded-lg text-sm text-cream-800 hover:text-cream-900" onclick="askAI('Analyze current arbitrage opportunities')">
-                                    📊 Analyze Current Opportunities
-                                </button>
-                                <button class="quick-action-btn w-full text-left px-3 py-2 rounded-lg text-sm text-cream-800 hover:text-cream-900" onclick="askAI('What is the market sentiment for BTC and ETH?')">
-                                    💰 Market Sentiment Analysis
-                                </button>
-                                <button class="quick-action-btn w-full text-left px-3 py-2 rounded-lg text-sm text-cream-800 hover:text-cream-900" onclick="askAI('Evaluate portfolio risk and suggest optimizations')">
-                                    ⚖️ Portfolio Risk Assessment
-                                </button>
-                                <button class="quick-action-btn w-full text-left px-3 py-2 rounded-lg text-sm text-cream-800 hover:text-cream-900" onclick="askAI('Explain how the Hyperbolic CNN model works')">
-                                    🧠 Hyperbolic CNN Explanation
-                                </button>
-                                <button class="quick-action-btn w-full text-left px-3 py-2 rounded-lg text-sm text-cream-800 hover:text-cream-900" onclick="askAI('What are the best trading strategies for current conditions?')">
-                                    🎯 Strategy Recommendations
-                                </button>
-                            </div>
+                    <button onclick="closeAIAssistant()" class="text-cream-700 hover:text-cream-900">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div id="chat-messages" class="h-96 overflow-y-auto mb-4 space-y-3">
+                    <div class="flex gap-3">
+                        <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                            <span class="text-cream-50 text-sm">🤖</span>
                         </div>
-
-                        <!-- AI Performance Metrics -->
-                        <div class="cream-panel rounded-lg p-4">
-                            <h3 class="font-bold text-cream-900 mb-4">AI Assistant Metrics</h3>
-                            <div class="space-y-3">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cream-700">Queries Today:</span>
-                                    <span class="font-semibold text-cream-900" id="ai-queries-count">47</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cream-700">Accuracy Rate:</span>
-                                    <span class="font-semibold text-cream-900">94.2%</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cream-700">Response Time:</span>
-                                    <span class="font-semibold text-cream-900">0.8s</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-cream-700">Model Version:</span>
-                                    <span class="font-semibold text-cream-900">v2.1.3</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Market Insights Feed -->
-                        <div class="cream-panel rounded-lg p-4">
-                            <h3 class="font-bold text-cream-900 mb-4">AI Market Insights</h3>
-                            <div class="space-y-3 text-sm" id="ai-insights-feed">
-                                <div class="border-l-3 border-cream-600 pl-3">
-                                    <div class="font-semibold text-cream-800">BTC Momentum Signal</div>
-                                    <div class="text-cream-700">Strong bullish pattern detected (+0.73 confidence)</div>
-                                    <div class="text-xs text-cream-600 mt-1">2 minutes ago</div>
-                                </div>
-                                <div class="border-l-3 border-cream-600 pl-3">
-                                    <div class="font-semibold text-cream-800">Arbitrage Alert</div>
-                                    <div class="text-cream-700">Cross-exchange opportunity: +0.18% profit</div>
-                                    <div class="text-xs text-cream-600 mt-1">5 minutes ago</div>
-                                </div>
-                                <div class="border-l-3 border-cream-600 pl-3">
-                                    <div class="font-semibold text-cream-800">Risk Warning</div>
-                                    <div class="text-cream-700">Increased volatility detected in ETH/USD</div>
-                                    <div class="text-xs text-cream-600 mt-1">8 minutes ago</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Voice Input (Future Feature) -->
-                        <div class="cream-panel rounded-lg p-4">
-                            <h3 class="font-bold text-cream-900 mb-4">Voice Commands</h3>
-                            <button class="w-full cream-card hover:bg-cream-300 px-4 py-3 rounded-lg font-semibold text-cream-800 transition-all flex items-center justify-center gap-2" onclick="toggleVoiceInput()">
-                                <i data-lucide="mic" class="w-4 h-4"></i>
-                                <span id="voice-button-text">Start Voice Input</span>
-                            </button>
-                            <p class="text-xs text-cream-600 mt-2 text-center">Say "Hey GOMNA" to activate</p>
+                        <div class="cream-card p-3 rounded-lg flex-1">
+                            <p class="text-cream-800">Hello! I'm your AI trading assistant. I can help you with:</p>
+                            <ul class="list-disc list-inside text-sm text-cream-700 mt-2">
+                                <li>Market Analysis & Insights</li>
+                                <li>Portfolio Optimization</li>
+                                <li>Risk Assessment</li>
+                                <li>Strategy Recommendations</li>
+                                <li>Real-time Market Commentary</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Market Microstructure Analytics Tab -->
-            <div id="microstructure-tab" class="tab-content hidden">
-                <div class="grid grid-cols-12 gap-6">
-                    
-                    <!-- Order Book Section -->
-                    <div class="col-span-4">
-                        <div class="trading-card p-6">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-3 h-3 bg-accent-400 rounded-full animate-pulse"></div>
-                                <h2 class="text-xl font-bold text-primary-800">📊 BTC/USD Order Book</h2>
-                                <div class="ml-auto text-xs font-mono text-primary-600 live-timestamp">--:--:--</div>
-                            </div>
-                            
-                            <!-- Order Book Display -->
-                            <div class="grid grid-cols-2 gap-4">
-                                <!-- Bids -->
-                                <div>
-                                    <div class="text-sm font-semibold text-accent-600 mb-2">Bids</div>
-                                    <div class="space-y-1 text-xs font-mono">
-                                        <div class="flex justify-between bg-accent-50 p-2 rounded">
-                                            <span id="bid-price-0" class="text-accent-600">67,234.50</span>
-                                            <span id="bid-size-0" class="text-primary-600">1.88 BTC</span>
-                                        </div>
-                                        <div class="flex justify-between bg-accent-50 p-2 rounded">
-                                            <span id="bid-price-1" class="text-accent-600">67,234.00</span>
-                                            <span id="bid-size-1" class="text-primary-600">2.86 BTC</span>
-                                        </div>
-                                        <div class="flex justify-between bg-accent-50 p-2 rounded">
-                                            <span id="bid-price-2" class="text-accent-600">67,233.50</span>
-                                            <span id="bid-size-2" class="text-primary-600">4.28 BTC</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Asks -->
-                                <div>
-                                    <div class="text-sm font-semibold text-danger-600 mb-2">Asks</div>
-                                    <div class="space-y-1 text-xs font-mono">
-                                        <div class="flex justify-between bg-danger-50 p-2 rounded">
-                                            <span id="ask-price-0" class="text-danger-600">67,235.00</span>
-                                            <span id="ask-size-0" class="text-primary-600">0.19 BTC</span>
-                                        </div>
-                                        <div class="flex justify-between bg-danger-50 p-2 rounded">
-                                            <span id="ask-price-1" class="text-danger-600">67,235.50</span>
-                                            <span id="ask-size-1" class="text-primary-600">2.78 BTC</span>
-                                        </div>
-                                        <div class="flex justify-between bg-danger-50 p-2 rounded">
-                                            <span id="ask-price-2" class="text-danger-600">67,236.00</span>
-                                            <span id="ask-size-2" class="text-primary-600">0.52 BTC</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Spread Display -->
-                            <div class="mt-4 p-3 bg-primary-50 rounded-lg text-center">
-                                <div class="text-xs text-primary-600">Spread</div>
-                                <div id="order-book-spread" class="font-mono font-bold text-primary-800">$0.50 (0.7bps)</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Execution Quality & Liquidity Metrics -->
-                    <div class="col-span-4">
-                        <!-- Execution Quality -->
-                        <div class="trading-card p-6 mb-4">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-3 h-3 bg-warning-400 rounded-full animate-pulse"></div>
-                                <h3 class="text-lg font-bold text-primary-800">⚡ Execution Quality</h3>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4 text-sm">
-                                <div class="bg-primary-50 p-3 rounded">
-                                    <div class="text-primary-600 text-xs">Avg Fill Speed:</div>
-                                    <div id="avg-fill-speed" class="font-mono font-bold text-primary-800">10.7ms</div>
-                                </div>
-                                <div class="bg-primary-50 p-3 rounded">
-                                    <div class="text-primary-600 text-xs">Price Improvement:</div>
-                                    <div id="price-improvement" class="font-mono font-bold text-accent-600">0.31bps</div>
-                                </div>
-                                <div class="bg-primary-50 p-3 rounded">
-                                    <div class="text-primary-600 text-xs">Reject Rate:</div>
-                                    <div id="reject-rate" class="font-mono font-bold text-danger-600">0.02%</div>
-                                </div>
-                                <div class="bg-primary-50 p-3 rounded">
-                                    <div class="text-primary-600 text-xs">Market Impact:</div>
-                                    <div id="market-impact" class="font-mono font-bold text-primary-800">0.12bps</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Liquidity Metrics -->
-                        <div class="trading-card p-6">
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="w-3 h-3 bg-accent-400 rounded-full animate-pulse"></div>
-                                <h3 class="text-lg font-bold text-primary-800">🌊 Liquidity Metrics</h3>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 gap-4 text-sm">
-                                <div class="bg-accent-50 p-3 rounded">
-                                    <div class="text-accent-700 text-xs">Top of Book:</div>
-                                    <div id="top-of-book" class="font-mono font-bold text-accent-800">$239K</div>
-                                </div>
-                                <div class="bg-accent-50 p-3 rounded">
-                                    <div class="text-accent-700 text-xs">5-Level Depth:</div>
-                                    <div id="five-level-depth" class="font-mono font-bold text-accent-800">$1360.2M</div>
-                                </div>
-                                <div class="bg-accent-50 p-3 rounded">
-                                    <div class="text-accent-700 text-xs">Liquidity Score:</div>
-                                    <div id="liquidity-score" class="font-mono font-bold text-accent-600">95.7/100</div>
-                                </div>
-                                <div class="bg-accent-50 p-3 rounded">
-                                    <div class="text-accent-700 text-xs">Volatility (5min):</div>
-                                    <div id="volatility-5min" class="font-mono font-bold text-primary-800">0.15%</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Multi-Exchange Comparison -->
-                    <div class="col-span-4">
-                        <div class="trading-card p-6">
-                            <div class="flex items-center gap-3 mb-6">
-                                <div class="w-3 h-3 bg-primary-400 rounded-full animate-pulse"></div>
-                                <h3 class="text-lg font-bold text-primary-800">🏢 Multi-Exchange Analysis</h3>
-                            </div>
-                            
-                            <!-- Exchange Comparison Table -->
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-xs">
-                                    <thead>
-                                        <tr class="text-primary-600 border-b">
-                                            <th class="text-left py-2">Exchange</th>
-                                            <th class="text-right py-2">Price</th>
-                                            <th class="text-right py-2">Spread</th>
-                                            <th class="text-right py-2">Volume (24h)</th>
-                                            <th class="text-right py-2">Latency</th>
-                                            <th class="text-right py-2">Fill Rate</th>
-                                            <th class="text-center py-2">Status</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="font-mono">
-                                        <tr class="border-b">
-                                            <td class="py-2 font-semibold">Binance</td>
-                                            <td id="binance-price" class="text-right text-primary-800">$67,234.50</td>
-                                            <td id="binance-spread" class="text-right text-primary-600">$0.50</td>
-                                            <td id="binance-volume" class="text-right text-accent-600">$2.3B</td>
-                                            <td id="binance-latency" class="text-right text-warning-600">14ms</td>
-                                            <td id="binance-fill-rate" class="text-right text-accent-600">99.8%</td>
-                                            <td class="text-center">🟢</td>
-                                        </tr>
-                                        <tr class="border-b">
-                                            <td class="py-2 font-semibold">Coinbase Pro</td>
-                                            <td id="coinbase-pro-price" class="text-right text-primary-800">$67,242.34</td>
-                                            <td id="coinbase-pro-spread" class="text-right text-primary-600">$0.72</td>
-                                            <td id="coinbase-pro-volume" class="text-right text-accent-600">$1.8B</td>
-                                            <td id="coinbase-pro-latency" class="text-right text-warning-600">25ms</td>
-                                            <td id="coinbase-pro-fill-rate" class="text-right text-accent-600">99.6%</td>
-                                            <td class="text-center">🟢</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 font-semibold">Kraken</td>
-                                            <td id="kraken-price" class="text-right text-primary-800">$67,216.50</td>
-                                            <td id="kraken-spread" class="text-right text-primary-600">$1.00</td>
-                                            <td id="kraken-volume" class="text-right text-accent-600">$456M</td>
-                                            <td id="kraken-latency" class="text-right text-warning-600">23ms</td>
-                                            <td id="kraken-fill-rate" class="text-right text-accent-600">99.2%</td>
-                                            <td class="text-center">🟢</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                            <!-- Real-time Status -->
-                            <div class="mt-4 p-3 bg-accent-900 bg-opacity-10 rounded-lg">
-                                <div class="text-xs text-accent-700 mb-2">🔴 LIVE Microstructure Monitoring</div>
-                                <div class="flex items-center justify-between text-xs">
-                                    <span>Update Frequency:</span>
-                                    <span class="font-mono text-accent-600">300ms</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                    <span>Data Sources:</span>
-                                    <span class="font-mono text-accent-600">3 Exchanges</span>
-                                </div>
-                                <div class="flex items-center justify-between text-xs">
-                                    <span>Last Update:</span>
-                                    <span class="font-mono text-accent-600 live-timestamp">--:--:--</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="flex gap-2">
+                    <input type="text" id="chat-input" placeholder="Ask me anything about trading, markets, or your portfolio..." 
+                           class="flex-1 cream-card border border-cream-400 rounded-lg px-4 py-2 text-cream-800 focus:outline-none focus:ring-2 focus:ring-cream-600">
+                    <button onclick="sendMessage()" class="brown-accent px-4 py-2 rounded-lg font-semibold hover:opacity-90">
+                        <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Floating AI Assistant Button -->
-    <div id="floating-assistant" class="floating-assistant">
-        <div class="assistant-bubble" onclick="toggleFloatingChat()" title="Open AI Assistant">
-            <i data-lucide="message-circle" class="w-6 h-6"></i>
+    <!-- Microstructure Analysis Modal -->
+    <div id="microstructure-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+        <div class="cream-panel rounded-lg shadow-xl w-full max-w-6xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-cream-300">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center">
+                            <span class="text-cream-50 font-bold">🔬</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-cream-900">Market Microstructure Analysis</h3>
+                        <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                    </div>
+                    <button onclick="closeMicrostructure()" class="text-cream-700 hover:text-cream-900">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Order Flow Analysis -->
+                    <div class="cream-card rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-cream-900 mb-4">📊 Order Flow Analysis</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Large Orders (>10 BTC):</span>
+                                <span class="font-semibold text-cream-900" id="large-orders">47</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Bid/Ask Imbalance:</span>
+                                <span class="font-semibold text-cream-900" id="order-imbalance">+0.23</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Market Impact:</span>
+                                <span class="font-semibold text-cream-900" id="market-impact">0.045%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">TWAP Deviation:</span>
+                                <span class="font-semibold text-cream-900" id="twap-deviation">-0.08%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liquidity Metrics -->
+                    <div class="cream-card rounded-lg p-4">
+                        <h4 class="text-lg font-bold text-cream-900 mb-4">💧 Liquidity Metrics</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Effective Spread:</span>
+                                <span class="font-semibold text-cream-900" id="effective-spread">0.08%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Price Impact:</span>
+                                <span class="font-semibold text-cream-900" id="price-impact">0.12%</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Kyle's Lambda:</span>
+                                <span class="font-semibold text-cream-900" id="kyles-lambda">2.34e-6</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-cream-700">Roll's Spread:</span>
+                                <span class="font-semibold text-cream-900" id="rolls-spread">0.06%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Depth Visualization -->
+                    <div class="cream-card rounded-lg p-4 lg:col-span-2">
+                        <h4 class="text-lg font-bold text-cream-900 mb-4">📈 Real-Time Order Book Depth</h4>
+                        <div class="h-64 relative overflow-hidden cream-panel rounded">
+                            <canvas id="depth-chart" class="w-full h-full"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Trade Flow Heatmap -->
+                    <div class="cream-card rounded-lg p-4 lg:col-span-2">
+                        <h4 class="text-lg font-bold text-cream-900 mb-4">🔥 Trade Flow Intensity</h4>
+                        <div class="grid grid-cols-12 gap-1 h-32" id="trade-heatmap">
+                            <!-- Heatmap cells will be generated by JavaScript -->
+                        </div>
+                        <div class="flex justify-between text-xs text-cream-600 mt-2">
+                            <span>Low Activity</span>
+                            <span>High Activity</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- JavaScript for Functionality -->
     <script>
         console.log('🚀 GOMNA AI Professional Arbitrage Platform Loading...');
+        
+        // Enhanced Real-Time Data Sources
+        const dataConnections = {
+            binance: null,
+            coinbase: null,
+            kraken: null,
+            coingecko: true // Always available
+        };
+        
+        // Global Markets Data (Simulated Real-Time)
+        const globalMarketsData = {
+            crypto: {
+                'BTC': { price: 67234, change: 2.34, volume: 24.5 },
+                'ETH': { price: 3456, change: 1.87, volume: 12.3 },
+                'SOL': { price: 123, change: 4.56, volume: 1.8 },
+                'ADA': { price: 0.42, change: 1.23, volume: 0.8 }
+            },
+            stocks: {
+                'SP500': { price: 5234.56, change: 0.45, status: 'Closed' },
+                'NASDAQ': { price: 18234, change: -0.23, status: 'Closed' },
+                'DOW': { price: 42156, change: 0.67, status: 'Closed' }
+            },
+            forex: {
+                'EURUSD': { price: 1.0856, change: 0.12 },
+                'GBPUSD': { price: 1.2634, change: -0.08 },
+                'USDJPY': { price: 149.23, change: 0.34 }
+            },
+            commodities: {
+                'GOLD': { price: 2034, change: 0.23 },
+                'SILVER': { price: 24.56, change: 0.89 },
+                'OIL': { price: 78.34, change: -1.45 }
+            }
+        };
+        
+        // Real-time WebSocket connections for live data
+        const wsConnections = {
+            binance: null,
+            coinbase: null
+        };
+        
+        // AI Assistant responses database
+        const aiResponses = [
+            "Based on current market volatility, I recommend reducing position size by 10%.",
+            "The BTC/ETH correlation is breaking down - potential arbitrage opportunity detected.",
+            "Your portfolio's Sharpe ratio has improved to 2.91 this week.",
+            "Market sentiment analysis shows 73% bullish indicators across social media.",
+            "Consider hedging your positions before the Federal Reserve announcement.",
+            "Cross-exchange spread on BTC has widened to $15 - excellent arbitrage potential.",
+            "Your hyperbolic CNN model confidence is at 94.2% for the next 4 hours.",
+            "Risk-adjusted returns suggest increasing ETH allocation by 3-5%.",
+            "Order flow analysis indicates smart money accumulation in the 67,200-67,400 range.",
+            "Microstructure data shows reduced market maker activity - expect higher volatility."
+        ];
 
         // Tab switching functionality
         function switchTab(tabName) {
@@ -1761,36 +1331,14 @@
             
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200';
-                btn.classList.remove('active');
+                btn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100';
             });
-            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
-            activeBtn.className = 'tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200 active';
+            document.querySelector(`[data-tab="${tabName}"]`).className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600';
         }
 
-        // Live market data updates
+        // Legacy function kept for compatibility
         function updateMarketData() {
-            // Simulate real-time price updates
-            const btcPrice = 67234.50 + (Math.random() - 0.5) * 100;
-            const ethPrice = 3456.78 + (Math.random() - 0.5) * 20;
-            
-            document.getElementById('btc-price').textContent = '$' + btcPrice.toFixed(2);
-            document.getElementById('eth-price').textContent = '$' + ethPrice.toFixed(2);
-            
-            // Update spreads
-            document.getElementById('spread-1').textContent = '+$' + (8.5 + Math.random() * 2).toFixed(2);
-            document.getElementById('spread-2').textContent = '+$' + (12.3 + Math.random() * 3).toFixed(2);
-            document.getElementById('spread-3').textContent = '+$' + (127 + Math.random() * 10).toFixed(2);
-            
-            // Update last scan time
-            const now = new Date();
-            document.getElementById('last-scan-time').textContent = now.toLocaleTimeString();
-            
-            // Update market update time if element exists
-            const marketUpdateEl = document.getElementById('market-update-time');
-            if (marketUpdateEl) {
-                marketUpdateEl.textContent = now.toLocaleTimeString();
-            }
+            updateAdvancedMarketData();
         }
 
         // Execute arbitrage opportunity
@@ -1860,973 +1408,336 @@
             switchTab('transparency');
         }
 
-        // AI Assistant functionality
-        let aiConversationHistory = [];
-        let aiQueryCount = 47;
-        let isVoiceActive = false;
-        
-        function sendAIMessage() {
-            const input = document.getElementById('ai-input');
-            const message = input.value.trim();
+        // Enhanced Real-Time Market Data with WebSocket simulation
+        function initializeRealTimeFeeds() {
+            // Simulate real WebSocket connections
+            console.log('🔄 Initializing real-time market feeds...');
             
-            if (message) {
-                addMessageToChat('user', message);
-                input.value = '';
-                
-                // Simulate AI processing
-                setTimeout(() => {
-                    const response = generateAIResponse(message);
-                    addMessageToChat('ai', response);
-                    updateAIMetrics();
-                }, 1000 + Math.random() * 2000);
-            }
+            // Update market data every 1-2 seconds for realistic feel
+            setInterval(updateAdvancedMarketData, 1500);
+            
+            // Update portfolio metrics every 5 seconds
+            setInterval(updatePortfolioMetrics, 5000);
+            
+            // Update global markets every 10 seconds
+            setInterval(updateGlobalMarkets, 10000);
+            
+            // Update microstructure data every 3 seconds
+            setInterval(updateMicrostructureData, 3000);
+            
+            // Generate trade heatmap
+            generateTradeHeatmap();
+            
+            console.log('✅ Real-time feeds initialized!');
         }
         
-        function handleAIInput(event) {
-            if (event.key === 'Enter') {
-                sendAIMessage();
-            }
-        }
-        
-        function askAI(question) {
-            document.getElementById('ai-input').value = question;
-            sendAIMessage();
-            switchTab('assistant');
-        }
-        
-        function addMessageToChat(sender, message) {
-            const chatMessages = document.getElementById('chat-messages');
-            const messageDiv = document.createElement('div');
+        // Advanced Market Data Updates with more realistic simulation
+        function updateAdvancedMarketData() {
             const timestamp = new Date().toLocaleTimeString();
             
-            if (sender === 'user') {
-                messageDiv.innerHTML = `
-                    <div class="user-message p-4 rounded-lg ml-12">
-                        <div class="flex items-start gap-3 justify-end">
-                            <div>
-                                <div class="font-semibold text-cream-100 mb-1 text-right">You</div>
-                                <div class="text-cream-200">${message}</div>
-                                <div class="text-xs text-cream-300 mt-2 text-right">
-                                    <i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>
-                                    ${timestamp}
-                                </div>
-                            </div>
-                            <div class="w-8 h-8 bg-cream-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="user" class="w-4 h-4 text-cream-800"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                messageDiv.innerHTML = `
-                    <div class="ai-message p-4 rounded-lg">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
-                                <i data-lucide="bot" class="w-4 h-4 text-cream-50"></i>
-                            </div>
-                            <div>
-                                <div class="font-semibold text-cream-900 mb-1">GOMNA AI</div>
-                                <div class="text-cream-800">${message}</div>
-                                <div class="text-xs text-cream-600 mt-2">
-                                    <i data-lucide="clock" class="w-3 h-3 inline mr-1"></i>
-                                    ${timestamp}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }
+            // More realistic BTC price movement
+            const btcBase = 67234.50;
+            const btcVolatility = 0.002; // 0.2% volatility
+            const btcPrice = btcBase * (1 + (Math.random() - 0.5) * btcVolatility);
             
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            // ETH with correlation to BTC but some independence
+            const ethBase = 3456.78;
+            const ethCorrelation = 0.7;
+            const btcMove = (btcPrice - btcBase) / btcBase;
+            const ethMove = btcMove * ethCorrelation + (Math.random() - 0.5) * 0.003;
+            const ethPrice = ethBase * (1 + ethMove);
             
-            // Reinitialize icons for new elements
-            lucide.createIcons();
-        }
-        
-        function generateAIResponse(userMessage) {
-            const message = userMessage.toLowerCase();
+            // Update prices with realistic formatting
+            document.getElementById('btc-price').textContent = '$' + btcPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            document.getElementById('eth-price').textContent = '$' + ethPrice.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
             
-            // Advanced AI response generation based on trading context
-            if (message.includes('arbitrage') || message.includes('opportunity')) {
-                return `Based on current market conditions, I've identified ${Math.floor(Math.random() * 5) + 2} active arbitrage opportunities:
-                
-                🔴 **Cross-Exchange BTC/USD**: ${(Math.random() * 0.2 + 0.1).toFixed(3)}% spread (Binance→Coinbase)
-                🟡 **Triangular ETH Path**: ${(Math.random() * 0.15 + 0.05).toFixed(3)}% profit potential
-                🟢 **Statistical Pairs**: ETH/BTC mean reversion signal (Z-score: ${(Math.random() * 2 + 1.5).toFixed(1)}σ)
-                
-                The Hyperbolic CNN model shows ${(Math.random() * 10 + 85).toFixed(1)}% confidence in these patterns. Would you like me to analyze execution risks for any specific opportunity?`;
-            }
+            // Update volumes with realistic numbers
+            const btcVolume = (14.2 + Math.random() * 2).toFixed(1);
+            const ethVolume = (23.8 + Math.random() * 5).toFixed(1);
+            document.getElementById('btc-volume').textContent = btcVolume + 'K';
+            document.getElementById('eth-volume').textContent = ethVolume + 'K';
             
-            if (message.includes('sentiment') || message.includes('market')) {
-                const btcSentiment = (Math.random() * 0.5 + 0.2).toFixed(2);
-                const ethSentiment = (Math.random() * 0.4 + 0.1).toFixed(2);
-                return `**Current Market Sentiment Analysis:**
-                
-                📊 **BTC/USD**: ${btcSentiment > 0.4 ? 'Bullish' : btcSentiment > 0.2 ? 'Neutral' : 'Bearish'} (+${btcSentiment} FinBERT score)
-                📈 **ETH/USD**: ${ethSentiment > 0.35 ? 'Bullish' : ethSentiment > 0.2 ? 'Neutral' : 'Bearish'} (+${ethSentiment} FinBERT score)
-                
-                **Key Factors:**
-                • Social media buzz: ${(Math.random() * 30 + 60).toFixed(0)}% positive
-                • News sentiment: ${(Math.random() * 40 + 50).toFixed(0)}% bullish
-                • On-chain activity: ${Math.random() > 0.5 ? 'Increasing' : 'Stable'}
-                
-                The multimodal fusion model indicates ${(Math.random() * 15 + 75).toFixed(0)}% probability of continued upward momentum in the next 4 hours.`;
-            }
+            // Update trade counts
+            const btcTrades = Math.floor(892 + Math.random() * 20);
+            const ethTrades = Math.floor(654 + Math.random() * 30);
+            document.getElementById('btc-trades').textContent = btcTrades + 'K';
+            document.getElementById('eth-trades').textContent = ethTrades + 'K';
             
-            if (message.includes('risk') || message.includes('portfolio')) {
-                return `**Portfolio Risk Assessment:**
-                
-                🛡️ **Current Risk Metrics:**
-                • Portfolio VaR (95%): $${(Math.random() * 5000 + 2000).toFixed(0)}
-                • Maximum Drawdown: ${(Math.random() * 3 + 2).toFixed(1)}%
-                • Sharpe Ratio: ${(Math.random() * 1 + 2).toFixed(2)}
-                • Correlation Risk: ${(Math.random() * 20 + 10).toFixed(0)}%
-                
-                **Optimization Recommendations:**
-                1. Reduce BTC exposure by ${(Math.random() * 10 + 5).toFixed(0)}% to minimize correlation risk
-                2. Increase arbitrage allocation (+${(Math.random() * 15 + 10).toFixed(0)}%) for better risk-adjusted returns
-                3. Implement dynamic hedging on ${Math.random() > 0.5 ? 'ETH' : 'BTC'} positions
-                
-                Would you like me to simulate these portfolio adjustments?`;
-            }
+            // Update spreads with realistic movements
+            const spread1 = (8.5 + (Math.random() - 0.5) * 4).toFixed(2);
+            const spread2 = (12.3 + (Math.random() - 0.5) * 6).toFixed(2);
+            const spread3 = (127 + (Math.random() - 0.5) * 25).toFixed(2);
             
-            if (message.includes('hyperbolic') || message.includes('cnn') || message.includes('model')) {
-                return `**Hyperbolic CNN Model Explanation:**
-                
-                🧠 Our Hyperbolic Convolutional Neural Network operates in **Poincaré Ball Model** (curvature: -1.0) to capture hierarchical market relationships:
-                
-                **Key Advantages:**
-                • **Exponential capacity**: Represents complex market hierarchies with fewer parameters
-                • **Geodesic distance**: Measures true market relationships in hyperbolic space
-                • **Möbius transformations**: Enable efficient pattern recognition
-                
-                **Current Model State:**
-                • Geodesic paths computed: ${document.getElementById('geodesic-count').textContent}
-                • Path efficiency: ${document.getElementById('path-efficiency').textContent}
-                • Feature embedding dimension: 256 (hyperbolic)
-                • Training accuracy: 94.7% (vs 87% standard CNN)
-                
-                The model excels at detecting **arbitrage patterns** because financial markets exhibit natural hyperbolic structure - smaller timeframe patterns nest within larger market cycles exponentially.`;
-            }
+            document.getElementById('spread-1').textContent = '+$' + spread1;
+            document.getElementById('spread-2').textContent = '+$' + spread2;
+            document.getElementById('spread-3').textContent = '+$' + spread3;
             
-            if (message.includes('strategy') || message.includes('trading')) {
-                const strategies = ['Mean Reversion', 'Momentum', 'Cross-Exchange Arbitrage', 'Statistical Pairs', 'News Sentiment'];
-                const recommended = strategies[Math.floor(Math.random() * strategies.length)];
-                return `**Trading Strategy Recommendations:**
-                
-                🎯 **Top Recommended**: ${recommended}
-                Confidence: ${(Math.random() * 20 + 75).toFixed(0)}% | Expected Return: +${(Math.random() * 0.5 + 0.2).toFixed(2)}%
-                
-                **Market Conditions Analysis:**
-                • Volatility: ${(Math.random() * 20 + 15).toFixed(0)}% (${Math.random() > 0.5 ? 'Favorable' : 'Moderate'} for arbitrage)
-                • Liquidity depth: ${(Math.random() * 30 + 70).toFixed(0)}% (${Math.random() > 0.6 ? 'High' : 'Medium'})
-                • Cross-correlation: ${(Math.random() * 0.2 + 0.7).toFixed(3)} BTC/ETH
-                
-                **Execution Parameters:**
-                • Optimal position size: ${(Math.random() * 20000 + 10000).toFixed(0)} USD
-                • Stop loss: ${(Math.random() * 2 + 1).toFixed(1)}%
-                • Time horizon: ${Math.floor(Math.random() * 8 + 2)} hours
-                
-                Shall I set up automated execution for this strategy?`;
-            }
+            // Update scan time
+            document.getElementById('last-scan-time').textContent = timestamp;
             
-            // Default response for other queries
-            return `I'm analyzing your query about "${userMessage}"...
-            
-            Based on current market data and our Hyperbolic CNN model, I can provide insights on:
-            
-            • **Real-time arbitrage opportunities** (${Math.floor(Math.random() * 7 + 3)} currently active)
-            • **Market sentiment analysis** (FinBERT confidence: ${(Math.random() * 20 + 75).toFixed(0)}%)
-            • **Risk assessment** for your portfolio positions
-            • **Strategy optimization** recommendations
-            • **Model transparency** and decision explanations
-            
-            Could you be more specific about what aspect you'd like me to analyze? For example:
-            - "Analyze current BTC arbitrage opportunities"
-            - "What's the market sentiment for ETH?"
-            - "Evaluate my portfolio risk"
-            - "Explain the latest model decisions"`;
-        }
-        
-        function updateAIMetrics() {
-            aiQueryCount++;
-            document.getElementById('ai-queries-count').textContent = aiQueryCount;
-        }
-        
-        function toggleFloatingChat() {
-            switchTab('assistant');
-            // Optionally scroll to the AI input
-            setTimeout(() => {
-                document.getElementById('ai-input').focus();
-            }, 300);
-        }
-        
-        function toggleVoiceInput() {
-            const button = document.getElementById('voice-button-text');
-            isVoiceActive = !isVoiceActive;
-            
-            if (isVoiceActive) {
-                button.textContent = 'Stop Voice Input';
-                // Placeholder for voice recognition implementation
-                console.log('Voice input activated (placeholder)');
-            } else {
-                button.textContent = 'Start Voice Input';
-                console.log('Voice input deactivated');
+            // Update market time if exists
+            const marketUpdateEl = document.getElementById('market-update-time');
+            if (marketUpdateEl) {
+                marketUpdateEl.textContent = timestamp;
             }
         }
         
-        // Add AI insights to the feed
-        function addAIInsight(title, message) {
-            const feed = document.getElementById('ai-insights-feed');
-            const insight = document.createElement('div');
-            insight.className = 'border-l-3 border-cream-600 pl-3';
-            insight.innerHTML = `
-                <div class="font-semibold text-cream-800">${title}</div>
-                <div class="text-cream-700">${message}</div>
-                <div class="text-xs text-cream-600 mt-1">Just now</div>
-            `;
+        // Enhanced Portfolio Metrics Updates
+        function updatePortfolioMetrics() {
+            const currentBalance = parseFloat(document.getElementById('portfolio-balance').textContent.replace(/[^\d.-]/g, ''));
+            const change = (Math.random() - 0.48) * 1000; // Slight upward bias
+            const newBalance = currentBalance + change;
             
-            feed.insertBefore(insight, feed.firstChild);
+            document.getElementById('portfolio-balance').textContent = '$' + newBalance.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0});
             
-            // Keep only the 3 most recent insights
-            while (feed.children.length > 3) {
-                feed.removeChild(feed.lastChild);
+            // Update P&L if displayed
+            const pnlEl = document.getElementById('total-pnl');
+            if (pnlEl) {
+                const currentPnl = parseFloat(pnlEl.textContent.replace(/[^\d.-]/g, ''));
+                const newPnl = currentPnl + (Math.random() * 100) + 10;
+                pnlEl.textContent = '+$' + newPnl.toFixed(0);
             }
         }
         
-        // Generate periodic AI insights
-        function generatePeriodicInsights() {
-            const insights = [
-                ['Volume Spike Alert', 'Unusual BTC volume detected: +127% above average'],
-                ['Arbitrage Opportunity', `New cross-exchange spread: +${(Math.random() * 0.3 + 0.1).toFixed(2)}% profit`],
-                ['Risk Update', 'Portfolio correlation risk decreased to moderate levels'],
-                ['Market Signal', `Hyperbolic CNN detected ${Math.random() > 0.5 ? 'bullish' : 'bearish'} pattern formation`],
-                ['Sentiment Shift', `Social sentiment changed: ${Math.random() > 0.5 ? '+' : '-'}${(Math.random() * 15 + 5).toFixed(0)}% in 1h`],
-                ['Model Update', `Feature importance recalculated: Price momentum now ${(Math.random() * 0.2 + 0.2).toFixed(2)}`]
-            ];
+        // Global Markets Data Updates
+        function updateGlobalMarkets() {
+            // This would normally connect to real market APIs
+            // For demo, we'll simulate realistic market movements
             
-            const randomInsight = insights[Math.floor(Math.random() * insights.length)];
-            addAIInsight(randomInsight[0], randomInsight[1]);
-        }
-
-        // Initialize real-time updates
-        setInterval(updateMarketData, 2000);
-        setInterval(updateHyperbolicMetrics, 5000);
-        setInterval(generatePeriodicInsights, 15000); // New AI insights every 15 seconds
-
-        // HYPERBOLIC SPACE ENGINE - Real-Time Implementation
-        class HyperbolicSpaceEngine {
-            constructor() {
-                this.isRunning = false;
-                this.dataStreams = new Map();
-                this.hyperbolicMetrics = {
-                    curvature: -1.0,
-                    dimension: 128,
-                    accuracy: 95.6,
-                    latency: 125,
-                    geodesicPaths: 138,
-                    reductionTime: 7
-                };
-                this.realTimeData = new Map();
-                this.websocketConnections = new Map();
-                this.lastUpdate = Date.now();
-                
-                // Market Microstructure Analytics
-                this.microstructure = {
-                    orderBooks: new Map(),
-                    executionMetrics: {
-                        avgFillSpeed: 10.7,
-                        priceImprovement: 0.31,
-                        rejectRate: 0.02,
-                        marketImpact: 0.12
-                    },
-                    liquidityMetrics: {
-                        topOfBook: 239000,
-                        fiveLevelDepth: 1360200000,
-                        liquidityScore: 95.7,
-                        volatility5min: 0.15
-                    },
-                    exchanges: new Map(),
-                    lastMicrostructureUpdate: Date.now()
-                };
-            }
-
-            // Initialize the Hyperbolic Space Engine
-            initialize() {
-                console.log('🚀 HYPERBOLIC SPACE ENGINE: Initializing real-time operations...');
-                this.setupRealTimeDataStreams();
-                this.initializeHyperbolicCalculations();
-                this.initializeMarketMicrostructure();
-                this.startLiveUpdates();
-                this.isRunning = true;
-                console.log('✅ HYPERBOLIC SPACE ENGINE: Live operations activated!');
-            }
-
-            // Setup real-time data streams
-            setupRealTimeDataStreams() {
-                // Simulated real-time market data streams
-                const marketPairs = ['BTC/USD', 'ETH/USD', 'SOL/USD', 'BNB/USD', 'ADA/USD'];
-                
-                marketPairs.forEach(pair => {
-                    this.dataStreams.set(pair, {
-                        price: this.generateInitialPrice(pair),
-                        volume: Math.random() * 1000000,
-                        change24h: (Math.random() - 0.5) * 10,
-                        hyperbolicCoords: this.generateHyperbolicCoordinates(),
-                        lastUpdate: Date.now()
-                    });
-                });
-
-                console.log('📡 Real-time data streams established for hyperbolic processing');
-            }
-
-            // Generate hyperbolic coordinates for data points
-            generateHyperbolicCoordinates() {
-                const r = Math.random() * 0.95; // Keep within Poincaré disk
-                const theta = Math.random() * 2 * Math.PI;
-                return {
-                    x: r * Math.cos(theta),
-                    y: r * Math.sin(theta),
-                    r: r,
-                    theta: theta
-                };
-            }
-
-            // Calculate hyperbolic distance between two points
-            hyperbolicDistance(p1, p2) {
-                const numerator = Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
-                const denominator = (1 - (p1.x * p1.x + p1.y * p1.y)) * (1 - (p2.x * p2.x + p2.y * p2.y));
-                return Math.acosh(1 + 2 * numerator / denominator);
-            }
-
-            // Möbius transformation in hyperbolic space
-            mobiusTransform(point, a, b, c, d) {
-                const z = { x: point.x, y: point.y };
-                const numeratorReal = (a * z.x - b * z.y + c);
-                const numeratorImag = (a * z.y + b * z.x + d);
-                const denominatorReal = (c * z.x - d * z.y + a);
-                const denominatorImag = (c * z.y + d * z.x + b);
-                
-                const denomMagnitude = denominatorReal * denominatorReal + denominatorImag * denominatorImag;
-                return {
-                    x: (numeratorReal * denominatorReal + numeratorImag * denominatorImag) / denomMagnitude,
-                    y: (numeratorImag * denominatorReal - numeratorReal * denominatorImag) / denomMagnitude
-                };
-            }
-
-            // Initialize hyperbolic calculations
-            initializeHyperbolicCalculations() {
-                this.hyperbolicProcessor = {
-                    processArbitrageOpportunity: (data) => {
-                        const coords = this.generateHyperbolicCoordinates();
-                        const confidence = this.calculateHyperbolicConfidenceLocal(coords);
-                        return {
-                            ...data,
-                            hyperbolicCoords: coords,
-                            confidence: confidence,
-                            geodesicPath: this.calculateGeodesicPath(coords),
-                            curvatureAdjustedProfit: data.profit * (1 + confidence * 0.1)
-                        };
-                    },
-                    
-                    processMarketData: (pair, data) => {
-                        const hyperbolicData = {
-                            ...data,
-                            hyperbolicTransform: this.applyHyperbolicTransform(data),
-                            convergenceMetric: this.calculateConvergence(data),
-                            spatialPosition: this.mapToHyperbolicSpace(data)
-                        };
-                        return hyperbolicData;
-                    }
-                };
-                
-                console.log('🔬 Hyperbolic calculation engine initialized');
-            }
-
-            // Apply hyperbolic transformation to market data
-            applyHyperbolicTransform(data) {
-                const volatility = Math.abs(data.change24h) / 100;
-                const volume = data.volume / 1000000;
-                
-                return {
-                    transformedPrice: data.price * Math.tanh(volatility),
-                    hyperbolicVolume: volume / (1 + volatility * volatility),
-                    curvatureAdjustment: Math.atanh(Math.min(0.99, volatility))
-                };
-            }
-
-            // Calculate convergence in hyperbolic space
-            calculateConvergence(data) {
-                const baseConvergence = 0.85;
-                const volatilityFactor = Math.abs(data.change24h) / 100;
-                return Math.min(0.99, baseConvergence + volatilityFactor * 0.1);
-            }
-
-            // Map data to hyperbolic space coordinates
-            mapToHyperbolicSpace(data) {
-                const normalizedPrice = (data.price % 1000) / 1000;
-                const normalizedVolume = Math.min(1, data.volume / 10000000);
-                
-                const r = Math.min(0.95, normalizedVolume * 0.8 + 0.1);
-                const theta = normalizedPrice * 2 * Math.PI;
-                
-                return {
-                    x: r * Math.cos(theta),
-                    y: r * Math.sin(theta),
-                    r: r,
-                    theta: theta
-                };
-            }
-
-            // Calculate geodesic path in Poincaré disk
-            calculateGeodesicPath(coords) {
-                const center = { x: 0, y: 0 };
-                const distance = this.hyperbolicDistance(center, coords);
-                const steps = Math.floor(distance * 20);
-                
-                return {
-                    distance: distance,
-                    steps: steps,
-                    curvature: -1.0,
-                    length: 2 * Math.sinh(distance / 2)
-                };
-            }
-
-            // Calculate hyperbolic confidence
-            calculateHyperbolicConfidenceLocal(coords) {
-                const distanceFromCenter = Math.sqrt(coords.x * coords.x + coords.y * coords.y);
-                return Math.min(0.95, 0.5 + distanceFromCenter * 0.45);
-            }
-
-            // Initialize Market Microstructure Analytics
-            initializeMarketMicrostructure() {
-                console.log('🔬 Initializing Market Microstructure Analytics...');
-                
-                // Initialize order books for major pairs
-                const majorPairs = ['BTC/USD', 'ETH/USD', 'SOL/USD'];
-                majorPairs.forEach(pair => {
-                    this.microstructure.orderBooks.set(pair, this.generateOrderBook(pair));
-                });
-
-                // Initialize exchange data
-                this.initializeExchangeData();
-                
-                // Setup liquidity monitoring
-                this.setupLiquidityMonitoring();
-                
-                console.log('📊 Market Microstructure Analytics initialized');
-            }
-
-            // Generate realistic order book data
-            generateOrderBook(pair) {
-                const basePrice = this.dataStreams.get(pair)?.price || 67234.50;
-                const spread = 0.50 + Math.random() * 0.30;
-                
-                const bids = [];
-                const asks = [];
-                
-                // Generate 5 levels of bids (below market price)
-                for (let i = 0; i < 5; i++) {
-                    const price = basePrice - spread/2 - (i * 0.50);
-                    const size = 0.5 + Math.random() * 4;
-                    bids.push({
-                        price: price,
-                        size: size,
-                        total: size * price
-                    });
+            const markets = {
+                'crypto': {
+                    'BTC': { base: 67234, element: null },
+                    'ETH': { base: 3456, element: null },
+                    'SOL': { base: 123, element: null }
+                },
+                'us': {
+                    'S&P 500': { base: 5234.56, element: null },
+                    'NASDAQ': { base: 18234, element: null },
+                    'Dow Jones': { base: 42156, element: null }
                 }
-                
-                // Generate 5 levels of asks (above market price)
-                for (let i = 0; i < 5; i++) {
-                    const price = basePrice + spread/2 + (i * 0.50);
-                    const size = 0.2 + Math.random() * 3;
-                    asks.push({
-                        price: price,
-                        size: size,
-                        total: size * price
-                    });
-                }
-                
-                return {
-                    pair: pair,
-                    bids: bids,
-                    asks: asks,
-                    spread: spread,
-                    midPrice: (bids[0].price + asks[0].price) / 2,
-                    lastUpdate: Date.now()
-                };
-            }
-
-            // Initialize exchange data
-            initializeExchangeData() {
-                const exchanges = [
-                    {
-                        name: 'Binance',
-                        price: 67234.50 + (Math.random() - 0.5) * 2,
-                        spread: 0.50 + Math.random() * 0.20,
-                        volume24h: 2.3e9 + (Math.random() - 0.5) * 0.5e9,
-                        latency: 14 + Math.floor(Math.random() * 6),
-                        fillRate: 99.8 - Math.random() * 0.3,
-                        status: 'active'
-                    },
-                    {
-                        name: 'Coinbase Pro',
-                        price: 67242.34 + (Math.random() - 0.5) * 3,
-                        spread: 0.72 + Math.random() * 0.30,
-                        volume24h: 1.8e9 + (Math.random() - 0.5) * 0.3e9,
-                        latency: 25 + Math.floor(Math.random() * 8),
-                        fillRate: 99.6 - Math.random() * 0.4,
-                        status: 'active'
-                    },
-                    {
-                        name: 'Kraken',
-                        price: 67216.50 + (Math.random() - 0.5) * 4,
-                        spread: 1.00 + Math.random() * 0.50,
-                        volume24h: 456e6 + (Math.random() - 0.5) * 100e6,
-                        latency: 23 + Math.floor(Math.random() * 10),
-                        fillRate: 99.2 - Math.random() * 0.5,
-                        status: 'active'
-                    }
-                ];
-
-                exchanges.forEach(exchange => {
-                    this.microstructure.exchanges.set(exchange.name, exchange);
-                });
-            }
-
-            // Setup liquidity monitoring
-            setupLiquidityMonitoring() {
-                // Initialize liquidity metrics
-                this.microstructure.liquidityMetrics = {
-                    topOfBook: 239000 + Math.random() * 50000,
-                    fiveLevelDepth: 1360200000 + (Math.random() - 0.5) * 200000000,
-                    liquidityScore: 95.7 + (Math.random() - 0.5) * 2,
-                    volatility5min: 0.15 + (Math.random() - 0.5) * 0.05
-                };
-            }
-
-            // Generate initial price for market pair
-            generateInitialPrice(pair) {
-                const basePrices = {
-                    'BTC/USD': 67561 + (Math.random() - 0.5) * 1000,
-                    'ETH/USD': 3450 + (Math.random() - 0.5) * 100,
-                    'SOL/USD': 206 + (Math.random() - 0.5) * 20,
-                    'BNB/USD': 456 + (Math.random() - 0.5) * 50,
-                    'ADA/USD': 0.799 + (Math.random() - 0.5) * 0.1
-                };
-                return basePrices[pair] || 100;
-            }
-
-            // Start live updates
-            startLiveUpdates() {
-                // Update market data every second
-                setInterval(() => {
-                    this.updateMarketData();
-                    this.updateHyperbolicMetrics();
-                    this.updateArbitrageOpportunities();
-                    this.updateLiveMarketData();
-                    this.updateUI();
-                }, 1000);
-
-                // Update hyperbolic visualizations every 500ms
-                setInterval(() => {
-                    this.updatePoincareDisk();
-                    this.updateGeodesicPaths();
-                }, 500);
-
-                // Update performance metrics every 2 seconds
-                setInterval(() => {
-                    this.updatePerformanceMetrics();
-                    this.updateTradingSignals();
-                }, 2000);
-
-                // Update microstructure data every 300ms (high frequency)
-                setInterval(() => {
-                    this.updateMicrostructureData();
-                }, 300);
-
-                console.log('⚡ Live update cycles initiated');
-            }
-
-            // Update market data in real-time
-            updateMarketData() {
-                this.dataStreams.forEach((data, pair) => {
-                    const priceChange = (Math.random() - 0.5) * 0.001;
-                    const newPrice = data.price * (1 + priceChange);
-                    const volumeChange = (Math.random() - 0.5) * 0.1;
-                    const newVolume = Math.max(0, data.volume * (1 + volumeChange));
-                    
-                    // Update hyperbolic coordinates based on price movement
-                    const newCoords = this.generateHyperbolicCoordinates();
-                    
-                    this.dataStreams.set(pair, {
-                        ...data,
-                        price: newPrice,
-                        volume: newVolume,
-                        change24h: data.change24h + priceChange * 100,
-                        hyperbolicCoords: newCoords,
-                        lastUpdate: Date.now()
-                    });
-                });
-            }
-
-            // Update hyperbolic metrics
-            updateHyperbolicMetrics() {
-                this.hyperbolicMetrics.accuracy = 95.6 + (Math.random() - 0.5) * 0.8;
-                this.hyperbolicMetrics.latency = 125 + Math.floor((Math.random() - 0.5) * 20);
-                this.hyperbolicMetrics.geodesicPaths = 138 + Math.floor((Math.random() - 0.5) * 10);
-                this.hyperbolicMetrics.reductionTime = 7 + Math.floor((Math.random() - 0.5) * 2);
-            }
-
-            // Update arbitrage opportunities with hyperbolic processing
-            updateArbitrageOpportunities() {
-                const opportunities = [
-                    {
-                        type: 'Cross-Exchange',
-                        pair: 'BTC/USD',
-                        exchange1: 'Binance',
-                        exchange2: 'Coinbase',
-                        profit: 0.45 + (Math.random() - 0.5) * 0.2,
-                        confidence: 92 + Math.random() * 6
-                    },
-                    {
-                        type: 'Triangular',
-                        pair: 'ETH/BTC/USD',
-                        profit: 0.32 + (Math.random() - 0.5) * 0.15,
-                        confidence: 87 + Math.random() * 8
-                    },
-                    {
-                        type: 'Statistical',
-                        pair: 'SOL/USD',
-                        profit: 0.28 + (Math.random() - 0.5) * 0.1,
-                        confidence: 94 + Math.random() * 4
-                    }
-                ];
-
-                // Process each opportunity through hyperbolic space
-                this.realTimeData.set('arbitrageOpportunities', 
-                    opportunities.map(opp => this.hyperbolicProcessor.processArbitrageOpportunity(opp))
-                );
-            }
-
-            // Update Poincaré disk visualization
-            updatePoincareDisk() {
-                const disk = document.querySelector('.poincare-disk');
-                if (!disk) return;
-
-                // Clear existing points
-                disk.querySelectorAll('.data-fusion-point').forEach(point => point.remove());
-
-                // Add new data points
-                this.dataStreams.forEach((data, pair) => {
-                    const point = document.createElement('div');
-                    point.className = 'data-fusion-point';
-                    
-                    // Position based on hyperbolic coordinates
-                    const diskRadius = 110; // Half of 220px
-                    const x = diskRadius + data.hyperbolicCoords.x * diskRadius;
-                    const y = diskRadius + data.hyperbolicCoords.y * diskRadius;
-                    
-                    point.style.left = `${x}px`;
-                    point.style.top = `${y}px`;
-                    point.title = `${pair}: $${data.price.toFixed(2)}`;
-                    
-                    disk.appendChild(point);
-                });
-            }
-
-            // Update geodesic paths visualization
-            updateGeodesicPaths() {
-                // Update geodesic path count in UI
-                const pathsElement = document.querySelector('.geodesic-paths-count');
-                if (pathsElement) {
-                    pathsElement.textContent = this.hyperbolicMetrics.geodesicPaths;
-                }
-            }
-
-            // Update performance metrics
-            updatePerformanceMetrics() {
-                const portfolioValue = 2855020 + (Math.random() - 0.5) * 10000;
-                const mtdChange = 12.4 + (Math.random() - 0.5) * 0.5;
-                
-                // Update portfolio display
-                const portfolioElement = document.querySelector('.portfolio-value');
-                if (portfolioElement) {
-                    portfolioElement.textContent = `$${portfolioValue.toLocaleString()}`;
-                }
-                
-                const mtdElement = document.querySelector('.mtd-change');
-                if (mtdElement) {
-                    mtdElement.textContent = `+${mtdChange.toFixed(1)}% MTD`;
-                }
-            }
-
-            // Update trading signals
-            updateTradingSignals() {
-                const signals = ['BUY', 'SELL', 'HOLD'];
-                const signalElements = document.querySelectorAll('.trading-signal');
-                
-                signalElements.forEach(element => {
-                    const newSignal = signals[Math.floor(Math.random() * signals.length)];
-                    element.textContent = newSignal;
-                    element.className = `trading-signal signal-${newSignal.toLowerCase()}`;
-                });
-            }
-
-            // Update live market data display
-            updateLiveMarketData() {
-                this.dataStreams.forEach((data, pair) => {
-                    const cleanPair = pair.replace('/', '').toLowerCase();
-                    const priceElement = document.querySelector(`#${cleanPair}-price`);
-                    const changeElement = document.querySelector(`#${cleanPair}-change`);
-                    
-                    if (priceElement) {
-                        const formattedPrice = pair.includes('ADA') ? 
-                            `$${data.price.toFixed(3)}` : 
-                            `$${data.price.toLocaleString(undefined, {maximumFractionDigits: 2})}`;
-                        priceElement.textContent = formattedPrice;
-                    }
-                    
-                    if (changeElement) {
-                        const changePercent = data.change24h.toFixed(2);
-                        const sign = data.change24h >= 0 ? '+' : '';
-                        changeElement.textContent = `${sign}${changePercent}%`;
-                        changeElement.className = data.change24h >= 0 ? 
-                            'text-xs text-accent-300' : 
-                            'text-xs text-danger-400';
+            };
+            
+            // Update with small realistic movements
+            Object.values(markets).forEach(category => {
+                Object.values(category).forEach(market => {
+                    if (market.element) {
+                        const change = (Math.random() - 0.5) * 0.02; // ±1% movement
+                        const newPrice = market.base * (1 + change);
+                        market.element.textContent = newPrice.toLocaleString('en-US', {minimumFractionDigits: 2});
                     }
                 });
-            }
-
-            // Update UI with real-time data
-            updateUI() {
-                // Update timestamp
-                const timestampElements = document.querySelectorAll('.live-timestamp');
-                const now = new Date();
-                const timeString = now.toLocaleTimeString();
-                
-                timestampElements.forEach(element => {
-                    element.textContent = timeString;
-                });
-
-                // Update hyperbolic metrics
-                this.updateHyperbolicMetricsUI();
-            }
-
-            // Update hyperbolic metrics in UI
-            updateHyperbolicMetricsUI() {
-                const updates = {
-                    '.accuracy-value': `${this.hyperbolicMetrics.accuracy.toFixed(1)}%`,
-                    '.latency-value': `${this.hyperbolicMetrics.latency}ms`,
-                    '.curvature-value': `${this.hyperbolicMetrics.curvature}`,
-                    '.dimension-value': `${this.hyperbolicMetrics.dimension}`,
-                    '.reduction-time-value': `${this.hyperbolicMetrics.reductionTime}s`
-                };
-
-                Object.entries(updates).forEach(([selector, value]) => {
-                    const element = document.querySelector(selector);
-                    if (element) element.textContent = value;
-                });
-            }
-
-            // Update microstructure data in real-time
-            updateMicrostructureData() {
-                // Update order books
-                this.microstructure.orderBooks.forEach((orderBook, pair) => {
-                    this.updateOrderBook(pair);
-                });
-
-                // Update execution metrics
-                this.updateExecutionMetrics();
-
-                // Update liquidity metrics
-                this.updateLiquidityMetrics();
-
-                // Update exchange data
-                this.updateExchangeData();
-
-                // Update UI
-                this.updateMicrostructureUI();
-            }
-
-            // Update order book for a specific pair
-            updateOrderBook(pair) {
-                const currentOrderBook = this.microstructure.orderBooks.get(pair);
-                if (!currentOrderBook) return;
-
-                const basePrice = this.dataStreams.get(pair)?.price || currentOrderBook.midPrice;
-                const spread = 0.50 + Math.random() * 0.30;
-
-                // Update bids with slight variations
-                currentOrderBook.bids.forEach((bid, index) => {
-                    bid.price = basePrice - spread/2 - (index * 0.50) + (Math.random() - 0.5) * 0.10;
-                    bid.size = Math.max(0.1, bid.size + (Math.random() - 0.5) * 0.5);
-                    bid.total = bid.price * bid.size;
-                });
-
-                // Update asks with slight variations
-                currentOrderBook.asks.forEach((ask, index) => {
-                    ask.price = basePrice + spread/2 + (index * 0.50) + (Math.random() - 0.5) * 0.10;
-                    ask.size = Math.max(0.1, ask.size + (Math.random() - 0.5) * 0.3);
-                    ask.total = ask.price * ask.size;
-                });
-
-                currentOrderBook.spread = spread;
-                currentOrderBook.midPrice = (currentOrderBook.bids[0].price + currentOrderBook.asks[0].price) / 2;
-                currentOrderBook.lastUpdate = Date.now();
-            }
-
-            // Update execution quality metrics
-            updateExecutionMetrics() {
-                this.microstructure.executionMetrics.avgFillSpeed = 10.7 + (Math.random() - 0.5) * 2;
-                this.microstructure.executionMetrics.priceImprovement = 0.31 + (Math.random() - 0.5) * 0.1;
-                this.microstructure.executionMetrics.rejectRate = Math.max(0, 0.02 + (Math.random() - 0.5) * 0.01);
-                this.microstructure.executionMetrics.marketImpact = 0.12 + (Math.random() - 0.5) * 0.05;
-            }
-
+            });
+        }
+        
+        // Microstructure Data Updates
+        function updateMicrostructureData() {
+            // Update order flow metrics
+            const largeOrders = Math.floor(47 + (Math.random() - 0.5) * 10);
+            const orderImbalance = ((Math.random() - 0.5) * 0.8).toFixed(3);
+            const marketImpact = (0.045 + (Math.random() - 0.5) * 0.02).toFixed(3);
+            const twapDev = ((Math.random() - 0.5) * 0.2).toFixed(3);
+            
+            const largeOrdersEl = document.getElementById('large-orders');
+            if (largeOrdersEl) largeOrdersEl.textContent = largeOrders;
+            
+            const imbalanceEl = document.getElementById('order-imbalance');
+            if (imbalanceEl) imbalanceEl.textContent = (orderImbalance >= 0 ? '+' : '') + orderImbalance;
+            
+            const impactEl = document.getElementById('market-impact');
+            if (impactEl) impactEl.textContent = marketImpact + '%';
+            
+            const twapEl = document.getElementById('twap-deviation');
+            if (twapEl) twapEl.textContent = (twapDev >= 0 ? '+' : '') + twapDev + '%';
+            
             // Update liquidity metrics
-            updateLiquidityMetrics() {
-                const metrics = this.microstructure.liquidityMetrics;
-                metrics.topOfBook = Math.max(100000, metrics.topOfBook + (Math.random() - 0.5) * 20000);
-                metrics.fiveLevelDepth = Math.max(1000000000, metrics.fiveLevelDepth + (Math.random() - 0.5) * 100000000);
-                metrics.liquidityScore = Math.min(100, Math.max(90, metrics.liquidityScore + (Math.random() - 0.5) * 1));
-                metrics.volatility5min = Math.max(0.05, metrics.volatility5min + (Math.random() - 0.5) * 0.02);
-            }
-
-            // Update exchange data
-            updateExchangeData() {
-                this.microstructure.exchanges.forEach((exchange, name) => {
-                    exchange.price += (Math.random() - 0.5) * 2;
-                    exchange.spread = Math.max(0.30, exchange.spread + (Math.random() - 0.5) * 0.1);
-                    exchange.latency = Math.max(10, exchange.latency + Math.floor((Math.random() - 0.5) * 4));
-                    exchange.fillRate = Math.min(100, Math.max(98, exchange.fillRate + (Math.random() - 0.5) * 0.2));
-                });
-            }
-
-            // Update microstructure UI elements
-            updateMicrostructureUI() {
-                // Update order book display
-                this.updateOrderBookDisplay('BTC/USD');
-                
-                // Update execution metrics display
-                this.updateExecutionMetricsDisplay();
-                
-                // Update liquidity metrics display  
-                this.updateLiquidityMetricsDisplay();
-                
-                // Update exchange table
-                this.updateExchangeTableDisplay();
-            }
-
-            // Update order book display in UI
-            updateOrderBookDisplay(pair) {
-                const orderBook = this.microstructure.orderBooks.get(pair);
-                if (!orderBook) return;
-
-                // Update bids
-                orderBook.bids.forEach((bid, index) => {
-                    const priceElement = document.querySelector(`#bid-price-${index}`);
-                    const sizeElement = document.querySelector(`#bid-size-${index}`);
-                    if (priceElement) priceElement.textContent = `${bid.price.toFixed(2)}`;
-                    if (sizeElement) sizeElement.textContent = `${bid.size.toFixed(2)} BTC`;
-                });
-
-                // Update asks
-                orderBook.asks.forEach((ask, index) => {
-                    const priceElement = document.querySelector(`#ask-price-${index}`);
-                    const sizeElement = document.querySelector(`#ask-size-${index}`);
-                    if (priceElement) priceElement.textContent = `${ask.price.toFixed(2)}`;
-                    if (sizeElement) sizeElement.textContent = `${ask.size.toFixed(2)} BTC`;
-                });
-
-                // Update spread
-                const spreadElement = document.querySelector('#order-book-spread');
-                if (spreadElement) {
-                    spreadElement.textContent = `$${orderBook.spread.toFixed(2)} (${((orderBook.spread / orderBook.midPrice) * 10000).toFixed(1)}bps)`;
-                }
-            }
-
-            // Update execution metrics display
-            updateExecutionMetricsDisplay() {
-                const metrics = this.microstructure.executionMetrics;
-                const updates = {
-                    '#avg-fill-speed': `${metrics.avgFillSpeed.toFixed(1)}ms`,
-                    '#price-improvement': `${metrics.priceImprovement.toFixed(2)}bps`,
-                    '#reject-rate': `${metrics.rejectRate.toFixed(2)}%`,
-                    '#market-impact': `${metrics.marketImpact.toFixed(2)}bps`
-                };
-
-                Object.entries(updates).forEach(([selector, value]) => {
-                    const element = document.querySelector(selector);
-                    if (element) element.textContent = value;
-                });
-            }
-
-            // Update liquidity metrics display
-            updateLiquidityMetricsDisplay() {
-                const metrics = this.microstructure.liquidityMetrics;
-                const updates = {
-                    '#top-of-book': `$${(metrics.topOfBook / 1000).toFixed(0)}K`,
-                    '#five-level-depth': `$${(metrics.fiveLevelDepth / 1000000).toFixed(1)}M`,
-                    '#liquidity-score': `${metrics.liquidityScore.toFixed(1)}/100`,
-                    '#volatility-5min': `${metrics.volatility5min.toFixed(2)}%`
-                };
-
-                Object.entries(updates).forEach(([selector, value]) => {
-                    const element = document.querySelector(selector);
-                    if (element) element.textContent = value;
-                });
-            }
-
-            // Update exchange table display
-            updateExchangeTableDisplay() {
-                this.microstructure.exchanges.forEach((exchange, name) => {
-                    const rowId = name.toLowerCase().replace(/\s+/g, '-');
-                    const updates = {
-                        [`#${rowId}-price`]: `$${exchange.price.toFixed(2)}`,
-                        [`#${rowId}-spread`]: `$${exchange.spread.toFixed(2)}`,
-                        [`#${rowId}-volume`]: exchange.volume24h > 1e9 ? 
-                            `$${(exchange.volume24h / 1e9).toFixed(1)}B` : 
-                            `$${(exchange.volume24h / 1e6).toFixed(0)}M`,
-                        [`#${rowId}-latency`]: `${exchange.latency}ms`,
-                        [`#${rowId}-fill-rate`]: `${exchange.fillRate.toFixed(1)}%`
-                    };
-
-                    Object.entries(updates).forEach(([selector, value]) => {
-                        const element = document.querySelector(selector);
-                        if (element) element.textContent = value;
-                    });
-                });
-            }
-
-            // Get real-time status
-            getStatus() {
-                return {
-                    isRunning: this.isRunning,
-                    activeStreams: this.dataStreams.size,
-                    lastUpdate: this.lastUpdate,
-                    hyperbolicMetrics: this.hyperbolicMetrics,
-                    microstructure: this.microstructure
-                };
-            }
+            const effectiveSpread = (0.08 + (Math.random() - 0.5) * 0.04).toFixed(3);
+            const priceImpact = (0.12 + (Math.random() - 0.5) * 0.06).toFixed(3);
+            const kylesLambda = (2.34e-6 * (1 + (Math.random() - 0.5) * 0.5)).toExponential(2);
+            const rollsSpread = (0.06 + (Math.random() - 0.5) * 0.02).toFixed(3);
+            
+            const spreadEl = document.getElementById('effective-spread');
+            if (spreadEl) spreadEl.textContent = effectiveSpread + '%';
+            
+            const priceImpactEl = document.getElementById('price-impact');
+            if (priceImpactEl) priceImpactEl.textContent = priceImpact + '%';
+            
+            const lambdaEl = document.getElementById('kyles-lambda');
+            if (lambdaEl) lambdaEl.textContent = kylesLambda;
+            
+            const rollsEl = document.getElementById('rolls-spread');
+            if (rollsEl) rollsEl.textContent = rollsSpread + '%';
         }
-
-        // Global Hyperbolic Space Engine instance
-        let hyperbolicEngine = null;
-
-        // Initialize everything when DOM loads
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('🚀 GOMNA AI Professional Arbitrage Platform Loading...');
+        
+        // Generate Trade Heatmap
+        function generateTradeHeatmap() {
+            const heatmapEl = document.getElementById('trade-heatmap');
+            if (!heatmapEl) return;
             
-            // Initialize Hyperbolic Space Engine
-            hyperbolicEngine = new HyperbolicSpaceEngine();
-            hyperbolicEngine.initialize();
+            heatmapEl.innerHTML = '';
             
-            // Initialize Lucide icons
+            for (let i = 0; i < 96; i++) { // 12x8 grid
+                const cell = document.createElement('div');
+                const intensity = Math.random();
+                const opacity = 0.2 + (intensity * 0.8);
+                
+                cell.className = 'w-full h-4 rounded-sm transition-all duration-1000';
+                cell.style.backgroundColor = `rgba(139, 115, 85, ${opacity})`;
+                
+                heatmapEl.appendChild(cell);
+            }
+            
+            // Update heatmap every 5 seconds
+            setTimeout(() => {
+                const cells = heatmapEl.children;
+                for (let cell of cells) {
+                    const intensity = Math.random();
+                    const opacity = 0.2 + (intensity * 0.8);
+                    cell.style.backgroundColor = `rgba(139, 115, 85, ${opacity})`;
+                }
+            }, 5000);
+        }
+        
+        // AI Assistant Functions
+        function openAIAssistant() {
+            document.getElementById('ai-assistant-modal').classList.remove('hidden');
             lucide.createIcons();
+        }
+        
+        function closeAIAssistant() {
+            document.getElementById('ai-assistant-modal').classList.add('hidden');
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+            if (!message) return;
             
-            console.log('✅ GOMNA AI Platform with Real-time Hyperbolic Space Engine initialized successfully!');
+            const chatMessages = document.getElementById('chat-messages');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex gap-3 justify-end';
+            userMsg.innerHTML = `
+                <div class="bg-cream-600 text-cream-50 p-3 rounded-lg max-w-xs">
+                    <p>${message}</p>
+                </div>
+                <div class="w-8 h-8 bg-cream-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span class="text-cream-50 text-sm">👤</span>
+                </div>
+            `;
+            chatMessages.appendChild(userMsg);
+            
+            input.value = '';
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'flex gap-3';
+                const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+                aiMsg.innerHTML = `
+                    <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="text-cream-50 text-sm">🤖</span>
+                    </div>
+                    <div class="cream-card p-3 rounded-lg flex-1">
+                        <p class="text-cream-800">${response}</p>
+                    </div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000 + Math.random() * 2000);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Send message on Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && e.target.id === 'chat-input') {
+                sendMessage();
+            }
+        });
+        
+        // Assistant Tab Functions
+        function sendAssistantMessage() {
+            const input = document.getElementById('assistant-input');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            const chat = document.getElementById('assistant-chat');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'flex gap-3 justify-end mb-4';
+            userMsg.innerHTML = `
+                <div class="bg-cream-600 text-cream-50 p-3 rounded-lg max-w-xs">
+                    <p>${message}</p>
+                </div>
+                <div class="w-8 h-8 bg-cream-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <span class="text-cream-50 text-sm">👤</span>
+                </div>
+            `;
+            chat.appendChild(userMsg);
+            
+            input.value = '';
+            
+            // Simulate AI response
+            setTimeout(() => {
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'flex gap-3 mb-4';
+                const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+                aiMsg.innerHTML = `
+                    <div class="w-8 h-8 brown-accent rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="text-cream-50 text-sm">🤖</span>
+                    </div>
+                    <div class="cream-panel p-3 rounded-lg flex-1">
+                        <p class="text-cream-800">${response}</p>
+                    </div>
+                `;
+                chat.appendChild(aiMsg);
+                chat.scrollTop = chat.scrollHeight;
+            }, 800 + Math.random() * 1500);
+            
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        // Microstructure Functions
+        function openMicrostructure() {
+            document.getElementById('microstructure-modal').classList.remove('hidden');
+            generateTradeHeatmap();
+            lucide.createIcons();
+        }
+        
+        function closeMicrostructure() {
+            document.getElementById('microstructure-modal').classList.add('hidden');
+        }
+        
+        // Update AI Analysis Panel
+        function updateAIAnalysis() {
+            const sentiments = ['Bullish', 'Bearish', 'Neutral', 'Mixed'];
+            const volatilities = ['Low', 'Medium', 'High', 'Extreme'];
+            const strategies = ['Cross-Exchange', 'Triangular', 'Statistical', 'News-Based'];
+            
+            document.getElementById('ai-sentiment').textContent = sentiments[Math.floor(Math.random() * sentiments.length)];
+            document.getElementById('ai-volatility').textContent = volatilities[Math.floor(Math.random() * volatilities.length)];
+            document.getElementById('ai-strategy').textContent = strategies[Math.floor(Math.random() * strategies.length)];
+        }
+        
+        // Initialize all real-time features
+        function initializePlatform() {
+            initializeRealTimeFeeds();
+            setInterval(updateHyperbolicMetrics, 5000);
+            setInterval(updateAIAnalysis, 30000);
+            
+            // Initialize with immediate updates
+            updateAdvancedMarketData();
+            updateAIAnalysis();
+            
+            console.log('✅ Enhanced GOMNA AI Platform fully initialized!');
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            initializePlatform();
         });
     </script>
 </body>
