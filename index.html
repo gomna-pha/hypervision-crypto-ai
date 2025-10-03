@@ -238,6 +238,33 @@
             color: #d97706;
             border: 1px solid rgba(245, 158, 11, 0.3);
         }
+
+        /* Institutional Subscription Styles */
+        .institutional-card {
+            background: linear-gradient(135deg, #faf7f0 0%, #f5f1e8 100%);
+            border: 2px solid #d4b896;
+        }
+
+        .institutional-input {
+            background: #ffffff;
+            border: 2px solid #e5d5b7;
+            transition: border-color 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .institutional-input:focus {
+            outline: none;
+            border-color: #d4b896;
+            box-shadow: 0 0 0 3px rgba(212, 184, 150, 0.1);
+        }
+
+        .institutional-form-step {
+            display: block;
+        }
+
+        .institutional-form-step.hidden {
+            display: none;
+        }
             box-shadow: 0 6px 20px rgba(139, 115, 85, 0.5);
         }
         @keyframes pulse {
@@ -823,6 +850,500 @@
                                         <div class="bg-accent-500 h-2 rounded-full w-4/5 animate-pulse"></div>
                                     </div>
                                     <span class="text-xs text-accent-300">95.6%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Enhanced Live Market Feeds -->
+                        <div class="market-data-card rounded-lg p-4">
+                            <div class="flex items-center gap-2 mb-4">
+                                <div class="w-2 h-2 bg-accent-400 rounded-full animate-pulse"></div>
+                                <h3 class="font-bold text-white text-sm">🔴 LIVE MARKET FEEDS</h3>
+                                <div class="ml-auto text-xs font-mono text-accent-300 live-timestamp">--:--:--</div>
+                            </div>
+                            
+                            <!-- Primary Markets -->
+                            <div class="space-y-3 mb-4">
+                                <div class="bg-primary-800 rounded p-3">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-white font-semibold">BTC/USD</span>
+                                        <span class="text-accent-400 font-mono font-bold">$67,269.50</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-accent-300">
+                                        <span>Vol: 14.2K</span>
+                                        <span>Trades: 892K</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-primary-800 rounded p-3">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-white font-semibold">ETH/USD</span>
+                                        <span class="text-accent-400 font-mono font-bold">$3,450.61</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs text-accent-300">
+                                        <span>Vol: 23.8K</span>
+                                        <span>Trades: 654K</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Cross-Exchange Spreads -->
+                            <div class="bg-primary-900 rounded p-3 mb-4">
+                                <div class="text-accent-200 font-semibold text-xs mb-2">CROSS-EXCHANGE SPREADS</div>
+                                <div class="space-y-1 text-xs">
+                                    <div class="flex justify-between">
+                                        <span class="text-accent-300">Binance-Coinbase:</span>
+                                        <span class="text-accent-500 font-semibold">+$9.14</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-accent-300">Kraken-Bybit:</span>
+                                        <span class="text-accent-500 font-semibold">+$12.44</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-accent-300">Futures-Spot:</span>
+                                        <span class="text-accent-500 font-semibold">+$129.54</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Book Depth -->
+                            <div class="bg-primary-900 rounded p-3">
+                                <div class="text-accent-200 font-semibold text-xs mb-2">ORDER BOOK DEPTH</div>
+                                <div class="space-y-1 text-xs">
+                                    <div class="flex justify-between">
+                                        <span class="text-red-400">ASK:</span>
+                                        <span class="text-accent-300">$67,238 (150 BTC)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-green-400">BID:</span>
+                                        <span class="text-accent-300">$67,230 (200 BTC)</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-accent-300">Spread:</span>
+                                        <span class="text-accent-400 font-semibold">$8.00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Institutional Tier Subscription -->
+                        <div class="institutional-card rounded-lg p-6 shadow-lg border border-accent-600">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-10 h-10 bg-gradient-to-r from-accent-600 to-accent-400 rounded-xl flex items-center justify-center">
+                                    🏦
+                                </div>
+                                <div>
+                                    <h3 class="font-bold text-cream-900 text-lg">Institutional Tier Subscription</h3>
+                                    <p class="text-sm text-cream-700">Complete Your Professional Trading Account Setup</p>
+                                </div>
+                                <div class="ml-auto">
+                                    <button onclick="closeInstitutionalModal()" class="text-cream-600 hover:text-cream-800 text-xl font-bold">×</button>
+                                </div>
+                            </div>
+
+                            <!-- Progress Steps -->
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-accent-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                                    <span class="text-xs text-cream-700">Entity Info</span>
+                                </div>
+                                <div class="flex-1 h-1 bg-cream-300 mx-2 rounded"></div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-cream-300 text-cream-600 rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                                    <span class="text-xs text-cream-700">Authorized Representative</span>
+                                </div>
+                                <div class="flex-1 h-1 bg-cream-300 mx-2 rounded"></div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-cream-300 text-cream-600 rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                                    <span class="text-xs text-cream-700">Beneficial Ownership</span>
+                                </div>
+                                <div class="flex-1 h-1 bg-cream-300 mx-2 rounded"></div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-cream-300 text-cream-600 rounded-full flex items-center justify-center text-sm font-bold">4</div>
+                                    <span class="text-xs text-cream-700">Trading Experience</span>
+                                </div>
+                                <div class="flex-1 h-1 bg-cream-300 mx-2 rounded"></div>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 bg-cream-300 text-cream-600 rounded-full flex items-center justify-center text-sm font-bold">5</div>
+                                    <span class="text-xs text-cream-700">Compliance</span>
+                                </div>
+                            </div>
+
+                            <!-- Current Step: Entity Information -->
+                            <div id="institutional-form-step-1" class="institutional-form-step">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xl">📋</span>
+                                    <h4 class="font-bold text-cream-900">Entity Information</h4>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Legal Entity Name *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="Enter legal entity name">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">DBA Name (if applicable)</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="Doing business as">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Entity Type *</label>
+                                        <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                            <option value="">Select entity type</option>
+                                            <option value="corporation">Corporation</option>
+                                            <option value="llc">Limited Liability Company</option>
+                                            <option value="partnership">Partnership</option>
+                                            <option value="trust">Trust</option>
+                                            <option value="fund">Investment Fund</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Tax ID / EIN *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="XX-XXXXXXX">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">State/Country of Formation *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="Delaware, USA">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Date of Formation *</label>
+                                        <input type="date" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <label class="block text-sm font-semibold text-cream-900 mb-1">Business Address *</label>
+                                    <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900 mb-2" placeholder="Street address">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="City *">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="State/Province *">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="ZIP/Postal Code *">
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-end mt-6">
+                                    <button onclick="nextInstitutionalStep(2)" class="bg-accent-600 hover:bg-accent-700 text-white px-6 py-2 rounded-md font-semibold transition-colors">
+                                        Continue to Representative Info →
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 2: Authorized Representative -->
+                            <div id="institutional-form-step-2" class="institutional-form-step hidden">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xl">👤</span>
+                                    <h4 class="font-bold text-cream-900">Authorized Representative</h4>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">First Name *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Last Name *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Title/Position *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="CEO, CTO, Fund Manager">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Date of Birth *</label>
+                                        <input type="date" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Social Security Number *</label>
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="XXX-XX-XXXX">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Email Address *</label>
+                                        <input type="email" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Phone Number *</label>
+                                        <input type="tel" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Mobile Number</label>
+                                        <input type="tel" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    <label class="block text-sm font-semibold text-cream-900 mb-1">Home Address *</label>
+                                    <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900 mb-2" placeholder="Street address">
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="City *">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="State *">
+                                        <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="ZIP Code *">
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between mt-6">
+                                    <button onclick="prevInstitutionalStep(1)" class="bg-cream-400 hover:bg-cream-500 text-cream-900 px-6 py-2 rounded-md font-semibold transition-colors">
+                                        ← Back to Entity Info
+                                    </button>
+                                    <button onclick="nextInstitutionalStep(3)" class="bg-accent-600 hover:bg-accent-700 text-white px-6 py-2 rounded-md font-semibold transition-colors">
+                                        Continue to Beneficial Ownership →
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 3: Beneficial Ownership -->
+                            <div id="institutional-form-step-3" class="institutional-form-step hidden">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xl">🏢</span>
+                                    <h4 class="font-bold text-cream-900">Beneficial Ownership (FinCEN CDD Rule)</h4>
+                                </div>
+                                
+                                <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                                    <div class="flex items-center gap-2 mb-2">
+                                        <span class="text-orange-600">⚠️</span>
+                                        <span class="font-semibold text-orange-800">Required by Law</span>
+                                    </div>
+                                    <p class="text-sm text-orange-700">Under FinCEN's Customer Due Diligence (CDD) Rule, we must identify individuals who own 25% or more of the entity and one individual with significant control.</p>
+                                </div>
+
+                                <div class="space-y-6">
+                                    <div>
+                                        <h5 class="font-semibold text-cream-900 mb-3">Beneficial Owner #1</h5>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">First Name *</label>
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">Last Name *</label>
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">Date of Birth *</label>
+                                                <input type="date" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">Ownership Percentage *</label>
+                                                <input type="number" min="25" max="100" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="25">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">Social Security Number *</label>
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="XXX-XX-XXXX">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-cream-900 mb-1">Control Type *</label>
+                                                <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                                    <option value="">Select control type</option>
+                                                    <option value="ownership">Ownership (25%+)</option>
+                                                    <option value="control">Control Person</option>
+                                                    <option value="both">Both</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mt-4">
+                                            <label class="block text-sm font-semibold text-cream-900 mb-1">Address *</label>
+                                            <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900 mb-2" placeholder="Street address">
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="City *">
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="State *">
+                                                <input type="text" class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900" placeholder="ZIP Code *">
+                                            </div>
+                                        </div>
+
+                                        <button class="mt-4 text-accent-600 hover:text-accent-700 font-semibold text-sm">+ Add Another Beneficial Owner</button>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between mt-6">
+                                    <button onclick="prevInstitutionalStep(2)" class="bg-cream-400 hover:bg-cream-500 text-cream-900 px-6 py-2 rounded-md font-semibold transition-colors">
+                                        ← Back to Representative
+                                    </button>
+                                    <button onclick="nextInstitutionalStep(4)" class="bg-accent-600 hover:bg-accent-700 text-white px-6 py-2 rounded-md font-semibold transition-colors">
+                                        Continue to Trading Experience →
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 4: Trading Experience -->
+                            <div id="institutional-form-step-4" class="institutional-form-step hidden">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xl">📊</span>
+                                    <h4 class="font-bold text-cream-900">Trading Experience & Suitability</h4>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-1">Investment Objective *</label>
+                                        <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                            <option value="">Select objective</option>
+                                            <option value="growth">Capital Growth</option>
+                                            <option value="income">Income Generation</option>
+                                            <option value="arbitrage">Arbitrage Profits</option>
+                                            <option value="hedging">Risk Hedging</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-cream-900 mb-1">Algorithmic Trading Experience *</label>
+                                            <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                                <option value="">Select experience level</option>
+                                                <option value="none">No Experience</option>
+                                                <option value="basic">Basic (1-2 years)</option>
+                                                <option value="intermediate">Intermediate (3-5 years)</option>
+                                                <option value="advanced">Advanced (5+ years)</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-cream-900 mb-1">High Frequency Trading Experience *</label>
+                                            <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                                <option value="">Select experience level</option>
+                                                <option value="none">No Experience</option>
+                                                <option value="basic">Basic (1-2 years)</option>
+                                                <option value="intermediate">Intermediate (3-5 years)</option>
+                                                <option value="advanced">Advanced (5+ years)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-cream-900 mb-1">Approximate Net Worth *</label>
+                                            <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                                <option value="">Select range</option>
+                                                <option value="1-5m">$1M - $5M</option>
+                                                <option value="5-10m">$5M - $10M</option>
+                                                <option value="10-50m">$10M - $50M</option>
+                                                <option value="50m+">$50M+</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-cream-900 mb-1">Intended Initial Investment *</label>
+                                            <select class="institutional-input w-full px-3 py-2 border border-cream-300 rounded-md text-cream-900">
+                                                <option value="">Select amount</option>
+                                                <option value="50k-100k">$50K - $100K</option>
+                                                <option value="100k-500k">$100K - $500K</option>
+                                                <option value="500k-1m">$500K - $1M</option>
+                                                <option value="1m+">$1M+</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-cream-900 mb-3">Risk Tolerance *</label>
+                                        <div class="space-y-3">
+                                            <label class="flex items-center gap-3 cursor-pointer">
+                                                <input type="radio" name="risk-tolerance" value="conservative" class="w-4 h-4 text-accent-600">
+                                                <div>
+                                                    <div class="font-semibold text-cream-900">Conservative</div>
+                                                    <div class="text-sm text-cream-700">Low risk, stable returns</div>
+                                                </div>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer">
+                                                <input type="radio" name="risk-tolerance" value="moderate" class="w-4 h-4 text-accent-600">
+                                                <div>
+                                                    <div class="font-semibold text-cream-900">Moderate</div>
+                                                    <div class="text-sm text-cream-700">Balanced risk/return</div>
+                                                </div>
+                                            </label>
+                                            <label class="flex items-center gap-3 cursor-pointer">
+                                                <input type="radio" name="risk-tolerance" value="aggressive" class="w-4 h-4 text-accent-600">
+                                                <div>
+                                                    <div class="font-semibold text-cream-900">Aggressive</div>
+                                                    <div class="text-sm text-cream-700">High risk, high return potential</div>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between mt-6">
+                                    <button onclick="prevInstitutionalStep(3)" class="bg-cream-400 hover:bg-cream-500 text-cream-900 px-6 py-2 rounded-md font-semibold transition-colors">
+                                        ← Back to Beneficial Ownership
+                                    </button>
+                                    <button onclick="nextInstitutionalStep(5)" class="bg-accent-600 hover:bg-accent-700 text-white px-6 py-2 rounded-md font-semibold transition-colors">
+                                        Continue to Compliance →
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Step 5: Compliance -->
+                            <div id="institutional-form-step-5" class="institutional-form-step hidden">
+                                <div class="flex items-center gap-2 mb-4">
+                                    <span class="text-xl">⚖️</span>
+                                    <h4 class="font-bold text-cream-900">Compliance & Legal Agreements</h4>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1" required>
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Accredited Investor Certification *</div>
+                                            <div class="text-sm text-cream-700">I certify that this entity qualifies as an "accredited investor" under Rule 501 of Regulation D.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1" required>
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Qualified Client Certification *</div>
+                                            <div class="text-sm text-cream-700">I certify that this entity is a "qualified client" under Rule 205-3 of the Investment Advisers Act.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1">
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Politically Exposed Person (PEP)</div>
+                                            <div class="text-sm text-cream-700">Check if any beneficial owner or authorized representative is a Politically Exposed Person.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1" required>
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Platform Agreement *</div>
+                                            <div class="text-sm text-cream-700">I agree to the Terms of Service, Privacy Policy, and Algorithmic Trading Agreement.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1" required>
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Risk Disclosure Acknowledgment *</div>
+                                            <div class="text-sm text-cream-700">I acknowledge receipt and understanding of the Algorithmic Trading Risk Disclosure Document.</div>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex items-start gap-3 cursor-pointer">
+                                        <input type="checkbox" class="w-5 h-5 text-accent-600 mt-1" required>
+                                        <div>
+                                            <div class="font-semibold text-cream-900">Anti-Money Laundering (AML) Compliance *</div>
+                                            <div class="text-sm text-cream-700">I certify that all information provided is accurate and agree to notify GOMNA AI of any material changes.</div>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="flex justify-between mt-6">
+                                    <button onclick="prevInstitutionalStep(4)" class="bg-cream-400 hover:bg-cream-500 text-cream-900 px-6 py-2 rounded-md font-semibold transition-colors">
+                                        ← Back to Trading Experience
+                                    </button>
+                                    <button onclick="submitInstitutionalApplication()" class="bg-gradient-to-r from-accent-600 to-accent-700 hover:from-accent-700 hover:to-accent-800 text-white px-8 py-2 rounded-md font-semibold transition-colors">
+                                        🚀 Submit Application
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- CTA Section -->
+                            <div class="mt-6 p-4 bg-gradient-to-r from-accent-50 to-cream-100 rounded-lg border border-accent-200">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex-1">
+                                        <h5 class="font-bold text-cream-900 mb-1">🚀 Subscribe to Purchase Algorithm Strategies</h5>
+                                        <p class="text-sm text-cream-700">Access our professional-grade arbitrage algorithms and hyperbolic CNN models for institutional trading.</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-accent-700">$50,000</div>
+                                        <div class="text-sm text-cream-700">minimum investment</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2302,6 +2823,59 @@
             }
         }
         
+        // Institutional Subscription Functions
+        let currentInstitutionalStep = 1;
+        
+        function nextInstitutionalStep(step) {
+            // Hide current step
+            const currentStepElement = document.getElementById(`institutional-form-step-${currentInstitutionalStep}`);
+            if (currentStepElement) {
+                currentStepElement.classList.add('hidden');
+            }
+            
+            // Show next step
+            const nextStepElement = document.getElementById(`institutional-form-step-${step}`);
+            if (nextStepElement) {
+                nextStepElement.classList.remove('hidden');
+                currentInstitutionalStep = step;
+            }
+            
+            // Update progress indicators
+            updateInstitutionalProgress(step);
+        }
+        
+        function prevInstitutionalStep(step) {
+            nextInstitutionalStep(step);
+        }
+        
+        function updateInstitutionalProgress(activeStep) {
+            for (let i = 1; i <= 5; i++) {
+                const stepElement = document.querySelector(`[data-step="${i}"]`);
+                if (stepElement) {
+                    if (i <= activeStep) {
+                        stepElement.classList.add('bg-accent-600', 'text-white');
+                        stepElement.classList.remove('bg-cream-300', 'text-cream-600');
+                    } else {
+                        stepElement.classList.add('bg-cream-300', 'text-cream-600');
+                        stepElement.classList.remove('bg-accent-600', 'text-white');
+                    }
+                }
+            }
+        }
+        
+        function closeInstitutionalModal() {
+            const modal = document.querySelector('.institutional-card');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        function submitInstitutionalApplication() {
+            // Simulate form submission
+            alert('🎉 Institutional application submitted successfully! Our compliance team will review your application within 2-3 business days.');
+            closeInstitutionalModal();
+        }
+
         // Generate periodic AI insights
         function generatePeriodicInsights() {
             const insights = [
