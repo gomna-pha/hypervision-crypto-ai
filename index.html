@@ -951,9 +951,485 @@
                 </div>
             </div>
         </div>
+
+        <!-- Portfolio Tab Content -->
+        <div id="portfolio-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <!-- Portfolio Overview Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="portfolio-total-value">$2,855,020</div>
+                            <div class="stat-label">Total Portfolio Value</div>
+                            <div class="stat-change positive" id="portfolio-total-change">+$67,430 today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="portfolio-daily-pnl">+$67,430</div>
+                            <div class="stat-label">Daily P&L</div>
+                            <div class="stat-change positive">+2.4%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="portfolio-sharpe">2.31</div>
+                            <div class="stat-label">Sharpe Ratio</div>
+                            <div class="stat-change positive">+0.05 this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="portfolio-drawdown">-4.2%</div>
+                            <div class="stat-label">Max Drawdown</div>
+                            <div class="stat-change positive">Improved</div>
+                        </div>
+                    </div>
+
+                    <!-- Holdings Table -->
+                    <div class="pro-card p-6">
+                        <h2 class="text-xl font-bold text-cream-900 mb-6 flex items-center gap-2">
+                            <div class="live-dot"></div>
+                            Current Holdings
+                        </h2>
+                        <table class="modern-table">
+                            <thead>
+                                <tr>
+                                    <th>Asset</th>
+                                    <th>Quantity</th>
+                                    <th>Avg Price</th>
+                                    <th>Current Price</th>
+                                    <th>P&L</th>
+                                    <th>Allocation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>BTC</strong></td>
+                                    <td>19.065</td>
+                                    <td>$65,420</td>
+                                    <td class="font-semibold">$67,269</td>
+                                    <td class="positive font-semibold">+$35,234 (+2.8%)</td>
+                                    <td>45.2%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>ETH</strong></td>
+                                    <td>247.2</td>
+                                    <td>$3,380</td>
+                                    <td class="font-semibold">$3,451</td>
+                                    <td class="positive font-semibold">+$17,551 (+2.1%)</td>
+                                    <td>29.8%</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SOL</strong></td>
+                                    <td>1,250</td>
+                                    <td>$198</td>
+                                    <td class="font-semibold">$206</td>
+                                    <td class="positive font-semibold">+$10,000 (+4.0%)</td>
+                                    <td>9.0%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Portfolio Sidebar -->
+                <div class="sidebar">
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Risk Metrics</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">VaR (95%):</span>
+                                <span class="font-semibold">$89,400</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Beta:</span>
+                                <span class="font-semibold">0.85</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Volatility:</span>
+                                <span class="font-semibold">12.8%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Win Rate:</span>
+                                <span class="font-semibold text-accent-600">74.2%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Performance Analytics</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-cream-700">Total Return:</span>
+                                <span class="font-semibold positive">+24.7%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-cream-700">Annualized:</span>
+                                <span class="font-semibold positive">+18.2%</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-cream-700">Best Day:</span>
+                                <span class="font-semibold positive">+$127,450</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- Global Markets Tab Content -->
+        <div id="markets-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <!-- Market Overview -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">72</div>
+                            <div class="stat-label">Fear & Greed Index</div>
+                            <div class="stat-change positive">Greed Territory</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">14.2</div>
+                            <div class="stat-label">VIX Level</div>
+                            <div class="stat-change positive">Low Volatility</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">103.45</div>
+                            <div class="stat-label">DXY Index</div>
+                            <div class="stat-change negative">-0.2%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">RISK_ON</div>
+                            <div class="stat-label">Market Regime</div>
+                            <div class="stat-change positive">Bullish</div>
+                        </div>
+                    </div>
+
+                    <!-- Global Indices -->
+                    <div class="pro-card p-6">
+                        <h2 class="text-xl font-bold text-cream-900 mb-6 flex items-center gap-2">
+                            <div class="live-dot"></div>
+                            Global Market Indices
+                        </h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">S&P 500 🇺🇸</span>
+                                    <span class="font-bold">4,567</span>
+                                </div>
+                                <div class="text-sm text-cream-700 positive">+0.8% (+35pts)</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">NASDAQ 🇺🇸</span>
+                                    <span class="font-bold">14,234</span>
+                                </div>
+                                <div class="text-sm text-cream-700 positive">+1.2% (+168pts)</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">Nikkei 225 🇯🇵</span>
+                                    <span class="font-bold">33,456</span>
+                                </div>
+                                <div class="text-sm text-cream-700 positive">+0.6% (+201pts)</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">FTSE 100 🇬🇧</span>
+                                    <span class="font-bold">7,823</span>
+                                </div>
+                                <div class="text-sm text-cream-700 positive">+0.4% (+31pts)</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">DAX 🇩🇪</span>
+                                    <span class="font-bold">15,678</span>
+                                </div>
+                                <div class="text-sm text-cream-700 negative">-0.2% (-32pts)</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-semibold">Hang Seng 🇭🇰</span>
+                                    <span class="font-bold">18,234</span>
+                                </div>
+                                <div class="text-sm text-cream-700 positive">+1.8% (+322pts)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Markets Sidebar -->
+                <div class="sidebar">
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Commodities</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Gold (XAU/USD)</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">$2,034</div>
+                                    <div class="text-sm positive">+0.23%</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Silver (XAG/USD)</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">$24.56</div>
+                                    <div class="text-sm positive">+0.89%</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Oil WTI</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">$78.34</div>
+                                    <div class="text-sm negative">-1.45%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Major Forex</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>EUR/USD</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">1.0856</div>
+                                    <div class="text-sm positive">+0.12%</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>GBP/USD</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">1.2634</div>
+                                    <div class="text-sm negative">-0.08%</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>USD/JPY</span>
+                                <div class="text-right">
+                                    <div class="font-semibold">149.23</div>
+                                    <div class="text-sm positive">+0.34%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Transparency Tab Content -->
+        <div id="transparency-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <!-- Model Performance Stats -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="model-overall-confidence">94.7%</div>
+                            <div class="stat-label">Model Confidence</div>
+                            <div class="stat-change positive">High Accuracy</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="model-accuracy">94.2%</div>
+                            <div class="stat-label">Accuracy</div>
+                            <div class="stat-change positive">+0.3%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="model-precision">91.7%</div>
+                            <div class="stat-label">Precision</div>
+                            <div class="stat-change positive">Excellent</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="model-f1">93.9%</div>
+                            <div class="stat-label">F1 Score</div>
+                            <div class="stat-change positive">Optimal</div>
+                        </div>
+                    </div>
+
+                    <!-- AI Decisions Feed -->
+                    <div class="pro-card p-6">
+                        <h2 class="text-xl font-bold text-cream-900 mb-6 flex items-center gap-2">
+                            <div class="live-dot"></div>
+                            Live AI Decisions
+                        </h2>
+                        <div id="ai-decisions-feed" class="space-y-3">
+                            <div class="bg-cream-100 p-4 rounded-lg border-l-4 border-accent-600">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-semibold text-cream-900">BUY Signal: BTC/USDT</span>
+                                    <span class="text-xs text-accent-600 bg-accent-100 px-2 py-1 rounded-full">96.7%</span>
+                                </div>
+                                <div class="text-xs text-cream-700">Hyperbolic momentum breakout detected with positive sentiment convergence</div>
+                                <div class="text-xs text-cream-600 mt-2">2 seconds ago</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg border-l-4 border-accent-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-semibold text-cream-900">HOLD Signal: ETH/USDT</span>
+                                    <span class="text-xs text-accent-600 bg-accent-100 px-2 py-1 rounded-full">87.2%</span>
+                                </div>
+                                <div class="text-xs text-cream-700">Market volatility above threshold, maintaining current position</div>
+                                <div class="text-xs text-cream-600 mt-2">15 seconds ago</div>
+                            </div>
+                            <div class="bg-cream-100 p-4 rounded-lg border-l-4 border-red-500">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-semibold text-cream-900">SELL Signal: SOL/USDT</span>
+                                    <span class="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full">91.3%</span>
+                                </div>
+                                <div class="text-xs text-cream-700">Geodesic divergence signal triggered, profit-taking recommended</div>
+                                <div class="text-xs text-cream-600 mt-2">28 seconds ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transparency Sidebar -->
+                <div class="sidebar">
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Model Components</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">Hyperbolic CNN</span>
+                                    <span class="text-sm font-semibold" id="model-hyperbolic-cnn-weight">40%</span>
+                                </div>
+                                <div class="w-full bg-cream-200 rounded-full h-2">
+                                    <div class="bg-accent-500 h-2 rounded-full" style="width: 40%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">LSTM-Transformer</span>
+                                    <span class="text-sm font-semibold" id="model-lstm-transformer-weight">25%</span>
+                                </div>
+                                <div class="w-full bg-cream-200 rounded-full h-2">
+                                    <div class="bg-accent-500 h-2 rounded-full" style="width: 25%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm">FinBERT Sentiment</span>
+                                    <span class="text-sm font-semibold">20%</span>
+                                </div>
+                                <div class="w-full bg-cream-200 rounded-full h-2">
+                                    <div class="bg-accent-500 h-2 rounded-full" style="width: 20%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Hyperbolic Metrics</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Curvature:</span>
+                                <span class="font-semibold" id="hyperbolic-curvature">-1.0</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Geodesic Opt:</span>
+                                <span class="font-semibold" id="hyperbolic-geodesic">0.94</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-cream-700">Convergence:</span>
+                                <span class="font-semibold" id="hyperbolic-convergence">0.97</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Tab Content -->
+        <div id="assistant-tab" class="tab-content">
+            <div class="dashboard-grid">
+                <div class="main-content">
+                    <div class="pro-card p-6 h-full">
+                        <div class="flex items-center gap-3 mb-6">
+                            <div class="w-10 h-10 bg-accent-500 rounded-full flex items-center justify-center">
+                                <i class="w-6 h-6 text-white" data-lucide="bot"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-cream-900">GOMNA AI Assistant</h2>
+                                <p class="text-sm text-cream-700">Advanced Trading Intelligence & Analysis</p>
+                            </div>
+                            <div class="ml-auto flex items-center gap-2">
+                                <div class="live-dot"></div>
+                                <span class="text-sm text-cream-700">Online</span>
+                            </div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div id="chat-messages" class="h-96 overflow-y-auto mb-4 space-y-4">
+                            <div class="bg-cream-100 p-4 rounded-lg">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center">
+                                        <i class="w-4 h-4 text-white" data-lucide="bot"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="font-semibold text-cream-900 mb-1">GOMNA AI</div>
+                                        <div class="text-cream-800">
+                                            Welcome to your advanced trading assistant! I can help you with:
+                                            <ul class="list-disc list-inside mt-2 space-y-1">
+                                                <li>Real-time market analysis and insights</li>
+                                                <li>Arbitrage opportunity evaluation</li>
+                                                <li>Risk assessment and portfolio optimization</li>
+                                                <li>Trading strategy recommendations</li>
+                                                <li>Hyperbolic CNN model explanations</li>
+                                            </ul>
+                                            Ask me anything about your trading platform or market conditions!
+                                        </div>
+                                        <div class="text-xs text-cream-600 mt-2">Just now</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message Input -->
+                        <div class="flex gap-3">
+                            <input type="text" id="ai-input" class="flex-1 px-4 py-3 bg-cream-100 border border-cream-300 rounded-lg text-cream-900 placeholder-cream-600 focus:outline-none focus:border-accent-500" placeholder="Ask me about market conditions or trading strategies..." onkeypress="handleAIInput(event)">
+                            <button class="btn-primary px-6 py-3" onclick="sendAIMessage()">
+                                <i class="w-4 h-4" data-lucide="send"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assistant Sidebar -->
+                <div class="sidebar">
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">AI Insights</h3>
+                        <div id="ai-insights-feed" class="space-y-3">
+                            <div class="bg-cream-100 p-3 rounded-lg border-l-4 border-accent-500">
+                                <div class="font-semibold text-sm text-cream-900">Volume Spike Alert</div>
+                                <div class="text-xs text-cream-700">BTC volume +127% above average</div>
+                                <div class="text-xs text-cream-600 mt-1">2m ago</div>
+                            </div>
+                            <div class="bg-cream-100 p-3 rounded-lg border-l-4 border-accent-600">
+                                <div class="font-semibold text-sm text-cream-900">Arbitrage Opportunity</div>
+                                <div class="text-xs text-cream-700">New cross-exchange spread: +0.23% profit</div>
+                                <div class="text-xs text-cream-600 mt-1">5m ago</div>
+                            </div>
+                            <div class="bg-cream-100 p-3 rounded-lg border-l-4 border-accent-400">
+                                <div class="font-semibold text-sm text-cream-900">Risk Update</div>
+                                <div class="text-xs text-cream-700">Portfolio correlation risk decreased</div>
+                                <div class="text-xs text-cream-600 mt-1">8m ago</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pro-card p-5">
+                        <h3 class="text-lg font-bold text-cream-900 mb-4">Quick Analysis</h3>
+                        <div class="space-y-3">
+                            <button class="btn-secondary w-full text-left text-sm" onclick="sendQuickMessage('Analyze current market sentiment')">
+                                📊 Market Sentiment
+                            </button>
+                            <button class="btn-secondary w-full text-left text-sm" onclick="sendQuickMessage('What are the best arbitrage opportunities right now?')">
+                                💰 Best Arbitrage Ops
+                            </button>
+                            <button class="btn-secondary w-full text-left text-sm" onclick="sendQuickMessage('Assess my portfolio risk')">
+                                ⚠️ Portfolio Risk
+                            </button>
+                            <button class="btn-secondary w-full text-left text-sm" onclick="sendQuickMessage('Explain the latest AI trading decisions')">
+                                🤖 AI Decisions
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
         <!-- Navigation Tabs -->
         <div class="glass-effect">
@@ -4576,6 +5052,96 @@
             if (selectedNavTab) {
                 selectedNavTab.classList.add('active');
             }
+        }
+
+        // AI Assistant Functions
+        function handleAIInput(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('ai-input');
+            const message = input.value.trim();
+            
+            if (message) {
+                addUserMessage(message);
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    generateAIResponse(message);
+                }, 1000);
+            }
+        }
+
+        function sendQuickMessage(message) {
+            addUserMessage(message);
+            setTimeout(() => {
+                generateAIResponse(message);
+            }, 1000);
+        }
+
+        function addUserMessage(message) {
+            const chatContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'bg-accent-50 p-4 rounded-lg ml-12';
+            messageDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <div class="font-semibold text-cream-900 mb-1">You</div>
+                        <div class="text-cream-800">${message}</div>
+                        <div class="text-xs text-cream-600 mt-2">Just now</div>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const responses = {
+                'market': 'Current market sentiment shows bullish momentum with BTC leading the charge. The Fear & Greed Index at 72 indicates strong investor confidence. Volume patterns suggest continued upward pressure.',
+                'arbitrage': 'I\'ve identified 3 high-confidence arbitrage opportunities: BTC/USDT on Binance-Coinbase (+0.23%), ETH/USDT Kraken-Bybit (+0.18%), and SOL/USDT Futures-Spot (+0.31%). All show execution times under 50μs.',
+                'risk': 'Your portfolio shows excellent risk metrics: Sharpe ratio of 2.31, max drawdown of -4.2%, and VaR at $89,400. Beta of 0.85 indicates lower volatility than market. Consider maintaining current allocation.',
+                'decisions': 'Latest AI model decisions include a BUY signal for BTC/USDT (96.7% confidence) due to hyperbolic momentum breakout, and a HOLD for ETH/USDT (87.2% confidence) as volatility exceeds threshold.'
+            };
+            
+            let response = 'Based on current market analysis and your portfolio data, I recommend monitoring the key metrics displayed in your dashboard. ';
+            
+            // Simple keyword matching for more relevant responses
+            const lowerMessage = userMessage.toLowerCase();
+            if (lowerMessage.includes('sentiment') || lowerMessage.includes('market')) {
+                response = responses['market'];
+            } else if (lowerMessage.includes('arbitrage') || lowerMessage.includes('opportunities')) {
+                response = responses['arbitrage'];
+            } else if (lowerMessage.includes('risk') || lowerMessage.includes('portfolio')) {
+                response = responses['risk'];
+            } else if (lowerMessage.includes('decision') || lowerMessage.includes('ai')) {
+                response = responses['decisions'];
+            }
+            
+            const chatContainer = document.getElementById('chat-messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'bg-cream-100 p-4 rounded-lg';
+            messageDiv.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center">
+                        <i class="w-4 h-4 text-white" data-lucide="bot"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-semibold text-cream-900 mb-1">GOMNA AI</div>
+                        <div class="text-cream-800">${response}</div>
+                        <div class="text-xs text-cream-600 mt-2">Just now</div>
+                    </div>
+                </div>
+            `;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Reinitialize icons for new content
+            lucide.createIcons();
         }
 
         // Initialize everything when DOM loads
