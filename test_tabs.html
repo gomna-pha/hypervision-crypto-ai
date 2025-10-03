@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tab Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { margin: 10px; padding: 10px; background: #4CAF50; color: white; border: none; cursor: pointer; }
+        button:hover { background: #45a049; }
+        .result { margin: 20px 0; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; }
+    </style>
+</head>
+<body>
+    <h1>GOMNA AI Tab Test</h1>
+    <p>Click the buttons below to test tab switching functionality:</p>
+    
+    <button onclick="testTab('portfolio')">Test Portfolio Tab</button>
+    <button onclick="testTab('markets')">Test Global Markets Tab</button>
+    <button onclick="testTab('transparency')">Test Model Transparency Tab</button>
+    <button onclick="testTab('investor-portal')">Test Investor Portal Tab</button>
+    <button onclick="testTab('trading')">Test Trading Dashboard Tab</button>
+    
+    <div id="result" class="result">
+        Click a button above to test tab functionality on the main platform.
+    </div>
+
+    <script>
+        function testTab(tabName) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `<h3>Testing ${tabName} tab...</h3><p>Opening main platform and switching to ${tabName} tab...</p>`;
+            
+            // Open the main platform in a new window and switch to the specified tab
+            const mainWindow = window.open('/', '_blank');
+            
+            // Wait for the main window to load, then switch tab
+            setTimeout(() => {
+                try {
+                    if (mainWindow && mainWindow.switchTab) {
+                        mainWindow.switchTab(tabName);
+                        resultDiv.innerHTML += `<p style="color: green;">✅ Successfully switched to ${tabName} tab!</p>`;
+                    } else {
+                        // Try via debug function
+                        if (mainWindow && mainWindow.eval) {
+                            mainWindow.eval(`switchTab('${tabName}')`);
+                            resultDiv.innerHTML += `<p style="color: green;">✅ Tab switch command executed via eval!</p>`;
+                        } else {
+                            resultDiv.innerHTML += `<p style="color: orange;">⚠️ Could not access main window functions directly. Please manually check the tab in the opened window.</p>`;
+                        }
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML += `<p style="color: red;">❌ Error: ${error.message}</p>`;
+                    resultDiv.innerHTML += `<p style="color: blue;">ℹ️ This is expected due to cross-origin restrictions. Please manually check the tab in the opened window.</p>`;
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
