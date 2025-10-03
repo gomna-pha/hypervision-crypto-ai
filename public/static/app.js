@@ -5,6 +5,11 @@ class TradingDashboard {
         this.currentSection = 'dashboard'
         this.refreshInterval = null
         this.portfolio = null
+        this.candlestickChart = null
+        this.currentSymbol = 'BTC'
+        this.currentTimeframe = '1m'
+        this.patternAlerts = []
+        this.hyperbolicAnalysis = {}
         this.init()
     }
 
@@ -71,6 +76,9 @@ class TradingDashboard {
                 this.executeArbitrage(opportunityData)
             }
         })
+
+        // Advanced Chart Controls
+        this.setupChartControls()
     }
 
     updateClock() {
@@ -102,7 +110,9 @@ class TradingDashboard {
                     this.loadMarketData(),
                     this.loadArbitrageOpportunities(),
                     this.loadOrderBook(),
-                    this.drawPoincareVisualization()
+                    this.drawPoincareVisualization(),
+                    this.initializeCandlestickChart(),
+                    this.startHyperbolicAnalysis()
                 ])
                 break
             case 'portfolio':
@@ -686,6 +696,384 @@ class TradingDashboard {
         
         container.appendChild(messageDiv)
         container.scrollTop = container.scrollHeight
+    }
+
+    // Advanced Hyperbolic CNN Chart Analysis System
+    setupChartControls() {
+        // Symbol selection buttons
+        const symbolButtons = document.querySelectorAll('.symbol-btn')
+        symbolButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                symbolButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-accent', 'text-dark-bg')
+                    b.classList.add('bg-gray-700', 'text-white')
+                })
+                e.target.classList.add('active', 'bg-accent', 'text-dark-bg')
+                e.target.classList.remove('bg-gray-700', 'text-white')
+                
+                this.currentSymbol = e.target.dataset.symbol
+                this.loadCandlestickData()
+            })
+        })
+
+        // Timeframe selection buttons
+        const timeframeButtons = document.querySelectorAll('.timeframe-btn')
+        timeframeButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                timeframeButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-accent', 'text-dark-bg')
+                    b.classList.add('bg-gray-700', 'text-white')
+                })
+                e.target.classList.add('active', 'bg-accent', 'text-dark-bg')
+                e.target.classList.remove('bg-gray-700', 'text-white')
+                
+                this.currentTimeframe = e.target.dataset.timeframe
+                this.loadCandlestickData()
+            })
+        })
+
+        // Pattern analysis button
+        const analyzeButton = document.getElementById('analyze-chart')
+        if (analyzeButton) {
+            analyzeButton.addEventListener('click', () => {
+                this.performHyperbolicAnalysis()
+            })
+        }
+
+        // Pattern-based arbitrage execution
+        const executePatternButton = document.getElementById('execute-pattern-arbitrage')
+        if (executePatternButton) {
+            executePatternButton.addEventListener('click', () => {
+                this.executePatternBasedArbitrage()
+            })
+        }
+    }
+
+    async initializeCandlestickChart() {
+        const canvas = document.getElementById('candlestick-chart')
+        if (!canvas) return
+
+        const ctx = canvas.getContext('2d')
+        
+        // Initialize with empty chart
+        this.candlestickChart = new Chart(ctx, {
+            type: 'candlestick',
+            data: {
+                datasets: [{
+                    label: `${this.currentSymbol}/USD`,
+                    data: [],
+                    borderColor: '#00d4aa',
+                    backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'minute'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#ffffff'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: '#ffffff'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#ffffff'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(26, 31, 41, 0.9)',
+                        titleColor: '#00d4aa',
+                        bodyColor: '#ffffff',
+                        borderColor: '#00d4aa',
+                        borderWidth: 1
+                    }
+                },
+                interaction: {
+                    mode: 'nearest',
+                    axis: 'x',
+                    intersect: false
+                }
+            }
+        })
+
+        // Load initial data
+        await this.loadCandlestickData()
+    }
+
+    async loadCandlestickData() {
+        try {
+            const response = await axios.get(`/api/candlestick/${this.currentSymbol}/${this.currentTimeframe}`)
+            const data = response.data
+
+            // Convert data to Chart.js candlestick format
+            const chartData = data.data.map(candle => ({
+                x: candle.timestamp,
+                o: candle.open,
+                h: candle.high,
+                l: candle.low,
+                c: candle.close
+            }))
+
+            if (this.candlestickChart) {
+                this.candlestickChart.data.datasets[0].data = chartData
+                this.candlestickChart.data.datasets[0].label = `${this.currentSymbol}/USD (${this.currentTimeframe})`
+                this.candlestickChart.update('none')
+            }
+
+            // Trigger automatic pattern analysis
+            setTimeout(() => this.performHyperbolicAnalysis(), 1000)
+
+        } catch (error) {
+            console.error('Error loading candlestick data:', error)
+        }
+    }
+
+    async performHyperbolicAnalysis() {
+        try {
+            const response = await axios.get(`/api/pattern-analysis/${this.currentSymbol}/${this.currentTimeframe}`)
+            const analysis = response.data
+
+            this.updatePatternAnalysisUI(analysis)
+            this.checkPatternAlerts(analysis)
+
+        } catch (error) {
+            console.error('Error performing hyperbolic analysis:', error)
+        }
+    }
+
+    updatePatternAnalysisUI(analysis) {
+        const { pattern, arbitrageTiming } = analysis
+
+        // Update pattern analysis panel
+        document.getElementById('detected-pattern').textContent = pattern.pattern.replace(/_/g, ' ').toUpperCase()
+        document.getElementById('pattern-confidence').textContent = `${pattern.confidence}%`
+        document.getElementById('pattern-signal').textContent = pattern.signal.replace(/_/g, ' ').toUpperCase()
+        document.getElementById('arbitrage-relevance').textContent = `${pattern.arbitrageRelevance}%`
+
+        // Update hyperbolic metrics
+        document.getElementById('geodesic-efficiency').textContent = `${pattern.geodesicEfficiency}%`
+        document.getElementById('hyperbolic-distance').textContent = pattern.hyperbolicDistance
+
+        // Update arbitrage timing
+        document.getElementById('timing-action').textContent = arbitrageTiming.timing.toUpperCase()
+        document.getElementById('optimal-entry').textContent = arbitrageTiming.optimalEntry || 'N/A'
+        document.getElementById('risk-level').textContent = arbitrageTiming.riskLevel.toUpperCase()
+        document.getElementById('timing-recommendation').textContent = arbitrageTiming.recommendation
+
+        // Update colors based on signal
+        const signalElement = document.getElementById('pattern-signal')
+        const actionElement = document.getElementById('timing-action')
+        
+        signalElement.className = pattern.signal.includes('bullish') ? 'text-profit' : 
+                                 pattern.signal.includes('bearish') ? 'text-loss' : 'text-warning'
+        
+        actionElement.className = arbitrageTiming.timing === 'buy' ? 'text-profit' :
+                                 arbitrageTiming.timing === 'sell' ? 'text-loss' : 'text-warning'
+
+        // Enable/disable execution button
+        const executeButton = document.getElementById('execute-pattern-arbitrage')
+        if (pattern.arbitrageRelevance > 75 && pattern.confidence > 80) {
+            executeButton.disabled = false
+            executeButton.classList.remove('opacity-50')
+        } else {
+            executeButton.disabled = true
+            executeButton.classList.add('opacity-50')
+        }
+
+        // Store analysis for later use
+        this.hyperbolicAnalysis = analysis
+    }
+
+    checkPatternAlerts(analysis) {
+        const { pattern, arbitrageTiming } = analysis
+        
+        // Generate alert if high-confidence pattern detected
+        if (pattern.confidence > 90 && pattern.arbitrageRelevance > 85) {
+            const alert = {
+                timestamp: new Date().toLocaleTimeString(),
+                symbol: this.currentSymbol,
+                timeframe: this.currentTimeframe,
+                pattern: pattern.pattern,
+                confidence: pattern.confidence,
+                action: arbitrageTiming.timing,
+                message: `High-confidence ${pattern.pattern} detected for ${this.currentSymbol} (${this.currentTimeframe})`
+            }
+            
+            this.addPatternAlert(alert)
+        }
+    }
+
+    addPatternAlert(alert) {
+        this.patternAlerts.unshift(alert)
+        if (this.patternAlerts.length > 10) {
+            this.patternAlerts.pop()
+        }
+
+        const alertsContainer = document.getElementById('pattern-alerts')
+        if (alertsContainer) {
+            alertsContainer.innerHTML = this.patternAlerts.map(alert => `
+                <div class="flex items-center justify-between p-2 bg-gray-900 rounded text-sm">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                        <span class="font-semibold">${alert.symbol}</span>
+                        <span class="text-gray-400">${alert.timeframe}</span>
+                        <span class="text-warning">${alert.pattern.replace(/_/g, ' ')}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-accent">${alert.confidence}%</span>
+                        <span class="text-xs text-gray-400">${alert.timestamp}</span>
+                    </div>
+                </div>
+            `).join('')
+        }
+    }
+
+    async executePatternBasedArbitrage() {
+        if (!this.hyperbolicAnalysis) {
+            this.showNotification('No pattern analysis available', 'error')
+            return
+        }
+
+        try {
+            const opportunityData = {
+                type: 'Hyperbolic CNN Pattern-Based',
+                symbol: this.currentSymbol,
+                timeframe: this.currentTimeframe,
+                pattern: this.hyperbolicAnalysis.pattern.pattern,
+                confidence: this.hyperbolicAnalysis.pattern.confidence,
+                arbitrageRelevance: this.hyperbolicAnalysis.pattern.arbitrageRelevance,
+                timing: this.hyperbolicAnalysis.arbitrageTiming.timing,
+                geodesicEfficiency: this.hyperbolicAnalysis.pattern.geodesicEfficiency
+            }
+
+            const response = await axios.post('/api/execute-arbitrage', opportunityData)
+            const result = response.data
+
+            if (result.success) {
+                this.showNotification(`✅ Pattern-based arbitrage executed! Pattern: ${opportunityData.pattern}, Confidence: ${opportunityData.confidence}%`, 'success')
+                
+                // Add to pattern alerts
+                this.addPatternAlert({
+                    timestamp: new Date().toLocaleTimeString(),
+                    symbol: this.currentSymbol,
+                    timeframe: this.currentTimeframe,
+                    pattern: opportunityData.pattern,
+                    confidence: opportunityData.confidence,
+                    action: 'EXECUTED',
+                    message: `Pattern-based arbitrage executed: ${opportunityData.pattern}`
+                })
+            } else {
+                this.showNotification(`❌ Pattern execution failed: ${result.message}`, 'error')
+            }
+
+        } catch (error) {
+            console.error('Error executing pattern-based arbitrage:', error)
+            this.showNotification('❌ Network error during pattern execution', 'error')
+        }
+    }
+
+    async startHyperbolicAnalysis() {
+        // Start continuous hyperbolic analysis updates
+        setInterval(async () => {
+            if (this.currentSection === 'dashboard') {
+                await this.loadCandlestickData()
+                
+                // Load multi-timeframe analysis
+                await this.loadMultiTimeframeAnalysis()
+            }
+        }, 5000) // Update every 5 seconds for pattern analysis
+    }
+
+    async loadMultiTimeframeAnalysis() {
+        try {
+            const response = await axios.get('/api/hyperbolic-analysis')
+            const analysis = response.data
+
+            // Update navigation with pattern confidence indicators
+            const symbols = ['BTC', 'ETH', 'SOL']
+            symbols.forEach(symbol => {
+                const button = document.querySelector(`.symbol-btn[data-symbol="${symbol}"]`)
+                if (button && analysis[symbol]) {
+                    const maxConfidence = Math.max(
+                        ...Object.values(analysis[symbol]).map(tf => tf.confidence)
+                    )
+                    
+                    // Add confidence indicator
+                    let indicator = button.querySelector('.confidence-indicator')
+                    if (!indicator) {
+                        indicator = document.createElement('span')
+                        indicator.className = 'confidence-indicator ml-1 w-2 h-2 rounded-full inline-block'
+                        button.appendChild(indicator)
+                    }
+                    
+                    if (maxConfidence > 90) {
+                        indicator.className = 'confidence-indicator ml-1 w-2 h-2 rounded-full inline-block bg-profit animate-pulse'
+                    } else if (maxConfidence > 75) {
+                        indicator.className = 'confidence-indicator ml-1 w-2 h-2 rounded-full inline-block bg-warning'
+                    } else {
+                        indicator.className = 'confidence-indicator ml-1 w-2 h-2 rounded-full inline-block bg-gray-500'
+                    }
+                }
+            })
+
+        } catch (error) {
+            console.error('Error loading multi-timeframe analysis:', error)
+        }
+    }
+
+    async sendChatMessage() {
+        const input = document.getElementById('chat-input')
+        const message = input.value.trim()
+        
+        if (!message) return
+        
+        // Add user message to chat
+        this.addChatMessage(message, 'user')
+        input.value = ''
+        
+        try {
+            // Include current chart data in query for enhanced AI analysis
+            const chartData = this.hyperbolicAnalysis || {}
+            
+            const response = await axios.post('/api/ai-query', { 
+                query: message,
+                chartData: chartData
+            })
+            const result = response.data
+            
+            // Add AI response to chat with enhanced formatting for chart analysis
+            this.addChatMessage(result.response, 'ai', result.confidence)
+            
+            // If chart data is included, show additional insights
+            if (result.patternAnalysis) {
+                setTimeout(() => {
+                    this.addChatMessage(`📊 **Additional Chart Insights**: The hyperbolic CNN detected ${result.patternAnalysis.pattern} with ${result.patternAnalysis.geodesicEfficiency}% geodesic efficiency. This pattern has ${result.patternAnalysis.arbitrageRelevance}% relevance for arbitrage opportunities.`, 'ai', result.confidence)
+                }, 1000)
+            }
+            
+        } catch (error) {
+            console.error('Error sending chat message:', error)
+            this.addChatMessage('Sorry, I encountered an error processing your request.', 'ai')
+        }
     }
 
     showNotification(message, type = 'info') {
