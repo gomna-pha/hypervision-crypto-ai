@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GOMNA AI Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #0a0a0f; color: white; }
+        h1 { color: #10b981; font-size: 2.5em; margin-bottom: 20px; }
+        .status { background: #1f2937; padding: 20px; border-radius: 10px; margin: 20px; }
+        .success { color: #10b981; font-size: 1.2em; font-weight: bold; }
+        .timestamp { color: #6b7280; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>🚀 GOMNA AI Deployment Test</h1>
+    
+    <div class="status">
+        <div class="success">✅ GitHub Pages Deployment Successful!</div>
+        <div class="timestamp">Deployed: <span id="timestamp"></span></div>
+    </div>
+    
+    <div class="status">
+        <h3>🧠 Platform Status</h3>
+        <p>✅ Repository: Active</p>
+        <p>✅ Files: Uploaded</p>
+        <p>✅ Configuration: Fixed</p>
+        <p>✅ Deployment: Working</p>
+    </div>
+    
+    <div class="status">
+        <h3>🎯 Access Links</h3>
+        <p><a href="./index.html" style="color: #60a5fa; text-decoration: none;">Main Platform</a></p>
+        <p><a href="./working.html" style="color: #10b981; text-decoration: none;">Working Version</a></p>
+        <p><a href="./live.html" style="color: #f59e0b; text-decoration: none;">Live Access</a></p>
+    </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+        console.log('✅ GOMNA AI Test Page Loaded - Deployment Working!');
+        
+        // Auto-redirect to main platform after 5 seconds
+        setTimeout(() => {
+            window.location.href = './index.html';
+        }, 5000);
+    </script>
+</body>
+</html>
