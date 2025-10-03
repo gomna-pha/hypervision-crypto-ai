@@ -1,27 +1,35 @@
-# GitHub Pages Configuration
-title: Gomna AI Trading & Payment Platform
-description: Institutional Quantitative Trading with Comprehensive Payment Processing
+# GitHub Pages Configuration for GOMNA AI Platform
+title: "GOMNA AI - Hyperbolic CNN Trading Platform"
+description: "Advanced AI Trading with Hyperbolic CNN and Multimodal Data Fusion"
+
+# Use no Jekyll theme to allow custom HTML
 theme: null
+markdown: kramdown
+highlighter: rouge
+
+# Plugins
 plugins: []
 
-# Exclude files from processing
-exclude:
-  - node_modules
-  - package.json
-  - package-lock.json
-  - supervisord.conf
-  - server.js
-  - api-integration.js
-  - ecosystem.config.js
-  - .git
-  - .github
-  - README.md
-  - MIT_PRESENTATION.md
-  - PLATFORM_VERIFICATION.md
-
-# Include specific files  
+# Include all HTML files
 include:
   - index.html
+  - live.html
+  - platform-test.html
+  - gomna-ai-live.html
+  - ".nojekyll"
 
-# Force rebuild
-github: [metadata]
+# Exclude development files
+exclude:
+  - node_modules/
+  - .git/
+  - .github/
+  - .env.example
+  - package*.json
+  - "*.py"
+  - "*.js"
+  - "*.sh"
+
+# Force processing
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
