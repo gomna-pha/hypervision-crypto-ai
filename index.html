@@ -14,16 +14,24 @@
                 extend: {
                     colors: {
                         cream: {
-                            50: '#fefbf3',
-                            100: '#fdf6e3',
-                            200: '#f5e6d3',
-                            300: '#e8dcc7',
-                            400: '#d4c4a8',
-                            500: '#c0ac89',
-                            600: '#a08968',
-                            700: '#8b7355',
-                            800: '#6d5d48',
-                            900: '#5a4d3b'
+                            50: '#fefcf7',
+                            100: '#fdf9f0',
+                            200: '#fcf5e8',
+                            300: '#faf1df',
+                            400: '#f7ead3',
+                            500: '#f3e2c6',
+                            600: '#efd9b7',
+                            700: '#e9d0a5',
+                            800: '#e3c692',
+                            900: '#dcbb7d'
+                        },
+                        brown: {
+                            50: '#f7f4f1',
+                            100: '#ede7df',
+                            200: '#d9cbb8',
+                            300: '#c4ac89',
+                            400: '#a08968',
+                            500: '#8b7355'
                         }
                     }
                 }
@@ -32,82 +40,158 @@
     </script>
     <style>
         .gradient-bg {
-            background: linear-gradient(135deg, #fefbf3 0%, #f5e6d3 40%, #e8dcc7 100%);
+            background: linear-gradient(135deg, #fefcf7 0%, #fcf5e8 40%, #faf1df 100%);
         }
         .glass-effect {
-            background: rgba(253, 246, 227, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(232, 220, 199, 0.3);
+            background: rgba(253, 249, 240, 0.96);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(239, 217, 183, 0.2);
+            box-shadow: 0 8px 32px rgba(139, 115, 85, 0.1);
         }
         .cream-panel {
-            background: linear-gradient(135deg, #fefbf3 0%, #fdf6e3 100%);
-            border: 1px solid rgba(232, 220, 199, 0.3);
+            background: linear-gradient(135deg, #fefcf7 0%, #fdf9f0 100%);
+            border: 1px solid rgba(239, 217, 183, 0.15);
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.05);
         }
         .cream-card {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
-            border: 1px solid rgba(212, 196, 168, 0.3);
+            background: linear-gradient(135deg, #fdf9f0 0%, #fcf5e8 100%);
+            border: 1px solid rgba(239, 217, 183, 0.2);
+            box-shadow: 0 4px 16px rgba(139, 115, 85, 0.08);
         }
         .cream-dark {
-            background: linear-gradient(135deg, #e8dcc7 0%, #d4c4a8 100%);
+            background: linear-gradient(135deg, #f7ead3 0%, #f3e2c6 100%);
         }
         .brown-accent {
-            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
-            color: #fefbf3;
+            background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
+            color: #fefcf7;
+            box-shadow: 0 4px 14px rgba(139, 115, 85, 0.25);
+        }
+        .professional-header {
+            background: linear-gradient(135deg, #fefcf7 0%, #fcf5e8 50%, #faf1df 100%);
+            border-bottom: 1px solid rgba(139, 115, 85, 0.1);
+            box-shadow: 0 2px 16px rgba(139, 115, 85, 0.05);
+        }
+        .professional-sidebar {
+            background: linear-gradient(180deg, #fefcf7 0%, #fdf9f0 100%);
+            border-right: 1px solid rgba(139, 115, 85, 0.08);
+        }
+        .professional-main {
+            background: linear-gradient(135deg, #fefcf7 0%, #fcf5e8 100%);
         }
         .hyperbolic-space {
-            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
-            color: #fefbf3;
+            background: linear-gradient(135deg, #f3e2c6 0%, #efd9b7 50%, #8b7355 100%);
+            color: #8b7355;
+            border: 2px solid rgba(139, 115, 85, 0.15);
         }
         .poincare-disk {
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            border: 2px solid #c0ac89;
+            border: 3px solid #8b7355;
             position: relative;
-            background: radial-gradient(circle, rgba(192, 172, 137, 0.1) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(139, 115, 85, 0.08) 0%, rgba(254, 252, 247, 0.95) 70%);
+            box-shadow: 0 8px 32px rgba(139, 115, 85, 0.15);
         }
         .data-fusion-point {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #8b7355;
             border-radius: 50%;
+            border: 2px solid #fefcf7;
             animation: pulse 2s infinite;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.3);
         }
         .opportunity-card {
-            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 100%);
+            background: linear-gradient(135deg, #fdf9f0 0%, #fcf5e8 100%);
             border-left: 4px solid #8b7355;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 12px rgba(139, 115, 85, 0.08);
         }
         .opportunity-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(139, 115, 85, 0.2);
-            background: linear-gradient(135deg, #f5e6d3 0%, #e8dcc7 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px rgba(139, 115, 85, 0.15);
+            background: linear-gradient(135deg, #fcf5e8 0%, #faf1df 100%);
+            border-left-width: 6px;
         }
         .market-feed {
-            background: linear-gradient(135deg, #5a4d3b 0%, #4a3f32 100%);
-            color: #fefbf3;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 12px;
+            background: linear-gradient(135deg, #faf1df 0%, #f3e2c6 100%);
+            color: #8b7355;
+            font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
+            font-size: 13px;
+            border: 1px solid rgba(139, 115, 85, 0.1);
         }
         .execute-btn {
-            background: linear-gradient(135deg, #8b7355 0%, #6d5d48 100%);
-            color: #fefbf3;
-            box-shadow: 0 4px 14px 0 rgba(139, 115, 85, 0.39);
+            background: linear-gradient(135deg, #8b7355 0%, #a08968 100%);
+            color: #fefcf7;
+            box-shadow: 0 6px 20px rgba(139, 115, 85, 0.25);
+            border: none;
+            font-weight: 600;
         }
         .execute-btn:hover {
-            background: linear-gradient(135deg, #6d5d48 0%, #5a4d3b 100%);
-            transform: translateY(-1px);
+            background: linear-gradient(135deg, #a08968 0%, #8b7355 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 115, 85, 0.35);
             box-shadow: 0 6px 20px rgba(139, 115, 85, 0.5);
         }
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.7; transform: scale(1.1); }
         }
+        
+        /* Professional AI Assistant Styling */
+        .ai-chat-container {
+            background: linear-gradient(135deg, #fefcf7 0%, #fdf9f0 100%);
+            border: 1px solid rgba(139, 115, 85, 0.1);
+            box-shadow: 0 8px 32px rgba(139, 115, 85, 0.1);
+        }
+        
+        .ai-message-user {
+            background: linear-gradient(135deg, #f3e2c6 0%, #efd9b7 100%);
+            color: #8b7355;
+            border-radius: 18px 18px 4px 18px;
+            padding: 12px 16px;
+            margin-left: 25%;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.1);
+        }
+        
+        .ai-message-bot {
+            background: linear-gradient(135deg, #fcf5e8 0%, #faf1df 100%);
+            color: #8b7355;
+            border-radius: 18px 18px 18px 4px;
+            padding: 12px 16px;
+            margin-right: 25%;
+            border-left: 3px solid #8b7355;
+            box-shadow: 0 2px 8px rgba(139, 115, 85, 0.08);
+        }
+        
+        .professional-card {
+            background: linear-gradient(135deg, #fefcf7 0%, #fdf9f0 100%);
+            border: 1px solid rgba(139, 115, 85, 0.08);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(139, 115, 85, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .professional-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(139, 115, 85, 0.12);
+            border-color: rgba(139, 115, 85, 0.15);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
         .metric-card {
-            background: linear-gradient(135deg, #fefbf3 0%, #faf5ed 100%);
-            transition: transform 0.2s;
-            border: 1px solid rgba(232, 220, 199, 0.2);
+            background: linear-gradient(135deg, #fefcf7 0%, #fdf9f0 100%);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(139, 115, 85, 0.08);
+            box-shadow: 0 4px 16px rgba(139, 115, 85, 0.05);
         }
         .metric-card:hover {
             transform: translateY(-2px);
@@ -190,10 +274,10 @@
         }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="professional-main min-h-screen font-sans antialiased">
     <div id="app" class="min-h-screen">
         <!-- Professional Header with Original Cream Theme -->
-        <div class="glass-effect shadow-2xl border-b border-cream-300">
+        <div class="professional-header shadow-lg">
             <div class="max-w-7xl mx-auto px-6 py-4">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
@@ -202,19 +286,19 @@
                                 <span class="text-cream-50 font-bold text-xl">G</span>
                             </div>
                             <div>
-                                <h1 class="text-2xl font-bold bg-gradient-to-r from-cream-800 via-cream-700 to-cream-800 bg-clip-text text-transparent">
+                                <h1 class="text-2xl font-bold bg-gradient-to-r from-brown-500 via-brown-400 to-brown-500 bg-clip-text text-transparent">
                                     GOMNA AI Trading
                                 </h1>
-                                <p class="text-sm text-cream-700 font-medium">Professional Arbitrage & Hyperbolic Analytics</p>
+                                <p class="text-sm text-brown-400 font-medium">Professional Arbitrage & Hyperbolic Analytics</p>
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
-                        <div class="bg-cream-200 text-cream-800 px-3 py-1 rounded-full text-sm font-semibold border border-cream-400">
+                        <div class="bg-cream-300 text-brown-500 px-3 py-1 rounded-full text-sm font-semibold border border-cream-400">
                             🟢 LIVE TRADING
                         </div>
-                        <div class="text-sm text-cream-700">
-                            Balance: <span class="font-bold text-cream-900">$2,847,563</span>
+                        <div class="text-sm text-brown-400">
+                            Balance: <span class="font-bold text-brown-500">$2,847,563</span>
                         </div>
                         <button class="brown-accent px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition-all shadow-md" onclick="toggleModelTransparency()">
                             <i data-lucide="eye" class="w-4 h-4 inline mr-2"></i>
@@ -229,19 +313,19 @@
         <div class="glass-effect">
             <div class="max-w-7xl mx-auto px-6 py-3">
                 <div class="flex gap-1">
-                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600" data-tab="trading" onclick="switchTab('trading')">
+                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200 active" data-tab="trading" onclick="switchTab('trading')">
                         Trading Dashboard
                     </button>
-                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="portfolio" onclick="switchTab('portfolio')">
+                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="portfolio" onclick="switchTab('portfolio')">
                         Portfolio
                     </button>
-                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="markets" onclick="switchTab('markets')">
+                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="markets" onclick="switchTab('markets')">
                         Global Markets
                     </button>
-                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="transparency" onclick="switchTab('transparency')">
+                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="transparency" onclick="switchTab('transparency')">
                         Model Transparency
                     </button>
-                    <button class="tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100" data-tab="assistant" onclick="switchTab('assistant')">
+                    <button class="tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200" data-tab="assistant" onclick="switchTab('assistant')">
                         <i data-lucide="bot" class="w-4 h-4 inline mr-2"></i>
                         AI Assistant
                     </button>
@@ -336,8 +420,8 @@
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center gap-3">
                                     <div class="w-3 h-3 bg-cream-600 rounded-full animate-pulse"></div>
-                                    <h2 class="text-xl font-bold text-cream-900">🎯 Live Arbitrage Opportunities</h2>
-                                    <span class="bg-cream-200 text-cream-800 px-2 py-1 rounded-full text-xs font-semibold">6 ACTIVE</span>
+                                    <h2 class="text-xl font-bold text-brown-500">🎯 Live Arbitrage Opportunities</h2>
+                                    <span class="bg-cream-300 text-brown-500 px-2 py-1 rounded-full text-xs font-semibold">6 ACTIVE</span>
                                 </div>
                                 <div class="text-sm text-cream-700">
                                     Last scan: <span id="last-scan-time" class="font-semibold">12:44:23</span>
@@ -383,7 +467,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('cross-exchange-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('cross-exchange-1')">
+                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('cross-exchange-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -426,7 +510,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('triangular-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('triangular-1')">
+                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('triangular-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -469,7 +553,7 @@
                                         <button class="execute-btn px-4 py-2 rounded-lg font-semibold flex-1 transition-all" onclick="executeOpportunity('statistical-1')">
                                             ⚡ Execute Arbitrage
                                         </button>
-                                        <button class="cream-card text-cream-800 px-4 py-2 rounded-lg font-semibold hover:bg-cream-300 transition-all" onclick="viewDetails('statistical-1')">
+                                        <button class="professional-card text-brown-500 px-4 py-2 rounded-lg font-semibold hover:text-brown-400 transition-all" onclick="viewDetails('statistical-1')">
                                             📊 Details
                                         </button>
                                     </div>
@@ -1254,9 +1338,11 @@
             
             // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 text-cream-700 hover:bg-cream-100';
+                btn.className = 'tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200';
+                btn.classList.remove('active');
             });
-            document.querySelector(`[data-tab="${tabName}"]`).className = 'tab-btn px-6 py-2 rounded-t-lg font-semibold transition-all duration-200 cream-panel text-cream-800 border-b-2 border-cream-600';
+            const activeBtn = document.querySelector(`[data-tab="${tabName}"]`);
+            activeBtn.className = 'tab-btn px-6 py-3 rounded-t-xl font-semibold transition-all duration-200 active';
         }
 
         // Live market data updates
