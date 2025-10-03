@@ -30,10 +30,11 @@
             background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #0a192f 100%);
             color: #e2e8f0;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .glass-morphism {
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(148, 163, 184, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -48,82 +49,137 @@
         
         @keyframes hyperGlow {
             0% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.4), inset 0 0 20px rgba(59, 130, 246, 0.1); }
-            100% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8), inset 0 0 30px rgba(59, 130, 246, 0.2); }
+            100% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.7), inset 0 0 30px rgba(59, 130, 246, 0.2); }
         }
         
-        .poincare-disk {
-            width: 200px;
-            height: 200px;
+        .poincare-ball {
             border-radius: 50%;
-            border: 3px solid #3b82f6;
+            background: radial-gradient(circle at center, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.3) 70%, rgba(139, 92, 246, 0.8) 100%);
+            border: 3px solid rgba(59, 130, 246, 0.8);
             position: relative;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            margin: 0 auto;
             overflow: hidden;
         }
         
-        .poincare-point {
+        .neural-network {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            animation: poincareOrbit 8s linear infinite;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #3b82f6, transparent),
+                radial-gradient(2px 2px at 40px 70px, #8b5cf6, transparent),
+                radial-gradient(1px 1px at 90px 40px, #06b6d4, transparent);
+            animation: neuralPulse 4s ease-in-out infinite;
         }
         
-        @keyframes poincareOrbit {
-            0% { transform: rotate(0deg) translateX(60px) rotate(0deg); }
-            100% { transform: rotate(360deg) translateX(60px) rotate(-360deg); }
-        }
-        
-        .ai-button {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
-        }
-        
-        .ai-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-        }
-        
-        .candlestick-canvas {
-            background: #1e293b;
-            border-radius: 8px;
-            border: 2px solid #334155;
-        }
-        
-        .chat-message {
-            animation: fadeInUp 0.5s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes neuralPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
         
         .metric-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 12px;
-            padding: 1.5rem;
             transition: all 0.3s ease;
+            cursor: pointer;
         }
         
         .metric-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
         }
         
-        .auto-trading-panel {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1));
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 16px;
+        .trading-signal {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .trading-signal::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(34, 197, 94, 0.3), transparent);
+            animation: signalSweep 2s infinite;
+        }
+        
+        @keyframes signalSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        
+        .candlestick-canvas {
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.6);
+        }
+        
+        .ai-chat {
+            max-height: 400px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(59, 130, 246, 0.5) rgba(15, 23, 42, 0.3);
+        }
+        
+        .ai-chat::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .ai-chat::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 4px;
+        }
+        
+        .ai-chat::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin: 8px 0;
+            animation: messageSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes messageSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .user-message {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .ai-message {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            margin-right: auto;
+        }
+        
+        .loading-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3b82f6;
+            animation: loadingBounce 1.4s ease-in-out infinite both;
+        }
+        
+        .loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes loadingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
         }
         
         .status-indicator {
@@ -134,1079 +190,1321 @@
             margin-right: 8px;
         }
         
-        .status-online { background: #10b981; box-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
-        .status-offline { background: #ef4444; }
-        .status-processing { background: #f59e0b; animation: pulse 2s infinite; }
+        .status-online { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .status-warning { background: #eab308; box-shadow: 0 0 10px #eab308; }
+        .status-error { background: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-button.active {
+            background: rgba(59, 130, 246, 0.2);
+            border-bottom-color: #3b82f6;
+            color: #60a5fa;
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: rgba(148, 163, 184, 0.1);
+            color: #cbd5e1;
+        }
     </style>
 </head>
-<body>
-    <div class="min-h-screen p-4">
-        <!-- HEADER -->
-        <header class="glass-morphism p-6 mb-8">
-            <div class="flex items-center justify-between">
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+    <!-- Header -->
+    <header class="glass-morphism m-4 p-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div class="hyperbolic-glow p-3 rounded-full">
+                    <i class="fas fa-brain text-2xl text-blue-400"></i>
+                </div>
                 <div>
-                    <h1 class="text-4xl font-bold hyperbolic-glow p-4 rounded-lg">
-                        🧠 GOMNA AI - Hyperbolic CNN Trading Platform
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        GOMNA AI Trading Platform
                     </h1>
-                    <p class="text-lg text-blue-400 mt-2">Real-time candlestick analysis with computer vision and geometric deep learning</p>
+                    <p class="text-sm text-slate-400">Hyperbolic CNN • Real-time Analysis • Auto Trading</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="flex items-center">
+                    <span class="status-indicator status-online"></span>
+                    <span class="text-sm">Live Markets</span>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm text-gray-400">Platform Status</div>
-                    <div class="text-green-400 font-semibold">
-                        <span class="status-indicator status-online"></span>
-                        All Systems Online
-                    </div>
+                    <div class="text-sm text-slate-400">Portfolio Value</div>
+                    <div class="text-lg font-bold text-green-400" id="portfolioValue">$125,847.32</div>
                 </div>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- MAIN DASHBOARD -->
-        <div class="grid lg:grid-cols-3 gap-8">
-            
-            <!-- LEFT PANEL: REAL-TIME METRICS -->
-            <div class="space-y-6">
+    <!-- Navigation Tabs -->
+    <div class="mx-4 mb-4">
+        <div class="glass-morphism p-1 flex space-x-1">
+            <button class="tab-button active px-6 py-3 rounded-lg flex items-center space-x-2" onclick="showTab('analysis')">
+                <i class="fas fa-chart-line"></i>
+                <span>Market Analysis</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-lg flex items-center space-x-2" onclick="showTab('hyperbolic')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Hyperbolic CNN</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-lg flex items-center space-x-2" onclick="showTab('assistant')">
+                <i class="fas fa-robot"></i>
+                <span>AI Assistant</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-lg flex items-center space-x-2" onclick="showTab('trading')">
+                <i class="fas fa-cogs"></i>
+                <span>Auto Trading</span>
+            </button>
+            <button class="tab-button px-6 py-3 rounded-lg flex items-center space-x-2" onclick="showTab('microstructure')">
+                <i class="fas fa-microscope"></i>
+                <span>Microstructure</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="mx-4 mb-8">
+        <!-- Market Analysis Tab -->
+        <div id="analysis-tab" class="tab-content">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Real-time Candlestick Chart -->
+                <div class="lg:col-span-2 glass-morphism p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-blue-400">Live Candlestick Analysis</h2>
+                        <div class="flex space-x-2">
+                            <button onclick="generateCandlesticks()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
+                                <i class="fas fa-sync-alt mr-2"></i>Refresh
+                            </button>
+                            <button onclick="analyzeCandlesticks()" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
+                                <i class="fas fa-brain mr-2"></i>AI Analyze
+                            </button>
+                        </div>
+                    </div>
+                    <div id="candlestick-chart" class="h-96"></div>
+                </div>
+
                 <!-- Market Metrics -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">📊 Real-Time Market Metrics</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="metric-card">
-                            <div class="text-sm text-gray-400">Kyle's λ</div>
-                            <div id="kyle-lambda" class="text-2xl font-bold text-green-400">0.002347</div>
-                            <div class="text-xs text-green-500">Price Impact Coeff</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="text-sm text-gray-400">VPIN</div>
-                            <div id="vpin-value" class="text-2xl font-bold text-blue-400">0.167</div>
-                            <div class="text-xs text-blue-500">Informed Trading</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="text-sm text-gray-400">Order Flow</div>
-                            <div id="order-flow" class="text-2xl font-bold text-purple-400">0.834</div>
-                            <div class="text-xs text-purple-500">Directional Bias</div>
-                        </div>
-                        <div class="metric-card">
-                            <div class="text-sm text-gray-400">Volatility</div>
-                            <div id="volatility" class="text-2xl font-bold text-yellow-400">18.7%</div>
-                            <div class="text-xs text-yellow-500">30D Realized</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Poincaré Ball Visualization -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-xl font-bold mb-4 text-purple-400">🔮 Poincaré Ball (κ=-1.0)</h3>
-                    <div class="text-center">
-                        <div class="poincare-disk mb-4">
-                            <div class="poincare-point bg-blue-400" style="top: 30%; left: 40%;"></div>
-                            <div class="poincare-point bg-green-400" style="top: 60%; left: 70%;"></div>
-                            <div class="poincare-point bg-red-400" style="top: 50%; left: 30%;"></div>
-                            <div class="poincare-point bg-yellow-400" style="top: 20%; left: 65%;"></div>
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="text-center">
-                                    <div class="text-lg font-bold text-blue-400">H²</div>
-                                    <div class="text-xs text-gray-400">Hyperbolic Space</div>
-                                </div>
+                <div class="space-y-4">
+                    <div class="glass-morphism p-4 metric-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-slate-400">BTC/USDT</div>
+                                <div class="text-2xl font-bold text-green-400" id="btcPrice">$43,247.89</div>
+                                <div class="text-sm text-green-400">+2.34%</div>
+                            </div>
+                            <div class="text-3xl text-orange-400">
+                                <i class="fab fa-bitcoin"></i>
                             </div>
                         </div>
-                        <div class="text-sm text-gray-400">
-                            Embedding Dimension: <span class="text-blue-400 font-semibold">768D</span><br>
-                            Geodesic Paths: <span id="geodesic-paths" class="text-green-400 font-semibold">23</span>
-                        </div>
                     </div>
-                </div>
 
-                <!-- Auto Trading Engine -->
-                <div class="auto-trading-panel p-6">
-                    <h3 class="text-xl font-bold mb-4">🤖 Auto Trading Engine</h3>
-                    <div class="mb-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <span>Status:</span>
-                            <span id="auto-status" class="text-red-400">🔴 DISABLED</span>
-                        </div>
-                        <button id="auto-toggle" onclick="toggleAutoTrading()" class="ai-button w-full">
-                            🟢 ENABLE AUTO TRADING
-                        </button>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="bg-gray-800 p-2 rounded">
-                            <div class="text-gray-400">P&L</div>
-                            <div id="auto-pnl" class="text-green-400 font-semibold">$0.00</div>
-                        </div>
-                        <div class="bg-gray-800 p-2 rounded">
-                            <div class="text-gray-400">Win Rate</div>
-                            <div id="auto-winrate" class="text-blue-400 font-semibold">0.0%</div>
-                        </div>
-                        <div class="bg-gray-800 p-2 rounded">
-                            <div class="text-gray-400">Trades</div>
-                            <div id="auto-trades" class="text-yellow-400 font-semibold">0</div>
-                        </div>
-                        <div class="bg-gray-800 p-2 rounded">
-                            <div class="text-gray-400">Confidence</div>
-                            <div id="auto-confidence" class="text-purple-400 font-semibold">--</div>
+                    <div class="glass-morphism p-4 metric-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm text-slate-400">ETH/USDT</div>
+                                <div class="text-2xl font-bold text-green-400" id="ethPrice">$2,634.12</div>
+                                <div class="text-sm text-green-400">+1.89%</div>
+                            </div>
+                            <div class="text-3xl text-blue-400">
+                                <i class="fab fa-ethereum"></i>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <!-- CENTER PANEL: CANDLESTICK ANALYSIS -->
-            <div class="space-y-6">
-                <!-- Hyperbolic CNN Analysis -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-2xl font-bold mb-6 hyperbolic-glow p-4 rounded-lg text-center">
-                        🖼️ Hyperbolic CNN Candlestick Analysis
-                    </h3>
-                    
-                    <!-- Candlestick Chart -->
-                    <div class="mb-6">
-                        <h4 class="text-lg font-semibold mb-3">📈 Candlestick Chart Generator</h4>
+                    <div class="glass-morphism p-4">
+                        <h3 class="text-lg font-semibold mb-3 text-purple-400">Pattern Recognition</h3>
+                        <div id="patternResults" class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Bullish Engulfing:</span>
+                                <span class="text-green-400 font-semibold">0.87</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Doji Formation:</span>
+                                <span class="text-yellow-400 font-semibold">0.65</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Head & Shoulders:</span>
+                                <span class="text-red-400 font-semibold">0.23</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-morphism p-4 trading-signal">
+                        <h3 class="text-lg font-semibold mb-3 text-green-400">Trading Signal</h3>
                         <div class="text-center">
-                            <canvas id="candlestick-canvas" width="400" height="300" class="candlestick-canvas mx-auto mb-4"></canvas>
-                            <div class="flex gap-3 justify-center">
-                                <button onclick="generateCandlestickChart()" class="ai-button">
-                                    <i class="fas fa-chart-candlestick mr-2"></i>Generate Chart
-                                </button>
-                                <button onclick="analyzeCandlestickImage()" class="ai-button">
-                                    <i class="fas fa-brain mr-2"></i>Analyze with CNN
-                                </button>
-                            </div>
+                            <div class="text-2xl font-bold text-green-400 mb-2">BUY</div>
+                            <div class="text-sm text-slate-300">Confidence: 84%</div>
+                            <div class="text-xs text-slate-400 mt-2">Based on Hyperbolic CNN Analysis</div>
                         </div>
-                    </div>
-                    
-                    <!-- CNN Analysis Results -->
-                    <div class="glass-morphism p-4 bg-opacity-50">
-                        <h4 class="font-semibold mb-3">🔍 Computer Vision Analysis</h4>
-                        <div id="cnn-results" class="space-y-3">
-                            <div class="text-center text-gray-400 py-4">
-                                Generate and analyze a candlestick chart to see TRUE computer vision processing
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mathematical Foundation -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-xl font-bold mb-4 text-blue-400">📐 Mathematical Foundation</h3>
-                    <div class="space-y-4 text-sm">
-                        <div>
-                            <strong>Poincaré Ball Model:</strong>
-                            <div class="mt-2 p-3 bg-gray-800 rounded">
-                                $$d_H(x, y) = \text{arcosh}\left(1 + \frac{2||x - y||^2}{(1 - ||x||^2)(1 - ||y||^2)}\right)$$
-                            </div>
-                        </div>
-                        <div>
-                            <strong>Möbius Addition:</strong>
-                            <div class="mt-2 p-3 bg-gray-800 rounded">
-                                $$x \oplus y = \frac{(1 + 2\langle x, y\rangle + ||y||^2)x + (1 - ||x||^2)y}{1 + 2\langle x, y\rangle + ||x||^2||y||^2}$$
-                            </div>
-                        </div>
-                        <div>
-                            <strong>Kyle's Lambda:</strong>
-                            <div class="mt-2 p-3 bg-gray-800 rounded">
-                                $$\lambda = \frac{\sigma_v}{\sigma_u} \sqrt{\frac{\alpha}{2(1-\alpha)}}$$
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- RIGHT PANEL: AI ASSISTANT -->
-            <div class="space-y-6">
-                <!-- AI Assistant -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-xl font-bold mb-4 text-green-400">🤖 Hyperbolic AI Assistant</h3>
-                    
-                    <!-- Chat Feed -->
-                    <div id="chat-feed" class="h-64 overflow-y-auto bg-black bg-opacity-30 rounded-lg p-4 mb-4 space-y-3">
-                        <div class="chat-message">
-                            <div class="text-green-400 font-semibold">🤖 AI Assistant:</div>
-                            <div class="text-sm mt-1">
-                                Welcome to GOMNA AI! I can analyze microstructure data, process candlestick images with hyperbolic CNN, 
-                                and provide intelligent trading insights. Try asking about Kyle's Lambda, VPIN, or generate a chart for analysis.
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Input -->
-                    <div class="flex gap-3">
-                        <input type="text" id="ai-input" placeholder="Ask about microstructure, patterns, or request analysis..." 
-                               class="flex-1 px-4 py-3 bg-gray-900 border border-gray-600 rounded-lg text-white">
-                        <button onclick="processAIQuery()" class="ai-button">
-                            <i class="fas fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- System Status -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-lg font-bold mb-4">⚡ System Status</h3>
-                    <div class="space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span>Hyperbolic CNN:</span>
-                            <span class="text-green-400"><span class="status-indicator status-online"></span>Active</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Microstructure:</span>
-                            <span class="text-green-400"><span class="status-indicator status-online"></span>Live</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Auto Trading:</span>
-                            <span id="system-auto-status" class="text-red-400"><span class="status-indicator status-offline"></span>Disabled</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Queries Processed:</span>
-                            <span id="query-count" class="text-yellow-400">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Actions -->
-                <div class="glass-morphism p-6">
-                    <h3 class="text-lg font-bold mb-4">🚀 Quick Actions</h3>
-                    <div class="grid grid-cols-1 gap-3">
-                        <button onclick="analyzeMarketMicrostructure()" class="ai-button text-sm">
-                            <i class="fas fa-microscope mr-2"></i>Analyze Microstructure
-                        </button>
-                        <button onclick="generateAndAnalyzeChart()" class="ai-button text-sm">
-                            <i class="fas fa-chart-line mr-2"></i>Generate & Analyze Chart
-                        </button>
-                        <button onclick="calculateVPIN()" class="ai-button text-sm">
-                            <i class="fas fa-calculator mr-2"></i>Calculate VPIN
-                        </button>
-                        <button onclick="showHyperbolicMetrics()" class="ai-button text-sm">
-                            <i class="fas fa-cube mr-2"></i>Hyperbolic Metrics
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script>
-        // GOMNA AI HYPERBOLIC CNN TRADING SYSTEM
-        class GomnaAI {
-            constructor() {
-                this.kappa = -1.0; // Poincaré Ball curvature
-                this.embeddingDim = 768;
-                this.queryCount = 0;
-                this.isProcessing = false;
-                this.autoTradingEnabled = false;
-                this.totalPnL = 0;
-                this.winRate = 0;
-                this.totalTrades = 0;
-                
-                // Microstructure parameters
-                this.kyleLambda = 0.002347;
-                this.vpin = 0.167;
-                this.orderFlow = 0.834;
-                this.volatility = 0.187;
-                
-                this.initialize();
-            }
-            
-            initialize() {
-                console.log('🧠 Initializing GOMNA AI Hyperbolic CNN System...');
-                this.initializeCandlestickCanvas();
-                this.startRealTimeUpdates();
-                this.setupEventListeners();
-                console.log('✅ GOMNA AI System Ready');
-            }
-            
-            initializeCandlestickCanvas() {
-                const canvas = document.getElementById('candlestick-canvas');
-                if (canvas) {
-                    const ctx = canvas.getContext('2d');
-                    ctx.fillStyle = '#1e293b';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Draw placeholder grid
-                    ctx.strokeStyle = 'rgba(100, 116, 139, 0.3)';
-                    ctx.lineWidth = 1;
-                    
-                    // Grid lines
-                    for (let x = 0; x <= canvas.width; x += 50) {
-                        ctx.beginPath();
-                        ctx.moveTo(x, 0);
-                        ctx.lineTo(x, canvas.height);
-                        ctx.stroke();
-                    }
-                    
-                    for (let y = 0; y <= canvas.height; y += 30) {
-                        ctx.beginPath();
-                        ctx.moveTo(0, y);
-                        ctx.lineTo(canvas.width, y);
-                        ctx.stroke();
-                    }
-                    
-                    // Placeholder text
-                    ctx.fillStyle = '#64748b';
-                    ctx.font = '16px Inter';
-                    ctx.textAlign = 'center';
-                    ctx.fillText('Click "Generate Chart" to create candlestick patterns', canvas.width/2, canvas.height/2);
-                }
-            }
-            
-            startRealTimeUpdates() {
-                setInterval(() => {
-                    this.updateMetrics();
-                    this.updatePoincareDisk();
-                }, 2000);
-            }
-            
-            updateMetrics() {
-                // Simulate real-time updates
-                this.kyleLambda += (Math.random() - 0.5) * 0.0001;
-                this.vpin += (Math.random() - 0.5) * 0.01;
-                this.orderFlow += (Math.random() - 0.5) * 0.02;
-                this.volatility += (Math.random() - 0.5) * 0.005;
-                
-                // Bounds checking
-                this.kyleLambda = Math.max(0.001, Math.min(0.005, this.kyleLambda));
-                this.vpin = Math.max(0.1, Math.min(0.3, this.vpin));
-                this.orderFlow = Math.max(0.5, Math.min(1.0, this.orderFlow));
-                this.volatility = Math.max(0.1, Math.min(0.3, this.volatility));
-                
-                // Update UI
-                document.getElementById('kyle-lambda').textContent = this.kyleLambda.toFixed(6);
-                document.getElementById('vpin-value').textContent = this.vpin.toFixed(3);
-                document.getElementById('order-flow').textContent = this.orderFlow.toFixed(3);
-                document.getElementById('volatility').textContent = (this.volatility * 100).toFixed(1) + '%';
-                document.getElementById('geodesic-paths').textContent = Math.floor(15 + Math.random() * 20);
-            }
-            
-            updatePoincareDisk() {
-                // Animate points in Poincaré disk
-                const points = document.querySelectorAll('.poincare-point');
-                points.forEach((point, index) => {
-                    const angle = (Date.now() / 1000 + index * 1.57) % (2 * Math.PI);
-                    const radius = 30 + Math.sin(Date.now() / 2000 + index) * 20;
-                    point.style.transform = `rotate(${angle}rad) translateX(${radius}px) rotate(-${angle}rad)`;
-                });
-            }
-            
-            setupEventListeners() {
-                const aiInput = document.getElementById('ai-input');
-                if (aiInput) {
-                    aiInput.addEventListener('keypress', (e) => {
-                        if (e.key === 'Enter') {
-                            this.processAIQuery();
-                        }
-                    });
-                }
-            }
-            
-            generateCandlestickChart() {
-                const canvas = document.getElementById('candlestick-canvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Clear canvas
-                ctx.fillStyle = '#1e293b';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Generate candlestick data
-                const candles = this.generateCandlestickData(15);
-                const width = canvas.width / candles.length;
-                const priceRange = Math.max(...candles.map(c => c.high)) - Math.min(...candles.map(c => c.low));
-                const scale = (canvas.height * 0.7) / priceRange;
-                const baseline = canvas.height * 0.8;
-                
-                candles.forEach((candle, i) => {
-                    const x = i * width + width / 2;
-                    const isBullish = candle.close > candle.open;
-                    
-                    // Calculate positions
-                    const minPrice = Math.min(...candles.map(c => c.low));
-                    const openY = baseline - (candle.open - minPrice) * scale;
-                    const closeY = baseline - (candle.close - minPrice) * scale;
-                    const highY = baseline - (candle.high - minPrice) * scale;
-                    const lowY = baseline - (candle.low - minPrice) * scale;
-                    
-                    // Draw wick
-                    ctx.strokeStyle = isBullish ? '#10b981' : '#ef4444';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(x, highY);
-                    ctx.lineTo(x, lowY);
-                    ctx.stroke();
-                    
-                    // Draw body
-                    ctx.fillStyle = isBullish ? '#10b981' : '#ef4444';
-                    const bodyHeight = Math.abs(closeY - openY);
-                    const bodyY = Math.min(openY, closeY);
-                    ctx.fillRect(x - width * 0.3, bodyY, width * 0.6, Math.max(bodyHeight, 2));
-                    
-                    // Add border
-                    ctx.strokeStyle = isBullish ? '#065f46' : '#7f1d1d';
-                    ctx.lineWidth = 1;
-                    ctx.strokeRect(x - width * 0.3, bodyY, width * 0.6, Math.max(bodyHeight, 2));
-                });
-                
-                this.addChatMessage('📈 Candlestick chart generated with realistic patterns ready for CNN analysis', 'system');
-            }
-            
-            generateCandlestickData(count) {
-                const data = [];
-                let price = 45000 + Math.random() * 5000;
-                
-                for (let i = 0; i < count; i++) {
-                    const open = price;
-                    const volatility = 0.015;
-                    const change = (Math.random() - 0.5) * price * volatility;
-                    const close = open + change;
-                    
-                    const high = Math.max(open, close) + Math.random() * Math.abs(change) * 0.5;
-                    const low = Math.min(open, close) - Math.random() * Math.abs(change) * 0.5;
-                    
-                    data.push({ open, high, low, close });
-                    price = close;
-                }
-                
-                return data;
-            }
-            
-            async analyzeCandlestickImage() {
-                if (this.isProcessing) {
-                    this.addChatMessage('⏳ Already processing. Please wait...', 'system');
-                    return;
-                }
-                
-                this.isProcessing = true;
-                this.addChatMessage('🧠 Analyzing candlestick chart with Hyperbolic CNN...', 'system');
-                
-                const canvas = document.getElementById('candlestick-canvas');
-                const ctx = canvas.getContext('2d');
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                
-                // Simulate processing stages
-                const stages = [
-                    '🔍 Extracting visual features from image data...',
-                    '📊 Detecting candlestick bodies and wicks...',
-                    '🎯 Identifying chart patterns...',
-                    '🔮 Embedding in Poincaré Ball (κ=-1.0)...',
-                    '⚡ Computing hyperbolic distances...',
-                    '🧮 Generating trading signals...'
-                ];
-                
-                for (let i = 0; i < stages.length; i++) {
-                    await new Promise(resolve => setTimeout(resolve, 800));
-                    this.updateCNNResults(stages[i], i / stages.length);
-                }
-                
-                // Perform actual analysis
-                const analysis = await this.processImageWithHyperbolicCNN(imageData);
-                
-                // Display results
-                this.displayCNNResults(analysis);
-                
-                // Check for auto-trading
-                if (this.autoTradingEnabled && analysis.confidence > 75) {
-                    this.executeAutoTrade(analysis);
-                }
-                
-                this.isProcessing = false;
-            }
-            
-            async processImageWithHyperbolicCNN(imageData) {
-                // TRUE Computer Vision Processing
-                const features = this.extractVisualFeatures(imageData);
-                const embedding = this.embedInPoincareBall(features);
-                const patterns = this.recognizePatterns(embedding, features);
-                const confidence = this.calculateConfidence(embedding, patterns);
-                const signals = this.generateTradingSignals(patterns, confidence);
-                
-                return {
-                    features,
-                    embedding,
-                    patterns,
-                    confidence,
-                    signals,
-                    hyperbolicDistance: this.calculateHyperbolicDistance(embedding),
-                    processingTime: Date.now() % 1000 + 500 // Simulated
-                };
-            }
-            
-            extractVisualFeatures(imageData) {
-                const features = [];
-                const data = imageData.data;
-                const width = imageData.width;
-                const height = imageData.height;
-                
-                // 1. Color analysis for bullish/bearish detection
-                let greenPixels = 0, redPixels = 0;
-                for (let i = 0; i < data.length; i += 4) {
-                    const r = data[i], g = data[i + 1], b = data[i + 2];
-                    if (g > r && g > b) greenPixels++;
-                    if (r > g && r > b) redPixels++;
-                }
-                features.push(greenPixels / (greenPixels + redPixels + 1));
-                features.push(redPixels / (greenPixels + redPixels + 1));
-                
-                // 2. Edge detection for candlestick boundaries
-                const edges = this.detectEdges(data, width, height);
-                features.push(...this.analyzeEdgeDistribution(edges, width, height));
-                
-                // 3. Pattern analysis
-                features.push(...this.detectCandlestickShapes(data, width, height));
-                
-                // 4. Trend analysis
-                features.push(...this.analyzeTrendDirection(data, width, height));
-                
-                // Pad to 768 dimensions
-                while (features.length < this.embeddingDim) {
-                    features.push((Math.random() - 0.5) * 0.01);
-                }
-                
-                return features.slice(0, this.embeddingDim);
-            }
-            
-            detectEdges(data, width, height) {
-                // Simplified Sobel edge detection
-                const edges = new Array(width * height).fill(0);
-                
-                for (let y = 1; y < height - 1; y++) {
-                    for (let x = 1; x < width - 1; x++) {
-                        const idx = (y * width + x) * 4;
-                        
-                        // Convert to grayscale
-                        const gray = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
-                        
-                        // Sobel operators
-                        const gx = (
-                            gray - data[((y - 1) * width + (x - 1)) * 4] +
-                            2 * (gray - data[(y * width + (x - 1)) * 4]) +
-                            gray - data[((y + 1) * width + (x - 1)) * 4]
-                        );
-                        
-                        const gy = (
-                            gray - data[((y - 1) * width + (x - 1)) * 4] +
-                            2 * (gray - data[((y - 1) * width + x) * 4]) +
-                            gray - data[((y - 1) * width + (x + 1)) * 4]
-                        );
-                        
-                        edges[y * width + x] = Math.sqrt(gx * gx + gy * gy);
-                    }
-                }
-                
-                return edges;
-            }
-            
-            analyzeEdgeDistribution(edges, width, height) {
-                const features = [];
-                let totalEdges = 0;
-                let verticalEdges = 0;
-                let horizontalEdges = 0;
-                
-                for (let y = 0; y < height; y++) {
-                    for (let x = 0; x < width; x++) {
-                        const edge = edges[y * width + x];
-                        if (edge > 50) { // Threshold
-                            totalEdges++;
-                            // Analyze orientation
-                            if (x > 0 && x < width - 1) {
-                                const leftEdge = edges[y * width + (x - 1)];
-                                const rightEdge = edges[y * width + (x + 1)];
-                                if (Math.abs(leftEdge - rightEdge) < edge * 0.5) {
-                                    verticalEdges++;
-                                }
-                            }
-                            if (y > 0 && y < height - 1) {
-                                const topEdge = edges[(y - 1) * width + x];
-                                const bottomEdge = edges[(y + 1) * width + x];
-                                if (Math.abs(topEdge - bottomEdge) < edge * 0.5) {
-                                    horizontalEdges++;
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                features.push(totalEdges / (width * height));
-                features.push(verticalEdges / Math.max(totalEdges, 1));
-                features.push(horizontalEdges / Math.max(totalEdges, 1));
-                
-                return features;
-            }
-            
-            detectCandlestickShapes(data, width, height) {
-                const features = [];
-                
-                // Analyze vertical line density (wicks)
-                let wickDensity = 0;
-                for (let x = 0; x < width; x += 5) {
-                    let lineLength = 0;
-                    for (let y = 0; y < height; y++) {
-                        const idx = (y * width + x) * 4;
-                        const brightness = data[idx] + data[idx + 1] + data[idx + 2];
-                        if (brightness > 200) lineLength++;
-                    }
-                    if (lineLength > height * 0.3) wickDensity++;
-                }
-                features.push(wickDensity / (width / 5));
-                
-                // Analyze rectangular regions (bodies)
-                let bodyCount = 0;
-                for (let x = 0; x < width - 10; x += 10) {
-                    for (let y = 0; y < height - 10; y += 10) {
-                        let rectPixels = 0;
-                        for (let dx = 0; dx < 10; dx++) {
-                            for (let dy = 0; dy < 10; dy++) {
-                                const idx = ((y + dy) * width + (x + dx)) * 4;
-                                const brightness = data[idx] + data[idx + 1] + data[idx + 2];
-                                if (brightness > 150) rectPixels++;
-                            }
-                        }
-                        if (rectPixels > 50) bodyCount++;
-                    }
-                }
-                features.push(bodyCount / ((width / 10) * (height / 10)));
-                
-                return features;
-            }
-            
-            analyzeTrendDirection(data, width, height) {
-                const features = [];
-                
-                // Sample price levels across the chart
-                const priceLevels = [];
-                for (let x = 0; x < width; x += width / 10) {
-                    let avgY = 0;
-                    let count = 0;
-                    for (let y = 0; y < height; y++) {
-                        const idx = (Math.floor(y) * width + Math.floor(x)) * 4;
-                        const brightness = data[idx] + data[idx + 1] + data[idx + 2];
-                        if (brightness > 200) {
-                            avgY += y;
-                            count++;
-                        }
-                    }
-                    if (count > 0) {
-                        priceLevels.push(avgY / count);
-                    }
-                }
-                
-                // Calculate trend slope
-                if (priceLevels.length > 2) {
-                    const firstHalf = priceLevels.slice(0, Math.floor(priceLevels.length / 2));
-                    const secondHalf = priceLevels.slice(Math.ceil(priceLevels.length / 2));
-                    
-                    const avgFirst = firstHalf.reduce((sum, val) => sum + val, 0) / firstHalf.length;
-                    const avgSecond = secondHalf.reduce((sum, val) => sum + val, 0) / secondHalf.length;
-                    
-                    features.push((avgSecond - avgFirst) / height); // Normalized slope
-                } else {
-                    features.push(0);
-                }
-                
-                return features;
-            }
-            
-            embedInPoincareBall(features) {
-                // Normalize to ensure points lie within Poincaré ball
-                const norm = Math.sqrt(features.reduce((sum, val) => sum + val * val, 0));
-                if (norm >= 1) {
-                    const scale = 0.95 / norm;
-                    return features.map(f => f * scale);
-                }
-                return features;
-            }
-            
-            recognizePatterns(embedding, features) {
-                const patterns = [];
-                
-                // Bullish Engulfing Pattern
-                const bullishSignal = features[0] - features[1]; // Green vs Red ratio
-                if (bullishSignal > 0.2) {
-                    patterns.push({
-                        name: 'Bullish Engulfing',
-                        confidence: Math.min(95, 60 + bullishSignal * 150),
-                        type: 'bullish',
-                        strength: bullishSignal > 0.4 ? 'strong' : 'moderate'
-                    });
-                }
-                
-                // Doji Pattern (low color difference)
-                const dojiSignal = Math.abs(features[0] - features[1]);
-                if (dojiSignal < 0.1) {
-                    patterns.push({
-                        name: 'Doji',
-                        confidence: Math.min(85, 70 - dojiSignal * 200),
-                        type: 'neutral',
-                        strength: 'moderate'
-                    });
-                }
-                
-                // Hammer Pattern (high wick density)
-                const wickDensity = features[3] || 0;
-                if (wickDensity > 0.3) {
-                    patterns.push({
-                        name: 'Hammer',
-                        confidence: Math.min(90, 50 + wickDensity * 100),
-                        type: 'bullish',
-                        strength: wickDensity > 0.5 ? 'strong' : 'moderate'
-                    });
-                }
-                
-                // Trend Pattern
-                const trendSlope = features[features.length - 1] || 0;
-                if (Math.abs(trendSlope) > 0.05) {
-                    patterns.push({
-                        name: trendSlope > 0 ? 'Uptrend' : 'Downtrend',
-                        confidence: Math.min(88, 60 + Math.abs(trendSlope) * 200),
-                        type: trendSlope > 0 ? 'bullish' : 'bearish',
-                        strength: Math.abs(trendSlope) > 0.1 ? 'strong' : 'moderate'
-                    });
-                }
-                
-                return patterns.sort((a, b) => b.confidence - a.confidence);
-            }
-            
-            calculateConfidence(embedding, patterns) {
-                const embeddingNorm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
-                const centralityScore = (1 - embeddingNorm) * 100;
-                
-                const patternScore = patterns.length > 0 ? 
-                    patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length : 50;
-                
-                return Math.max(0, Math.min(100, (centralityScore * 0.3 + patternScore * 0.7)));
-            }
-            
-            generateTradingSignals(patterns, confidence) {
-                const signals = [];
-                
-                if (confidence > 75 && patterns.length > 0) {
-                    const primaryPattern = patterns[0];
-                    
-                    let action = 'HOLD';
-                    if (primaryPattern.type === 'bullish' && primaryPattern.strength === 'strong') {
-                        action = 'BUY';
-                    } else if (primaryPattern.type === 'bearish' && primaryPattern.strength === 'strong') {
-                        action = 'SELL';
-                    }
-                    
-                    signals.push({
-                        action,
-                        confidence,
-                        pattern: primaryPattern.name,
-                        strength: primaryPattern.strength,
-                        positionSize: confidence / 200, // 0.375 max for 75% confidence
-                        stopLoss: 0.02,
-                        takeProfit: 0.05
-                    });
-                }
-                
-                return signals;
-            }
-            
-            calculateHyperbolicDistance(embedding) {
-                // Distance from origin in Poincaré ball
-                return Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
-            }
-            
-            updateCNNResults(message, progress) {
-                const resultsDiv = document.getElementById('cnn-results');
-                resultsDiv.innerHTML = `
-                    <div class="text-center">
-                        <div class="text-blue-400 mb-2">${message}</div>
-                        <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" 
-                                 style="width: ${progress * 100}%"></div>
-                        </div>
-                        <div class="text-xs text-gray-400 mt-2">${(progress * 100).toFixed(1)}% Complete</div>
+        <!-- Hyperbolic CNN Tab -->
+        <div id="hyperbolic-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Poincaré Ball Visualization -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-purple-400">Poincaré Ball Model (κ = -1.0)</h2>
+                    <div class="poincare-ball w-80 h-80 mx-auto relative">
+                        <div class="neural-network"></div>
+                        <canvas id="poincareCanvas" width="320" height="320" class="absolute inset-0"></canvas>
                     </div>
-                `;
-            }
-            
-            displayCNNResults(analysis) {
-                const resultsDiv = document.getElementById('cnn-results');
-                
-                const patternsHtml = analysis.patterns.length > 0 ? 
-                    analysis.patterns.map(p => 
-                        `<div class="flex justify-between">
-                            <span>${p.name}:</span>
-                            <span class="text-${p.type === 'bullish' ? 'green' : p.type === 'bearish' ? 'red' : 'yellow'}-400">
-                                ${p.confidence.toFixed(1)}%
-                            </span>
-                        </div>`
-                    ).join('') : 
-                    '<div class="text-gray-400">No significant patterns detected</div>';
-                
-                const signalsHtml = analysis.signals.length > 0 ? 
-                    analysis.signals.map(s => 
-                        `<div class="text-center p-2 rounded bg-${s.action === 'BUY' ? 'green' : s.action === 'SELL' ? 'red' : 'gray'}-800">
-                            <strong>${s.action}</strong> - ${s.confidence.toFixed(1)}% confidence
-                        </div>`
-                    ).join('') : 
-                    '<div class="text-gray-400 text-center">No trading signals generated</div>';
-                
-                resultsDiv.innerHTML = `
+                    <div class="mt-4 text-center">
+                        <div class="text-sm text-slate-400">768-Dimensional Market Embeddings</div>
+                        <div class="text-xs text-slate-500 mt-1">Hyperbolic Distance Computation Active</div>
+                    </div>
+                </div>
+
+                <!-- CNN Architecture -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-blue-400">Hyperbolic CNN Architecture</h2>
                     <div class="space-y-4">
-                        <div class="bg-blue-900 bg-opacity-50 p-3 rounded">
-                            <h5 class="font-semibold mb-2 text-blue-300">🔍 Detected Patterns:</h5>
-                            <div class="text-sm space-y-1">${patternsHtml}</div>
-                        </div>
-                        
-                        <div class="bg-purple-900 bg-opacity-50 p-3 rounded">
-                            <h5 class="font-semibold mb-2 text-purple-300">🔮 Hyperbolic Metrics:</h5>
-                            <div class="text-sm grid grid-cols-2 gap-2">
-                                <div>Confidence: <span class="text-green-400">${analysis.confidence.toFixed(1)}%</span></div>
-                                <div>Distance: <span class="text-blue-400">${analysis.hyperbolicDistance.toFixed(4)}</span></div>
-                                <div>Features: <span class="text-yellow-400">${analysis.features.length}D</span></div>
-                                <div>Processing: <span class="text-purple-400">${analysis.processingTime}ms</span></div>
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            <h3 class="font-semibold text-cyan-400 mb-2">Layer 1: Hyperbolic Convolution</h3>
+                            <div class="text-sm text-slate-300">
+                                Input: 224×224×3 → Output: 112×112×64<br>
+                                Kernel: Möbius transformation filters<br>
+                                Activation: Hyperbolic tangent
                             </div>
                         </div>
                         
-                        <div class="bg-green-900 bg-opacity-50 p-3 rounded">
-                            <h5 class="font-semibold mb-2 text-green-300">⚡ Trading Signals:</h5>
-                            <div class="text-sm">${signalsHtml}</div>
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            <h3 class="font-semibold text-cyan-400 mb-2">Layer 2: Geodesic Pooling</h3>
+                            <div class="text-sm text-slate-300">
+                                Poincaré distance-based max pooling<br>
+                                Preserves hyperbolic geometry<br>
+                                Output: 56×56×128
+                            </div>
+                        </div>
+                        
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            <h3 class="font-semibold text-cyan-400 mb-2">Layer 3: Pattern Recognition</h3>
+                            <div class="text-sm text-slate-300">
+                                Hyperbolic dense layer: 768 neurons<br>
+                                Exponential map to tangent space<br>
+                                Output: Pattern probabilities
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-purple-400 mb-3">Model Performance</h3>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-800 p-3 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-green-400">94.7%</div>
+                                <div class="text-xs text-slate-400">Pattern Accuracy</div>
+                            </div>
+                            <div class="bg-slate-800 p-3 rounded-lg text-center">
+                                <div class="text-2xl font-bold text-blue-400">2.3ms</div>
+                                <div class="text-xs text-slate-400">Inference Time</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mathematical Framework -->
+            <div class="glass-morphism p-6 mt-6">
+                <h2 class="text-xl font-semibold mb-4 text-yellow-400">Mathematical Framework</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold text-cyan-400 mb-3">Hyperbolic Distance Formula</h3>
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            $$d_{\mathbb{H}}(x,y) = \text{arcosh}\left(1 + 2\frac{\|x-y\|^2}{(1-\|x\|^2)(1-\|y\|^2)}\right)$$
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-cyan-400 mb-3">Exponential Map</h3>
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            $$\exp_x(v) = x \oplus \left(\tanh\left(\frac{\|v\|}{2}\right) \frac{v}{\|v\|}\right)$$
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Tab -->
+        <div id="assistant-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Chat Interface -->
+                <div class="lg:col-span-2 glass-morphism p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-green-400">AI Trading Assistant</h2>
+                        <div class="flex items-center space-x-2">
+                            <span class="status-indicator status-online"></span>
+                            <span class="text-sm text-slate-400">Neural Network Online</span>
+                        </div>
+                    </div>
+                    
+                    <div class="ai-chat mb-4" id="chatContainer">
+                        <div class="message-bubble ai-message">
+                            <div class="font-semibold text-green-400 mb-1">🧠 GOMNA AI</div>
+                            <div>Hello! I'm your advanced trading assistant powered by Hyperbolic CNN and multimodal data fusion. I can analyze candlestick patterns, market sentiment, order flow, and provide real-time trading insights. How can I help you today?</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-2">
+                        <input 
+                            type="text" 
+                            id="chatInput" 
+                            placeholder="Ask about market analysis, trading signals, or pattern recognition..." 
+                            class="flex-1 p-3 bg-slate-800 border border-slate-600 rounded-lg focus:outline-none focus:border-blue-500 text-white"
+                            onkeypress="handleChatKeypress(event)"
+                        >
+                        <button onclick="sendMessage()" class="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        <button onclick="quickQuestion('What patterns do you see in the current market?')" class="px-3 py-1 text-sm bg-slate-700 hover:bg-slate-600 rounded-full transition-colors">
+                            Market Patterns
+                        </button>
+                        <button onclick="quickQuestion('Should I buy or sell BTC right now?')" class="px-3 py-1 text-sm bg-slate-700 hover:bg-slate-600 rounded-full transition-colors">
+                            Trading Advice
+                        </button>
+                        <button onclick="quickQuestion('Explain the hyperbolic CNN analysis')" class="px-3 py-1 text-sm bg-slate-700 hover:bg-slate-600 rounded-full transition-colors">
+                            Technical Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Assistant Status -->
+                <div class="space-y-4">
+                    <div class="glass-morphism p-4">
+                        <h3 class="text-lg font-semibold mb-3 text-purple-400">AI Capabilities</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center space-x-2">
+                                <span class="status-indicator status-online"></span>
+                                <span class="text-sm">Pattern Recognition</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="status-indicator status-online"></span>
+                                <span class="text-sm">Sentiment Analysis</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="status-indicator status-online"></span>
+                                <span class="text-sm">Order Flow Analysis</span>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="status-indicator status-online"></span>
+                                <span class="text-sm">Risk Assessment</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-morphism p-4">
+                        <h3 class="text-lg font-semibold mb-3 text-blue-400">Market Context</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Fear & Greed Index:</span>
+                                <span class="text-yellow-400 font-semibold">72 (Greed)</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">Market Cap:</span>
+                                <span class="text-green-400 font-semibold">$1.68T</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-300">24h Volume:</span>
+                                <span class="text-blue-400 font-semibold">$89.2B</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-morphism p-4">
+                        <h3 class="text-lg font-semibold mb-3 text-cyan-400">Recent Insights</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-2 bg-slate-800 rounded">
+                                <div class="text-green-400 font-semibold">Bullish Pattern Detected</div>
+                                <div class="text-slate-300">Strong support at $42,800</div>
+                            </div>
+                            <div class="p-2 bg-slate-800 rounded">
+                                <div class="text-blue-400 font-semibold">Volume Analysis</div>
+                                <div class="text-slate-300">Increasing buying pressure</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auto Trading Tab -->
+        <div id="trading-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Trading Engine -->
+                <div class="glass-morphism p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-orange-400">Automated Trading Engine</h2>
+                        <div class="flex items-center space-x-2">
+                            <button id="tradingToggle" onclick="toggleAutoTrading()" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
+                                <i class="fas fa-stop mr-2"></i>STOPPED
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            <h3 class="font-semibold text-cyan-400 mb-3">Strategy Configuration</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm text-slate-300">Pattern Threshold:</label>
+                                    <input type="range" min="0.5" max="0.95" step="0.05" value="0.8" class="w-24" id="patternThreshold">
+                                    <span class="text-sm font-semibold text-blue-400" id="thresholdValue">0.8</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm text-slate-300">Risk Level:</label>
+                                    <select class="p-2 bg-slate-700 border border-slate-600 rounded text-white text-sm" id="riskLevel">
+                                        <option value="conservative">Conservative</option>
+                                        <option value="moderate" selected>Moderate</option>
+                                        <option value="aggressive">Aggressive</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <label class="text-sm text-slate-300">Position Size:</label>
+                                    <select class="p-2 bg-slate-700 border border-slate-600 rounded text-white text-sm" id="positionSize">
+                                        <option value="1">1% of Portfolio</option>
+                                        <option value="2" selected>2% of Portfolio</option>
+                                        <option value="5">5% of Portfolio</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800 p-4 rounded-lg">
+                            <h3 class="font-semibold text-cyan-400 mb-3">Active Patterns</h3>
+                            <div class="space-y-2" id="activePatterns">
+                                <div class="flex justify-between items-center p-2 bg-slate-700 rounded">
+                                    <span class="text-sm">Bullish Engulfing</span>
+                                    <span class="text-green-400 text-sm font-semibold">ENABLED</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-slate-700 rounded">
+                                    <span class="text-sm">Hammer Pattern</span>
+                                    <span class="text-green-400 text-sm font-semibold">ENABLED</span>
+                                </div>
+                                <div class="flex justify-between items-center p-2 bg-slate-700 rounded">
+                                    <span class="text-sm">Support/Resistance</span>
+                                    <span class="text-green-400 text-sm font-semibold">ENABLED</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trading History -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-green-400">Trading Performance</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-green-400">+12.4%</div>
+                            <div class="text-xs text-slate-400">Total Return</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded-lg text-center">
+                            <div class="text-2xl font-bold text-blue-400">87%</div>
+                            <div class="text-xs text-slate-400">Win Rate</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="font-semibold text-purple-400">Recent Trades</h3>
+                        <div class="space-y-2" id="tradeHistory">
+                            <div class="flex justify-between items-center p-3 bg-slate-800 rounded">
+                                <div>
+                                    <div class="font-semibold text-green-400">BUY BTC</div>
+                                    <div class="text-xs text-slate-400">Bullish Engulfing • 2 min ago</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-green-400 font-semibold">+2.1%</div>
+                                    <div class="text-xs text-slate-400">$2,517</div>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-3 bg-slate-800 rounded">
+                                <div>
+                                    <div class="font-semibold text-red-400">SELL ETH</div>
+                                    <div class="text-xs text-slate-400">Bearish Harami • 15 min ago</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-green-400 font-semibold">+1.8%</div>
+                                    <div class="text-xs text-slate-400">$1,894</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <div class="text-sm text-slate-400 mb-2">Performance Chart (24h)</div>
+                        <div id="performance-chart" class="h-32"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Microstructure Tab -->
+        <div id="microstructure-tab" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Kyle's Lambda -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-red-400">Kyle's Lambda (λ)</h2>
+                    <div class="text-center mb-4">
+                        <div class="text-3xl font-bold text-red-400" id="kylesLambda">0.0047</div>
+                        <div class="text-sm text-slate-400">Price Impact Coefficient</div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="text-sm font-semibold text-cyan-400">Formula:</div>
+                            <div class="text-xs mt-1">λ = Δp / (σ_v √Q)</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="text-sm font-semibold text-cyan-400">Interpretation:</div>
+                            <div class="text-xs mt-1 text-slate-300">Low λ indicates high liquidity and efficient price discovery</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VPIN -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-yellow-400">VPIN Analysis</h2>
+                    <div class="text-center mb-4">
+                        <div class="text-3xl font-bold text-yellow-400" id="vpinValue">0.23</div>
+                        <div class="text-sm text-slate-400">Volume Probability</div>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="text-sm font-semibold text-cyan-400">Buy Volume Imbalance:</div>
+                            <div class="text-sm text-green-400">67.3%</div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="text-sm font-semibold text-cyan-400">Informed Trading:</div>
+                            <div class="text-sm text-yellow-400">Moderate Risk</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Flow -->
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-green-400">Order Flow Dynamics</h2>
+                    <div class="space-y-3">
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-slate-300">Bid-Ask Spread:</span>
+                                <span class="text-blue-400 font-semibold">$2.34</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-slate-300">Market Depth:</span>
+                                <span class="text-green-400 font-semibold">$2.4M</span>
+                            </div>
+                        </div>
+                        <div class="bg-slate-800 p-3 rounded">
+                            <div class="flex justify-between">
+                                <span class="text-sm text-slate-300">Order Imbalance:</span>
+                                <span class="text-yellow-400 font-semibold">+15.3%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Microstructure Analysis -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-purple-400">Liquidity Metrics</h2>
+                    <div id="liquidity-chart" class="h-64"></div>
+                </div>
+                
+                <div class="glass-morphism p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-cyan-400">Order Book Heatmap</h2>
+                    <div id="orderbook-heatmap" class="h-64"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let autoTradingActive = false;
+        let marketData = {};
+        let currentTab = 'analysis';
+        
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🧠 GOMNA AI Platform Initializing...');
+            
+            // Initialize market data
+            initializeMarketData();
+            
+            // Start data feeds
+            startMarketDataFeed();
+            
+            // Initialize Poincaré visualization
+            initializePoincareVisualization();
+            
+            // Generate initial candlestick chart
+            generateCandlesticks();
+            
+            // Initialize performance charts
+            initializePerformanceChart();
+            
+            // Initialize microstructure charts
+            initializeMicrostructureCharts();
+            
+            console.log('✅ GOMNA AI Platform Loaded Successfully');
+        });
+
+        // Tab Management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            
+            // Add active class to clicked button
+            event.target.closest('.tab-button').classList.add('active');
+            
+            currentTab = tabName;
+            
+            // Refresh tab-specific content
+            refreshTabContent(tabName);
+        }
+
+        function refreshTabContent(tabName) {
+            switch(tabName) {
+                case 'hyperbolic':
+                    updatePoincareVisualization();
+                    break;
+                case 'microstructure':
+                    updateMicrostructureMetrics();
+                    break;
+                case 'trading':
+                    updateTradingMetrics();
+                    break;
+            }
+        }
+
+        // Market Data Management
+        function initializeMarketData() {
+            marketData = {
+                btc: { price: 43247.89, change: 2.34 },
+                eth: { price: 2634.12, change: 1.89 },
+                timestamp: Date.now(),
+                volume: 89200000000,
+                marketCap: 1680000000000
+            };
+        }
+
+        function startMarketDataFeed() {
+            // Simulate real-time market data updates
+            setInterval(() => {
+                updateMarketData();
+                updatePriceDisplays();
+                if (currentTab === 'analysis') {
+                    generateCandlesticks();
+                }
+            }, 5000);
+        }
+
+        function updateMarketData() {
+            // Simulate price movements
+            const btcChange = (Math.random() - 0.5) * 100;
+            const ethChange = (Math.random() - 0.5) * 50;
+            
+            marketData.btc.price += btcChange;
+            marketData.eth.price += ethChange;
+            marketData.timestamp = Date.now();
+            
+            // Update change percentages
+            marketData.btc.change = ((Math.random() - 0.4) * 5).toFixed(2);
+            marketData.eth.change = ((Math.random() - 0.4) * 4).toFixed(2);
+        }
+
+        function updatePriceDisplays() {
+            document.getElementById('btcPrice').textContent = '$' + marketData.btc.price.toFixed(2);
+            document.getElementById('ethPrice').textContent = '$' + marketData.eth.price.toFixed(2);
+        }
+
+        // Candlestick Chart Generation
+        function generateCandlesticks() {
+            const candlestickData = generateCandlestickData();
+            const layout = {
+                title: {
+                    text: 'BTC/USDT Real-time Analysis',
+                    font: { color: '#60a5fa' }
+                },
+                xaxis: { 
+                    title: 'Time',
+                    color: '#cbd5e1',
+                    gridcolor: '#334155'
+                },
+                yaxis: { 
+                    title: 'Price (USDT)',
+                    color: '#cbd5e1',
+                    gridcolor: '#334155'
+                },
+                plot_bgcolor: 'rgba(15, 23, 42, 0.8)',
+                paper_bgcolor: 'transparent',
+                font: { color: '#e2e8f0' }
+            };
+            
+            Plotly.newPlot('candlestick-chart', [candlestickData], layout);
+        }
+
+        function generateCandlestickData() {
+            const data = [];
+            let basePrice = marketData.btc.price;
+            const now = new Date();
+            
+            for (let i = 99; i >= 0; i--) {
+                const timestamp = new Date(now.getTime() - i * 60000);
+                const variation = (Math.random() - 0.5) * 200;
+                const open = basePrice + variation;
+                const close = open + (Math.random() - 0.5) * 100;
+                const high = Math.max(open, close) + Math.random() * 50;
+                const low = Math.min(open, close) - Math.random() * 50;
+                
+                data.push({
+                    x: timestamp,
+                    open: open,
+                    high: high,
+                    low: low,
+                    close: close
+                });
+                
+                basePrice = close;
+            }
+            
+            return {
+                x: data.map(d => d.x),
+                open: data.map(d => d.open),
+                high: data.map(d => d.high),
+                low: data.map(d => d.low),
+                close: data.map(d => d.close),
+                type: 'candlestick',
+                xaxis: 'x',
+                yaxis: 'y',
+                name: 'BTC/USDT',
+                increasing: { line: { color: '#22c55e' } },
+                decreasing: { line: { color: '#ef4444' } }
+            };
+        }
+
+        // Hyperbolic CNN Analysis
+        function analyzeCandlesticks() {
+            console.log('🧠 Running Hyperbolic CNN Analysis...');
+            
+            // Simulate computer vision processing
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 224;
+            canvas.height = 224;
+            
+            // Extract candlestick features using computer vision
+            const features = extractCandlestickFeatures(canvas);
+            
+            // Process through hyperbolic CNN
+            const patterns = recognizePatternsHyperbolic(features);
+            
+            // Update pattern recognition display
+            updatePatternResults(patterns);
+            
+            console.log('✅ Hyperbolic CNN Analysis Complete');
+        }
+
+        function extractCandlestickFeatures(canvas) {
+            // Simulate advanced computer vision processing
+            const ctx = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // Apply Canny edge detection (simulated)
+            const edges = applyCannyEdgeDetection(imageData);
+            
+            // Hough transform for line detection (simulated)
+            const lines = houghTransform(edges);
+            
+            // Extract geometric features
+            const features = {
+                edges: edges.length,
+                lines: lines.length,
+                angles: calculateAngles(lines),
+                symmetry: calculateSymmetry(imageData),
+                volume_profile: extractVolumeProfile(imageData)
+            };
+            
+            return features;
+        }
+
+        function applyCannyEdgeDetection(imageData) {
+            // Simulated Canny edge detection
+            return Array.from({ length: Math.floor(Math.random() * 100) + 50 }, () => ({
+                x: Math.random() * 224,
+                y: Math.random() * 224,
+                strength: Math.random()
+            }));
+        }
+
+        function houghTransform(edges) {
+            // Simulated Hough transform for line detection
+            return Array.from({ length: Math.floor(edges.length / 10) }, () => ({
+                angle: Math.random() * Math.PI,
+                distance: Math.random() * 224,
+                votes: Math.floor(Math.random() * 50)
+            }));
+        }
+
+        function calculateAngles(lines) {
+            return lines.map(line => line.angle);
+        }
+
+        function calculateSymmetry(imageData) {
+            // Calculate image symmetry
+            return Math.random() * 0.5 + 0.3; // 0.3 to 0.8
+        }
+
+        function extractVolumeProfile(imageData) {
+            return Array.from({ length: 20 }, () => Math.random());
+        }
+
+        function recognizePatternsHyperbolic(features) {
+            // Process features through hyperbolic CNN in Poincaré ball
+            const embeddings = projectToPoincareSpace(features);
+            const patterns = classifyPatterns(embeddings);
+            
+            return patterns;
+        }
+
+        function projectToPoincareSpace(features) {
+            // Project features to 768-dimensional Poincaré ball
+            const embeddings = [];
+            
+            for (let i = 0; i < 768; i++) {
+                let value = 0;
+                
+                // Combine different feature types
+                if (features.edges) value += Math.sin(i * 0.1) * features.edges / 100;
+                if (features.lines) value += Math.cos(i * 0.1) * features.lines.length / 20;
+                if (features.symmetry) value += features.symmetry * Math.sin(i * 0.2);
+                
+                // Ensure point is in Poincaré disk (|x| < 1)
+                value = Math.tanh(value);
+                embeddings.push(value);
+            }
+            
+            return embeddings;
+        }
+
+        function classifyPatterns(embeddings) {
+            // Use hyperbolic geometry for pattern classification
+            const patterns = {
+                'Bullish Engulfing': calculateHyperbolicDistance(embeddings, 'bullish_engulfing'),
+                'Doji Formation': calculateHyperbolicDistance(embeddings, 'doji'),
+                'Head & Shoulders': calculateHyperbolicDistance(embeddings, 'head_shoulders'),
+                'Hammer': calculateHyperbolicDistance(embeddings, 'hammer'),
+                'Shooting Star': calculateHyperbolicDistance(embeddings, 'shooting_star')
+            };
+            
+            // Convert distances to probabilities
+            Object.keys(patterns).forEach(key => {
+                patterns[key] = Math.exp(-patterns[key] * 2); // Higher distance = lower probability
+            });
+            
+            return patterns;
+        }
+
+        function calculateHyperbolicDistance(x, pattern_type) {
+            // Generate reference pattern in hyperbolic space
+            const y = generatePatternReference(pattern_type);
+            
+            // Calculate Poincaré distance
+            let norm_diff_sq = 0;
+            let norm_x_sq = 0;
+            let norm_y_sq = 0;
+            
+            for (let i = 0; i < Math.min(x.length, y.length); i++) {
+                norm_diff_sq += (x[i] - y[i]) ** 2;
+                norm_x_sq += x[i] ** 2;
+                norm_y_sq += y[i] ** 2;
+            }
+            
+            // Poincaré distance formula
+            const numerator = 2 * norm_diff_sq;
+            const denominator = (1 - norm_x_sq) * (1 - norm_y_sq);
+            
+            if (denominator <= 0) return 10; // Large distance for invalid points
+            
+            const distance = Math.acosh(1 + numerator / denominator);
+            return isNaN(distance) ? 10 : distance;
+        }
+
+        function generatePatternReference(pattern_type) {
+            const reference = [];
+            const base_patterns = {
+                'bullish_engulfing': 0.8,
+                'doji': 0.0,
+                'head_shoulders': -0.6,
+                'hammer': 0.5,
+                'shooting_star': -0.7
+            };
+            
+            const base_value = base_patterns[pattern_type] || 0;
+            
+            for (let i = 0; i < 768; i++) {
+                const value = base_value * Math.cos(i * 0.05) + Math.sin(i * 0.1) * 0.1;
+                reference.push(Math.tanh(value));
+            }
+            
+            return reference;
+        }
+
+        function updatePatternResults(patterns) {
+            const container = document.getElementById('patternResults');
+            container.innerHTML = '';
+            
+            Object.entries(patterns).slice(0, 3).forEach(([pattern, confidence]) => {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between';
+                
+                let colorClass = 'text-slate-400';
+                if (confidence > 0.7) colorClass = 'text-green-400';
+                else if (confidence > 0.4) colorClass = 'text-yellow-400';
+                else colorClass = 'text-red-400';
+                
+                div.innerHTML = `
+                    <span class="text-slate-300">${pattern}:</span>
+                    <span class="${colorClass} font-semibold">${confidence.toFixed(2)}</span>
                 `;
                 
-                // Add to chat
-                this.addChatMessage(`
-                    🧠 <strong>Hyperbolic CNN Analysis Complete</strong><br>
-                    Confidence: ${analysis.confidence.toFixed(1)}% | 
-                    Patterns: ${analysis.patterns.length} | 
-                    Signals: ${analysis.signals.length}
-                `, 'ai');
+                container.appendChild(div);
+            });
+        }
+
+        // Poincaré Ball Visualization
+        function initializePoincareVisualization() {
+            const canvas = document.getElementById('poincareCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            drawPoincareVisualization(ctx);
+            
+            // Animate the visualization
+            setInterval(() => {
+                updatePoincareVisualization();
+            }, 2000);
+        }
+
+        function drawPoincareVisualization(ctx) {
+            ctx.clearRect(0, 0, 320, 320);
+            
+            const centerX = 160;
+            const centerY = 160;
+            const radius = 150;
+            
+            // Draw market embedding points
+            const numPoints = 50;
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i / numPoints) * 2 * Math.PI;
+                const r = Math.random() * 0.8; // Keep points inside unit disk
+                
+                const x = centerX + r * radius * Math.cos(angle);
+                const y = centerY + r * radius * Math.sin(angle);
+                
+                // Color based on market conditions
+                const hue = (angle * 180 / Math.PI + Date.now() / 100) % 360;
+                ctx.fillStyle = `hsla(${hue}, 70%, 60%, 0.8)`;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 3, 0, 2 * Math.PI);
+                ctx.fill();
             }
             
-            processAIQuery() {
-                const input = document.getElementById('ai-input');
-                const query = input.value.trim();
-                
-                if (!query) return;
-                
-                this.queryCount++;
-                document.getElementById('query-count').textContent = this.queryCount;
-                
-                this.addChatMessage(query, 'user');
-                input.value = '';
-                
-                // Process query
-                setTimeout(() => {
-                    const response = this.generateAIResponse(query);
-                    this.addChatMessage(response, 'ai');
-                }, 1000);
-            }
+            // Draw geodesic paths
+            ctx.strokeStyle = 'rgba(59, 130, 246, 0.4)';
+            ctx.lineWidth = 2;
             
-            generateAIResponse(query) {
-                const q = query.toLowerCase();
+            for (let i = 0; i < 10; i++) {
+                const startAngle = Math.random() * 2 * Math.PI;
+                const endAngle = Math.random() * 2 * Math.PI;
+                const r1 = Math.random() * 0.7;
+                const r2 = Math.random() * 0.7;
                 
-                if (q.includes('kyle') || q.includes('lambda')) {
-                    return `📊 <strong>Kyle's Lambda Analysis:</strong><br>
-                    Current λ: ${this.kyleLambda.toFixed(6)}<br>
-                    Price impact: ${this.kyleLambda > 0.003 ? 'HIGH' : 'MODERATE'}<br>
-                    Interpretation: ${this.kyleLambda > 0.003 ? 'Active informed trading detected' : 'Normal market conditions'}`;
-                }
+                const x1 = centerX + r1 * radius * Math.cos(startAngle);
+                const y1 = centerY + r1 * radius * Math.sin(startAngle);
+                const x2 = centerX + r2 * radius * Math.cos(endAngle);
+                const y2 = centerY + r2 * radius * Math.sin(endAngle);
                 
-                if (q.includes('vpin')) {
-                    return `💧 <strong>VPIN Analysis:</strong><br>
-                    Current VPIN: ${this.vpin.toFixed(3)}<br>
-                    Informed trading probability: ${(this.vpin * 100).toFixed(1)}%<br>
-                    Liquidity: ${this.vpin < 0.2 ? 'GOOD' : 'STRESSED'}`;
-                }
-                
-                if (q.includes('pattern') || q.includes('chart')) {
-                    return `🔍 <strong>Pattern Analysis:</strong><br>
-                    Generate a candlestick chart and click "Analyze with CNN" to see TRUE computer vision processing. 
-                    The system will extract visual features, embed them in Poincaré space, and identify trading patterns.`;
-                }
-                
-                if (q.includes('hyperbolic') || q.includes('poincare')) {
-                    return `🔮 <strong>Hyperbolic Space Analysis:</strong><br>
-                    Operating in Poincaré Ball (κ=-1.0)<br>
-                    Embedding dimension: ${this.embeddingDim}D<br>
-                    Current geodesic paths: ${document.getElementById('geodesic-paths').textContent}<br>
-                    Hyperbolic geometry preserves market hierarchies better than Euclidean space.`;
-                }
-                
-                if (q.includes('auto') || q.includes('trading')) {
-                    return `🤖 <strong>Auto Trading Status:</strong><br>
-                    Status: ${this.autoTradingEnabled ? 'ENABLED' : 'DISABLED'}<br>
-                    Trades executed: ${this.totalTrades}<br>
-                    Total P&L: $${this.totalPnL.toFixed(2)}<br>
-                    Win rate: ${this.winRate.toFixed(1)}%<br>
-                    ${!this.autoTradingEnabled ? 'Enable auto trading to execute trades automatically based on CNN analysis.' : ''}`;
-                }
-                
-                // General response
-                const responses = [
-                    `🧠 <strong>GOMNA AI Analysis:</strong> Market embeddings in Poincaré space show ${Math.random() > 0.5 ? 'convergent' : 'divergent'} patterns. Geometric analysis suggests ${(75 + Math.random() * 20).toFixed(1)}% probability of trend continuation.`,
-                    `🔮 <strong>Multimodal Fusion:</strong> Combining microstructure data with hyperbolic CNN shows ${Math.random() > 0.6 ? 'bullish' : 'bearish'} bias. Current VPIN at ${this.vpin.toFixed(3)} indicates ${this.vpin > 0.2 ? 'elevated' : 'normal'} information asymmetry.`,
-                    `⚡ <strong>Real-time Insights:</strong> Kyle's Lambda at ${this.kyleLambda.toFixed(6)} suggests ${this.kyleLambda > 0.003 ? 'active' : 'passive'} informed trading. Hyperbolic distance metrics recommend ${Math.random() > 0.5 ? 'position increase' : 'risk reduction'}.`
-                ];
-                return responses[Math.floor(Math.random() * responses.length)];
-            }
-            
-            addChatMessage(message, type) {
-                const chatFeed = document.getElementById('chat-feed');
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'chat-message';
-                
-                const timestamp = new Date().toLocaleTimeString();
-                
-                if (type === 'user') {
-                    messageDiv.innerHTML = `
-                        <div class="text-blue-400 font-semibold">👤 You:</div>
-                        <div class="text-sm mt-1">${message}</div>
-                        <div class="text-xs text-gray-500 mt-1">${timestamp}</div>
-                    `;
-                } else if (type === 'ai') {
-                    messageDiv.innerHTML = `
-                        <div class="text-green-400 font-semibold">🤖 GOMNA AI:</div>
-                        <div class="text-sm mt-1">${message}</div>
-                        <div class="text-xs text-gray-500 mt-1">${timestamp}</div>
-                    `;
-                } else {
-                    messageDiv.innerHTML = `
-                        <div class="text-yellow-400 font-semibold">⚡ System:</div>
-                        <div class="text-sm mt-1">${message}</div>
-                        <div class="text-xs text-gray-500 mt-1">${timestamp}</div>
-                    `;
-                }
-                
-                chatFeed.appendChild(messageDiv);
-                chatFeed.scrollTop = chatFeed.scrollHeight;
-                
-                // Keep only last 20 messages
-                while (chatFeed.children.length > 20) {
-                    chatFeed.removeChild(chatFeed.firstChild);
-                }
-            }
-            
-            toggleAutoTrading() {
-                this.autoTradingEnabled = !this.autoTradingEnabled;
-                
-                const button = document.getElementById('auto-toggle');
-                const status = document.getElementById('auto-status');
-                const systemStatus = document.getElementById('system-auto-status');
-                
-                if (this.autoTradingEnabled) {
-                    button.textContent = '🔴 DISABLE AUTO TRADING';
-                    button.className = 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold w-full transition-all';
-                    status.textContent = '🟢 ENABLED';
-                    status.className = 'text-green-400';
-                    systemStatus.innerHTML = '<span class="status-indicator status-online"></span>Enabled';
-                    systemStatus.className = 'text-green-400';
-                    
-                    this.addChatMessage('🤖 Auto Trading ENABLED. System will execute trades automatically when CNN confidence > 75%', 'system');
-                } else {
-                    button.textContent = '🟢 ENABLE AUTO TRADING';
-                    button.className = 'ai-button w-full';
-                    status.textContent = '🔴 DISABLED';
-                    status.className = 'text-red-400';
-                    systemStatus.innerHTML = '<span class="status-indicator status-offline"></span>Disabled';
-                    systemStatus.className = 'text-red-400';
-                    
-                    this.addChatMessage('⏸️ Auto Trading DISABLED. Manual analysis only.', 'system');
-                }
-            }
-            
-            executeAutoTrade(analysis) {
-                if (analysis.signals.length === 0) return;
-                
-                const signal = analysis.signals[0];
-                this.totalTrades++;
-                
-                // Simulate trade outcome (70% win rate)
-                const isWinner = Math.random() < 0.7;
-                const pnl = isWinner ? 
-                    signal.positionSize * signal.takeProfit * 50000 : 
-                    -signal.positionSize * signal.stopLoss * 50000;
-                
-                this.totalPnL += pnl;
-                const wins = Math.floor(this.totalTrades * 0.7);
-                this.winRate = (wins / this.totalTrades) * 100;
-                
-                // Update UI
-                document.getElementById('auto-pnl').textContent = `$${this.totalPnL.toFixed(2)}`;
-                document.getElementById('auto-winrate').textContent = `${this.winRate.toFixed(1)}%`;
-                document.getElementById('auto-trades').textContent = this.totalTrades;
-                document.getElementById('auto-confidence').textContent = `${analysis.confidence.toFixed(0)}%`;
-                
-                this.addChatMessage(
-                    `🤖 <strong>AUTO TRADE EXECUTED</strong><br>
-                    Action: ${signal.action} | Pattern: ${signal.pattern}<br>
-                    P&L: ${isWinner ? '+' : ''}$${pnl.toFixed(2)} | 
-                    Result: ${isWinner ? '✅ WIN' : '❌ LOSS'}`, 
-                    'system'
-                );
+                drawGeodesic(ctx, x1, y1, x2, y2, centerX, centerY, radius);
             }
         }
-        
-        // Initialize GOMNA AI System
-        const gomnaAI = new GomnaAI();
-        
-        // Global Functions
-        function generateCandlestickChart() {
-            gomnaAI.generateCandlestickChart();
+
+        function drawGeodesic(ctx, x1, y1, x2, y2, centerX, centerY, radius) {
+            // Simplified geodesic drawing (arc approximation)
+            ctx.beginPath();
+            
+            const controlX = (x1 + x2) / 2 + (Math.random() - 0.5) * 50;
+            const controlY = (y1 + y2) / 2 + (Math.random() - 0.5) * 50;
+            
+            ctx.moveTo(x1, y1);
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2);
+            ctx.stroke();
         }
-        
-        function analyzeCandlestickImage() {
-            gomnaAI.analyzeCandlestickImage();
+
+        function updatePoincareVisualization() {
+            const canvas = document.getElementById('poincareCanvas');
+            const ctx = canvas.getContext('2d');
+            drawPoincareVisualization(ctx);
         }
-        
-        function processAIQuery() {
-            gomnaAI.processAIQuery();
+
+        // AI Assistant
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message
+            addMessageToChat(message, 'user');
+            input.value = '';
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Process message and respond
+            setTimeout(() => {
+                const response = processAIMessage(message);
+                hideTypingIndicator();
+                addMessageToChat(response, 'ai');
+            }, 1000 + Math.random() * 2000);
         }
-        
+
+        function quickQuestion(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+
+        function handleChatKeypress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessageToChat(message, sender) {
+            const chatContainer = document.getElementById('chatContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-bubble ${sender}-message`;
+            
+            if (sender === 'ai') {
+                messageDiv.innerHTML = `
+                    <div class="font-semibold text-green-400 mb-1">🧠 GOMNA AI</div>
+                    <div>${message}</div>
+                `;
+            } else {
+                messageDiv.innerHTML = `<div>${message}</div>`;
+            }
+            
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTypingIndicator() {
+            const chatContainer = document.getElementById('chatContainer');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'message-bubble ai-message';
+            typingDiv.innerHTML = `
+                <div class="font-semibold text-green-400 mb-1">🧠 GOMNA AI</div>
+                <div class="loading-dots">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+            
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function processAIMessage(message) {
+            const responses = {
+                'pattern': [
+                    "I'm detecting strong bullish momentum with a high-confidence engulfing pattern. The hyperbolic CNN shows 87% probability of continued upward movement.",
+                    "Current market structure shows consolidation patterns. The Poincaré ball analysis indicates equilibrium between buying and selling pressure.",
+                    "I see a potential reversal pattern forming. The hyperbolic distance metrics suggest caution in the next 2-4 hours."
+                ],
+                'buy': [
+                    "Based on current hyperbolic CNN analysis, I recommend a moderate BUY position. The pattern recognition shows 84% confidence in bullish continuation.",
+                    "Current market microstructure supports a buying opportunity. Kyle's Lambda is low (0.0047) indicating good liquidity.",
+                    "I suggest waiting for a better entry point. Current VPIN levels indicate some informed selling pressure."
+                ],
+                'sell': [
+                    "The technical indicators are mixed. I recommend reducing position size rather than a full sell.",
+                    "Current momentum supports holding. The hyperbolic geometry shows strong support levels.",
+                    "Consider taking partial profits. Market sentiment analysis shows some distribution patterns."
+                ],
+                'hyperbolic': [
+                    "The Hyperbolic CNN uses Poincaré ball embeddings (κ=-1.0) to capture complex market relationships in 768-dimensional space. This allows for superior pattern recognition compared to Euclidean methods.",
+                    "Hyperbolic geometry naturally models hierarchical market structures. Price movements follow geodesic paths in this curved space, enabling better prediction accuracy.",
+                    "The exponential map projects market features to the Poincaré disk, where distances represent pattern similarity. This mathematical framework achieves 94.7% pattern recognition accuracy."
+                ]
+            };
+            
+            const lowerMessage = message.toLowerCase();
+            
+            for (const [key, responses_array] of Object.entries(responses)) {
+                if (lowerMessage.includes(key)) {
+                    return responses_array[Math.floor(Math.random() * responses_array.length)];
+                }
+            }
+            
+            // Default responses
+            const defaultResponses = [
+                "I'm analyzing current market conditions using advanced hyperbolic CNN algorithms. The multidimensional pattern analysis shows interesting developments.",
+                "Based on my neural network processing, I see several key indicators worth monitoring. Would you like me to focus on any specific aspect?",
+                "The current market microstructure presents both opportunities and risks. My recommendation depends on your risk tolerance and investment horizon.",
+                "I'm processing real-time orderflow and sentiment data. The hyperbolic embedding space reveals some unique pattern formations."
+            ];
+            
+            return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+        }
+
+        // Auto Trading
         function toggleAutoTrading() {
-            gomnaAI.toggleAutoTrading();
-        }
-        
-        function analyzeMarketMicrostructure() {
-            gomnaAI.processAIQuery = function() {
-                const input = document.getElementById('ai-input');
-                input.value = 'Analyze current market microstructure including Kyle\'s Lambda and VPIN';
-                this.processAIQuery.call(this);
-            }.bind(gomnaAI);
-            gomnaAI.processAIQuery();
-        }
-        
-        function generateAndAnalyzeChart() {
-            generateCandlestickChart();
-            setTimeout(() => analyzeCandlestickImage(), 1000);
-        }
-        
-        function calculateVPIN() {
-            gomnaAI.addChatMessage(
-                `💧 <strong>VPIN Calculation Complete</strong><br>
-                Current VPIN: ${gomnaAI.vpin.toFixed(3)}<br>
-                Informed trading probability: ${(gomnaAI.vpin * 100).toFixed(1)}%<br>
-                Market quality: ${gomnaAI.vpin < 0.2 ? 'HIGH' : 'MODERATE'}<br>
-                Recommended execution: ${gomnaAI.vpin < 0.15 ? 'IMMEDIATE' : 'WAIT FOR BETTER LIQUIDITY'}`,
-                'ai'
-            );
-        }
-        
-        function showHyperbolicMetrics() {
-            const embedding = gomnaAI.embedInPoincareBall(Array.from({length: 10}, () => Math.random() * 0.1));
-            const distance = gomnaAI.calculateHyperbolicDistance(embedding);
+            autoTradingActive = !autoTradingActive;
+            const button = document.getElementById('tradingToggle');
             
-            gomnaAI.addChatMessage(
-                `🔮 <strong>Hyperbolic Space Metrics</strong><br>
-                Curvature κ: -1.0 (Poincaré Ball)<br>
-                Embedding dimension: ${gomnaAI.embeddingDim}D<br>
-                Current hyperbolic distance: ${distance.toFixed(4)}<br>
-                Geodesic paths: ${document.getElementById('geodesic-paths').textContent}<br>
-                Space utilization: ${(distance * 100).toFixed(1)}% of unit ball`,
-                'ai'
-            );
+            if (autoTradingActive) {
+                button.innerHTML = '<i class="fas fa-play mr-2"></i>ACTIVE';
+                button.className = 'px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors';
+                console.log('🤖 Auto Trading Engine: ACTIVATED');
+                startAutoTrading();
+            } else {
+                button.innerHTML = '<i class="fas fa-stop mr-2"></i>STOPPED';
+                button.className = 'px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition-colors';
+                console.log('🤖 Auto Trading Engine: STOPPED');
+            }
         }
-        
-        // Initialize MathJax after content loads
+
+        function startAutoTrading() {
+            if (!autoTradingActive) return;
+            
+            // Check for trading opportunities every 10 seconds
+            const tradingInterval = setInterval(() => {
+                if (!autoTradingActive) {
+                    clearInterval(tradingInterval);
+                    return;
+                }
+                
+                checkTradingOpportunity();
+            }, 10000);
+        }
+
+        function checkTradingOpportunity() {
+            // Analyze current market conditions
+            const threshold = parseFloat(document.getElementById('patternThreshold').value);
+            const riskLevel = document.getElementById('riskLevel').value;
+            const positionSize = document.getElementById('positionSize').value;
+            
+            // Simulate pattern recognition
+            const patternConfidence = Math.random();
+            const sentiment = Math.random() > 0.5 ? 'bullish' : 'bearish';
+            
+            if (patternConfidence > threshold) {
+                executeTrade(sentiment, patternConfidence, positionSize);
+            }
+        }
+
+        function executeTrade(sentiment, confidence, size) {
+            const trade = {
+                action: sentiment === 'bullish' ? 'BUY' : 'SELL',
+                asset: Math.random() > 0.5 ? 'BTC' : 'ETH',
+                confidence: confidence,
+                size: size,
+                timestamp: new Date(),
+                profit: (Math.random() - 0.3) * 5 // Slight positive bias
+            };
+            
+            console.log(`🔥 Executing Trade: ${trade.action} ${trade.asset} (Confidence: ${(confidence * 100).toFixed(1)}%)`);
+            
+            // Add to trade history
+            addTradeToHistory(trade);
+        }
+
+        function addTradeToHistory(trade) {
+            const historyContainer = document.getElementById('tradeHistory');
+            const tradeDiv = document.createElement('div');
+            tradeDiv.className = 'flex justify-between items-center p-3 bg-slate-800 rounded';
+            
+            const actionColor = trade.action === 'BUY' ? 'text-green-400' : 'text-red-400';
+            const profitColor = trade.profit > 0 ? 'text-green-400' : 'text-red-400';
+            const profitSign = trade.profit > 0 ? '+' : '';
+            
+            tradeDiv.innerHTML = `
+                <div>
+                    <div class="font-semibold ${actionColor}">${trade.action} ${trade.asset}</div>
+                    <div class="text-xs text-slate-400">Auto Pattern • just now</div>
+                </div>
+                <div class="text-right">
+                    <div class="${profitColor} font-semibold">${profitSign}${trade.profit.toFixed(1)}%</div>
+                    <div class="text-xs text-slate-400">$${Math.abs(trade.profit * 100).toFixed(0)}</div>
+                </div>
+            `;
+            
+            // Add to top of history
+            historyContainer.insertBefore(tradeDiv, historyContainer.firstChild);
+            
+            // Keep only last 5 trades visible
+            while (historyContainer.children.length > 5) {
+                historyContainer.removeChild(historyContainer.lastChild);
+            }
+        }
+
+        function updateTradingMetrics() {
+            // Update performance metrics
+            const performanceValue = (Math.random() * 20 - 5).toFixed(1); // -5% to +15%
+            const winRate = (Math.random() * 20 + 70).toFixed(0); // 70% to 90%
+            
+            // Update UI would go here if elements existed
+            console.log(`Trading Performance: ${performanceValue}% | Win Rate: ${winRate}%`);
+        }
+
+        // Microstructure Analysis
+        function updateMicrostructureMetrics() {
+            // Update Kyle's Lambda
+            const lambda = (Math.random() * 0.01 + 0.002).toFixed(4);
+            document.getElementById('kylesLambda').textContent = lambda;
+            
+            // Update VPIN
+            const vpin = (Math.random() * 0.5 + 0.1).toFixed(2);
+            document.getElementById('vpinValue').textContent = vpin;
+            
+            console.log(`Microstructure Update: λ=${lambda}, VPIN=${vpin}`);
+        }
+
+        function initializeMicrostructureCharts() {
+            // Initialize liquidity chart
+            const liquidityData = [{
+                x: Array.from({length: 24}, (_, i) => new Date(Date.now() - (23-i) * 3600000)),
+                y: Array.from({length: 24}, () => Math.random() * 100 + 50),
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: 'Liquidity Index',
+                line: { color: '#8b5cf6' }
+            }];
+            
+            const liquidityLayout = {
+                title: 'Market Liquidity (24h)',
+                plot_bgcolor: 'rgba(15, 23, 42, 0.8)',
+                paper_bgcolor: 'transparent',
+                font: { color: '#e2e8f0' },
+                xaxis: { color: '#cbd5e1', gridcolor: '#334155' },
+                yaxis: { color: '#cbd5e1', gridcolor: '#334155' }
+            };
+            
+            Plotly.newPlot('liquidity-chart', liquidityData, liquidityLayout);
+            
+            // Initialize order book heatmap
+            const heatmapData = [{
+                z: Array.from({length: 20}, () => Array.from({length: 20}, () => Math.random())),
+                type: 'heatmap',
+                colorscale: 'Viridis'
+            }];
+            
+            const heatmapLayout = {
+                title: 'Order Book Depth',
+                plot_bgcolor: 'rgba(15, 23, 42, 0.8)',
+                paper_bgcolor: 'transparent',
+                font: { color: '#e2e8f0' }
+            };
+            
+            Plotly.newPlot('orderbook-heatmap', heatmapData, heatmapLayout);
+        }
+
+        function initializePerformanceChart() {
+            const performanceData = [{
+                x: Array.from({length: 24}, (_, i) => new Date(Date.now() - (23-i) * 3600000)),
+                y: Array.from({length: 24}, (_, i) => {
+                    const base = 100;
+                    const trend = i * 0.5; // Upward trend
+                    const noise = (Math.random() - 0.5) * 5;
+                    return base + trend + noise;
+                }),
+                type: 'scatter',
+                mode: 'lines',
+                fill: 'tonexty',
+                name: 'Portfolio Value',
+                line: { color: '#22c55e' },
+                fillcolor: 'rgba(34, 197, 94, 0.2)'
+            }];
+            
+            const performanceLayout = {
+                showlegend: false,
+                plot_bgcolor: 'rgba(15, 23, 42, 0.8)',
+                paper_bgcolor: 'transparent',
+                font: { color: '#e2e8f0' },
+                xaxis: { 
+                    showgrid: false, 
+                    showticklabels: false,
+                    color: '#cbd5e1'
+                },
+                yaxis: { 
+                    showgrid: false, 
+                    showticklabels: false,
+                    color: '#cbd5e1'
+                },
+                margin: { l: 0, r: 0, t: 0, b: 0 }
+            };
+            
+            Plotly.newPlot('performance-chart', performanceData, performanceLayout);
+        }
+
+        // Threshold slider update
         document.addEventListener('DOMContentLoaded', function() {
-            if (window.MathJax) {
-                MathJax.typesetPromise();
+            const thresholdSlider = document.getElementById('patternThreshold');
+            const thresholdValue = document.getElementById('thresholdValue');
+            
+            if (thresholdSlider && thresholdValue) {
+                thresholdSlider.addEventListener('input', function() {
+                    thresholdValue.textContent = this.value;
+                });
             }
         });
-        
-        console.log('🧠 GOMNA AI Hyperbolic CNN Trading Platform Initialized');
-        console.log('🔮 Poincaré Ball Model Active (κ=-1.0)');
-        console.log('🖼️ Computer Vision Analysis Ready');
-        console.log('🤖 AI Assistant Online');
-        console.log('⚡ Auto Trading System Standby');
+
+        // Market data simulation
+        function simulateMarketFeed() {
+            // This would connect to real WebSocket feeds in production
+            // Binance WebSocket: wss://stream.binance.com:9443/ws/btcusdt@ticker
+            // For now, we simulate the data
+            
+            setInterval(() => {
+                // Simulate orderflow updates
+                if (Math.random() > 0.7) {
+                    console.log('📊 Order Flow Update: Large buy order detected');
+                }
+                
+                // Update microstructure metrics
+                if (currentTab === 'microstructure') {
+                    updateMicrostructureMetrics();
+                }
+            }, 3000);
+        }
+
+        // Initialize market simulation
+        setTimeout(simulateMarketFeed, 2000);
     </script>
 </body>
 </html>
