@@ -27,16 +27,16 @@
                             900: '#c2a466'    // Brown accent
                         },
                         accent: {
-                            50: '#f0f9f5',
-                            100: '#dcf2e7',
-                            200: '#b8e5d0',
-                            300: '#85d4ac',
-                            400: '#4abe87',
-                            500: '#22a366',
-                            600: '#16854f',
-                            700: '#146a41',
-                            800: '#145536',
-                            900: '#12462d'
+                            50: '#fdf8f3',     // Very light brown
+                            100: '#f9f0e7',    // Light brown
+                            200: '#f0dcc9',    // Soft brown
+                            300: '#e4c4a0',    // Medium light brown
+                            400: '#d4a574',    // Medium brown
+                            500: '#c2864f',    // Base brown (inspired by PDF)
+                            600: '#a66f42',    // Darker brown
+                            700: '#8b5a36',    // Deep brown
+                            800: '#6f472a',    // Very dark brown
+                            900: '#5c3a22'     // Darkest brown
                         }
                     }
                 }
@@ -176,13 +176,13 @@
             left: 0;
             right: 0;
             height: 3px;
-            background: linear-gradient(90deg, #22a366, #4abe87);
+            background: linear-gradient(90deg, #c2864f, #d4a574);
         }
         
         .stat-value {
             font-size: 2.5rem;
             font-weight: 700;
-            color: #2D5416;
+            color: #6f472a;
             line-height: 1;
             margin-bottom: 8px;
         }
@@ -201,7 +201,7 @@
             margin-top: 8px;
         }
         
-        .positive { color: #22a366; }
+        .positive { color: #c2864f; }
         .negative { color: #dc2626; }
         
         /* Modern Table */
@@ -239,7 +239,7 @@
         
         /* Buttons */
         .btn-primary {
-            background: linear-gradient(135deg, #22a366 0%, #4abe87 100%);
+            background: linear-gradient(135deg, #c2864f 0%, #d4a574 100%);
             color: white;
             padding: 12px 24px;
             border-radius: 10px;
@@ -247,12 +247,13 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(34, 163, 102, 0.2);
+            box-shadow: 0 2px 8px rgba(194, 134, 79, 0.2);
         }
         
         .btn-primary:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(34, 163, 102, 0.3);
+            box-shadow: 0 4px 16px rgba(194, 134, 79, 0.3);
+            background: linear-gradient(135deg, #a66f42 0%, #c2864f 100%);
         }
         
         .btn-secondary {
@@ -275,7 +276,7 @@
         .live-dot {
             width: 8px;
             height: 8px;
-            background: #22a366;
+            background: #c2864f;
             border-radius: 50%;
             animation: pulse 2s infinite;
             margin-right: 8px;
