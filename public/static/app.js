@@ -87,6 +87,9 @@ class TradingDashboard {
 
         // Advanced Chart Controls
         this.setupChartControls()
+        
+        // Visualization Toggle Controls
+        this.setupVisualizationToggle()
     }
 
     updateClock() {
@@ -122,6 +125,10 @@ class TradingDashboard {
                     this.initializeCandlestickChart(),
                     this.startHyperbolicAnalysis()
                 ])
+                // Initialize clustering for hyperbolic space engine
+                if (this.currentVisualization === 'clustering') {
+                    this.initializeAssetClustering()
+                }
                 break
             case 'portfolio':
                 await this.loadPortfolioData()
@@ -2048,6 +2055,231 @@ class TradingDashboard {
         setTimeout(() => {
             notification.remove()
         }, 5000)
+    }
+
+    // Visualization Toggle Setup
+    setupVisualizationToggle() {
+        const patternsToggle = document.getElementById('viz-toggle-patterns')
+        const clusteringToggle = document.getElementById('viz-toggle-clustering')
+        
+        if (patternsToggle && clusteringToggle) {
+            patternsToggle.addEventListener('click', () => {
+                this.switchVisualization('patterns')
+            })
+            
+            clusteringToggle.addEventListener('click', () => {
+                this.switchVisualization('clustering')
+            })
+        }
+    }
+
+    switchVisualization(type) {
+        this.currentVisualization = type
+        
+        // Update toggle buttons
+        const patternsToggle = document.getElementById('viz-toggle-patterns')
+        const clusteringToggle = document.getElementById('viz-toggle-clustering')
+        
+        if (type === 'patterns') {
+            patternsToggle.className = 'px-3 py-1 rounded text-xs font-semibold bg-accent text-dark-bg'
+            clusteringToggle.className = 'px-3 py-1 rounded text-xs font-semibold text-gray-300 hover:text-white'
+            
+            // Show patterns view, hide clustering view
+            document.getElementById('poincare-patterns-view').classList.remove('hidden')
+            document.getElementById('poincare-clustering-view').classList.add('hidden')
+        } else {
+            patternsToggle.className = 'px-3 py-1 rounded text-xs font-semibold text-gray-300 hover:text-white'
+            clusteringToggle.className = 'px-3 py-1 rounded text-xs font-semibold bg-accent text-dark-bg'
+            
+            // Show clustering view, hide patterns view
+            document.getElementById('poincare-patterns-view').classList.add('hidden')
+            document.getElementById('poincare-clustering-view').classList.remove('hidden')
+            
+            // Initialize clustering visualization
+            this.initializeAssetClustering()
+        }
+    }
+
+    // Asset Clustering Functionality
+    async initializeAssetClustering() {
+        try {
+            const response = await axios.get('/api/asset-clustering')
+            this.clusteringData = response.data.clustering
+            this.drawAssetClustering()
+            
+            // Start real-time clustering updates
+            if (this.clusteringAnimation) {
+                clearInterval(this.clusteringAnimation)
+            }
+            this.clusteringAnimation = setInterval(() => {
+                if (this.currentVisualization === 'clustering') {
+                    this.updateAssetClustering()
+                }
+            }, 2000)
+        } catch (error) {
+            console.error('Failed to initialize asset clustering:', error)
+        }
+    }
+
+    async updateAssetClustering() {
+        try {
+            const response = await axios.get('/api/asset-clustering')
+            this.clusteringData = response.data.clustering
+            this.drawAssetClustering()
+        } catch (error) {
+            console.error('Failed to update clustering:', error)
+        }
+    }
+
+    drawAssetClustering() {
+        const canvas = document.getElementById('asset-clustering-disk')
+        if (!canvas || !this.clusteringData) return
+        
+        const ctx = canvas.getContext('2d')
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+        const radius = Math.min(centerX, centerY) - 20
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        // Draw Poincaré disk boundary
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+        ctx.strokeStyle = '#00ff9f'
+        ctx.lineWidth = 2
+        ctx.stroke()
+        
+        // Draw correlation lines between assets
+        this.drawCorrelationLines(ctx, centerX, centerY, radius)
+        
+        // Draw asset nodes
+        this.drawAssetNodes(ctx, centerX, centerY, radius)
+        
+        // Update clustering metrics
+        this.updateClusteringMetrics()
+    }
+
+    drawCorrelationLines(ctx, centerX, centerY, radius) {
+        const { positions } = this.clusteringData
+        const assets = Object.keys(positions)
+        
+        for (let i = 0; i < assets.length; i++) {
+            for (let j = i + 1; j < assets.length; j++) {
+                const asset1 = assets[i]
+                const asset2 = assets[j]
+                const correlation = positions[asset1].correlations[asset2]
+                
+                // Convert hyperbolic coordinates to canvas coordinates
+                const pos1 = this.hyperbolicToCanvas(positions[asset1], centerX, centerY, radius)
+                const pos2 = this.hyperbolicToCanvas(positions[asset2], centerX, centerY, radius)
+                
+                // Draw correlation line
+                ctx.beginPath()
+                ctx.moveTo(pos1.x, pos1.y)
+                ctx.lineTo(pos2.x, pos2.y)
+                
+                // Color and width based on correlation strength
+                const strength = Math.abs(correlation)
+                const alpha = Math.max(0.2, strength)
+                
+                if (correlation > 0) {
+                    ctx.strokeStyle = `rgba(0, 255, 159, ${alpha})` // Green for positive correlation
+                } else {
+                    ctx.strokeStyle = `rgba(255, 71, 87, ${alpha})` // Red for negative correlation
+                }
+                
+                ctx.lineWidth = Math.max(1, strength * 3)
+                ctx.stroke()
+                
+                // Draw correlation value at midpoint
+                const midX = (pos1.x + pos2.x) / 2
+                const midY = (pos1.y + pos2.y) / 2
+                
+                ctx.fillStyle = '#ffffff'
+                ctx.font = '8px monospace'
+                ctx.textAlign = 'center'
+                ctx.fillText(correlation.toFixed(2), midX, midY)
+            }
+        }
+    }
+
+    drawAssetNodes(ctx, centerX, centerY, radius) {
+        const { positions } = this.clusteringData
+        
+        Object.entries(positions).forEach(([symbol, data]) => {
+            const pos = this.hyperbolicToCanvas(data, centerX, centerY, radius)
+            
+            // Node size based on market cap (normalized)
+            const maxMarketCap = Math.max(...Object.values(positions).map(p => p.marketCap))
+            const nodeSize = 8 + (data.marketCap / maxMarketCap) * 12
+            
+            // Draw node circle
+            ctx.beginPath()
+            ctx.arc(pos.x, pos.y, nodeSize, 0, 2 * Math.PI)
+            
+            // Color based on price change
+            if (data.priceChange > 0) {
+                ctx.fillStyle = '#00ff9f' // Green for positive
+            } else {
+                ctx.fillStyle = '#ff4757' // Red for negative
+            }
+            
+            ctx.fill()
+            ctx.strokeStyle = '#ffffff'
+            ctx.lineWidth = 2
+            ctx.stroke()
+            
+            // Draw asset symbol
+            ctx.fillStyle = '#000000'
+            ctx.font = '10px monospace'
+            ctx.textAlign = 'center'
+            ctx.fillText(symbol, pos.x, pos.y + 3)
+            
+            // Draw volatility indicator (small ring around node)
+            ctx.beginPath()
+            ctx.arc(pos.x, pos.y, nodeSize + 4, 0, 2 * Math.PI)
+            ctx.strokeStyle = `rgba(255, 255, 255, ${data.volatility * 100})`
+            ctx.lineWidth = 1
+            ctx.stroke()
+        })
+    }
+
+    hyperbolicToCanvas(position, centerX, centerY, radius) {
+        // Scale hyperbolic coordinates to canvas
+        const scaledX = position.x * radius * 0.8
+        const scaledY = position.y * radius * 0.8
+        
+        return {
+            x: centerX + scaledX,
+            y: centerY + scaledY
+        }
+    }
+
+    updateClusteringMetrics() {
+        if (!this.clusteringData) return
+        
+        const { positions, correlationMatrix } = this.clusteringData
+        const assetCount = Object.keys(positions).length
+        
+        // Calculate correlation variance
+        const correlations = []
+        Object.values(correlationMatrix).forEach(row => {
+            Object.values(row).forEach(corr => {
+                if (corr !== 1) correlations.push(corr) // Exclude self-correlation
+            })
+        })
+        
+        const avgCorrelation = correlations.reduce((a, b) => a + b) / correlations.length
+        const correlationVariance = correlations.reduce((sum, corr) => sum + Math.pow(corr - avgCorrelation, 2), 0) / correlations.length
+        
+        // Calculate clustering coefficient (simplified)
+        const clusteringCoefficient = 1 - (correlationVariance / 0.25) // Normalized to 0-1
+        
+        // Update UI elements
+        document.getElementById('cluster-asset-count').textContent = assetCount
+        document.getElementById('correlation-variance').textContent = correlationVariance.toFixed(4)
+        document.getElementById('clustering-coefficient').textContent = clusteringCoefficient.toFixed(3)
     }
 }
 
