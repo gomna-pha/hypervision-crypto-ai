@@ -2161,87 +2161,152 @@ class TradingDashboard {
     }
 
     drawCorrelationLines(ctx, centerX, centerY, radius) {
-        const { positions } = this.clusteringData
-        const assets = Object.keys(positions)
+        if (!this.clusteringData.assets) return
         
-        for (let i = 0; i < assets.length; i++) {
-            for (let j = i + 1; j < assets.length; j++) {
-                const asset1 = assets[i]
-                const asset2 = assets[j]
-                const correlation = positions[asset1].correlations[asset2]
+        // Enhanced correlation visualization for 15 assets
+        // Only show significant correlations to avoid visual clutter
+        const significantThreshold = 0.3
+        
+        for (let i = 0; i < this.clusteringData.assets.length; i++) {
+            const asset1 = this.clusteringData.assets[i]
+            
+            for (let j = i + 1; j < this.clusteringData.assets.length; j++) {
+                const asset2 = this.clusteringData.assets[j]
+                const correlation = asset1.correlations ? asset1.correlations[asset2.symbol] : 0
                 
-                // Convert hyperbolic coordinates to canvas coordinates
-                const pos1 = this.hyperbolicToCanvas(positions[asset1], centerX, centerY, radius)
-                const pos2 = this.hyperbolicToCanvas(positions[asset2], centerX, centerY, radius)
+                if (!correlation || Math.abs(correlation) < significantThreshold) continue
                 
-                // Draw correlation line
+                // Convert coordinates to canvas positions
+                const pos1 = this.hyperbolicToCanvas(asset1, centerX, centerY, radius)
+                const pos2 = this.hyperbolicToCanvas(asset2, centerX, centerY, radius)
+                
+                // Calculate correlation strength and visual properties
+                const strength = Math.abs(correlation)
+                const alpha = Math.min(0.8, strength * 1.5)
+                const lineWidth = Math.max(0.5, strength * 3)
+                
+                // Category-aware correlation coloring
+                let correlationColor
+                if (asset1.category === asset2.category) {
+                    // Intra-category correlations (same asset class)
+                    correlationColor = correlation > 0 ? 
+                        `rgba(0, 255, 159, ${alpha})` :     // Strong green for positive intra-category
+                        `rgba(255, 159, 0, ${alpha})`       // Orange for negative intra-category
+                } else {
+                    // Inter-category correlations (cross-asset class)
+                    correlationColor = correlation > 0 ?
+                        `rgba(100, 200, 255, ${alpha})` :   // Blue for positive cross-category  
+                        `rgba(255, 71, 87, ${alpha})`       // Red for negative cross-category
+                }
+                
+                // Draw correlation line with gradient effect
                 ctx.beginPath()
                 ctx.moveTo(pos1.x, pos1.y)
                 ctx.lineTo(pos2.x, pos2.y)
+                ctx.strokeStyle = correlationColor
+                ctx.lineWidth = lineWidth
                 
-                // Color and width based on correlation strength
-                const strength = Math.abs(correlation)
-                const alpha = Math.max(0.2, strength)
-                
-                if (correlation > 0) {
-                    ctx.strokeStyle = `rgba(0, 255, 159, ${alpha})` // Green for positive correlation
+                // Add dash pattern for negative correlations
+                if (correlation < 0) {
+                    ctx.setLineDash([3, 3])
                 } else {
-                    ctx.strokeStyle = `rgba(255, 71, 87, ${alpha})` // Red for negative correlation
+                    ctx.setLineDash([])
                 }
                 
-                ctx.lineWidth = Math.max(1, strength * 3)
                 ctx.stroke()
+                ctx.setLineDash([]) // Reset dash pattern
                 
-                // Draw correlation value at midpoint
-                const midX = (pos1.x + pos2.x) / 2
-                const midY = (pos1.y + pos2.y) / 2
-                
-                ctx.fillStyle = '#ffffff'
-                ctx.font = '8px monospace'
-                ctx.textAlign = 'center'
-                ctx.fillText(correlation.toFixed(2), midX, midY)
+                // Draw correlation strength indicator for very strong correlations
+                if (strength > 0.7) {
+                    const midX = (pos1.x + pos2.x) / 2
+                    const midY = (pos1.y + pos2.y) / 2
+                    
+                    ctx.fillStyle = '#ffffff'
+                    ctx.font = '7px monospace'
+                    ctx.textAlign = 'center'
+                    ctx.shadowColor = 'rgba(0,0,0,0.8)'
+                    ctx.shadowBlur = 1
+                    ctx.fillText(correlation.toFixed(2), midX, midY - 2)
+                    ctx.shadowBlur = 0
+                }
             }
         }
     }
 
     drawAssetNodes(ctx, centerX, centerY, radius) {
-        const { positions } = this.clusteringData
+        if (!this.clusteringData.assets) return
         
-        Object.entries(positions).forEach(([symbol, data]) => {
-            const pos = this.hyperbolicToCanvas(data, centerX, centerY, radius)
+        // Enhanced visualization for all 15 assets across 5 categories
+        const categoryColors = {
+            crypto: '#00ff9f',      // Bright Green
+            equity: '#3742fa',      // Blue  
+            international: '#ff6b35', // Orange
+            commodities: '#f39c12',  // Golden
+            forex: '#9c59d1'        // Purple
+        }
+        
+        this.clusteringData.assets.forEach(asset => {
+            const pos = this.hyperbolicToCanvas(asset, centerX, centerY, radius)
             
-            // Node size based on market cap (normalized)
-            const maxMarketCap = Math.max(...Object.values(positions).map(p => p.marketCap))
-            const nodeSize = 8 + (data.marketCap / maxMarketCap) * 12
+            // Dynamic node size based on market cap and fusion signal strength
+            const maxMarketCap = Math.max(...this.clusteringData.assets.map(a => a.marketCap || 1000000000))
+            const baseSize = 6 + (asset.marketCap / maxMarketCap) * 8
+            const fusionMultiplier = 1 + Math.abs(asset.fusionSignal || 0) * 2
+            const nodeSize = baseSize * fusionMultiplier
             
-            // Draw node circle
+            // Category-based coloring with performance overlay
+            const categoryColor = categoryColors[asset.category] || '#ffffff'
+            
+            // Draw main node circle  
             ctx.beginPath()
             ctx.arc(pos.x, pos.y, nodeSize, 0, 2 * Math.PI)
             
-            // Color based on price change
-            if (data.priceChange > 0) {
-                ctx.fillStyle = '#00ff9f' // Green for positive
+            // Performance-based color intensity
+            const intensity = asset.priceChange > 0 ? 
+                Math.min(1, Math.abs(asset.priceChange) * 50 + 0.3) : 0.8
+            
+            if (asset.priceChange > 0) {
+                ctx.fillStyle = `rgba(0, 255, 159, ${intensity})` // Green for gains
             } else {
-                ctx.fillStyle = '#ff4757' // Red for negative
+                ctx.fillStyle = `rgba(255, 71, 87, ${intensity})` // Red for losses
             }
             
             ctx.fill()
-            ctx.strokeStyle = '#ffffff'
+            
+            // Category border
+            ctx.strokeStyle = categoryColor
             ctx.lineWidth = 2
             ctx.stroke()
             
             // Draw asset symbol
-            ctx.fillStyle = '#000000'
-            ctx.font = '10px monospace'
+            ctx.fillStyle = '#ffffff'
+            ctx.font = `${Math.max(8, nodeSize * 0.7)}px monospace`
             ctx.textAlign = 'center'
-            ctx.fillText(symbol, pos.x, pos.y + 3)
+            ctx.shadowColor = 'rgba(0,0,0,0.8)'
+            ctx.shadowBlur = 2
+            ctx.fillText(asset.symbol, pos.x, pos.y + 2)
+            ctx.shadowBlur = 0
             
-            // Draw volatility indicator (small ring around node)
-            ctx.beginPath()
-            ctx.arc(pos.x, pos.y, nodeSize + 4, 0, 2 * Math.PI)
-            ctx.strokeStyle = `rgba(255, 255, 255, ${data.volatility * 100})`
-            ctx.lineWidth = 1
-            ctx.stroke()
+            // Fusion signal indicator (pulsing ring)
+            if (Math.abs(asset.fusionSignal || 0) > 0.1) {
+                const pulseRadius = nodeSize + 3 + Math.sin(Date.now() * 0.005) * 2
+                ctx.beginPath()
+                ctx.arc(pos.x, pos.y, pulseRadius, 0, 2 * Math.PI)
+                ctx.strokeStyle = `rgba(255, 255, 255, ${Math.abs(asset.fusionSignal) * 0.8})`
+                ctx.lineWidth = 1
+                ctx.stroke()
+            }
+            
+            // Volatility ring (outer)
+            if (asset.volatility > 0.005) {
+                ctx.beginPath()
+                ctx.arc(pos.x, pos.y, nodeSize + 6, 0, 2 * Math.PI)
+                ctx.strokeStyle = `rgba(255, 255, 255, ${Math.min(asset.volatility * 20, 0.6)})`
+                ctx.lineWidth = 1
+                ctx.setLineDash([2, 2])
+                ctx.stroke()
+                ctx.setLineDash([])
+            }
         })
     }
 
@@ -2259,27 +2324,79 @@ class TradingDashboard {
     updateClusteringMetrics() {
         if (!this.clusteringData) return
         
-        const { positions, correlationMatrix } = this.clusteringData
-        const assetCount = Object.keys(positions).length
+        const { assets, fusionComponents, assetCategories, totalAssets } = this.clusteringData
         
-        // Calculate correlation variance
+        // Enhanced multi-modal metrics
+        const assetCount = totalAssets || assets.length
+        
+        // Calculate fusion-weighted correlation statistics
         const correlations = []
-        Object.values(correlationMatrix).forEach(row => {
-            Object.values(row).forEach(corr => {
-                if (corr !== 1) correlations.push(corr) // Exclude self-correlation
-            })
+        const categoryCorrelations = {}
+        
+        assetCategories.forEach(cat => {
+            categoryCorrelations[cat] = []
         })
         
-        const avgCorrelation = correlations.reduce((a, b) => a + b) / correlations.length
-        const correlationVariance = correlations.reduce((sum, corr) => sum + Math.pow(corr - avgCorrelation, 2), 0) / correlations.length
+        assets.forEach(asset => {
+            if (asset.correlations) {
+                Object.values(asset.correlations).forEach(corr => {
+                    if (corr !== 1 && !isNaN(corr)) {
+                        correlations.push(corr)
+                    }
+                })
+                
+                // Category-specific correlations
+                if (categoryCorrelations[asset.category]) {
+                    assets.filter(a => a.category === asset.category && a.symbol !== asset.symbol).forEach(sameCategory => {
+                        const corr = asset.correlations[sameCategory.symbol]
+                        if (corr !== undefined && !isNaN(corr)) {
+                            categoryCorrelations[asset.category].push(corr)
+                        }
+                    })
+                }
+            }
+        })
         
-        // Calculate clustering coefficient (simplified)
-        const clusteringCoefficient = 1 - (correlationVariance / 0.25) // Normalized to 0-1
+        // Advanced metrics calculation
+        const avgCorrelation = correlations.length > 0 ? correlations.reduce((a, b) => a + b) / correlations.length : 0
+        const correlationVariance = correlations.length > 0 ? 
+            correlations.reduce((sum, corr) => sum + Math.pow(corr - avgCorrelation, 2), 0) / correlations.length : 0
         
-        // Update UI elements
-        document.getElementById('cluster-asset-count').textContent = assetCount
+        // Multi-modal clustering coefficient
+        const fusionScore = fusionComponents ? 
+            (fusionComponents.hyperbolicCNN + fusionComponents.finBERT + fusionComponents.lstmTransformer) : 0.85
+        const clusteringCoefficient = Math.max(0, 1 - (correlationVariance / 0.3)) * fusionScore
+        
+        // Calculate category diversity (how well distributed across categories)
+        const categoryDistribution = {}
+        assets.forEach(asset => {
+            categoryDistribution[asset.category] = (categoryDistribution[asset.category] || 0) + 1
+        })
+        const diversityScore = Math.min(Object.keys(categoryDistribution).length / 5, 1) // Max 5 categories
+        
+        // Update UI elements with enhanced metrics
+        document.getElementById('cluster-asset-count').textContent = `${assetCount} (${assetCategories.length} categories)`
         document.getElementById('correlation-variance').textContent = correlationVariance.toFixed(4)
-        document.getElementById('clustering-coefficient').textContent = clusteringCoefficient.toFixed(3)
+        document.getElementById('clustering-coefficient').textContent = `${clusteringCoefficient.toFixed(3)} (fusion-weighted)`
+        
+        // Add fusion component display if elements exist
+        const fusionDisplay = document.getElementById('fusion-components')
+        if (fusionDisplay && fusionComponents) {
+            fusionDisplay.innerHTML = `
+                <div class="text-xs">
+                    <div>CNN: ${(fusionComponents.hyperbolicCNN * 100).toFixed(0)}%</div>
+                    <div>LSTM: ${(fusionComponents.lstmTransformer * 100).toFixed(0)}%</div>
+                    <div>FinBERT: ${(fusionComponents.finBERT * 100).toFixed(0)}%</div>
+                    <div>Arbitrage: ${(fusionComponents.classicalArbitrage * 100).toFixed(0)}%</div>
+                </div>
+            `
+        }
+        
+        // Update diversity metrics if element exists
+        const diversityDisplay = document.getElementById('category-diversity')
+        if (diversityDisplay) {
+            diversityDisplay.textContent = `${(diversityScore * 100).toFixed(1)}%`
+        }
     }
 }
 
