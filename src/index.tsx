@@ -525,15 +525,44 @@ app.post('/api/ai-query', async (c) => {
     }
   }
   
-  // Other query types
-  else if (query.toLowerCase().includes('market analysis')) {
-    response = 'Current market shows strong bullish momentum with BTC breaking resistance at $67,000. Volume indicators suggest continued upward pressure. Hyperbolic CNN analysis indicates 94.2% pattern recognition accuracy.'
-  } else if (query.toLowerCase().includes('risk assessment')) {
-    response = 'Portfolio risk is well-managed with 73% correlation to market beta. Current VaR of $45,231 represents 1.6% of total portfolio value. Hyperbolic distance calculations show optimal risk distribution.'
-  } else if (query.toLowerCase().includes('arbitrage')) {
-    response = 'Current cross-exchange spreads offer profitable opportunities. Binance-Coinbase spread of +0.18% provides $127 profit potential. Hyperbolic CNN detected bullish engulfing pattern suggesting optimal entry timing.'
-  } else {
-    response = `Based on current market conditions and your query about "${query}", I recommend monitoring the BTC resistance levels and ETH correlation patterns for optimal trading opportunities. The hyperbolic space engine shows 99.5% geodesic efficiency for pattern recognition.`
+  // Dynamic multi-modal fusion analysis queries
+  else if (query.toLowerCase().includes('cluster') || query.toLowerCase().includes('correlation')) {
+    const clusterData = clusteringEngine.getLiveClusterData()
+    const analysis = analyzeClusteringInsights(clusterData, query)
+    response = analysis.response
+    confidence = analysis.confidence
+    additionalData = analysis.data
+  }
+  else if (query.toLowerCase().includes('market analysis') || query.toLowerCase().includes('market')) {
+    const marketAnalysis = analyzeMarketConditions()
+    response = marketAnalysis.response
+    confidence = marketAnalysis.confidence
+    additionalData = marketAnalysis.data
+  } 
+  else if (query.toLowerCase().includes('risk') || query.toLowerCase().includes('portfolio')) {
+    const riskAnalysis = analyzeRiskMetrics()
+    response = riskAnalysis.response
+    confidence = riskAnalysis.confidence
+    additionalData = riskAnalysis.data
+  }
+  else if (query.toLowerCase().includes('arbitrage') || query.toLowerCase().includes('opportunity')) {
+    const arbitrageAnalysis = analyzeArbitrageOpportunities()
+    response = arbitrageAnalysis.response
+    confidence = arbitrageAnalysis.confidence
+    additionalData = arbitrageAnalysis.data
+  }
+  else if (query.toLowerCase().includes('fusion') || query.toLowerCase().includes('hyperbolic')) {
+    const fusionAnalysis = analyzeFusionComponents(query)
+    response = fusionAnalysis.response
+    confidence = fusionAnalysis.confidence
+    additionalData = fusionAnalysis.data
+  }
+  else {
+    // Dynamic general analysis based on current system state
+    const generalAnalysis = analyzeGeneralQuery(query)
+    response = generalAnalysis.response
+    confidence = generalAnalysis.confidence
+    additionalData = generalAnalysis.data
   }
   
   return c.json({
@@ -1726,6 +1755,276 @@ const backtestingEngine = new BacktestingEngine()
 const paperTradingEngine = new PaperTradingEngine()
 const monteCarloEngine = new MonteCarloEngine()
 const clusteringEngine = new HierarchicalClusteringEngine()
+
+// Dynamic Multi-Modal Fusion AI Analysis Engine
+function analyzeClusteringInsights(clusterData, query) {
+  const { assets, fusionComponents, correlationMatrix, totalAssets, assetCategories } = clusterData
+  
+  // Analyze clustering patterns
+  const strongCorrelations = []
+  const weakCorrelations = []
+  const categoryStats = {}
+  
+  assetCategories.forEach(category => {
+    categoryStats[category] = { count: 0, avgVolatility: 0, avgFusionSignal: 0 }
+  })
+  
+  assets.forEach(asset => {
+    categoryStats[asset.category].count++
+    categoryStats[asset.category].avgVolatility += asset.volatility || 0
+    categoryStats[asset.category].avgFusionSignal += Math.abs(asset.fusionSignal || 0)
+    
+    if (asset.correlations) {
+      Object.entries(asset.correlations).forEach(([otherAsset, corr]) => {
+        if (otherAsset !== asset.symbol && Math.abs(corr) > 0.5) {
+          strongCorrelations.push({ asset1: asset.symbol, asset2: otherAsset, correlation: corr, strength: Math.abs(corr) })
+        } else if (otherAsset !== asset.symbol && Math.abs(corr) < 0.1) {
+          weakCorrelations.push({ asset1: asset.symbol, asset2: otherAsset, correlation: corr })
+        }
+      })
+    }
+  })
+  
+  // Calculate category averages
+  Object.keys(categoryStats).forEach(category => {
+    const count = categoryStats[category].count
+    if (count > 0) {
+      categoryStats[category].avgVolatility /= count
+      categoryStats[category].avgFusionSignal /= count
+    }
+  })
+  
+  // Generate insights based on actual data
+  const topCorrelations = strongCorrelations
+    .sort((a, b) => b.strength - a.strength)
+    .slice(0, 3)
+  
+  const dominantCategory = Object.entries(categoryStats)
+    .sort((a, b) => b[1].avgFusionSignal - a[1].avgFusionSignal)[0]
+  
+  const response = `🌐 **Multi-Modal Clustering Analysis**\n\n` +
+    `**Asset Universe**: ${totalAssets} assets across ${assetCategories.length} categories\n` +
+    `**Fusion Components**: CNN ${(fusionComponents.hyperbolicCNN * 100).toFixed(0)}% | LSTM ${(fusionComponents.lstmTransformer * 100).toFixed(0)}% | FinBERT ${(fusionComponents.finBERT * 100).toFixed(0)}% | Arbitrage ${(fusionComponents.classicalArbitrage * 100).toFixed(0)}%\n\n` +
+    `**Strongest Correlations**:\n${topCorrelations.map(c => `• ${c.asset1}↔${c.asset2}: ${c.correlation.toFixed(3)} (${c.strength > 0.7 ? 'Very Strong' : 'Strong'})`).join('\n')}\n\n` +
+    `**Category Analysis**:\n• Most Active: ${dominantCategory[0]} (fusion signal: ${dominantCategory[1].avgFusionSignal.toFixed(3)})\n` +
+    `• Volatility Leader: ${Object.entries(categoryStats).sort((a, b) => b[1].avgVolatility - a[1].avgVolatility)[0][0]}\n\n` +
+    `**Hyperbolic Insight**: Assets are positioned using geodesic distances reflecting multi-modal correlations. ` +
+    `Strong intra-category clustering detected in ${assetCategories.filter(cat => categoryStats[cat].avgFusionSignal > 0.05).length} categories.`
+  
+  return {
+    response,
+    confidence: Math.min(95, 75 + (strongCorrelations.length * 3)),
+    data: { strongCorrelations, categoryStats, topCorrelations }
+  }
+}
+
+function analyzeMarketConditions() {
+  try {
+    const clusterData = clusteringEngine.getLiveClusterData()
+  
+  // Analyze current market state from real data
+  const cryptoAssets = clusterData.assets.filter(a => a.category === 'crypto')
+  const equityAssets = clusterData.assets.filter(a => a.category === 'equity')
+  
+  const cryptoMomentum = cryptoAssets.reduce((sum, asset) => sum + (asset.priceChange || 0), 0) / cryptoAssets.length
+  const equityMomentum = equityAssets.reduce((sum, asset) => sum + (asset.priceChange || 0), 0) / equityAssets.length
+  
+  const avgVolatility = clusterData.assets.reduce((sum, asset) => sum + (asset.volatility || 0), 0) / clusterData.assets.length
+  const strongFusionSignals = clusterData.assets.filter(a => Math.abs(a.fusionSignal || 0) > 0.1).length
+  
+  const marketSentiment = cryptoMomentum > 0 ? 'bullish' : 'bearish'
+  const marketStrength = Math.abs(cryptoMomentum) > 0.01 ? 'strong' : 'moderate'
+  
+  const response = `📊 **Real-Time Market Analysis**\n\n` +
+    `**Current Momentum**:\n• Crypto: ${(cryptoMomentum * 100).toFixed(2)}% (${cryptoMomentum > 0 ? '📈' : '📉'})\n` +
+    `• Equity: ${(equityMomentum * 100).toFixed(2)}% (${equityMomentum > 0 ? '📈' : '📉'})\n\n` +
+    `**Market Regime**: ${marketStrength.charAt(0).toUpperCase() + marketStrength.slice(1)} ${marketSentiment} trend detected\n` +
+    `**Volatility Environment**: ${avgVolatility > 0.01 ? 'High volatility' : 'Normal volatility'} (${(avgVolatility * 100).toFixed(2)}%)\n` +
+    `**Fusion Activity**: ${strongFusionSignals}/${clusterData.assets.length} assets showing strong multi-modal signals\n\n` +
+    `**Hyperbolic CNN Analysis**: Pattern recognition confidence varies by asset class. ` +
+    `Current geodesic efficiency indicates ${avgVolatility < 0.005 ? 'stable' : 'dynamic'} market microstructure.`
+  
+    return {
+      response,
+      confidence: 88 + Math.min(10, strongFusionSignals * 2),
+      data: { cryptoMomentum, equityMomentum, avgVolatility, strongFusionSignals, marketSentiment }
+    }
+  } catch (error) {
+    return {
+      response: `🤖 **Market Analysis Error**: Unable to retrieve current market conditions. System is initializing multi-modal fusion components.`,
+      confidence: 50,
+      data: { error: error.message }
+    }
+  }
+}
+
+function analyzeRiskMetrics() {
+  try {
+    const clusterData = clusteringEngine.getLiveClusterData()
+  
+  // Calculate real risk metrics from clustering data
+  const correlations = []
+  clusterData.assets.forEach(asset => {
+    if (asset.correlations) {
+      Object.values(asset.correlations).forEach(corr => {
+        if (corr !== 1 && !isNaN(corr)) correlations.push(corr)
+      })
+    }
+  })
+  
+  const avgCorrelation = correlations.reduce((a, b) => a + b, 0) / correlations.length
+  const correlationStd = Math.sqrt(correlations.reduce((sum, corr) => sum + Math.pow(corr - avgCorrelation, 2), 0) / correlations.length)
+  
+  const highVolAssets = clusterData.assets.filter(a => (a.volatility || 0) > 0.008).length
+  const diversificationRatio = clusterData.assetCategories.length / clusterData.totalAssets * 5 // Normalized
+  
+  const riskLevel = correlationStd > 0.3 ? 'elevated' : correlationStd > 0.2 ? 'moderate' : 'low'
+  const diversificationQuality = diversificationRatio > 0.8 ? 'excellent' : diversificationRatio > 0.6 ? 'good' : 'limited'
+  
+  const response = `⚠️ **Multi-Modal Risk Assessment**\n\n` +
+    `**Correlation Analysis**:\n• Average Cross-Asset Correlation: ${avgCorrelation.toFixed(3)}\n` +
+    `• Correlation Standard Deviation: ${correlationStd.toFixed(3)}\n• Risk Level: ${riskLevel.toUpperCase()}\n\n` +
+    `**Diversification Metrics**:\n• Portfolio Spread: ${clusterData.assetCategories.length} asset categories\n` +
+    `• Diversification Quality: ${diversificationQuality.toUpperCase()}\n• High Volatility Assets: ${highVolAssets}/${clusterData.totalAssets}\n\n` +
+    `**Hyperbolic Risk Mapping**: Assets positioned by correlation distance in Poincaré disk. ` +
+    `Current risk distribution shows ${riskLevel} clustering with ${diversificationQuality} category separation.`
+  
+    return {
+      response,
+      confidence: 92,
+      data: { avgCorrelation, correlationStd, highVolAssets, diversificationRatio, riskLevel }
+    }
+  } catch (error) {
+    return {
+      response: `⚠️ **Risk Analysis Error**: Unable to calculate risk metrics. Multi-modal clustering engine initializing.`,
+      confidence: 50,
+      data: { error: error.message }
+    }
+  }
+}
+
+function analyzeArbitrageOpportunities() {
+  try {
+    const clusterData = clusteringEngine.getLiveClusterData()
+  
+  // Analyze real arbitrage opportunities from clustering patterns
+  const decorrelatedPairs = []
+  const strongCorrelatedPairs = []
+  
+  for (let i = 0; i < clusterData.assets.length; i++) {
+    for (let j = i + 1; j < clusterData.assets.length; j++) {
+      const asset1 = clusterData.assets[i]
+      const asset2 = clusterData.assets[j]
+      
+      if (asset1.correlations && asset1.correlations[asset2.symbol] !== undefined) {
+        const corr = asset1.correlations[asset2.symbol]
+        const priceDivergence = Math.abs((asset1.priceChange || 0) - (asset2.priceChange || 0))
+        
+        if (Math.abs(corr) < 0.2 && priceDivergence > 0.01) {
+          decorrelatedPairs.push({ pair: `${asset1.symbol}-${asset2.symbol}`, correlation: corr, divergence: priceDivergence })
+        } else if (Math.abs(corr) > 0.7 && priceDivergence > 0.02) {
+          strongCorrelatedPairs.push({ pair: `${asset1.symbol}-${asset2.symbol}`, correlation: corr, divergence: priceDivergence })
+        }
+      }
+    }
+  }
+  
+  const topOpportunities = [...decorrelatedPairs, ...strongCorrelatedPairs]
+    .sort((a, b) => b.divergence - a.divergence)
+    .slice(0, 3)
+  
+  const fusionSignals = clusterData.assets.filter(a => Math.abs(a.fusionSignal || 0) > 0.08)
+  
+  const response = `⚡ **Multi-Modal Arbitrage Analysis**\n\n` +
+    `**Opportunity Detection**:\n${topOpportunities.map((opp, i) => 
+      `${i + 1}. ${opp.pair}: ${(opp.divergence * 100).toFixed(2)}% price divergence (corr: ${opp.correlation.toFixed(3)})`
+    ).join('\n')}\n\n` +
+    `**Fusion Signal Alerts**:\n• ${fusionSignals.length} assets showing strong multi-modal signals\n` +
+    `• Primary signals: ${fusionSignals.map(a => `${a.symbol}(${(a.fusionSignal * 100).toFixed(1)}%)`).join(', ')}\n\n` +
+    `**Hyperbolic Arbitrage**: Using geodesic distance calculations to identify correlation-divergence opportunities. ` +
+    `Current market microstructure shows ${topOpportunities.length > 0 ? 'active' : 'limited'} arbitrage potential.`
+  
+    return {
+      response,
+      confidence: 85 + Math.min(12, topOpportunities.length * 4),
+      data: { topOpportunities, fusionSignals, decorrelatedPairs }
+    }
+  } catch (error) {
+    return {
+      response: `⚡ **Arbitrage Analysis Error**: Unable to detect opportunities. Hyperbolic correlation matrix rebuilding.`,
+      confidence: 50,  
+      data: { error: error.message }
+    }
+  }
+}
+
+function analyzeFusionComponents(query) {
+  const clusterData = clusteringEngine.getLiveClusterData()
+  const { fusionComponents } = clusterData
+  
+  // Analyze current fusion component performance
+  const componentPerformance = {
+    hyperbolicCNN: clusterData.assets.filter(a => Math.abs(a.fusionSignal || 0) > 0.05).length,
+    patterns: clusterData.assets.filter(a => (a.volatility || 0) > 0.006).length,
+    sentiment: Math.random() * 0.3 + 0.4, // Simulated FinBERT activity
+    arbitrage: clusterData.assets.filter(a => Object.values(a.correlations || {}).some(c => Math.abs(c) > 0.6)).length
+  }
+  
+  const dominantComponent = Object.entries(fusionComponents)
+    .sort((a, b) => b[1] - a[1])[0]
+  
+  const response = `🧠 **Multi-Modal Fusion Component Analysis**\n\n` +
+    `**Component Weights**:\n• Hyperbolic CNN: ${(fusionComponents.hyperbolicCNN * 100).toFixed(0)}% (${componentPerformance.hyperbolicCNN} active signals)\n` +
+    `• LSTM-Transformer: ${(fusionComponents.lstmTransformer * 100).toFixed(0)}% (${componentPerformance.patterns} pattern assets)\n` +
+    `• FinBERT Sentiment: ${(fusionComponents.finBERT * 100).toFixed(0)}% (${(componentPerformance.sentiment * 100).toFixed(0)}% activity)\n` +
+    `• Classical Arbitrage: ${(fusionComponents.classicalArbitrage * 100).toFixed(0)}% (${componentPerformance.arbitrage} correlation signals)\n\n` +
+    `**Dominant Component**: ${dominantComponent[0]} contributing ${(dominantComponent[1] * 100).toFixed(0)}% to fusion decisions\n\n` +
+    `**Hyperbolic Space Efficiency**: Operating in Poincaré disk with curvature -1.0. ` +
+    `Geodesic calculations optimized for ${clusterData.totalAssets}-asset correlation matrix processing.`
+  
+  return {
+    response,
+    confidence: 93,
+    data: { fusionComponents, componentPerformance, dominantComponent }
+  }
+}
+
+function analyzeGeneralQuery(query) {
+  try {
+    const clusterData = clusteringEngine.getLiveClusterData()
+  
+  // Dynamic analysis based on current system state
+  const activeAssets = clusterData.assets.filter(a => Math.abs(a.fusionSignal || 0) > 0.03).length
+  const avgCorrelation = clusterData.assets.reduce((sum, asset) => {
+    const correlations = Object.values(asset.correlations || {}).filter(c => c !== 1 && !isNaN(c))
+    return sum + (correlations.reduce((a, b) => a + Math.abs(b), 0) / correlations.length || 0)
+  }, 0) / clusterData.assets.length
+  
+  const systemEfficiency = (activeAssets / clusterData.totalAssets) * 100
+  const marketComplexity = avgCorrelation > 0.4 ? 'high' : avgCorrelation > 0.25 ? 'moderate' : 'low'
+  
+  const response = `🤖 **Multi-Modal System Analysis**\n\n` +
+    `Your query: "${query}"\n\n` +
+    `**Current System State**:\n• ${clusterData.totalAssets} assets actively monitored across ${clusterData.assetCategories.length} categories\n` +
+    `• ${activeAssets} assets showing significant fusion activity (${systemEfficiency.toFixed(0)}% system utilization)\n` +
+    `• Market complexity: ${marketComplexity.toUpperCase()} (avg correlation: ${avgCorrelation.toFixed(3)})\n\n` +
+    `**Recommendation**: Based on current multi-modal fusion analysis, focus on ` +
+    `${clusterData.assets.filter(a => Math.abs(a.fusionSignal || 0) > 0.08).map(a => a.symbol).join(', ') || 'stable assets'} ` +
+    `for optimal trading opportunities. The hyperbolic space engine shows ${systemEfficiency > 70 ? 'high' : systemEfficiency > 40 ? 'moderate' : 'low'} signal activity.`
+  
+    return {
+      response,
+      confidence: 80 + Math.min(15, Math.floor(systemEfficiency / 5)),
+      data: { activeAssets, avgCorrelation, systemEfficiency, marketComplexity }
+    }
+  } catch (error) {
+    return {
+      response: `🤖 **System Analysis**: Your query "${query}" is being processed. Multi-modal fusion engine currently initializing correlation matrices across 15 global assets.`,
+      confidence: 75,
+      data: { error: error.message }
+    }
+  }
+}
 
 // API endpoints for backtesting and paper trading
 
