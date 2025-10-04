@@ -1142,10 +1142,208 @@ class MonteCarloEngine {
   }
 }
 
+// Hierarchical Asset Clustering Engine
+class HierarchicalClusteringEngine {
+  constructor() {
+    this.assets = ['BTC', 'ETH', 'SOL']
+    this.priceHistory = {}
+    this.correlationMatrix = {}
+    this.clusterPositions = {}
+    this.lastUpdate = Date.now()
+    this.initializeAssetData()
+  }
+
+  initializeAssetData() {
+    // Initialize price history for correlation calculations
+    this.assets.forEach(asset => {
+      this.priceHistory[asset] = []
+      for (let i = 0; i < 100; i++) {
+        const basePrice = candlestickGenerators[asset].basePrice
+        const price = basePrice * (1 + (Math.random() - 0.5) * 0.02)
+        this.priceHistory[asset].push({
+          timestamp: Date.now() - (100 - i) * 60000,
+          price
+        })
+      }
+    })
+    this.updateCorrelationMatrix()
+    this.calculateClusterPositions()
+  }
+
+  updatePriceData() {
+    // Add new price data and maintain rolling window
+    this.assets.forEach(asset => {
+      const currentPrice = candlestickGenerators[asset].currentPrice
+      this.priceHistory[asset].push({
+        timestamp: Date.now(),
+        price: currentPrice
+      })
+      
+      // Keep only last 100 data points for correlation
+      if (this.priceHistory[asset].length > 100) {
+        this.priceHistory[asset].shift()
+      }
+    })
+  }
+
+  calculateCorrelation(asset1, asset2) {
+    const history1 = this.priceHistory[asset1]
+    const history2 = this.priceHistory[asset2]
+    
+    if (history1.length < 10 || history2.length < 10) return 0
+    
+    // Calculate returns
+    const returns1 = []
+    const returns2 = []
+    
+    for (let i = 1; i < Math.min(history1.length, history2.length); i++) {
+      const return1 = (history1[i].price - history1[i-1].price) / history1[i-1].price
+      const return2 = (history2[i].price - history2[i-1].price) / history2[i-1].price
+      returns1.push(return1)
+      returns2.push(return2)
+    }
+    
+    // Pearson correlation coefficient
+    const n = returns1.length
+    const sum1 = returns1.reduce((a, b) => a + b, 0)
+    const sum2 = returns2.reduce((a, b) => a + b, 0)
+    const sum1Sq = returns1.reduce((a, b) => a + b * b, 0)
+    const sum2Sq = returns2.reduce((a, b) => a + b * b, 0)
+    const pSum = returns1.reduce((sum, r1, i) => sum + r1 * returns2[i], 0)
+    
+    const num = pSum - (sum1 * sum2 / n)
+    const den = Math.sqrt((sum1Sq - sum1 * sum1 / n) * (sum2Sq - sum2 * sum2 / n))
+    
+    return den === 0 ? 0 : num / den
+  }
+
+  updateCorrelationMatrix() {
+    this.correlationMatrix = {}
+    
+    for (let i = 0; i < this.assets.length; i++) {
+      this.correlationMatrix[this.assets[i]] = {}
+      for (let j = 0; j < this.assets.length; j++) {
+        if (i === j) {
+          this.correlationMatrix[this.assets[i]][this.assets[j]] = 1.0
+        } else {
+          const correlation = this.calculateCorrelation(this.assets[i], this.assets[j])
+          this.correlationMatrix[this.assets[i]][this.assets[j]] = correlation
+        }
+      }
+    }
+  }
+
+  calculateVolatility(asset) {
+    const history = this.priceHistory[asset]
+    if (history.length < 10) return 0.02
+    
+    const returns = []
+    for (let i = 1; i < history.length; i++) {
+      const returnValue = (history[i].price - history[i-1].price) / history[i-1].price
+      returns.push(returnValue)
+    }
+    
+    const mean = returns.reduce((a, b) => a + b, 0) / returns.length
+    const variance = returns.reduce((sum, r) => sum + Math.pow(r - mean, 2), 0) / returns.length
+    return Math.sqrt(variance)
+  }
+
+  getMarketCap(asset) {
+    // Simplified market cap representation
+    const marketCaps = {
+      'BTC': 1.3e12, // $1.3T
+      'ETH': 4.2e11, // $420B  
+      'SOL': 5.8e10  // $58B
+    }
+    return marketCaps[asset] || 1e10
+  }
+
+  calculateClusterPositions() {
+    const centerX = 0
+    const centerY = 0
+    const maxRadius = 0.85 // Stay within Poincaré disk bounds
+    
+    this.assets.forEach((asset, index) => {
+      const volatility = this.calculateVolatility(asset)
+      const marketCap = this.getMarketCap(asset)
+      
+      // Distance from center based on volatility (higher vol = further from center)
+      const distance = Math.min(volatility * 30, maxRadius)
+      
+      // Angular position based on market cap and correlations
+      let angle = (index * 2 * Math.PI) / this.assets.length
+      
+      // Adjust angle based on correlations with other assets
+      let avgCorrelation = 0
+      this.assets.forEach(otherAsset => {
+        if (otherAsset !== asset) {
+          avgCorrelation += this.correlationMatrix[asset][otherAsset]
+        }
+      })
+      avgCorrelation /= (this.assets.length - 1)
+      
+      // High correlation assets cluster together
+      angle += avgCorrelation * 0.5
+      
+      // Convert to Cartesian coordinates
+      const x = centerX + distance * Math.cos(angle)
+      const y = centerY + distance * Math.sin(angle)
+      
+      // Get current price change for performance color
+      const history = this.priceHistory[asset]
+      const priceChange = history.length >= 2 
+        ? (history[history.length - 1].price - history[history.length - 2].price) / history[history.length - 2].price
+        : 0
+      
+      this.clusterPositions[asset] = {
+        x: Math.max(-0.95, Math.min(0.95, x)), // Ensure within disk bounds
+        y: Math.max(-0.95, Math.min(0.95, y)),
+        distance,
+        angle,
+        volatility,
+        marketCap,
+        priceChange,
+        correlations: { ...this.correlationMatrix[asset] }
+      }
+    })
+  }
+
+  getLiveClusterData() {
+    // Update with fresh data
+    this.updatePriceData()
+    
+    // Recalculate correlations every 10 seconds to avoid too frequent updates
+    const now = Date.now()
+    if (now - this.lastUpdate > 10000) {
+      this.updateCorrelationMatrix()
+      this.calculateClusterPositions()
+      this.lastUpdate = now
+    }
+    
+    return {
+      positions: this.clusterPositions,
+      correlationMatrix: this.correlationMatrix,
+      lastUpdate: this.lastUpdate,
+      assets: this.assets.map(asset => ({
+        symbol: asset,
+        currentPrice: candlestickGenerators[asset].currentPrice,
+        volatility: this.calculateVolatility(asset),
+        marketCap: this.getMarketCap(asset),
+        ...this.clusterPositions[asset]
+      }))
+    }
+  }
+
+  getCorrelationStrength(asset1, asset2) {
+    return Math.abs(this.correlationMatrix[asset1]?.[asset2] || 0)
+  }
+}
+
 // Initialize engines
 const backtestingEngine = new BacktestingEngine()
 const paperTradingEngine = new PaperTradingEngine()
 const monteCarloEngine = new MonteCarloEngine()
+const clusteringEngine = new HierarchicalClusteringEngine()
 
 // API endpoints for backtesting and paper trading
 
@@ -1239,6 +1437,20 @@ app.post('/api/monte-carlo', async (c) => {
     })
   } catch (error) {
     return c.json({ error: error.message }, 400)
+  }
+})
+
+// Real-time hierarchical asset clustering endpoint
+app.get('/api/asset-clustering', (c) => {
+  try {
+    const clusterData = clusteringEngine.getLiveClusterData()
+    return c.json({
+      success: true,
+      clustering: clusterData,
+      timestamp: Date.now()
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 500)
   }
 })
 
@@ -1411,30 +1623,81 @@ app.get('/', (c) => {
                             </div>
                         </div>
 
-                        <!-- Hyperbolic Space Engine -->
+                        <!-- Enhanced Hyperbolic Space Engine -->
                         <div class="col-span-4 bg-card-bg rounded-lg p-6">
                             <h3 class="text-lg font-semibold mb-4 flex items-center">
                                 <i class="fas fa-atom mr-2 text-accent"></i>
                                 HYPERBOLIC SPACE ENGINE
+                                <span class="ml-auto">
+                                    <span class="bg-profit text-dark-bg px-2 py-1 rounded text-xs font-semibold">ENHANCED</span>
+                                </span>
                             </h3>
-                            <div class="text-center mb-4">
-                                <div class="text-warning font-semibold">Poincaré Disk Model</div>
-                            </div>
-                            <div id="hyperbolic-canvas" class="mb-4">
-                                <canvas id="poincare-disk" width="250" height="250" class="mx-auto bg-gray-900 rounded-full"></canvas>
-                            </div>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span>Geodesic Paths:</span>
-                                    <span class="text-accent">791</span>
+                            
+                            <!-- Visualization Toggle -->
+                            <div class="flex justify-center mb-3">
+                                <div class="bg-gray-700 rounded-lg p-1 flex">
+                                    <button id="viz-toggle-patterns" class="px-3 py-1 rounded text-xs font-semibold bg-accent text-dark-bg">
+                                        Patterns
+                                    </button>
+                                    <button id="viz-toggle-clustering" class="px-3 py-1 rounded text-xs font-semibold text-gray-300 hover:text-white">
+                                        Asset Clustering
+                                    </button>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span>Space Curvature:</span>
-                                    <span class="text-accent">-1.0</span>
+                            </div>
+                            
+                            <!-- Original Poincaré Disk (Pattern Analysis) -->
+                            <div id="poincare-patterns-view" class="visualization-view">
+                                <div class="text-center mb-2">
+                                    <div class="text-warning font-semibold text-sm">Pattern Analysis Model</div>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span>Path Efficiency:</span>
-                                    <span class="text-profit">99.5%</span>
+                                <div id="hyperbolic-canvas" class="mb-4">
+                                    <canvas id="poincare-disk" width="250" height="250" class="mx-auto bg-gray-900 rounded-full"></canvas>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Geodesic Paths:</span>
+                                        <span class="text-accent">791</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Space Curvature:</span>
+                                        <span class="text-accent">-1.0</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Path Efficiency:</span>
+                                        <span class="text-profit">99.5%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- New Asset Clustering View -->
+                            <div id="poincare-clustering-view" class="visualization-view hidden">
+                                <div class="text-center mb-2">
+                                    <div class="text-profit font-semibold text-sm">Real-Time Asset Clustering</div>
+                                </div>
+                                <div id="clustering-canvas" class="mb-4">
+                                    <canvas id="asset-clustering-disk" width="250" height="250" class="mx-auto bg-gray-900 rounded-full"></canvas>
+                                </div>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span>Active Assets:</span>
+                                        <span id="cluster-asset-count" class="text-accent">3</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Avg Correlation:</span>
+                                        <span id="avg-correlation" class="text-accent">--</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Cluster Stability:</span>
+                                        <span id="cluster-stability" class="text-profit">--</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Asset Legend -->
+                                <div class="mt-3 space-y-1 text-xs">
+                                    <div class="text-gray-400 font-semibold mb-2">Asset Legend:</div>
+                                    <div id="asset-legend">
+                                        <!-- Will be populated dynamically -->
+                                    </div>
                                 </div>
                             </div>
                         </div>

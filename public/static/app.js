@@ -15,6 +15,9 @@ class TradingDashboard {
         this.autoTradingEnabled = false
         this.equityCurveChart = null
         this.drawdownChart = null
+        this.clusteringData = null
+        this.clusteringAnimation = null
+        this.currentVisualization = 'patterns'
         this.init()
     }
 
@@ -649,6 +652,312 @@ class TradingDashboard {
         
         // Animate by redrawing periodically
         setTimeout(() => this.drawPoincareVisualization(), 3000)
+    }
+
+    // Enhanced Asset Clustering Visualization System
+    initializeHyperbolicVisualizations() {
+        this.setupVisualizationToggle()
+        this.initializeAssetClustering()
+    }
+
+    setupVisualizationToggle() {
+        const patternsBtn = document.getElementById('viz-toggle-patterns')
+        const clusteringBtn = document.getElementById('viz-toggle-clustering')
+        
+        if (patternsBtn && clusteringBtn) {
+            patternsBtn.addEventListener('click', () => {
+                this.switchVisualization('patterns')
+            })
+            
+            clusteringBtn.addEventListener('click', () => {
+                this.switchVisualization('clustering')
+            })
+        }
+    }
+
+    switchVisualization(type) {
+        const patternsView = document.getElementById('poincare-patterns-view')
+        const clusteringView = document.getElementById('poincare-clustering-view')
+        const patternsBtn = document.getElementById('viz-toggle-patterns')
+        const clusteringBtn = document.getElementById('viz-toggle-clustering')
+        
+        if (type === 'patterns') {
+            patternsView.classList.remove('hidden')
+            clusteringView.classList.add('hidden')
+            patternsBtn.classList.add('bg-accent', 'text-dark-bg')
+            patternsBtn.classList.remove('text-gray-300')
+            clusteringBtn.classList.remove('bg-accent', 'text-dark-bg')
+            clusteringBtn.classList.add('text-gray-300')
+            this.currentVisualization = 'patterns'
+        } else if (type === 'clustering') {
+            patternsView.classList.add('hidden')
+            clusteringView.classList.remove('hidden')
+            clusteringBtn.classList.add('bg-accent', 'text-dark-bg')
+            clusteringBtn.classList.remove('text-gray-300')
+            patternsBtn.classList.remove('bg-accent', 'text-dark-bg')
+            patternsBtn.classList.add('text-gray-300')
+            this.currentVisualization = 'clustering'
+            this.startAssetClusteringUpdates()
+        }
+    }
+
+    initializeAssetClustering() {
+        // Initialize clustering canvas if not already done
+        const canvas = document.getElementById('asset-clustering-disk')
+        if (canvas && !canvas.initialized) {
+            canvas.initialized = true
+            // Start loading clustering data
+            this.loadClusteringData()
+        }
+    }
+
+    async loadClusteringData() {
+        try {
+            const response = await axios.get('/api/asset-clustering')
+            this.clusteringData = response.data.clustering
+            
+            if (this.currentVisualization === 'clustering') {
+                this.drawAssetClustering()
+                this.updateClusteringMetrics()
+            }
+        } catch (error) {
+            console.error('Error loading clustering data:', error)
+        }
+    }
+
+    drawAssetClustering() {
+        const canvas = document.getElementById('asset-clustering-disk')
+        if (!canvas || !this.clusteringData) return
+        
+        const ctx = canvas.getContext('2d')
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+        const radius = 100
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        // Draw Poincaré disk boundary
+        ctx.strokeStyle = '#00d4aa'
+        ctx.lineWidth = 2
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
+        ctx.stroke()
+        
+        // Draw center indicator (market stability)
+        ctx.fillStyle = '#4ecdc4'
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI)
+        ctx.fill()
+        
+        // Draw correlation connection lines first (so they appear behind assets)
+        this.drawCorrelationLines(ctx, centerX, centerY, radius)
+        
+        // Draw asset nodes
+        this.drawAssetNodes(ctx, centerX, centerY, radius)
+        
+        // Draw cluster boundaries
+        this.drawClusterBoundaries(ctx, centerX, centerY, radius)
+        
+        // Update legend
+        this.updateAssetLegend()
+    }
+
+    drawCorrelationLines(ctx, centerX, centerY, radius) {
+        if (!this.clusteringData.assets) return
+        
+        const assets = this.clusteringData.assets
+        
+        // Draw lines between highly correlated assets (correlation > 0.5)
+        for (let i = 0; i < assets.length; i++) {
+            for (let j = i + 1; j < assets.length; j++) {
+                const asset1 = assets[i]
+                const asset2 = assets[j]
+                const correlation = Math.abs(asset1.correlations[asset2.symbol] || 0)
+                
+                if (correlation > 0.3) { // Only show significant correlations
+                    const x1 = centerX + asset1.x * radius
+                    const y1 = centerY + asset1.y * radius
+                    const x2 = centerX + asset2.x * radius
+                    const y2 = centerY + asset2.y * radius
+                    
+                    // Line style based on correlation strength
+                    ctx.strokeStyle = correlation > 0.7 ? '#2ed573' : 
+                                     correlation > 0.5 ? '#ffa502' : '#4ecdc4'
+                    ctx.lineWidth = Math.max(1, correlation * 3)
+                    ctx.globalAlpha = 0.6
+                    
+                    // Draw geodesic-like curve (simplified)
+                    ctx.beginPath()
+                    ctx.moveTo(x1, y1)
+                    
+                    // Create curved line through disk center for more hyperbolic appearance
+                    const midX = centerX + (asset1.x + asset2.x) * radius * 0.3
+                    const midY = centerY + (asset1.y + asset2.y) * radius * 0.3
+                    ctx.quadraticCurveTo(midX, midY, x2, y2)
+                    ctx.stroke()
+                    
+                    ctx.globalAlpha = 1.0
+                }
+            }
+        }
+    }
+
+    drawAssetNodes(ctx, centerX, centerY, radius) {
+        if (!this.clusteringData.assets) return
+        
+        this.clusteringData.assets.forEach(asset => {
+            const x = centerX + asset.x * radius
+            const y = centerY + asset.y * radius
+            
+            // Node size based on market cap (logarithmic scale)
+            const nodeSize = Math.max(8, Math.min(20, Math.log10(asset.marketCap / 1e9) * 3))
+            
+            // Color based on price change
+            let fillColor
+            if (asset.priceChange > 0.01) fillColor = '#2ed573'      // Green for gains
+            else if (asset.priceChange < -0.01) fillColor = '#ff4757' // Red for losses  
+            else fillColor = '#4ecdc4'                                // Blue for stable
+            
+            // Volatility glow effect
+            const glowRadius = nodeSize + asset.volatility * 100
+            const gradient = ctx.createRadialGradient(x, y, nodeSize, x, y, glowRadius)
+            gradient.addColorStop(0, fillColor)
+            gradient.addColorStop(1, 'transparent')
+            
+            // Draw glow
+            ctx.fillStyle = gradient
+            ctx.globalAlpha = 0.3
+            ctx.beginPath()
+            ctx.arc(x, y, glowRadius, 0, 2 * Math.PI)
+            ctx.fill()
+            
+            // Draw main node
+            ctx.globalAlpha = 1.0
+            ctx.fillStyle = fillColor
+            ctx.beginPath()
+            ctx.arc(x, y, nodeSize, 0, 2 * Math.PI)
+            ctx.fill()
+            
+            // Border for arbitrage opportunities
+            if (this.hasArbitrageOpportunity(asset.symbol)) {
+                ctx.strokeStyle = '#ffa502'
+                ctx.lineWidth = 2
+                ctx.stroke()
+            }
+            
+            // Asset symbol text
+            ctx.fillStyle = '#ffffff'
+            ctx.font = 'bold 10px monospace'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.fillText(asset.symbol, x, y)
+        })
+    }
+
+    drawClusterBoundaries(ctx, centerX, centerY, radius) {
+        // Draw transparent regions for different asset classes
+        const cryptoAssets = this.clusteringData.assets.filter(a => ['BTC', 'ETH', 'SOL'].includes(a.symbol))
+        
+        if (cryptoAssets.length > 0) {
+            // Calculate crypto cluster boundary
+            const avgX = cryptoAssets.reduce((sum, a) => sum + a.x, 0) / cryptoAssets.length
+            const avgY = cryptoAssets.reduce((sum, a) => sum + a.y, 0) / cryptoAssets.length
+            const avgDistance = cryptoAssets.reduce((sum, a) => sum + Math.sqrt(a.x*a.x + a.y*a.y), 0) / cryptoAssets.length
+            
+            // Draw cluster region
+            ctx.fillStyle = 'rgba(0, 212, 170, 0.1)'
+            ctx.beginPath()
+            ctx.arc(centerX + avgX * radius, centerY + avgY * radius, avgDistance * radius * 1.2, 0, 2 * Math.PI)
+            ctx.fill()
+            
+            // Cluster label
+            ctx.fillStyle = '#00d4aa'
+            ctx.font = '8px monospace'
+            ctx.textAlign = 'center'
+            ctx.fillText('CRYPTO', centerX + avgX * radius, centerY + avgY * radius - avgDistance * radius * 1.5)
+        }
+    }
+
+    updateClusteringMetrics() {
+        if (!this.clusteringData) return
+        
+        // Calculate average correlation
+        let totalCorrelation = 0
+        let correlationCount = 0
+        
+        this.clusteringData.assets.forEach(asset1 => {
+            this.clusteringData.assets.forEach(asset2 => {
+                if (asset1.symbol !== asset2.symbol) {
+                    totalCorrelation += Math.abs(asset1.correlations[asset2.symbol] || 0)
+                    correlationCount++
+                }
+            })
+        })
+        
+        const avgCorrelation = correlationCount > 0 ? totalCorrelation / correlationCount : 0
+        
+        // Update UI elements
+        document.getElementById('avg-correlation').textContent = avgCorrelation.toFixed(3)
+        
+        // Cluster stability (based on correlation variance)
+        const stability = avgCorrelation > 0.6 ? 'High' : avgCorrelation > 0.3 ? 'Medium' : 'Low'
+        const stabilityElement = document.getElementById('cluster-stability')
+        stabilityElement.textContent = stability
+        stabilityElement.className = `text-${stability === 'High' ? 'profit' : stability === 'Medium' ? 'warning' : 'loss'}`
+    }
+
+    updateAssetLegend() {
+        if (!this.clusteringData) return
+        
+        const legendContainer = document.getElementById('asset-legend')
+        if (!legendContainer) return
+        
+        const legendHtml = this.clusteringData.assets.map(asset => {
+            const priceChangePercent = (asset.priceChange * 100).toFixed(2)
+            const changeColor = asset.priceChange > 0 ? 'text-profit' : asset.priceChange < 0 ? 'text-loss' : 'text-gray-400'
+            
+            return `
+                <div class="flex items-center justify-between py-1">
+                    <div class="flex items-center">
+                        <div class="w-2 h-2 rounded-full mr-2" style="background-color: ${
+                            asset.priceChange > 0.01 ? '#2ed573' : 
+                            asset.priceChange < -0.01 ? '#ff4757' : '#4ecdc4'
+                        }"></div>
+                        <span class="font-semibold">${asset.symbol}</span>
+                    </div>
+                    <span class="${changeColor}">${priceChangePercent > 0 ? '+' : ''}${priceChangePercent}%</span>
+                </div>
+            `
+        }).join('')
+        
+        legendContainer.innerHTML = legendHtml
+    }
+
+    hasArbitrageOpportunity(symbol) {
+        // Check if asset has current arbitrage opportunities
+        // This would integrate with existing arbitrage detection
+        return Math.random() > 0.7 // Simplified for demo
+    }
+
+    startAssetClusteringUpdates() {
+        if (this.clusteringAnimation) {
+            clearInterval(this.clusteringAnimation)
+        }
+        
+        // Update clustering visualization every 5 seconds
+        this.clusteringAnimation = setInterval(() => {
+            if (this.currentVisualization === 'clustering') {
+                this.loadClusteringData()
+            }
+        }, 5000)
+    }
+
+    stopAssetClusteringUpdates() {
+        if (this.clusteringAnimation) {
+            clearInterval(this.clusteringAnimation)
+            this.clusteringAnimation = null
+        }
     }
 
     async executeArbitrage(opportunity) {
