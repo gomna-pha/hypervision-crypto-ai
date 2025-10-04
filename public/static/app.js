@@ -110,6 +110,8 @@ class TradingDashboard {
                 this.loadMarketData()
                 this.loadArbitrageOpportunities()
                 this.loadOrderBook()
+                this.loadSocialSentiment()
+                this.loadEconomicIndicators()
             }
         }, 2000) // Refresh every 2 seconds for live effect
     }
@@ -121,6 +123,8 @@ class TradingDashboard {
                     this.loadMarketData(),
                     this.loadArbitrageOpportunities(),
                     this.loadOrderBook(),
+                    this.loadSocialSentiment(),
+                    this.loadEconomicIndicators(),
                     this.drawPoincareVisualization(),
                     this.initializeCandlestickChart(),
                     this.startHyperbolicAnalysis()
@@ -144,6 +148,9 @@ class TradingDashboard {
                 break
             case 'paper-trading':
                 this.initializePaperTrading()
+                break
+            case 'economic-data':
+                this.initializeEconomicData()
                 break
         }
     }
@@ -191,6 +198,125 @@ class TradingDashboard {
             
         } catch (error) {
             console.error('Error loading market data:', error)
+        }
+    }
+
+    async loadSocialSentiment() {
+        try {
+            const response = await axios.get('/api/sentiment-summary')
+            const data = response.data
+            
+            const sentimentContainer = document.getElementById('social-sentiment')
+            if (sentimentContainer) {
+                const getSentimentColor = (score) => {
+                    if (score > 70) return 'text-profit'
+                    if (score > 30) return 'text-warning' 
+                    return 'text-loss'
+                }
+                
+                const getSentimentIcon = (score) => {
+                    if (score > 70) return '😄'
+                    if (score > 50) return '😐'
+                    return '😰'
+                }
+                
+                sentimentContainer.innerHTML = `
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">Market Mood</span>
+                            <span class="${getSentimentColor(data.overall)} font-bold">
+                                ${getSentimentIcon(data.overall)} ${data.overall.toFixed(0)}%
+                            </span>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded p-2 space-y-2">
+                            ${Object.entries(data.assets).map(([asset, sentiment]) => `
+                                <div class="flex justify-between text-sm">
+                                    <span>${asset}:</span>
+                                    <span class="${getSentimentColor(sentiment)}">${sentiment.toFixed(0)}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="text-xs text-gray-400 space-y-1">
+                            <div class="flex justify-between">
+                                <span>Fear & Greed:</span>
+                                <span class="${getSentimentColor(data.fearGreedIndex)}">${data.fearGreedIndex}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Social Volume:</span>
+                                <span class="text-accent">${(data.socialVolume.twitter / 1000).toFixed(0)}K</span>
+                            </div>
+                            ${data.trending.twitter.length > 0 ? `
+                                <div class="text-warning">🔥 Trending: ${data.trending.twitter.join(', ')}</div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `
+            }
+        } catch (error) {
+            console.error('Error loading social sentiment:', error)
+        }
+    }
+
+    async loadEconomicIndicators() {
+        try {
+            const response = await axios.get('/api/economic-indicators')
+            const data = response.data
+            
+            const economicContainer = document.getElementById('economic-indicators')
+            if (economicContainer) {
+                const formatEconValue = (indicator) => {
+                    const change = indicator.change || 0
+                    const changeColor = change > 0 ? 'text-profit' : change < 0 ? 'text-loss' : 'text-gray-400'
+                    const changeIcon = change > 0 ? '↗️' : change < 0 ? '↘️' : '→'
+                    return `
+                        <span class="text-accent">${indicator.current.toFixed(2)}</span>
+                        <span class="${changeColor} text-xs ml-1">${changeIcon}${Math.abs(change).toFixed(2)}</span>
+                    `
+                }
+                
+                economicContainer.innerHTML = `
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span>US GDP:</span>
+                            ${formatEconValue(data.us.gdp)}%
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Inflation:</span>
+                            ${formatEconValue(data.us.inflation)}%
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Fed Rate:</span>
+                            ${formatEconValue(data.us.interestRate)}%
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Unemployment:</span>
+                            ${formatEconValue(data.us.unemployment)}%
+                        </div>
+                        <div class="flex justify-between">
+                            <span>DXY Index:</span>
+                            ${formatEconValue(data.us.dollarIndex)}
+                        </div>
+                        <div class="border-t border-gray-700 pt-2 mt-2">
+                            <div class="flex justify-between">
+                                <span>BTC Dominance:</span>
+                                <span class="text-accent">${data.crypto.bitcoinDominance.current.toFixed(1)}%</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Total Market Cap:</span>
+                                <span class="text-accent">$${data.crypto.totalMarketCap.current.toFixed(2)}T</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>DeFi TVL:</span>
+                                <span class="text-accent">$${data.crypto.defiTvl.current.toFixed(1)}B</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        } catch (error) {
+            console.error('Error loading economic indicators:', error)
         }
     }
 
@@ -2397,6 +2523,223 @@ class TradingDashboard {
         if (diversityDisplay) {
             diversityDisplay.textContent = `${(diversityScore * 100).toFixed(1)}%`
         }
+    }
+
+    async initializeEconomicData() {
+        await this.loadEconomicDashboard()
+        await this.loadSentimentDashboard()
+        this.createEconomicTrendsChart()
+        
+        // Auto-refresh economic data every 5 seconds
+        if (this.economicDataInterval) {
+            clearInterval(this.economicDataInterval)
+        }
+        this.economicDataInterval = setInterval(() => {
+            if (this.currentSection === 'economic-data') {
+                this.loadEconomicDashboard()
+                this.loadSentimentDashboard()
+            }
+        }, 5000)
+    }
+
+    async loadEconomicDashboard() {
+        try {
+            const response = await axios.get('/api/economic-indicators')
+            const data = response.data
+            
+            const dashboardContainer = document.getElementById('economic-dashboard')
+            if (dashboardContainer) {
+                const formatIndicator = (name, value, unit = '%', icon = '📊') => `
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-semibold">${icon} ${name}</span>
+                            <span class="text-xs ${value.change > 0 ? 'text-profit' : value.change < 0 ? 'text-loss' : 'text-gray-400'}">
+                                ${value.change > 0 ? '↗️' : value.change < 0 ? '↘️' : '→'} ${Math.abs(value.change || 0).toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="text-2xl font-bold text-accent">${value.current.toFixed(2)}${unit}</div>
+                        <div class="text-xs text-gray-400">
+                            Prev: ${value.previous.toFixed(2)}${unit} | Forecast: ${value.forecast.toFixed(2)}${unit}
+                        </div>
+                    </div>
+                `
+                
+                dashboardContainer.innerHTML = `
+                    ${formatIndicator('GDP Growth', data.us.gdp, '%', '🏛️')}
+                    ${formatIndicator('Inflation Rate', data.us.inflation, '%', '💰')}
+                    ${formatIndicator('Fed Funds Rate', data.us.interestRate, '%', '🏦')}
+                    ${formatIndicator('Unemployment', data.us.unemployment, '%', '👷')}
+                    ${formatIndicator('Dollar Index', data.us.dollarIndex, '', '💵')}
+                    ${formatIndicator('Consumer Confidence', data.us.consumerConfidence, '', '🛒')}
+                    ${formatIndicator('BTC Dominance', data.crypto.bitcoinDominance, '%', '₿')}
+                    ${formatIndicator('Total Crypto Cap', data.crypto.totalMarketCap, 'T', '💎')}
+                    ${formatIndicator('DeFi TVL', data.crypto.defiTvl, 'B', '🔗')}
+                `
+            }
+        } catch (error) {
+            console.error('Error loading economic dashboard:', error)
+        }
+    }
+
+    async loadSentimentDashboard() {
+        try {
+            const [sentimentResponse, socialResponse] = await Promise.all([
+                axios.get('/api/sentiment-summary'),
+                axios.get('/api/social-sentiment')
+            ])
+            
+            const sentiment = sentimentResponse.data
+            const social = socialResponse.data
+            
+            const sentimentContainer = document.getElementById('sentiment-dashboard')
+            if (sentimentContainer) {
+                const getSentimentEmoji = (score) => {
+                    if (score > 80) return '🚀'
+                    if (score > 60) return '😄' 
+                    if (score > 40) return '😐'
+                    if (score > 20) return '😰'
+                    return '😱'
+                }
+                
+                const getSentimentColor = (score) => {
+                    if (score > 70) return 'text-profit'
+                    if (score > 30) return 'text-warning'
+                    return 'text-loss'
+                }
+                
+                sentimentContainer.innerHTML = `
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <div class="text-center mb-3">
+                            <div class="text-3xl mb-1">${getSentimentEmoji(sentiment.overall)}</div>
+                            <div class="text-xl font-bold ${getSentimentColor(sentiment.overall)}">
+                                ${sentiment.overall.toFixed(0)}%
+                            </div>
+                            <div class="text-sm text-gray-400">Overall Market Mood</div>
+                        </div>
+                        
+                        <div class="space-y-2">
+                            ${Object.entries(sentiment.assets).map(([asset, score]) => `
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">${getSentimentEmoji(score)} ${asset}:</span>
+                                    <span class="${getSentimentColor(score)} font-semibold">${score.toFixed(0)}%</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-800 rounded-lg p-4">
+                        <h5 class="font-semibold mb-2">📱 Social Media Activity</h5>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Twitter Volume:</span>
+                                <span class="text-accent">${(sentiment.socialVolume.twitter / 1000).toFixed(0)}K</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Reddit Posts:</span>
+                                <span class="text-accent">${sentiment.socialVolume.reddit}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Fear & Greed Index:</span>
+                                <span class="${getSentimentColor(sentiment.fearGreedIndex)}">${sentiment.fearGreedIndex}</span>
+                            </div>
+                            ${sentiment.trending.twitter.length > 0 ? `
+                                <div class="mt-2 p-2 bg-warning bg-opacity-20 rounded">
+                                    <div class="text-warning text-xs font-semibold">🔥 TRENDING:</div>
+                                    <div class="text-xs">${sentiment.trending.twitter.join(', ')}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `
+            }
+        } catch (error) {
+            console.error('Error loading sentiment dashboard:', error)
+        }
+    }
+
+    createEconomicTrendsChart() {
+        const canvas = document.getElementById('trends-chart')
+        if (!canvas) return
+        
+        const ctx = canvas.getContext('2d')
+        
+        // Generate sample trend data
+        const labels = []
+        const inflationData = []
+        const gdpData = []
+        const unemploymentData = []
+        
+        for (let i = 11; i >= 0; i--) {
+            const date = new Date()
+            date.setMonth(date.getMonth() - i)
+            labels.push(date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' }))
+            
+            inflationData.push(3.2 + (Math.random() - 0.5) * 1.5)
+            gdpData.push(2.1 + (Math.random() - 0.5) * 0.8)
+            unemploymentData.push(3.8 + (Math.random() - 0.5) * 0.6)
+        }
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Inflation %',
+                        data: inflationData,
+                        borderColor: '#ff4757',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'GDP Growth %',
+                        data: gdpData,
+                        borderColor: '#00ff9f',
+                        backgroundColor: 'rgba(0, 255, 159, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    },
+                    {
+                        label: 'Unemployment %',
+                        data: unemploymentData,
+                        borderColor: '#ffa502',
+                        backgroundColor: 'rgba(255, 165, 2, 0.1)',
+                        tension: 0.3,
+                        borderWidth: 2
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { 
+                            color: '#ffffff',
+                            font: { size: 10 }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { 
+                            color: '#ffffff',
+                            font: { size: 9 }
+                        }
+                    },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        ticks: { 
+                            color: '#ffffff',
+                            font: { size: 9 }
+                        }
+                    }
+                }
+            }
+        })
     }
 }
 

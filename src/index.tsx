@@ -132,6 +132,121 @@ const getPortfolioData = () => {
   }
 }
 
+// Social Media Sentiment Analysis Engine
+const getSocialSentimentFeeds = () => {
+  const generateSentiment = () => Math.random() * 100
+  const generateVolume = () => Math.floor(Math.random() * 50000 + 10000)
+  const generateTrending = () => Math.random() > 0.7
+  
+  return {
+    twitter: {
+      BTC: {
+        sentiment: generateSentiment(),
+        volume: generateVolume(),
+        trending: generateTrending(),
+        topHashtags: ['#Bitcoin', '#BTC', '#Crypto', '#HODL', '#ToTheMoon'],
+        influencerMentions: Math.floor(Math.random() * 150 + 50),
+        lastUpdate: Date.now()
+      },
+      ETH: {
+        sentiment: generateSentiment(),
+        volume: generateVolume(),
+        trending: generateTrending(),
+        topHashtags: ['#Ethereum', '#ETH', '#DeFi', '#SmartContracts', '#Web3'],
+        influencerMentions: Math.floor(Math.random() * 120 + 30),
+        lastUpdate: Date.now()
+      },
+      SOL: {
+        sentiment: generateSentiment(),
+        volume: generateVolume(),
+        trending: generateTrending(),
+        topHashtags: ['#Solana', '#SOL', '#FastCrypto', '#NFTs', '#DeFi'],
+        influencerMentions: Math.floor(Math.random() * 80 + 20),
+        lastUpdate: Date.now()
+      }
+    },
+    reddit: {
+      BTC: {
+        sentiment: generateSentiment(),
+        posts: Math.floor(Math.random() * 500 + 100),
+        upvotes: Math.floor(Math.random() * 10000 + 2000),
+        comments: Math.floor(Math.random() * 5000 + 1000),
+        trending: generateTrending()
+      },
+      ETH: {
+        sentiment: generateSentiment(),
+        posts: Math.floor(Math.random() * 400 + 80),
+        upvotes: Math.floor(Math.random() * 8000 + 1500),
+        comments: Math.floor(Math.random() * 4000 + 800),
+        trending: generateTrending()
+      },
+      SOL: {
+        sentiment: generateSentiment(),
+        posts: Math.floor(Math.random() * 200 + 50),
+        upvotes: Math.floor(Math.random() * 5000 + 800),
+        comments: Math.floor(Math.random() * 2500 + 400),
+        trending: generateTrending()
+      }
+    },
+    news: {
+      sentiment: generateSentiment(),
+      articlesCount: Math.floor(Math.random() * 50 + 20),
+      mediaOutlets: ['Reuters', 'Bloomberg', 'CoinDesk', 'Cointelegraph', 'TheBlock'],
+      breakingNews: Math.random() > 0.8,
+      fearGreedIndex: Math.floor(Math.random() * 100)
+    }
+  }
+}
+
+// Economic Indicators Engine  
+const getEconomicIndicators = () => {
+  const generateEconData = (base, volatility) => ({
+    current: base + (Math.random() - 0.5) * volatility,
+    previous: base + (Math.random() - 0.5) * volatility,
+    forecast: base + (Math.random() - 0.5) * volatility,
+    change: (Math.random() - 0.5) * 2,
+    lastUpdate: Date.now()
+  })
+  
+  return {
+    us: {
+      gdp: generateEconData(2.1, 0.8),
+      inflation: generateEconData(3.2, 0.5), 
+      unemployment: generateEconData(3.8, 0.3),
+      interestRate: generateEconData(5.25, 0.25),
+      retailSales: generateEconData(0.4, 1.2),
+      cpi: generateEconData(3.7, 0.4),
+      ppi: generateEconData(2.1, 0.6),
+      consumerConfidence: generateEconData(102.6, 8.0),
+      dollarIndex: generateEconData(103.8, 2.0)
+    },
+    global: {
+      china: {
+        gdp: generateEconData(5.2, 0.6),
+        pmi: generateEconData(49.5, 2.0),
+        exports: generateEconData(2.3, 3.0)
+      },
+      europe: {
+        gdp: generateEconData(0.1, 0.4),
+        inflation: generateEconData(2.9, 0.3),
+        ecbRate: generateEconData(4.5, 0.25)
+      },
+      japan: {
+        gdp: generateEconData(-0.1, 0.3),
+        inflation: generateEconData(3.1, 0.2),
+        bojRate: generateEconData(-0.1, 0.1)
+      }
+    },
+    crypto: {
+      bitcoinDominance: generateEconData(52.3, 3.0),
+      totalMarketCap: generateEconData(2.1, 0.3), // Trillions
+      defiTvl: generateEconData(78.5, 8.0), // Billions
+      stakingRatio: generateEconData(23.4, 2.0),
+      institutionalFlow: generateEconData(1.2, 2.5) // Billions
+    }
+  }
+}
+
 // Global market indices
 const getGlobalMarkets = () => {
   return {
@@ -198,6 +313,45 @@ app.get('/api/portfolio', (c) => {
 
 app.get('/api/global-markets', (c) => {
   return c.json(getGlobalMarkets())
+})
+
+// Social sentiment endpoints
+app.get('/api/social-sentiment', (c) => {
+  return c.json(getSocialSentimentFeeds())
+})
+
+// Economic indicators endpoints
+app.get('/api/economic-indicators', (c) => {
+  return c.json(getEconomicIndicators())
+})
+
+// Real-time sentiment summary
+app.get('/api/sentiment-summary', (c) => {
+  const sentiment = getSocialSentimentFeeds()
+  
+  const overallSentiment = {
+    BTC: (sentiment.twitter.BTC.sentiment + sentiment.reddit.BTC.sentiment) / 2,
+    ETH: (sentiment.twitter.ETH.sentiment + sentiment.reddit.ETH.sentiment) / 2,
+    SOL: (sentiment.twitter.SOL.sentiment + sentiment.reddit.SOL.sentiment) / 2
+  }
+  
+  const marketMood = (overallSentiment.BTC + overallSentiment.ETH + overallSentiment.SOL) / 3
+  
+  return c.json({
+    overall: marketMood,
+    assets: overallSentiment,
+    fearGreedIndex: sentiment.news.fearGreedIndex,
+    socialVolume: {
+      twitter: sentiment.twitter.BTC.volume + sentiment.twitter.ETH.volume + sentiment.twitter.SOL.volume,
+      reddit: sentiment.reddit.BTC.posts + sentiment.reddit.ETH.posts + sentiment.reddit.SOL.posts
+    },
+    trending: {
+      twitter: Object.keys(sentiment.twitter).filter(asset => sentiment.twitter[asset].trending),
+      reddit: Object.keys(sentiment.reddit).filter(asset => sentiment.reddit[asset].trending)
+    },
+    breakingNews: sentiment.news.breakingNews,
+    timestamp: Date.now()
+  })
 })
 
 app.get('/api/orderbook/:symbol', (c) => {
@@ -2211,6 +2365,9 @@ app.get('/', (c) => {
                         <button class="nav-item" data-section="markets">
                             <i class="fas fa-globe mr-2"></i>GLOBAL MARKETS
                         </button>
+                        <button class="nav-item" data-section="economic-data">
+                            <i class="fas fa-chart-bar mr-2"></i>ECONOMIC DATA
+                        </button>
                         <button class="nav-item" data-section="transparency">
                             <i class="fas fa-microscope mr-2"></i>MODEL TRANSPARENCY
                         </button>
@@ -2254,7 +2411,7 @@ app.get('/', (c) => {
                             </div>
                         </div>
 
-                        <!-- Arbitrage Opportunities -->
+                        <!-- Social Sentiment & Economic Data -->\n                        <div class=\"col-span-4 bg-card-bg rounded-lg p-6\">\n                            <h3 class=\"text-lg font-semibold mb-4 flex items-center\">\n                                <i class=\"fas fa-chart-line mr-2 text-profit\"></i>\n                                SOCIAL SENTIMENT\n                            </h3>\n                            <div id=\"social-sentiment\" class=\"space-y-4\">\n                                <!-- Sentiment data will be populated here -->\n                            </div>\n                            \n                            <h4 class=\"text-md font-semibold mt-6 mb-3 text-accent\">ECONOMIC INDICATORS</h4>\n                            <div id=\"economic-indicators\" class=\"space-y-2 text-sm\">\n                                <!-- Economic data will be populated here -->\n                            </div>\n                        </div>\n\n                        <!-- Arbitrage Opportunities -->
                         <div class="col-span-8 bg-card-bg rounded-lg p-6">
                             <h3 class="text-lg font-semibold mb-4 flex items-center">
                                 <i class="fas fa-bullseye mr-2 text-accent"></i>
@@ -2531,6 +2688,40 @@ app.get('/', (c) => {
                         <h3 class="text-lg font-semibold mb-4">🌍 Global Market Indices</h3>
                         <div id="global-markets-content">
                             <!-- Global markets content will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economic Data Section -->
+                <div id="economic-data" class="section">
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- Economic Indicators Overview -->
+                        <div class="col-span-8 bg-card-bg rounded-lg p-6">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-chart-line mr-2 text-accent"></i>
+                                📈 Economic Indicators Dashboard
+                            </h3>
+                            <div id="economic-dashboard" class="grid grid-cols-3 gap-4">
+                                <!-- Economic data charts will be populated here -->
+                            </div>
+                        </div>
+
+                        <!-- Social Sentiment Summary -->  
+                        <div class="col-span-4 bg-card-bg rounded-lg p-6">
+                            <h3 class="text-lg font-semibold mb-4 flex items-center">
+                                <i class="fas fa-users mr-2 text-profit"></i>
+                                💬 Social Sentiment Analysis
+                            </h3>
+                            <div id="sentiment-dashboard" class="space-y-4">
+                                <!-- Detailed sentiment analysis will be populated here -->
+                            </div>
+
+                            <div class="mt-6">
+                                <h4 class="text-md font-semibold mb-3 text-warning">📊 Economic Trends</h4>
+                                <div id="economic-trends-chart" class="bg-gray-900 rounded-lg p-2">
+                                    <canvas id="trends-chart" width="300" height="200"></canvas>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
