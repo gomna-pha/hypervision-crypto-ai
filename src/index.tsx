@@ -613,6 +613,662 @@ app.get('/api/hyperbolic-analysis', (c) => {
   return c.json(analysis)
 })
 
+// Advanced Backtesting Engine
+class BacktestingEngine {
+  constructor() {
+    this.strategies = {}
+    this.backtests = {}
+    this.paperTrades = {}
+    this.portfolios = {}
+  }
+
+  // Generate comprehensive historical data for backtesting
+  generateHistoricalData(symbol, days = 365) {
+    const data = []
+    const startPrice = candlestickGenerators[symbol].basePrice
+    let currentPrice = startPrice
+    const startTime = Date.now() - (days * 24 * 60 * 60 * 1000)
+    
+    for (let i = 0; i < days * 24 * 60; i++) { // Minute-by-minute data
+      const timestamp = startTime + (i * 60 * 1000)
+      
+      // Generate realistic price movements
+      const volatility = 0.001 + Math.random() * 0.002
+      const trend = Math.sin(i / 1440) * 0.0001 // Daily trend cycle
+      const noise = (Math.random() - 0.5) * volatility
+      const priceChange = trend + noise
+      
+      currentPrice *= (1 + priceChange)
+      
+      const candle = {
+        timestamp,
+        open: currentPrice,
+        high: currentPrice * (1 + Math.random() * 0.01),
+        low: currentPrice * (1 - Math.random() * 0.01),
+        close: currentPrice * (1 + (Math.random() - 0.5) * 0.005),
+        volume: Math.floor(Math.random() * 1000 + 500)
+      }
+      
+      // Adjust high/low to be consistent
+      candle.high = Math.max(candle.open, candle.close, candle.high)
+      candle.low = Math.min(candle.open, candle.close, candle.low)
+      
+      data.push(candle)
+    }
+    
+    return data
+  }
+
+  // Advanced Strategy Backtesting
+  async runBacktest(strategyConfig) {
+    const {
+      strategyId,
+      symbol,
+      timeframe,
+      startDate,
+      endDate,
+      initialCapital,
+      strategyType,
+      parameters
+    } = strategyConfig
+
+    const historicalData = this.generateHistoricalData(symbol, 365)
+    const results = {
+      trades: [],
+      equity: [],
+      metrics: {},
+      drawdowns: [],
+      positions: []
+    }
+
+    let currentCapital = initialCapital
+    let position = null
+    let maxEquity = initialCapital
+    let maxDrawdown = 0
+    let winningTrades = 0
+    let losingTrades = 0
+    let totalPnL = 0
+
+    // Strategy execution simulation
+    for (let i = 10; i < historicalData.length; i++) {
+      const currentCandle = historicalData[i]
+      const recentCandles = historicalData.slice(i - 10, i)
+      
+      // Analyze patterns for strategy signals
+      const patternAnalysis = hyperbolicAnalyzer.analyzePattern(recentCandles)
+      const signal = this.generateStrategySignal(strategyType, patternAnalysis, parameters)
+      
+      // Execute trades based on signals
+      if (signal.action === 'BUY' && !position) {
+        const quantity = (currentCapital * (parameters.riskPerTrade || 0.02)) / currentCandle.close
+        position = {
+          type: 'LONG',
+          entryPrice: currentCandle.close,
+          quantity,
+          entryTime: currentCandle.timestamp,
+          stopLoss: currentCandle.close * (1 - (parameters.stopLoss || 0.02)),
+          takeProfit: currentCandle.close * (1 + (parameters.takeProfit || 0.04))
+        }
+      } else if (signal.action === 'SELL' && position && position.type === 'LONG') {
+        const exitPrice = currentCandle.close
+        const pnl = (exitPrice - position.entryPrice) * position.quantity
+        const pnlPercent = ((exitPrice - position.entryPrice) / position.entryPrice) * 100
+        
+        currentCapital += pnl
+        totalPnL += pnl
+        
+        if (pnl > 0) winningTrades++
+        else losingTrades++
+        
+        results.trades.push({
+          entryPrice: position.entryPrice,
+          exitPrice,
+          quantity: position.quantity,
+          pnl,
+          pnlPercent,
+          duration: currentCandle.timestamp - position.entryTime,
+          entryTime: position.entryTime,
+          exitTime: currentCandle.timestamp,
+          reason: signal.reason
+        })
+        
+        position = null
+      }
+      
+      // Check stop loss / take profit
+      if (position) {
+        const currentPrice = currentCandle.close
+        if (currentPrice <= position.stopLoss || currentPrice >= position.takeProfit) {
+          const exitPrice = currentPrice <= position.stopLoss ? position.stopLoss : position.takeProfit
+          const pnl = (exitPrice - position.entryPrice) * position.quantity
+          currentCapital += pnl
+          totalPnL += pnl
+          
+          if (pnl > 0) winningTrades++
+          else losingTrades++
+          
+          results.trades.push({
+            entryPrice: position.entryPrice,
+            exitPrice,
+            quantity: position.quantity,
+            pnl,
+            pnlPercent: ((exitPrice - position.entryPrice) / position.entryPrice) * 100,
+            duration: currentCandle.timestamp - position.entryTime,
+            entryTime: position.entryTime,
+            exitTime: currentCandle.timestamp,
+            reason: currentPrice <= position.stopLoss ? 'STOP_LOSS' : 'TAKE_PROFIT'
+          })
+          
+          position = null
+        }
+      }
+      
+      // Record equity curve
+      results.equity.push({
+        timestamp: currentCandle.timestamp,
+        equity: currentCapital,
+        price: currentCandle.close
+      })
+      
+      // Calculate drawdown
+      if (currentCapital > maxEquity) {
+        maxEquity = currentCapital
+      }
+      const currentDrawdown = ((maxEquity - currentCapital) / maxEquity) * 100
+      if (currentDrawdown > maxDrawdown) {
+        maxDrawdown = currentDrawdown
+      }
+      
+      results.drawdowns.push({
+        timestamp: currentCandle.timestamp,
+        drawdown: currentDrawdown
+      })
+    }
+
+    // Calculate final metrics
+    const totalTrades = winningTrades + losingTrades
+    const winRate = totalTrades > 0 ? (winningTrades / totalTrades) * 100 : 0
+    const totalReturn = ((currentCapital - initialCapital) / initialCapital) * 100
+    const avgTrade = totalTrades > 0 ? totalPnL / totalTrades : 0
+    
+    const winningTradePnLs = results.trades.filter(t => t.pnl > 0).map(t => t.pnl)
+    const losingTradePnLs = results.trades.filter(t => t.pnl < 0).map(t => t.pnl)
+    
+    const avgWin = winningTradePnLs.length > 0 ? winningTradePnLs.reduce((a, b) => a + b) / winningTradePnLs.length : 0
+    const avgLoss = losingTradePnLs.length > 0 ? Math.abs(losingTradePnLs.reduce((a, b) => a + b) / losingTradePnLs.length) : 0
+    const profitFactor = avgLoss > 0 ? avgWin / avgLoss : Infinity
+    
+    // Calculate Sharpe ratio (simplified)
+    const dailyReturns = []
+    for (let i = 1; i < results.equity.length; i += 1440) { // Daily samples
+      const prevEquity = results.equity[Math.max(0, i - 1440)]?.equity || initialCapital
+      const currentEquity = results.equity[i]?.equity || currentCapital
+      const dailyReturn = ((currentEquity - prevEquity) / prevEquity) * 100
+      dailyReturns.push(dailyReturn)
+    }
+    
+    const avgDailyReturn = dailyReturns.length > 0 ? dailyReturns.reduce((a, b) => a + b) / dailyReturns.length : 0
+    const dailyReturnStd = dailyReturns.length > 1 ? Math.sqrt(dailyReturns.map(x => Math.pow(x - avgDailyReturn, 2)).reduce((a, b) => a + b) / (dailyReturns.length - 1)) : 0
+    const sharpeRatio = dailyReturnStd > 0 ? (avgDailyReturn / dailyReturnStd) * Math.sqrt(252) : 0
+
+    results.metrics = {
+      initialCapital,
+      finalCapital: currentCapital,
+      totalReturn,
+      totalPnL,
+      totalTrades,
+      winningTrades,
+      losingTrades,
+      winRate,
+      avgTrade,
+      avgWin,
+      avgLoss,
+      profitFactor,
+      maxDrawdown,
+      sharpeRatio: sharpeRatio.toFixed(3),
+      calmarRatio: maxDrawdown > 0 ? (totalReturn / maxDrawdown).toFixed(3) : Infinity
+    }
+
+    // Store backtest results
+    this.backtests[strategyId] = {
+      ...strategyConfig,
+      results,
+      completedAt: Date.now(),
+      status: 'completed'
+    }
+
+    return results
+  }
+
+  // Generate strategy signals based on pattern analysis
+  generateStrategySignal(strategyType, patternAnalysis, parameters) {
+    const { pattern, confidence, arbitrageRelevance, signal } = patternAnalysis
+    
+    switch (strategyType) {
+      case 'PATTERN_ARBITRAGE':
+        if (confidence > (parameters.minConfidence || 80) && arbitrageRelevance > (parameters.minArbitrageRelevance || 75)) {
+          if (signal.includes('bullish')) {
+            return { action: 'BUY', reason: `Pattern: ${pattern}, Confidence: ${confidence}%` }
+          } else if (signal.includes('bearish')) {
+            return { action: 'SELL', reason: `Pattern: ${pattern}, Confidence: ${confidence}%` }
+          }
+        }
+        break
+      case 'MEAN_REVERSION':
+        if (pattern === 'doji' && confidence > 70) {
+          return { action: 'BUY', reason: 'Mean reversion signal detected' }
+        }
+        break
+      case 'MOMENTUM':
+        if (pattern.includes('engulfing') && confidence > 85) {
+          return signal.includes('bullish') 
+            ? { action: 'BUY', reason: 'Strong momentum signal' }
+            : { action: 'SELL', reason: 'Strong momentum signal' }
+        }
+        break
+    }
+    
+    return { action: 'HOLD', reason: 'No signal criteria met' }
+  }
+}
+
+// Paper Trading Engine  
+class PaperTradingEngine {
+  constructor() {
+    this.accounts = {}
+    this.activeOrders = {}
+    this.tradeHistory = {}
+  }
+
+  // Create new paper trading account
+  createAccount(accountId, initialBalance = 100000) {
+    this.accounts[accountId] = {
+      accountId,
+      balance: initialBalance,
+      initialBalance,
+      positions: {},
+      orders: [],
+      tradeHistory: [],
+      metrics: {
+        totalPnL: 0,
+        realizedPnL: 0,
+        unrealizedPnL: 0,
+        totalTrades: 0,
+        winningTrades: 0,
+        losingTrades: 0
+      },
+      createdAt: Date.now(),
+      lastUpdated: Date.now()
+    }
+    return this.accounts[accountId]
+  }
+
+  // Place paper trade order
+  placeOrder(accountId, orderData) {
+    const { symbol, side, quantity, orderType, price, stopLoss, takeProfit } = orderData
+    const account = this.accounts[accountId]
+    
+    if (!account) throw new Error('Account not found')
+    
+    const orderId = `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const currentPrice = this.getCurrentPrice(symbol)
+    
+    const order = {
+      orderId,
+      accountId,
+      symbol,
+      side, // 'BUY' or 'SELL'
+      quantity,
+      orderType, // 'MARKET' or 'LIMIT'
+      price: orderType === 'MARKET' ? currentPrice : price,
+      stopLoss,
+      takeProfit,
+      status: 'PENDING',
+      createdAt: Date.now(),
+      executedAt: null,
+      executedPrice: null
+    }
+
+    // Execute market orders immediately
+    if (orderType === 'MARKET') {
+      return this.executeOrder(orderId, order)
+    }
+    
+    // Store limit orders for later execution
+    account.orders.push(order)
+    this.activeOrders[orderId] = order
+    
+    return order
+  }
+
+  // Execute paper trade order
+  executeOrder(orderId, order = null) {
+    if (!order) {
+      order = this.activeOrders[orderId]
+      if (!order) throw new Error('Order not found')
+    }
+
+    const account = this.accounts[order.accountId]
+    const currentPrice = this.getCurrentPrice(order.symbol)
+    const executionPrice = order.orderType === 'MARKET' ? currentPrice : order.price
+    
+    // Check if account has sufficient funds/shares
+    if (order.side === 'BUY') {
+      const requiredAmount = executionPrice * order.quantity
+      if (account.balance < requiredAmount) {
+        order.status = 'REJECTED'
+        order.rejectionReason = 'Insufficient funds'
+        return order
+      }
+      account.balance -= requiredAmount
+    } else {
+      const position = account.positions[order.symbol]
+      if (!position || position.quantity < order.quantity) {
+        order.status = 'REJECTED'
+        order.rejectionReason = 'Insufficient shares'
+        return order
+      }
+    }
+
+    // Update position
+    if (!account.positions[order.symbol]) {
+      account.positions[order.symbol] = { symbol: order.symbol, quantity: 0, avgPrice: 0, unrealizedPnL: 0 }
+    }
+
+    const position = account.positions[order.symbol]
+    
+    if (order.side === 'BUY') {
+      const newQuantity = position.quantity + order.quantity
+      position.avgPrice = ((position.avgPrice * position.quantity) + (executionPrice * order.quantity)) / newQuantity
+      position.quantity = newQuantity
+    } else {
+      const soldValue = executionPrice * order.quantity
+      const costBasis = position.avgPrice * order.quantity
+      const realizedPnL = soldValue - costBasis
+      
+      account.balance += soldValue
+      position.quantity -= order.quantity
+      account.metrics.realizedPnL += realizedPnL
+      account.metrics.totalPnL += realizedPnL
+      
+      if (realizedPnL > 0) account.metrics.winningTrades++
+      else account.metrics.losingTrades++
+      
+      account.metrics.totalTrades++
+    }
+
+    // Update order status
+    order.status = 'EXECUTED'
+    order.executedAt = Date.now()
+    order.executedPrice = executionPrice
+
+    // Add to trade history
+    account.tradeHistory.push({
+      ...order,
+      realizedPnL: order.side === 'SELL' ? (executionPrice - position.avgPrice) * order.quantity : 0
+    })
+
+    // Remove from active orders
+    delete this.activeOrders[orderId]
+    
+    account.lastUpdated = Date.now()
+    return order
+  }
+
+  // Get current market price (simplified)
+  getCurrentPrice(symbol) {
+    if (candlestickGenerators[symbol]) {
+      return candlestickGenerators[symbol].currentPrice
+    }
+    return 67234.56 // Default BTC price
+  }
+
+  // Update unrealized P&L for all positions
+  updateAccountMetrics(accountId) {
+    const account = this.accounts[accountId]
+    if (!account) return
+
+    let totalUnrealizedPnL = 0
+    
+    Object.values(account.positions).forEach(position => {
+      if (position.quantity > 0) {
+        const currentPrice = this.getCurrentPrice(position.symbol)
+        position.unrealizedPnL = (currentPrice - position.avgPrice) * position.quantity
+        totalUnrealizedPnL += position.unrealizedPnL
+      }
+    })
+
+    account.metrics.unrealizedPnL = totalUnrealizedPnL
+    account.metrics.totalPnL = account.metrics.realizedPnL + totalUnrealizedPnL
+    
+    // Calculate current portfolio value
+    const positionValue = Object.values(account.positions).reduce((total, pos) => {
+      return total + (this.getCurrentPrice(pos.symbol) * pos.quantity)
+    }, 0)
+    
+    account.currentValue = account.balance + positionValue
+    account.totalReturn = ((account.currentValue - account.initialBalance) / account.initialBalance) * 100
+    
+    account.lastUpdated = Date.now()
+    return account
+  }
+
+  // Get account summary
+  getAccountSummary(accountId) {
+    const account = this.accounts[accountId]
+    if (!account) throw new Error('Account not found')
+    
+    this.updateAccountMetrics(accountId)
+    
+    return {
+      ...account,
+      winRate: account.metrics.totalTrades > 0 
+        ? (account.metrics.winningTrades / account.metrics.totalTrades) * 100 
+        : 0
+    }
+  }
+}
+
+// Monte Carlo Simulation Engine
+class MonteCarloEngine {
+  constructor() {}
+
+  // Run Monte Carlo simulation for strategy validation
+  runSimulation(strategyConfig, iterations = 1000) {
+    const results = []
+    
+    for (let i = 0; i < iterations; i++) {
+      // Add randomness to strategy parameters
+      const randomizedConfig = {
+        ...strategyConfig,
+        parameters: {
+          ...strategyConfig.parameters,
+          minConfidence: strategyConfig.parameters.minConfidence + (Math.random() - 0.5) * 10,
+          riskPerTrade: strategyConfig.parameters.riskPerTrade * (0.8 + Math.random() * 0.4)
+        }
+      }
+      
+      // Add market noise
+      const marketNoise = (Math.random() - 0.5) * 0.1
+      
+      // Simulate strategy with variations
+      const backtest = backtestingEngine.runBacktest({
+        ...randomizedConfig,
+        strategyId: `mc_${i}`,
+        marketNoise
+      })
+      
+      results.push({
+        iteration: i,
+        finalReturn: backtest.metrics.totalReturn,
+        maxDrawdown: backtest.metrics.maxDrawdown,
+        sharpeRatio: backtest.metrics.sharpeRatio,
+        profitFactor: backtest.metrics.profitFactor,
+        winRate: backtest.metrics.winRate
+      })
+    }
+    
+    // Calculate simulation statistics
+    const returns = results.map(r => r.finalReturn)
+    const drawdowns = results.map(r => r.maxDrawdown)
+    
+    return {
+      iterations,
+      summary: {
+        avgReturn: returns.reduce((a, b) => a + b) / returns.length,
+        medianReturn: this.median(returns),
+        stdReturn: this.standardDeviation(returns),
+        minReturn: Math.min(...returns),
+        maxReturn: Math.max(...returns),
+        avgDrawdown: drawdowns.reduce((a, b) => a + b) / drawdowns.length,
+        maxDrawdown: Math.max(...drawdowns),
+        profitProbability: (results.filter(r => r.finalReturn > 0).length / iterations) * 100
+      },
+      results
+    }
+  }
+
+  median(arr) {
+    const sorted = arr.slice().sort((a, b) => a - b)
+    const middle = Math.floor(sorted.length / 2)
+    return sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle]
+  }
+
+  standardDeviation(arr) {
+    const mean = arr.reduce((a, b) => a + b) / arr.length
+    const squaredDiffs = arr.map(x => Math.pow(x - mean, 2))
+    const avgSquaredDiff = squaredDiffs.reduce((a, b) => a + b) / arr.length
+    return Math.sqrt(avgSquaredDiff)
+  }
+}
+
+// Initialize engines
+const backtestingEngine = new BacktestingEngine()
+const paperTradingEngine = new PaperTradingEngine()
+const monteCarloEngine = new MonteCarloEngine()
+
+// API endpoints for backtesting and paper trading
+
+// Backtesting endpoints
+app.post('/api/backtest/run', async (c) => {
+  try {
+    const strategyConfig = await c.req.json()
+    const results = await backtestingEngine.runBacktest(strategyConfig)
+    
+    return c.json({
+      success: true,
+      strategyId: strategyConfig.strategyId,
+      results
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
+app.get('/api/backtest/:strategyId', (c) => {
+  const strategyId = c.req.param('strategyId')
+  const backtest = backtestingEngine.backtests[strategyId]
+  
+  if (!backtest) {
+    return c.json({ error: 'Backtest not found' }, 404)
+  }
+  
+  return c.json(backtest)
+})
+
+app.get('/api/backtests', (c) => {
+  return c.json({
+    backtests: Object.values(backtestingEngine.backtests)
+  })
+})
+
+// Paper trading endpoints
+app.post('/api/paper-trading/account', async (c) => {
+  const { accountId, initialBalance } = await c.req.json()
+  const account = paperTradingEngine.createAccount(accountId, initialBalance)
+  
+  return c.json({
+    success: true,
+    account
+  })
+})
+
+app.post('/api/paper-trading/order', async (c) => {
+  try {
+    const orderData = await c.req.json()
+    const order = paperTradingEngine.placeOrder(orderData.accountId, orderData)
+    
+    return c.json({
+      success: true,
+      order
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
+app.get('/api/paper-trading/account/:accountId', (c) => {
+  try {
+    const accountId = c.req.param('accountId')
+    const account = paperTradingEngine.getAccountSummary(accountId)
+    
+    return c.json({
+      success: true,
+      account
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 404)
+  }
+})
+
+app.get('/api/paper-trading/accounts', (c) => {
+  return c.json({
+    accounts: Object.values(paperTradingEngine.accounts)
+  })
+})
+
+// Monte Carlo simulation endpoint
+app.post('/api/monte-carlo', async (c) => {
+  try {
+    const { strategyConfig, iterations } = await c.req.json()
+    const results = monteCarloEngine.runSimulation(strategyConfig, iterations)
+    
+    return c.json({
+      success: true,
+      simulation: results
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
+// Strategy performance comparison
+app.post('/api/strategy/compare', async (c) => {
+  try {
+    const { strategies } = await c.req.json()
+    const comparisons = []
+    
+    for (const strategy of strategies) {
+      const backtest = await backtestingEngine.runBacktest(strategy)
+      comparisons.push({
+        strategyName: strategy.strategyName,
+        metrics: backtest.metrics,
+        riskAdjustedReturn: backtest.metrics.sharpeRatio
+      })
+    }
+    
+    // Rank strategies by risk-adjusted return
+    comparisons.sort((a, b) => b.riskAdjustedReturn - a.riskAdjustedReturn)
+    
+    return c.json({
+      success: true,
+      comparison: comparisons
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
 // Main dashboard route
 app.get('/', (c) => {
   return c.html(`
@@ -667,6 +1323,12 @@ app.get('/', (c) => {
                         </button>
                         <button class="nav-item" data-section="assistant">
                             <i class="fas fa-robot mr-2"></i>AI ASSISTANT
+                        </button>
+                        <button class="nav-item" data-section="backtesting">
+                            <i class="fas fa-chart-area mr-2"></i>BACKTESTING
+                        </button>
+                        <button class="nav-item" data-section="paper-trading">
+                            <i class="fas fa-file-invoice-dollar mr-2"></i>PAPER TRADING
                         </button>
                     </div>
                 </div>
@@ -986,6 +1648,298 @@ app.get('/', (c) => {
                                 <div class="flex justify-between">
                                     <span>Response Time:</span>
                                     <span class="text-accent">0.8s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Backtesting Section -->
+                <div id="backtesting" class="section">
+                    <div class="bg-card-bg rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-chart-area mr-2 text-accent"></i>
+                            🧪 Advanced Strategy Backtesting
+                            <span class="ml-auto text-sm">
+                                <span class="bg-accent text-dark-bg px-2 py-1 rounded text-xs font-semibold">ENTERPRISE-GRADE</span>
+                            </span>
+                        </h3>
+                        
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- Strategy Configuration -->
+                            <div class="col-span-4 space-y-4">
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">Strategy Configuration</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Strategy Name</label>
+                                            <input id="strategy-name" type="text" placeholder="My Pattern Strategy" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Strategy Type</label>
+                                            <select id="strategy-type" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                <option value="PATTERN_ARBITRAGE">Pattern Arbitrage</option>
+                                                <option value="MEAN_REVERSION">Mean Reversion</option>
+                                                <option value="MOMENTUM">Momentum</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Symbol</label>
+                                                <select id="backtest-symbol" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                    <option value="BTC">BTC</option>
+                                                    <option value="ETH">ETH</option>
+                                                    <option value="SOL">SOL</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Timeframe</label>
+                                                <select id="backtest-timeframe" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                    <option value="1m">1m</option>
+                                                    <option value="5m">5m</option>
+                                                    <option value="15m">15m</option>
+                                                    <option value="1h">1h</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Initial Capital ($)</label>
+                                            <input id="initial-capital" type="number" value="100000" min="1000" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">Risk Parameters</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Min Confidence (%)</label>
+                                                <input id="min-confidence" type="number" value="80" min="50" max="100" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Risk Per Trade (%)</label>
+                                                <input id="risk-per-trade" type="number" value="2" min="0.1" max="10" step="0.1" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Stop Loss (%)</label>
+                                                <input id="stop-loss" type="number" value="2" min="0.5" max="10" step="0.1" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Take Profit (%)</label>
+                                                <input id="take-profit" type="number" value="4" min="1" max="20" step="0.1" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Min Arbitrage Relevance (%)</label>
+                                            <input id="min-arbitrage-relevance" type="number" value="75" min="50" max="100" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-2">
+                                    <button id="run-backtest" class="w-full bg-gradient-to-r from-accent to-profit text-dark-bg py-2 rounded font-semibold hover:from-opacity-80">
+                                        <i class="fas fa-play mr-2"></i>Run Backtest
+                                    </button>
+                                    <button id="run-monte-carlo" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded font-semibold hover:from-purple-600">
+                                        <i class="fas fa-dice mr-2"></i>Monte Carlo Simulation
+                                    </button>
+                                    <button id="compare-strategies" class="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 rounded font-semibold hover:from-orange-600">
+                                        <i class="fas fa-balance-scale mr-2"></i>Compare Strategies
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Results Display -->
+                            <div class="col-span-8 space-y-4">
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">📊 Backtest Results</h4>
+                                    <div id="backtest-results" class="text-center text-gray-400 py-8">
+                                        Run a backtest to see results...
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="bg-gray-800 rounded-lg p-4">
+                                        <h5 class="font-semibold mb-3 text-accent">📈 Equity Curve</h5>
+                                        <canvas id="equity-curve-chart" width="300" height="200"></canvas>
+                                    </div>
+                                    <div class="bg-gray-800 rounded-lg p-4">
+                                        <h5 class="font-semibold mb-3 text-accent">📉 Drawdown Chart</h5>
+                                        <canvas id="drawdown-chart" width="300" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paper Trading Section -->
+                <div id="paper-trading" class="section">
+                    <div class="bg-card-bg rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-file-invoice-dollar mr-2 text-accent"></i>
+                            📊 Real-Time Paper Trading
+                            <span class="ml-auto text-sm">
+                                <span class="bg-profit text-dark-bg px-2 py-1 rounded text-xs font-semibold">LIVE SIMULATION</span>
+                            </span>
+                        </h3>
+                        
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- Account Creation & Management -->
+                            <div class="col-span-4 space-y-4">
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">Account Setup</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Account Name</label>
+                                            <input id="paper-account-name" type="text" placeholder="My Trading Account" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1">Initial Balance ($)</label>
+                                            <input id="paper-initial-balance" type="number" value="100000" min="1000" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                        
+                                        <button id="create-paper-account" class="w-full bg-accent text-dark-bg py-2 rounded font-semibold hover:bg-opacity-80">
+                                            <i class="fas fa-plus mr-2"></i>Create Account
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">Place Order</h4>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Symbol</label>
+                                                <select id="paper-symbol" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                    <option value="BTC">BTC</option>
+                                                    <option value="ETH">ETH</option>
+                                                    <option value="SOL">SOL</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Side</label>
+                                                <select id="paper-side" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                    <option value="BUY">BUY</option>
+                                                    <option value="SELL">SELL</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Quantity</label>
+                                                <input id="paper-quantity" type="number" value="0.1" min="0.001" step="0.001" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Order Type</label>
+                                                <select id="paper-order-type" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                    <option value="MARKET">MARKET</option>
+                                                    <option value="LIMIT">LIMIT</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="limit-price-container" class="hidden">
+                                            <label class="block text-sm font-medium mb-1">Limit Price ($)</label>
+                                            <input id="paper-limit-price" type="number" step="0.01" 
+                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Stop Loss ($)</label>
+                                                <input id="paper-stop-loss" type="number" step="0.01" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Take Profit ($)</label>
+                                                <input id="paper-take-profit" type="number" step="0.01" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                        </div>
+                                        
+                                        <button id="place-paper-order" class="w-full bg-gradient-to-r from-profit to-accent text-dark-bg py-2 rounded font-semibold hover:from-opacity-80">
+                                            <i class="fas fa-paper-plane mr-2"></i>Place Order
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">Auto Trading</h4>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm">Pattern-Based Auto Trading</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input id="auto-trading-toggle" type="checkbox" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+                                            </label>
+                                        </div>
+                                        <div id="auto-trading-status" class="text-xs text-gray-400">
+                                            Auto trading disabled
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Account Summary & Positions -->
+                            <div class="col-span-8 space-y-4">
+                                <div class="grid grid-cols-4 gap-4">
+                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                        <div id="paper-balance" class="text-2xl font-bold text-accent">$0</div>
+                                        <div class="text-sm text-gray-400">Available Balance</div>
+                                    </div>
+                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                        <div id="paper-equity" class="text-2xl font-bold text-profit">$0</div>
+                                        <div class="text-sm text-gray-400">Total Equity</div>
+                                    </div>
+                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                        <div id="paper-pnl" class="text-2xl font-bold">$0</div>
+                                        <div class="text-sm text-gray-400">Total P&L</div>
+                                    </div>
+                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                        <div id="paper-return" class="text-2xl font-bold">0%</div>
+                                        <div class="text-sm text-gray-400">Total Return</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h5 class="font-semibold mb-3 text-accent">📋 Current Positions</h5>
+                                    <div id="paper-positions" class="text-center text-gray-400 py-4">
+                                        No positions yet...
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-gray-800 rounded-lg p-4">
+                                    <h5 class="font-semibold mb-3 text-accent">📜 Trade History</h5>
+                                    <div id="paper-trade-history" class="max-h-64 overflow-y-auto">
+                                        <div class="text-center text-gray-400 py-4">
+                                            No trades yet...
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

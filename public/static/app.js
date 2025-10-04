@@ -10,6 +10,11 @@ class TradingDashboard {
         this.currentTimeframe = '1m'
         this.patternAlerts = []
         this.hyperbolicAnalysis = {}
+        this.backtests = {}
+        this.paperAccount = null
+        this.autoTradingEnabled = false
+        this.equityCurveChart = null
+        this.drawdownChart = null
         this.init()
     }
 
@@ -123,6 +128,12 @@ class TradingDashboard {
                 break
             case 'transparency':
                 this.loadModelTransparency()
+                break
+            case 'backtesting':
+                this.initializeBacktesting()
+                break
+            case 'paper-trading':
+                this.initializePaperTrading()
                 break
         }
     }
@@ -901,6 +912,9 @@ class TradingDashboard {
 
         // Store analysis for later use
         this.hyperbolicAnalysis = analysis
+        
+        // Check auto trading if enabled
+        this.checkAutoTrading()
     }
 
     checkPatternAlerts(analysis) {
@@ -1073,6 +1087,642 @@ class TradingDashboard {
         } catch (error) {
             console.error('Error sending chat message:', error)
             this.addChatMessage('Sorry, I encountered an error processing your request.', 'ai')
+        }
+    }
+
+    // Advanced Backtesting System
+    initializeBacktesting() {
+        // Setup backtesting event listeners
+        this.setupBacktestingControls()
+        this.initializeBacktestCharts()
+    }
+
+    setupBacktestingControls() {
+        // Run backtest button
+        const runBacktestBtn = document.getElementById('run-backtest')
+        if (runBacktestBtn) {
+            runBacktestBtn.addEventListener('click', () => this.runBacktest())
+        }
+
+        // Monte Carlo simulation button
+        const runMonteCarloBtn = document.getElementById('run-monte-carlo')
+        if (runMonteCarloBtn) {
+            runMonteCarloBtn.addEventListener('click', () => this.runMonteCarloSimulation())
+        }
+
+        // Compare strategies button
+        const compareBtn = document.getElementById('compare-strategies')
+        if (compareBtn) {
+            compareBtn.addEventListener('click', () => this.compareStrategies())
+        }
+    }
+
+    initializeBacktestCharts() {
+        // Initialize equity curve chart
+        const equityCanvas = document.getElementById('equity-curve-chart')
+        if (equityCanvas) {
+            const ctx = equityCanvas.getContext('2d')
+            this.equityCurveChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Equity',
+                        data: [],
+                        borderColor: '#00d4aa',
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        },
+                        y: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            })
+        }
+
+        // Initialize drawdown chart
+        const drawdownCanvas = document.getElementById('drawdown-chart')
+        if (drawdownCanvas) {
+            const ctx = drawdownCanvas.getContext('2d')
+            this.drawdownChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Drawdown %',
+                        data: [],
+                        borderColor: '#ff4757',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: { unit: 'day' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        },
+                        y: {
+                            reverse: true,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: '#ffffff' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#ffffff' } }
+                    }
+                }
+            })
+        }
+    }
+
+    async runBacktest() {
+        try {
+            const strategyConfig = this.getBacktestConfiguration()
+            
+            // Show loading state
+            const resultsContainer = document.getElementById('backtest-results')
+            resultsContainer.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mr-3"></div>
+                    <span>Running backtest...</span>
+                </div>
+            `
+
+            const response = await axios.post('/api/backtest/run', strategyConfig)
+            const { results } = response.data
+
+            this.displayBacktestResults(results)
+            this.updateBacktestCharts(results)
+            
+            // Store results
+            this.backtests[strategyConfig.strategyId] = results
+
+            this.showNotification(`✅ Backtest completed! Total Return: ${results.metrics.totalReturn.toFixed(2)}%`, 'success')
+
+        } catch (error) {
+            console.error('Backtest error:', error)
+            this.showNotification('❌ Backtest failed. Please check your parameters.', 'error')
+            
+            document.getElementById('backtest-results').innerHTML = `
+                <div class="text-center text-loss py-8">
+                    <i class="fas fa-exclamation-triangle text-2xl mb-2"></i>
+                    <div>Backtest failed. Please try again.</div>
+                </div>
+            `
+        }
+    }
+
+    getBacktestConfiguration() {
+        return {
+            strategyId: `backtest_${Date.now()}`,
+            strategyName: document.getElementById('strategy-name').value || 'Unnamed Strategy',
+            symbol: document.getElementById('backtest-symbol').value,
+            timeframe: document.getElementById('backtest-timeframe').value,
+            strategyType: document.getElementById('strategy-type').value,
+            initialCapital: parseFloat(document.getElementById('initial-capital').value),
+            startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+            endDate: new Date().toISOString(),
+            parameters: {
+                minConfidence: parseFloat(document.getElementById('min-confidence').value),
+                riskPerTrade: parseFloat(document.getElementById('risk-per-trade').value) / 100,
+                stopLoss: parseFloat(document.getElementById('stop-loss').value) / 100,
+                takeProfit: parseFloat(document.getElementById('take-profit').value) / 100,
+                minArbitrageRelevance: parseFloat(document.getElementById('min-arbitrage-relevance').value)
+            }
+        }
+    }
+
+    displayBacktestResults(results) {
+        const { metrics, trades } = results
+        
+        const resultsHtml = `
+            <div class="grid grid-cols-4 gap-4 mb-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold ${metrics.totalReturn > 0 ? 'text-profit' : 'text-loss'}">
+                        ${metrics.totalReturn.toFixed(2)}%
+                    </div>
+                    <div class="text-sm text-gray-400">Total Return</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-accent">${metrics.winRate.toFixed(1)}%</div>
+                    <div class="text-sm text-gray-400">Win Rate</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-warning">${metrics.sharpeRatio}</div>
+                    <div class="text-sm text-gray-400">Sharpe Ratio</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-loss">-${metrics.maxDrawdown.toFixed(2)}%</div>
+                    <div class="text-sm text-gray-400">Max Drawdown</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h5 class="font-semibold mb-3 text-accent">📊 Performance Metrics</h5>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Initial Capital:</span>
+                            <span class="text-accent">$${metrics.initialCapital.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Final Capital:</span>
+                            <span class="text-accent">$${metrics.finalCapital.toLocaleString()}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total P&L:</span>
+                            <span class="${metrics.totalPnL > 0 ? 'text-profit' : 'text-loss'}">
+                                ${metrics.totalPnL > 0 ? '+' : ''}$${metrics.totalPnL.toLocaleString()}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Total Trades:</span>
+                            <span class="text-accent">${metrics.totalTrades}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Profit Factor:</span>
+                            <span class="text-accent">${metrics.profitFactor.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Calmar Ratio:</span>
+                            <span class="text-accent">${metrics.calmarRatio}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h5 class="font-semibold mb-3 text-accent">📈 Trade Analysis</h5>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span>Winning Trades:</span>
+                            <span class="text-profit">${metrics.winningTrades}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Losing Trades:</span>
+                            <span class="text-loss">${metrics.losingTrades}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Avg Trade:</span>
+                            <span class="${metrics.avgTrade > 0 ? 'text-profit' : 'text-loss'}">
+                                ${metrics.avgTrade > 0 ? '+' : ''}$${metrics.avgTrade.toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Avg Winner:</span>
+                            <span class="text-profit">+$${metrics.avgWin.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Avg Loser:</span>
+                            <span class="text-loss">-$${metrics.avgLoss.toFixed(2)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Best Trade:</span>
+                            <span class="text-profit">
+                                +$${Math.max(...trades.map(t => t.pnl), 0).toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Worst Trade:</span>
+                            <span class="text-loss">
+                                $${Math.min(...trades.map(t => t.pnl), 0).toFixed(2)}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+        
+        document.getElementById('backtest-results').innerHTML = resultsHtml
+    }
+
+    updateBacktestCharts(results) {
+        // Update equity curve
+        if (this.equityCurveChart && results.equity) {
+            const equityData = results.equity.slice(0, -1) // Skip last incomplete point
+            this.equityCurveChart.data.labels = equityData.map(point => new Date(point.timestamp))
+            this.equityCurveChart.data.datasets[0].data = equityData.map(point => point.equity)
+            this.equityCurveChart.update()
+        }
+
+        // Update drawdown chart
+        if (this.drawdownChart && results.drawdowns) {
+            const drawdownData = results.drawdowns.slice(0, -1)
+            this.drawdownChart.data.labels = drawdownData.map(point => new Date(point.timestamp))
+            this.drawdownChart.data.datasets[0].data = drawdownData.map(point => point.drawdown)
+            this.drawdownChart.update()
+        }
+    }
+
+    async runMonteCarloSimulation() {
+        try {
+            const strategyConfig = this.getBacktestConfiguration()
+            
+            this.showNotification('🎲 Running Monte Carlo simulation...', 'info')
+            
+            const response = await axios.post('/api/monte-carlo', {
+                strategyConfig,
+                iterations: 1000
+            })
+            
+            const simulation = response.data.simulation
+            
+            this.showNotification(
+                `✅ Monte Carlo completed! Avg Return: ${simulation.summary.avgReturn.toFixed(2)}%, ` +
+                `Profit Probability: ${simulation.summary.profitProbability.toFixed(1)}%`, 
+                'success'
+            )
+            
+            // Display Monte Carlo results
+            this.displayMonteCarloResults(simulation)
+            
+        } catch (error) {
+            console.error('Monte Carlo error:', error)
+            this.showNotification('❌ Monte Carlo simulation failed', 'error')
+        }
+    }
+
+    displayMonteCarloResults(simulation) {
+        const { summary } = simulation
+        
+        const monteCarloHtml = `
+            <div class="mt-6 bg-gray-900 rounded-lg p-4">
+                <h5 class="font-semibold mb-3 text-purple-400">🎲 Monte Carlo Simulation Results</h5>
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-accent">${summary.avgReturn.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Average Return</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-profit">${summary.profitProbability.toFixed(1)}%</div>
+                        <div class="text-xs text-gray-400">Profit Probability</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-lg font-bold text-warning">${summary.stdReturn.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Return Std Dev</div>
+                    </div>
+                </div>
+                <div class="mt-4 grid grid-cols-2 gap-4 text-sm">
+                    <div class="space-y-1">
+                        <div class="flex justify-between">
+                            <span>Best Case:</span>
+                            <span class="text-profit">+${summary.maxReturn.toFixed(2)}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Worst Case:</span>
+                            <span class="text-loss">${summary.minReturn.toFixed(2)}%</span>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between">
+                            <span>Median Return:</span>
+                            <span class="text-accent">${summary.medianReturn.toFixed(2)}%</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Avg Drawdown:</span>
+                            <span class="text-loss">-${summary.avgDrawdown.toFixed(2)}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+        
+        document.getElementById('backtest-results').innerHTML += monteCarloHtml
+    }
+
+    async compareStrategies() {
+        // This would implement strategy comparison logic
+        this.showNotification('🔄 Strategy comparison feature coming soon!', 'info')
+    }
+
+    // Paper Trading System
+    initializePaperTrading() {
+        this.setupPaperTradingControls()
+        this.loadPaperAccounts()
+    }
+
+    setupPaperTradingControls() {
+        // Create account button
+        const createAccountBtn = document.getElementById('create-paper-account')
+        if (createAccountBtn) {
+            createAccountBtn.addEventListener('click', () => this.createPaperAccount())
+        }
+
+        // Place order button
+        const placeOrderBtn = document.getElementById('place-paper-order')
+        if (placeOrderBtn) {
+            placeOrderBtn.addEventListener('click', () => this.placePaperOrder())
+        }
+
+        // Order type change listener
+        const orderTypeSelect = document.getElementById('paper-order-type')
+        if (orderTypeSelect) {
+            orderTypeSelect.addEventListener('change', (e) => {
+                const limitPriceContainer = document.getElementById('limit-price-container')
+                if (e.target.value === 'LIMIT') {
+                    limitPriceContainer.classList.remove('hidden')
+                } else {
+                    limitPriceContainer.classList.add('hidden')
+                }
+            })
+        }
+
+        // Auto trading toggle
+        const autoTradingToggle = document.getElementById('auto-trading-toggle')
+        if (autoTradingToggle) {
+            autoTradingToggle.addEventListener('change', (e) => {
+                this.autoTradingEnabled = e.target.checked
+                const status = document.getElementById('auto-trading-status')
+                if (status) {
+                    status.textContent = this.autoTradingEnabled 
+                        ? 'Auto trading enabled - monitoring patterns...'
+                        : 'Auto trading disabled'
+                    status.className = this.autoTradingEnabled 
+                        ? 'text-xs text-profit' 
+                        : 'text-xs text-gray-400'
+                }
+            })
+        }
+    }
+
+    async createPaperAccount() {
+        try {
+            const accountName = document.getElementById('paper-account-name').value || 'Default Account'
+            const initialBalance = parseFloat(document.getElementById('paper-initial-balance').value) || 100000
+            
+            const response = await axios.post('/api/paper-trading/account', {
+                accountId: `account_${Date.now()}`,
+                initialBalance
+            })
+            
+            this.paperAccount = response.data.account
+            this.updatePaperAccountUI()
+            this.showNotification(`✅ Paper trading account created with $${initialBalance.toLocaleString()}`, 'success')
+            
+        } catch (error) {
+            console.error('Account creation error:', error)
+            this.showNotification('❌ Failed to create paper trading account', 'error')
+        }
+    }
+
+    async placePaperOrder() {
+        try {
+            if (!this.paperAccount) {
+                this.showNotification('❌ Please create a paper trading account first', 'error')
+                return
+            }
+
+            const orderData = {
+                accountId: this.paperAccount.accountId,
+                symbol: document.getElementById('paper-symbol').value,
+                side: document.getElementById('paper-side').value,
+                quantity: parseFloat(document.getElementById('paper-quantity').value),
+                orderType: document.getElementById('paper-order-type').value,
+                price: document.getElementById('paper-order-type').value === 'LIMIT' 
+                    ? parseFloat(document.getElementById('paper-limit-price').value) 
+                    : null,
+                stopLoss: parseFloat(document.getElementById('paper-stop-loss').value) || null,
+                takeProfit: parseFloat(document.getElementById('paper-take-profit').value) || null
+            }
+
+            const response = await axios.post('/api/paper-trading/order', orderData)
+            const order = response.data.order
+            
+            if (order.status === 'EXECUTED') {
+                this.showNotification(`✅ Order executed: ${order.side} ${order.quantity} ${order.symbol} at $${order.executedPrice}`, 'success')
+            } else if (order.status === 'REJECTED') {
+                this.showNotification(`❌ Order rejected: ${order.rejectionReason}`, 'error')
+            } else {
+                this.showNotification(`📋 Order placed: ${order.side} ${order.quantity} ${order.symbol}`, 'info')
+            }
+            
+            this.refreshPaperAccount()
+            
+        } catch (error) {
+            console.error('Order placement error:', error)
+            this.showNotification('❌ Failed to place order', 'error')
+        }
+    }
+
+    async refreshPaperAccount() {
+        if (!this.paperAccount) return
+        
+        try {
+            const response = await axios.get(`/api/paper-trading/account/${this.paperAccount.accountId}`)
+            this.paperAccount = response.data.account
+            this.updatePaperAccountUI()
+        } catch (error) {
+            console.error('Account refresh error:', error)
+        }
+    }
+
+    updatePaperAccountUI() {
+        if (!this.paperAccount) return
+        
+        // Update account summary
+        document.getElementById('paper-balance').textContent = `$${this.paperAccount.balance.toLocaleString()}`
+        document.getElementById('paper-equity').textContent = `$${(this.paperAccount.currentValue || this.paperAccount.balance).toLocaleString()}`
+        
+        const totalPnL = this.paperAccount.metrics.totalPnL
+        const pnlElement = document.getElementById('paper-pnl')
+        pnlElement.textContent = `${totalPnL >= 0 ? '+' : ''}$${totalPnL.toLocaleString()}`
+        pnlElement.className = `text-2xl font-bold ${totalPnL >= 0 ? 'text-profit' : 'text-loss'}`
+        
+        const totalReturn = this.paperAccount.totalReturn || 0
+        const returnElement = document.getElementById('paper-return')
+        returnElement.textContent = `${totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}%`
+        returnElement.className = `text-2xl font-bold ${totalReturn >= 0 ? 'text-profit' : 'text-loss'}`
+        
+        // Update positions
+        this.updatePaperPositions()
+        
+        // Update trade history
+        this.updatePaperTradeHistory()
+    }
+
+    updatePaperPositions() {
+        const positionsContainer = document.getElementById('paper-positions')
+        const positions = Object.values(this.paperAccount.positions || {}).filter(pos => pos.quantity > 0)
+        
+        if (positions.length === 0) {
+            positionsContainer.innerHTML = '<div class="text-center text-gray-400 py-4">No positions yet...</div>'
+            return
+        }
+        
+        const positionsHtml = `
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-700">
+                            <th class="text-left py-2">Symbol</th>
+                            <th class="text-right py-2">Quantity</th>
+                            <th class="text-right py-2">Avg Price</th>
+                            <th class="text-right py-2">Current Price</th>
+                            <th class="text-right py-2">Unrealized P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${positions.map(pos => `
+                            <tr class="border-b border-gray-700">
+                                <td class="py-2 font-semibold">${pos.symbol}</td>
+                                <td class="text-right">${pos.quantity}</td>
+                                <td class="text-right">$${pos.avgPrice.toLocaleString()}</td>
+                                <td class="text-right">$${this.getCurrentPrice(pos.symbol).toLocaleString()}</td>
+                                <td class="text-right ${pos.unrealizedPnL >= 0 ? 'text-profit' : 'text-loss'}">
+                                    ${pos.unrealizedPnL >= 0 ? '+' : ''}$${pos.unrealizedPnL.toLocaleString()}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        `
+        
+        positionsContainer.innerHTML = positionsHtml
+    }
+
+    updatePaperTradeHistory() {
+        const historyContainer = document.getElementById('paper-trade-history')
+        const trades = this.paperAccount.tradeHistory || []
+        
+        if (trades.length === 0) {
+            historyContainer.innerHTML = '<div class="text-center text-gray-400 py-4">No trades yet...</div>'
+            return
+        }
+        
+        const tradesHtml = trades.slice(-10).reverse().map(trade => `
+            <div class="flex items-center justify-between p-2 bg-gray-900 rounded mb-2">
+                <div class="flex items-center space-x-3">
+                    <span class="font-semibold ${trade.side === 'BUY' ? 'text-profit' : 'text-loss'}">
+                        ${trade.side}
+                    </span>
+                    <span>${trade.quantity} ${trade.symbol}</span>
+                    <span class="text-gray-400">@$${trade.executedPrice}</span>
+                </div>
+                <div class="text-right text-sm">
+                    <div class="text-gray-400">${new Date(trade.executedAt).toLocaleTimeString()}</div>
+                    ${trade.realizedPnL ? `<div class="${trade.realizedPnL >= 0 ? 'text-profit' : 'text-loss'}">
+                        ${trade.realizedPnL >= 0 ? '+' : ''}$${trade.realizedPnL.toFixed(2)}
+                    </div>` : ''}
+                </div>
+            </div>
+        `).join('')
+        
+        historyContainer.innerHTML = tradesHtml
+    }
+
+    getCurrentPrice(symbol) {
+        // This would get current market price
+        const basePrice = { BTC: 67234.56, ETH: 3456.08, SOL: 123.45 }
+        return basePrice[symbol] || 0
+    }
+
+    async loadPaperAccounts() {
+        try {
+            const response = await axios.get('/api/paper-trading/accounts')
+            const accounts = response.data.accounts
+            
+            if (accounts.length > 0) {
+                this.paperAccount = accounts[0] // Load first account by default
+                this.updatePaperAccountUI()
+            }
+        } catch (error) {
+            console.error('Loading accounts error:', error)
+        }
+    }
+
+    // Auto trading based on pattern analysis
+    async checkAutoTrading() {
+        if (!this.autoTradingEnabled || !this.paperAccount || !this.hyperbolicAnalysis) return
+        
+        const { pattern, arbitrageTiming } = this.hyperbolicAnalysis
+        
+        if (pattern && pattern.confidence > 85 && pattern.arbitrageRelevance > 80) {
+            if (arbitrageTiming.timing === 'buy') {
+                await this.executeAutoTrade('BUY', this.currentSymbol, 0.01)
+            } else if (arbitrageTiming.timing === 'sell') {
+                await this.executeAutoTrade('SELL', this.currentSymbol, 0.01)
+            }
+        }
+    }
+
+    async executeAutoTrade(side, symbol, quantity) {
+        try {
+            const response = await axios.post('/api/paper-trading/order', {
+                accountId: this.paperAccount.accountId,
+                symbol,
+                side,
+                quantity,
+                orderType: 'MARKET'
+            })
+            
+            if (response.data.order.status === 'EXECUTED') {
+                this.showNotification(`🤖 Auto trade executed: ${side} ${quantity} ${symbol}`, 'success')
+                this.refreshPaperAccount()
+            }
+        } catch (error) {
+            console.error('Auto trade error:', error)
         }
     }
 

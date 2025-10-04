@@ -44,10 +44,23 @@
 - `GET /api/portfolio` - Portfolio overview with asset allocation and P&L
 - `GET /api/global-markets` - Global market indices across all asset classes
 
-### **Advanced Charting & AI** (NEW)
+### **Advanced Charting & AI** 
 - `GET /api/candlestick/:symbol/:timeframe` - Advanced OHLCV candlestick data with realistic patterns
 - `GET /api/pattern-analysis/:symbol/:timeframe` - Hyperbolic CNN pattern analysis with confidence scoring
 - `GET /api/hyperbolic-analysis` - Multi-timeframe pattern analysis across all symbols
+
+### **Backtesting & Simulation** (NEW)
+- `POST /api/backtest/run` - Execute comprehensive strategy backtests with performance analytics
+- `GET /api/backtest/:strategyId` - Retrieve detailed backtest results and metrics
+- `GET /api/backtests` - List all completed backtests with summary statistics
+- `POST /api/monte-carlo` - Run Monte Carlo simulations for strategy validation (1000+ iterations)
+- `POST /api/strategy/compare` - Compare multiple strategies with risk-adjusted rankings
+
+### **Paper Trading** (NEW)
+- `POST /api/paper-trading/account` - Create virtual trading accounts with custom initial capital
+- `POST /api/paper-trading/order` - Place paper trades (market/limit orders, stop-loss, take-profit)
+- `GET /api/paper-trading/account/:accountId` - Get real-time account summary and performance
+- `GET /api/paper-trading/accounts` - List all paper trading accounts with metrics
 
 ### Trading Operations  
 - `POST /api/execute-arbitrage` - Execute arbitrage opportunities (supports pattern-based execution)
@@ -55,7 +68,7 @@
 
 ### Currently Completed Features
 
-#### 🚀 **INDUSTRY-LEADING: Hyperbolic CNN Chart Analysis** (NEW)
+#### 🚀 **INDUSTRY-LEADING: Hyperbolic CNN Chart Analysis** 
 - **Advanced candlestick pattern recognition** using hyperbolic geometry and Poincaré disk model
 - **Multi-timeframe analysis** (1m, 5m, 15m, 1h) with real-time pattern detection
 - **Hyperbolic CNN pattern analysis** with geodesic distance calculations and confidence scoring
@@ -66,6 +79,26 @@
 - **Live pattern alerts** with 90%+ confidence threshold and sub-second detection
 - **Hyperbolic space metrics**: Geodesic efficiency, hyperbolic distance, space curvature (-1.0)
 - **AI-enhanced chart analysis** through GOMNA assistant with visual pattern interpretation
+
+#### 🧪 **ENTERPRISE-GRADE: Advanced Backtesting Engine** (NEW)
+- **Comprehensive strategy backtesting** with realistic historical data simulation (365 days)
+- **Multiple strategy types**: Pattern Arbitrage, Mean Reversion, Momentum strategies
+- **Advanced risk metrics**: Sharpe ratio, Calmar ratio, maximum drawdown, profit factor
+- **Detailed trade analysis**: Win rate, average trade, best/worst trades, trade distribution
+- **Interactive equity curves** and drawdown charts with Chart.js visualization
+- **Monte Carlo simulation** with 1000+ iterations for strategy validation and risk assessment
+- **Strategy performance comparison** with risk-adjusted return rankings
+- **Realistic market simulation** with trend cycles, volatility clustering, and noise
+
+#### 📊 **LIVE: Real-Time Paper Trading System** (NEW)
+- **Virtual trading accounts** with customizable initial capital ($1K - $1M+)
+- **Real-time order execution** with market and limit orders, stop-loss, take-profit
+- **Live portfolio tracking** with P&L, equity, balance, and return calculations  
+- **Position management** with unrealized P&L updates and current market pricing
+- **Complete trade history** with execution details, timestamps, and performance metrics
+- **Auto-trading integration** with pattern-based execution (90%+ confidence threshold)
+- **Risk management** with account balance validation and position size controls
+- **Performance analytics**: Win rate, total return, Sharpe ratio, maximum drawdown
 
 #### ✅ Trading Dashboard
 - Live market feeds for BTC/USD, ETH/USD, SOL/USD with volume and trade data
@@ -116,14 +149,15 @@
 - Real-time WebSocket connections for sub-second data updates
 - Integration with actual cryptocurrency exchange APIs (Binance, Coinbase Pro, Kraken)
 - Advanced charting with technical indicators (RSI, MACD, Bollinger Bands)
-- Historical backtesting framework for arbitrage strategies
 - Risk management alerts and position size optimization
-- Multi-timeframe analysis (1m, 5m, 15m, 1h, 4h, 1d)
 - Voice command interface ("Hey GOMNA" activation)
 - Mobile responsive design optimization
 - User authentication and personalized portfolios
 - Real-time notifications for arbitrage opportunities
-- Advanced order types (Stop-loss, Take-profit, Trailing stops)
+- Advanced order types (Trailing stops, OCO orders)
+- Strategy optimization with genetic algorithms
+- Social trading features and community insights
+- Options and derivatives trading simulation
 
 ## User Guide
 
@@ -139,6 +173,24 @@
 2. Review profit potential, execution time, and confidence levels
 3. Click "⚡ Execute Arbitrage" to simulate trade execution
 4. View execution results and transaction confirmations
+
+### Using Backtesting System
+1. Navigate to **Backtesting** section
+2. Configure strategy parameters (type, symbol, timeframe, risk settings)
+3. Set initial capital and risk management rules (stop-loss, take-profit)
+4. Click **"Run Backtest"** to execute comprehensive 365-day simulation
+5. Review performance metrics, equity curves, and trade analysis
+6. Use **"Monte Carlo Simulation"** for strategy validation (1000 iterations)
+7. Compare multiple strategies with risk-adjusted rankings
+
+### Using Paper Trading
+1. Navigate to **Paper Trading** section  
+2. Create account with custom initial balance ($1K - $1M+)
+3. Place paper trades: select symbol, quantity, order type (market/limit)
+4. Set stop-loss and take-profit levels for risk management
+5. Monitor real-time P&L, positions, and account performance
+6. Enable **Auto-Trading** for pattern-based execution (90%+ confidence)
+7. Track complete trade history and performance analytics
 
 ### Portfolio Management
 1. Navigate to Portfolio section to view current holdings
