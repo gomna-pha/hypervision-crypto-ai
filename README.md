@@ -48,6 +48,7 @@
 - `GET /api/candlestick/:symbol/:timeframe` - Advanced OHLCV candlestick data with realistic patterns
 - `GET /api/pattern-analysis/:symbol/:timeframe` - Hyperbolic CNN pattern analysis with confidence scoring
 - `GET /api/hyperbolic-analysis` - Multi-timeframe pattern analysis across all symbols
+- `GET /api/asset-clustering` - **NEW**: Real-time hierarchical asset clustering with correlation matrices
 
 ### **Backtesting & Simulation** (NEW)
 - `POST /api/backtest/run` - Execute comprehensive strategy backtests with performance analytics
@@ -79,6 +80,18 @@
 - **Live pattern alerts** with 90%+ confidence threshold and sub-second detection
 - **Hyperbolic space metrics**: Geodesic efficiency, hyperbolic distance, space curvature (-1.0)
 - **AI-enhanced chart analysis** through GOMNA assistant with visual pattern interpretation
+
+#### 🌐 **BREAKTHROUGH: Hierarchical Asset Clustering in Hyperbolic Space** (NEW)
+- **Real-time asset correlation visualization** in Poincaré disk with geodesic distance calculations
+- **Dynamic correlation matrix updates** for BTC, ETH, SOL with live market data integration
+- **Hierarchical clustering engine** showing asset relationships and correlation strength visualization
+- **Interactive visualization toggle** between pattern analysis and asset clustering views
+- **Correlation-based positioning** with hyperbolic distance representing relationship strength
+- **Live clustering metrics**: Active assets, correlation variance, clustering coefficient
+- **Real-time updates** synchronized with market data for dynamic relationship tracking
+- **Geodesic correlation lines** showing strength and direction of asset correlations
+- **Market cap and volatility integration** affecting cluster positioning and visual size
+- **Advanced mathematical visualization** combining financial correlation with hyperbolic geometry
 
 #### 🧪 **ENTERPRISE-GRADE: Advanced Backtesting Engine** (NEW)
 - **Comprehensive strategy backtesting** with realistic historical data simulation (365 days)
@@ -198,6 +211,15 @@
 3. Review risk metrics and performance indicators
 4. Track monthly returns and portfolio value changes
 
+### Using Hierarchical Asset Clustering (NEW)
+1. Navigate to **Hyperbolic Analysis** section
+2. Click **"Asset Clustering"** toggle button to switch from pattern view
+3. View real-time correlation relationships between BTC, ETH, and SOL in Poincaré disk
+4. Monitor correlation strength through geodesic distance visualization
+5. Track clustering metrics: active assets, correlation variance, clustering coefficient
+6. Observe dynamic positioning updates as market correlations change in real-time
+7. Use correlation insights for portfolio diversification and risk management
+
 ### AI Assistant Usage
 1. Navigate to AI Assistant section
 2. Type questions about market conditions, risk assessment, or trading strategies
@@ -245,7 +267,7 @@ npm run deploy
 - **Platform**: Cloudflare Pages (configured for edge deployment)
 - **Status**: ✅ Active (Development Environment)
 - **Tech Stack**: Hono + TypeScript + TailwindCSS + Chart.js
-- **Last Updated**: October 3, 2025
+- **Last Updated**: October 4, 2025
 
 ## Development Features
 - Hot reloading for rapid development
