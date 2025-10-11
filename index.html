@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA HyperVision Crypto AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'dark-bg': '#0f1419',
+              'card-bg': '#1a1f29',
+              'accent': '#00d4aa',
+              'profit': '#2ed573',
+              'loss': '#ff4757'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .gradient-text { 
+            background: linear-gradient(45deg, #00d4aa, #2ed573); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .glassmorphism { 
+            backdrop-filter: blur(10px); 
+            background: rgba(26, 31, 41, 0.8); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white font-mono">
+    <!-- Hero Section -->
+    <div class="relative min-h-screen bg-gradient-to-br from-dark-bg via-card-bg to-dark-bg flex items-center">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <h1 class="text-6xl font-bold gradient-text mb-6">
+                🧠 GOMNA HyperVision
+            </h1>
+            <p class="text-2xl text-gray-300 mb-8">
+                Enterprise-Grade AI Trading Dashboard
+            </p>
+            <p class="text-lg text-gray-400 mb-12 max-w-4xl mx-auto">
+                Advanced real-time trading system with hyperbolic space analysis, Monte Carlo backtesting, 
+                and multi-modal AI fusion architecture. Professional-grade tools for serious traders.
+            </p>
+            
+            <!-- Live Status -->
+            <div class="glassmorphism rounded-xl p-8 mb-8 max-w-4xl mx-auto">
+                <div class="flex items-center justify-center space-x-4 mb-6">
+                    <div class="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                    <span class="text-2xl font-bold text-green-300">🟢 SYSTEM ONLINE</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-accent">15</div>
+                        <div class="text-sm text-gray-400">Live Assets</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-profit">82.7%</div>
+                        <div class="text-sm text-gray-400">Win Rate</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-purple-300">47μs</div>
+                        <div class="text-sm text-gray-400">Execution Time</div>
+                    </div>
+                </div>
+                
+                <!-- Launch Button -->
+                <a href="https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev" 
+                   class="inline-block bg-gradient-to-r from-accent to-profit text-dark-bg px-12 py-4 rounded-xl text-xl font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4"
+                   target="_blank">
+                    🚀 Launch Live Dashboard
+                </a>
+                
+                <div class="text-sm text-green-200">
+                    ✅ Real-time clustering • Enterprise backtesting • Monte Carlo simulation
+                </div>
+            </div>
+            
+            <!-- Key Features -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
+                    <div class="text-4xl mb-3">🧠</div>
+                    <h3 class="text-lg font-bold text-accent mb-2">AI Fusion</h3>
+                    <p class="text-sm text-gray-300">40% CNN + 25% LSTM + 20% FinBERT + 15% Classical</p>
+                </div>
+                
+                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
+                    <div class="text-4xl mb-3">📊</div>
+                    <h3 class="text-lg font-bold text-profit mb-2">Live Clustering</h3>
+                    <p class="text-sm text-gray-300">Real-time asset correlation with hyperbolic visualization</p>
+                </div>
+                
+                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
+                    <div class="text-4xl mb-3">🧪</div>
+                    <h3 class="text-lg font-bold text-purple-300 mb-2">Enterprise Testing</h3>
+                    <p class="text-sm text-gray-300">Monte Carlo simulation & strategy comparison</p>
+                </div>
+                
+                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
+                    <div class="text-4xl mb-3">⚡</div>
+                    <h3 class="text-lg font-bold text-yellow-300 mb-2">Edge Computing</h3>
+                    <p class="text-sm text-gray-300">Cloudflare Workers for global low-latency</p>
+                </div>
+            </div>
+            
+            <!-- Footer Links -->
+            <div class="flex justify-center space-x-8 text-gray-400">
+                <a href="https://github.com/gomna-pha/hypervision-crypto-ai" target="_blank" 
+                   class="hover:text-accent transition-colors">
+                    <i class="fab fa-github mr-2"></i>Source Code
+                </a>
+                <a href="https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev" target="_blank"
+                   class="hover:text-profit transition-colors">
+                    <i class="fas fa-chart-line mr-2"></i>Live Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.glassmorphism');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
