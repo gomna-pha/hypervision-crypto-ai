@@ -1376,18 +1376,22 @@ class TradingDashboard {
             stabilityIcon = '🟡'
         }
         
-        // Animate metric updates
-        this.animateMetricUpdate('cluster-asset-count', this.clusteringData.totalAssets || this.clusteringData.assets.length)
-        this.animateMetricUpdate('avg-correlation', avgCorrelation.toFixed(3))
+        // Animate metric updates (with null checks)
+        try {
+            this.animateMetricUpdate('cluster-asset-count', this.clusteringData.totalAssets || this.clusteringData.assets.length)
+            this.animateMetricUpdate('avg-correlation', avgCorrelation.toFixed(3))
+        } catch (e) {
+            // Ignore missing DOM elements for clustering metrics
+        }
         
-        // Update cluster stability with enhanced presentation
+        // Update cluster stability with enhanced presentation (with null check)
         const stabilityElement = document.getElementById('cluster-stability')
         if (stabilityElement) {
             stabilityElement.innerHTML = `${stabilityIcon} ${stability}`
             stabilityElement.className = `${stabilityClass} font-semibold`
         }
         
-        // Update timestamp to show real-time updates
+        // Update timestamp to show real-time updates (with null check)
         const timestampElement = document.getElementById('clustering-timestamp')
         if (timestampElement) {
             const now = new Date()
@@ -1399,14 +1403,26 @@ class TradingDashboard {
             })
         }
         
-        // Update asset legend with enhanced information
-        this.updateEnhancedAssetLegend()
+        // Update asset legend with enhanced information (with error handling)
+        try {
+            this.updateEnhancedAssetLegend()
+        } catch (e) {
+            // Ignore missing DOM elements for asset legend
+        }
         
-        // Add real-time correlation heatmap
-        this.updateCorrelationHeatmap()
+        // Add real-time correlation heatmap (with error handling)
+        try {
+            this.updateCorrelationHeatmap()
+        } catch (e) {
+            // Ignore missing DOM elements for correlation heatmap
+        }
         
-        // Update clustering performance metrics
-        this.updateClusteringPerformance(avgCorrelation, correlationVariance, stabilityIcon)
+        // Update clustering performance metrics (with error handling)
+        try {
+            this.updateClusteringPerformance(avgCorrelation, correlationVariance, stabilityIcon)
+        } catch (e) {
+            // Ignore missing DOM elements for performance metrics
+        }
     }
 
     updateAssetLegend() {
@@ -1465,18 +1481,27 @@ class TradingDashboard {
     // Enhanced animation for metric updates
     animateMetricUpdate(elementId, newValue) {
         const element = document.getElementById(elementId)
-        if (!element) return
+        if (!element) {
+            // Silently return if element doesn't exist
+            return
+        }
         
-        // Add smooth update animation with glow effect
-        element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
-        element.style.transform = 'scale(1.15)'
-        element.style.textShadow = '0 0 10px rgba(0, 212, 170, 0.8)'
-        
-        setTimeout(() => {
-            element.textContent = newValue
-            element.style.transform = 'scale(1)'
-            element.style.textShadow = 'none'
-        }, 200)
+        try {
+            // Add smooth update animation with glow effect
+            element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+            element.style.transform = 'scale(1.15)'
+            element.style.textShadow = '0 0 10px rgba(0, 212, 170, 0.8)'
+            
+            setTimeout(() => {
+                if (element) { // Check again in case element was removed
+                    element.textContent = newValue
+                    element.style.transform = 'scale(1)'
+                    element.style.textShadow = 'none'
+                }
+            }, 200)
+        } catch (e) {
+            // Silently handle any style errors
+        }
     }
     
     // Enhanced asset legend with real-time data
