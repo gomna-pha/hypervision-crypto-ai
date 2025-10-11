@@ -148,7 +148,11 @@ class TradingDashboard {
                 this.loadModelTransparency()
                 break
             case 'backtesting':
-                this.initializeBacktesting()
+                console.log('🧪 Loading backtesting section...')
+                // Add small delay to ensure DOM is rendered
+                setTimeout(() => {
+                    this.initializeBacktesting()
+                }, 200)
                 break
             case 'paper-trading':
                 this.initializePaperTrading()
@@ -2085,82 +2089,113 @@ class TradingDashboard {
     }
 
     initializeBacktestCharts() {
+        console.log('Initializing backtest charts...')
+        
         // Initialize equity curve chart
         const equityCanvas = document.getElementById('equity-curve-chart')
         if (equityCanvas) {
-            const ctx = equityCanvas.getContext('2d')
-            this.equityCurveChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Equity',
-                        data: [],
-                        borderColor: '#00d4aa',
-                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: { unit: 'day' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#ffffff' }
-                        },
-                        y: {
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#ffffff' }
-                        }
+            console.log('Found equity curve canvas, initializing...')
+            try {
+                const ctx = equityCanvas.getContext('2d')
+                this.equityCurveChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Portfolio Equity ($)',
+                            data: [],
+                            borderColor: '#00d4aa',
+                            backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
                     },
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#ffffff' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#ffffff' }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#ffffff' } },
+                            tooltip: {
+                                backgroundColor: 'rgba(26, 31, 41, 0.9)',
+                                titleColor: '#00d4aa',
+                                bodyColor: '#ffffff'
+                            }
+                        }
                     }
-                }
-            })
+                })
+                console.log('✅ Equity curve chart initialized successfully')
+            } catch (error) {
+                console.error('❌ Error initializing equity curve chart:', error)
+            }
+        } else {
+            console.error('❌ Equity curve canvas not found')
         }
 
         // Initialize drawdown chart
         const drawdownCanvas = document.getElementById('drawdown-chart')
         if (drawdownCanvas) {
-            const ctx = drawdownCanvas.getContext('2d')
-            this.drawdownChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        label: 'Drawdown %',
-                        data: [],
-                        borderColor: '#ff4757',
-                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
-                        tension: 0.1,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            type: 'time',
-                            time: { unit: 'day' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#ffffff' }
-                        },
-                        y: {
-                            reverse: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#ffffff' }
-                        }
+            console.log('Found drawdown canvas, initializing...')
+            try {
+                const ctx = drawdownCanvas.getContext('2d')
+                this.drawdownChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Drawdown %',
+                            data: [],
+                            borderColor: '#ff4757',
+                            backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                            tension: 0.1,
+                            fill: true
+                        }]
                     },
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { color: '#ffffff' }
+                            },
+                            y: {
+                                min: 0,
+                                reverse: true,
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                ticks: { 
+                                    color: '#ffffff',
+                                    callback: function(value) {
+                                        return '-' + value.toFixed(1) + '%'
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#ffffff' } },
+                            tooltip: {
+                                backgroundColor: 'rgba(26, 31, 41, 0.9)',
+                                titleColor: '#ff4757',
+                                bodyColor: '#ffffff'
+                            }
+                        }
                     }
-                }
-            })
+                })
+                console.log('✅ Drawdown chart initialized successfully')
+            } catch (error) {
+                console.error('❌ Error initializing drawdown chart:', error)
+            }
+        } else {
+            console.error('❌ Drawdown canvas not found')
         }
     }
 
@@ -2578,20 +2613,40 @@ class TradingDashboard {
     }
 
     updateBacktestCharts(results) {
+        console.log('📊 Updating backtest charts with results:', results)
+        
         // Update equity curve
-        if (this.equityCurveChart && results.equity) {
-            const equityData = results.equity.slice(0, -1) // Skip last incomplete point
+        if (this.equityCurveChart && results.equity && results.equity.length > 0) {
+            console.log('📈 Updating equity curve with', results.equity.length, 'data points')
+            const equityData = results.equity
+            
             this.equityCurveChart.data.labels = equityData.map(point => new Date(point.timestamp))
             this.equityCurveChart.data.datasets[0].data = equityData.map(point => point.equity)
-            this.equityCurveChart.update()
+            this.equityCurveChart.update('none')
+            console.log('✅ Equity curve updated successfully')
+        } else {
+            console.error('❌ Cannot update equity curve:', {
+                chartExists: !!this.equityCurveChart,
+                equityDataExists: !!results.equity,
+                equityDataLength: results.equity?.length
+            })
         }
 
-        // Update drawdown chart
-        if (this.drawdownChart && results.drawdowns) {
-            const drawdownData = results.drawdowns.slice(0, -1)
+        // Update drawdown chart  
+        if (this.drawdownChart && results.drawdowns && results.drawdowns.length > 0) {
+            console.log('📉 Updating drawdown chart with', results.drawdowns.length, 'data points')
+            const drawdownData = results.drawdowns
+            
             this.drawdownChart.data.labels = drawdownData.map(point => new Date(point.timestamp))
-            this.drawdownChart.data.datasets[0].data = drawdownData.map(point => point.drawdown)
-            this.drawdownChart.update()
+            this.drawdownChart.data.datasets[0].data = drawdownData.map(point => Math.abs(point.drawdown))
+            this.drawdownChart.update('none')
+            console.log('✅ Drawdown chart updated successfully')
+        } else {
+            console.error('❌ Cannot update drawdown chart:', {
+                chartExists: !!this.drawdownChart,
+                drawdownDataExists: !!results.drawdowns,
+                drawdownDataLength: results.drawdowns?.length
+            })
         }
     }
 
