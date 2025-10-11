@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA Trading Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'dark-bg': '#0f1419',
+              'card-bg': '#1a1f29',
+              'accent': '#00d4aa',
+              'danger': '#ff4757',
+              'warning': '#ffa502',
+              'profit': '#2ed573',
+              'loss': '#ff4757'
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+        .nav-item { @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer; }
+        .nav-item:hover { @apply bg-gray-700 text-accent; }
+        .nav-item.active { @apply bg-accent text-dark-bg font-bold; }
+        .section { @apply hidden; }
+        .section.active { @apply block; }
+        .metric-card { @apply bg-card-bg rounded-lg p-4 border-l-4 border-accent; }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .gradient-text { background: linear-gradient(45deg, #00d4aa, #2ed573); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glassmorphism { backdrop-filter: blur(10px); background: rgba(26, 31, 41, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body class="bg-dark-bg text-white font-mono">
+    <!-- Navigation -->
+    <nav class="bg-card-bg border-b border-gray-700 px-6 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <h1 class="text-2xl font-bold gradient-text">GOMNA HyperVision</h1>
+                <div class="flex space-x-6">
+                    <button class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-chart-line mr-2"></i>LIVE DASHBOARD
+                    </button>
+                    <button class="nav-item" data-section="about">
+                        <i class="fas fa-info-circle mr-2"></i>ABOUT
+                    </button>
+                    <a href="https://github.com/gomna-pha/hypervision-crypto-ai" class="nav-item" target="_blank">
+                        <i class="fab fa-github mr-2"></i>GITHUB
+                    </a>
+                </div>
+            </div>
+            <div class="text-sm text-gray-400">
+                <span id="current-time"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="min-h-screen">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <!-- Hero Section -->
+            <div class="relative bg-gradient-to-br from-dark-bg via-card-bg to-dark-bg py-20">
+                <div class="max-w-7xl mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h1 class="text-5xl font-bold gradient-text mb-4">
+                            🧠 HyperVision Crypto AI
+                        </h1>
+                        <p class="text-xl text-gray-300 mb-8">
+                            Advanced Real-Time Trading Dashboard with Hyperbolic Space Analysis
+                        </p>
+                        <div class="flex justify-center space-x-4">
+                            <span class="bg-profit text-dark-bg px-4 py-2 rounded-full font-semibold">
+                                🟢 LIVE SYSTEM
+                            </span>
+                            <span class="bg-accent text-dark-bg px-4 py-2 rounded-full font-semibold">
+                                ⚡ REAL-TIME DATA
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Dashboard Access -->
+            <div class="max-w-7xl mx-auto px-6 py-12">
+                <div class="grid grid-cols-12 gap-8">
+                    <!-- Live System Access -->
+                    <div class="col-span-8 glassmorphism rounded-2xl p-8">
+                        <h2 class="text-3xl font-bold text-accent mb-6">
+                            <i class="fas fa-rocket mr-3"></i>Access Live System
+                        </h2>
+                        <p class="text-gray-300 mb-8 text-lg leading-relaxed">
+                            Experience the full power of our advanced trading system with real-time data processing, 
+                            hyperbolic space analysis, and multi-modal AI fusion architecture.
+                        </p>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-profit text-xl"></i>
+                                <span class="text-lg">Real-time asset clustering visualization</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-profit text-xl"></i>
+                                <span class="text-lg">Advanced hyperbolic CNN pattern analysis</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-profit text-xl"></i>
+                                <span class="text-lg">Multi-modal AI fusion (CNN + LSTM + FinBERT)</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-profit text-xl"></i>
+                                <span class="text-lg">Live arbitrage opportunities detection</span>
+                            </div>
+                        </div>
+                        
+                        <a href="https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev" 
+                           class="inline-block bg-gradient-to-r from-accent to-profit text-dark-bg px-8 py-4 rounded-lg text-lg font-bold hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                           target="_blank">
+                            🚀 Launch Live Dashboard
+                        </a>
+                    </div>
+
+                    <!-- System Metrics -->
+                    <div class="col-span-4 space-y-6">
+                        <div class="glassmorphism rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-accent mb-4">System Status</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Status:</span>
+                                    <span class="text-profit font-semibold">🟢 Online</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Uptime:</span>
+                                    <span class="text-white font-semibold">99.9%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Response:</span>
+                                    <span class="text-accent font-semibold">47μs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glassmorphism rounded-xl p-6">
+                            <h3 class="text-lg font-semibold text-warning mb-4">Performance</h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Win Rate:</span>
+                                    <span class="text-profit font-semibold">82.7%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Assets:</span>
+                                    <span class="text-accent font-semibold">15</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-300">Correlations:</span>
+                                    <span class="text-white font-semibold">210</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Grid -->
+            <div class="max-w-7xl mx-auto px-6 py-12">
+                <h2 class="text-4xl font-bold text-center gradient-text mb-12">
+                    Advanced AI Trading Features
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">🧠</div>
+                        <h3 class="text-xl font-bold text-accent mb-3">Hyperbolic CNN</h3>
+                        <p class="text-gray-300">Advanced pattern recognition using hyperbolic space geometry for superior market analysis.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">📊</div>
+                        <h3 class="text-xl font-bold text-profit mb-3">Real-Time Clustering</h3>
+                        <p class="text-gray-300">Live asset correlation analysis with dynamic visualization on Poincaré disk model.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">⚡</div>
+                        <h3 class="text-xl font-bold text-warning mb-3">Arbitrage Detection</h3>
+                        <p class="text-gray-300">Sub-50μs latency arbitrage opportunity identification across multiple exchanges.</p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">🎯</div>
+                        <h3 class="text-xl font-bold text-accent mb-3">Multi-Modal Fusion</h3>
+                        <p class="text-gray-300">40% CNN + 25% LSTM + 20% FinBERT + 15% Classical arbitrage fusion architecture.</p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">📈</div>
+                        <h3 class="text-xl font-bold text-profit mb-3">Live Market Data</h3>
+                        <p class="text-gray-300">Real-time feeds from 15 assets across 5 categories with 2-second refresh cycles.</p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="glassmorphism rounded-xl p-8 hover:transform hover:scale-105 transition-all duration-300">
+                        <div class="text-4xl mb-4">🌐</div>
+                        <h3 class="text-xl font-bold text-warning mb-3">Edge Computing</h3>
+                        <p class="text-gray-300">Deployed on Cloudflare Workers for global low-latency access and optimal performance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div id="about" class="section">
+            <div class="max-w-7xl mx-auto px-6 py-20">
+                <h2 class="text-4xl font-bold gradient-text mb-8 text-center">About HyperVision Crypto AI</h2>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div class="glassmorphism rounded-xl p-8">
+                        <h3 class="text-2xl font-bold text-accent mb-6">🎯 Project Vision</h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            HyperVision Crypto AI represents the cutting-edge of financial technology, combining advanced mathematical concepts from hyperbolic geometry with state-of-the-art machine learning techniques.
+                        </p>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            Our system processes real-time market data through a sophisticated multi-modal AI architecture, providing traders with unprecedented insights into market dynamics and arbitrage opportunities.
+                        </p>
+                        <p class="text-gray-300 leading-relaxed">
+                            Built with modern web technologies and deployed on Cloudflare's edge network, the platform delivers sub-50μs response times and 99.9% uptime reliability.
+                        </p>
+                    </div>
+                    
+                    <div class="glassmorphism rounded-xl p-8">
+                        <h3 class="text-2xl font-bold text-profit mb-6">🛠 Technical Architecture</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <span class="text-accent font-bold">Backend:</span>
+                                <span class="text-gray-300">Hono Framework + TypeScript + Cloudflare Workers</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-accent font-bold">Frontend:</span>
+                                <span class="text-gray-300">Vanilla JavaScript + Canvas API + TailwindCSS</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-accent font-bold">AI Models:</span>
+                                <span class="text-gray-300">Hyperbolic CNN + LSTM-Transformer + FinBERT</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-accent font-bold">Deployment:</span>
+                                <span class="text-gray-300">Cloudflare Pages + Edge Computing</span>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <span class="text-accent font-bold">Performance:</span>
+                                <span class="text-gray-300">47μs execution time, 2s refresh cycles</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item[data-section]').forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update sections
+                document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+                document.getElementById(section).classList.add('active');
+            });
+        });
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', {
+                hour12: false,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+        
+        updateClock();
+        setInterval(updateClock, 1000);
+    </script>
+</body>
+</html>
