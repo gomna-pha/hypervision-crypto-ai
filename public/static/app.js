@@ -2168,12 +2168,18 @@ class TradingDashboard {
         try {
             const strategyConfig = this.getBacktestConfiguration()
             
+            // Validate configuration
+            if (!this.validateBacktestConfig(strategyConfig)) {
+                this.showNotification('❌ Invalid configuration. Please check all parameters.', 'error')
+                return
+            }
+            
             // Show loading state
             const resultsContainer = document.getElementById('backtest-results')
             resultsContainer.innerHTML = `
                 <div class="flex items-center justify-center py-8">
                     <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent mr-3"></div>
-                    <span>Running backtest...</span>
+                    <span>Running enterprise-grade backtest...</span>
                 </div>
             `
 
@@ -2198,6 +2204,76 @@ class TradingDashboard {
                     <div>Backtest failed. Please try again.</div>
                 </div>
             `
+        }
+    }
+
+    validateBacktestConfig(config) {
+        if (!config.strategyName || config.strategyName.trim() === '') return false
+        if (!config.symbol || !config.timeframe) return false
+        if (config.initialCapital < 1000 || config.initialCapital > 10000000) return false
+        if (config.parameters.minConfidence < 50 || config.parameters.minConfidence > 100) return false
+        if (config.parameters.riskPerTrade < 0.001 || config.parameters.riskPerTrade > 0.1) return false
+        return true
+    }
+
+    async runMonteCarloSimulation() {
+        try {
+            const strategyConfig = this.getBacktestConfiguration()
+            
+            if (!this.validateBacktestConfig(strategyConfig)) {
+                this.showNotification('❌ Invalid configuration for Monte Carlo simulation.', 'error')
+                return
+            }
+
+            const resultsContainer = document.getElementById('backtest-results')
+            resultsContainer.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mr-3"></div>
+                    <span>Running Monte Carlo simulation (1000 iterations)...</span>
+                </div>
+            `
+
+            const response = await axios.post('/api/backtest/monte-carlo', {
+                ...strategyConfig,
+                iterations: 1000
+            })
+            const { results } = response.data
+
+            this.displayMonteCarloResults(results)
+            this.showNotification('✅ Monte Carlo simulation completed!', 'success')
+
+        } catch (error) {
+            console.error('Monte Carlo simulation error:', error)
+            this.showNotification('❌ Monte Carlo simulation failed.', 'error')
+        }
+    }
+
+    async compareStrategies() {
+        try {
+            const baseConfig = this.getBacktestConfiguration()
+            
+            if (!this.validateBacktestConfig(baseConfig)) {
+                this.showNotification('❌ Invalid base configuration for strategy comparison.', 'error')
+                return
+            }
+
+            const resultsContainer = document.getElementById('backtest-results')
+            resultsContainer.innerHTML = `
+                <div class="flex items-center justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500 mr-3"></div>
+                    <span>Comparing strategies across multiple configurations...</span>
+                </div>
+            `
+
+            const response = await axios.post('/api/backtest/compare', baseConfig)
+            const { results } = response.data
+
+            this.displayStrategyComparison(results)
+            this.showNotification('✅ Strategy comparison completed!', 'success')
+
+        } catch (error) {
+            console.error('Strategy comparison error:', error)
+            this.showNotification('❌ Strategy comparison failed.', 'error')
         }
     }
 
@@ -2305,6 +2381,24 @@ class TradingDashboard {
                             <span class="text-loss">-$${metrics.avgLoss.toFixed(2)}</span>
                         </div>
                         <div class="flex justify-between">
+                            <span>Profit Factor:</span>
+                            <span class="${metrics.profitFactor > 1.5 ? 'text-profit' : metrics.profitFactor > 1 ? 'text-warning' : 'text-loss'}">
+                                ${metrics.profitFactor.toFixed(2)}x
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Calmar Ratio:</span>
+                            <span class="${metrics.calmarRatio > 1 ? 'text-profit' : 'text-warning'}">
+                                ${metrics.calmarRatio}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Recovery Factor:</span>
+                            <span class="text-accent">
+                                ${((metrics.totalReturn / Math.max(metrics.maxDrawdown, 1))).toFixed(2)}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
                             <span>Best Trade:</span>
                             <span class="text-profit">
                                 +$${Math.max(...trades.map(t => t.pnl), 0).toFixed(2)}
@@ -2322,6 +2416,165 @@ class TradingDashboard {
         `
         
         document.getElementById('backtest-results').innerHTML = resultsHtml
+    }
+
+    displayMonteCarloResults(results) {
+        const { summary, iterations } = results
+        
+        const monteCarloHtml = `
+            <div class="bg-gradient-to-br from-purple-900/50 to-pink-900/50 rounded-lg p-6 mt-4">
+                <h4 class="text-lg font-bold text-purple-300 mb-4">
+                    🎲 Monte Carlo Analysis (${iterations.toLocaleString()} Iterations)
+                </h4>
+                
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-300">
+                            ${summary.avgReturn.toFixed(2)}%
+                        </div>
+                        <div class="text-sm text-gray-400">Average Return</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-300">
+                            ${summary.profitProbability.toFixed(1)}%
+                        </div>
+                        <div class="text-sm text-gray-400">Profit Probability</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl font-bold text-purple-300">
+                            ${summary.stdReturn.toFixed(2)}%
+                        </div>
+                        <div class="text-sm text-gray-400">Return Volatility</div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="text-center bg-black/30 rounded p-3">
+                        <div class="text-lg font-semibold text-green-400">${summary.maxReturn.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Best Case</div>
+                    </div>
+                    <div class="text-center bg-black/30 rounded p-3">
+                        <div class="text-lg font-semibold text-purple-300">${summary.medianReturn.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Median Return</div>
+                    </div>
+                    <div class="text-center bg-black/30 rounded p-3">
+                        <div class="text-lg font-semibold text-red-400">${summary.minReturn.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Worst Case</div>
+                    </div>
+                    <div class="text-center bg-black/30 rounded p-3">
+                        <div class="text-lg font-semibold text-orange-400">${summary.maxDrawdown.toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Max Drawdown</div>
+                    </div>
+                </div>
+                
+                <div class="mt-4 p-3 bg-black/30 rounded">
+                    <div class="text-sm text-gray-300">
+                        <strong>Risk Assessment:</strong> 
+                        ${summary.profitProbability > 70 ? 
+                            '<span class="text-green-400">Low Risk - High probability of profit</span>' :
+                            summary.profitProbability > 50 ? 
+                            '<span class="text-yellow-400">Medium Risk - Moderate profit probability</span>' :
+                            '<span class="text-red-400">High Risk - Low profit probability</span>'
+                        }
+                    </div>
+                </div>
+            </div>
+        `
+        
+        document.getElementById('backtest-results').innerHTML += monteCarloHtml
+    }
+
+    displayStrategyComparison(results) {
+        const { strategies, benchmark } = results
+        
+        const comparisonHtml = `
+            <div class="bg-gradient-to-br from-orange-900/50 to-red-900/50 rounded-lg p-6 mt-4">
+                <h4 class="text-lg font-bold text-orange-300 mb-4">
+                    ⚖️ Strategy Performance Comparison
+                </h4>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-gray-600">
+                                <th class="text-left py-2 text-orange-300">Strategy</th>
+                                <th class="text-center py-2 text-orange-300">Return</th>
+                                <th class="text-center py-2 text-orange-300">Sharpe</th>
+                                <th class="text-center py-2 text-orange-300">Max DD</th>
+                                <th class="text-center py-2 text-orange-300">Win Rate</th>
+                                <th class="text-center py-2 text-orange-300">Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${strategies.map((strategy, index) => `
+                                <tr class="border-b border-gray-700 ${index === 0 ? 'bg-green-900/30' : ''}">
+                                    <td class="py-3 font-medium">${strategy.name}</td>
+                                    <td class="text-center ${strategy.metrics.finalReturn > 0 ? 'text-green-400' : 'text-red-400'}">
+                                        ${strategy.metrics.finalReturn > 0 ? '+' : ''}${strategy.metrics.finalReturn.toFixed(2)}%
+                                    </td>
+                                    <td class="text-center">${strategy.metrics.sharpeRatio}</td>
+                                    <td class="text-center text-red-400">${strategy.metrics.maxDrawdown.toFixed(2)}%</td>
+                                    <td class="text-center">${strategy.metrics.winRate.toFixed(1)}%</td>
+                                    <td class="text-center">
+                                        <span class="px-2 py-1 rounded text-xs ${
+                                            strategy.riskAdjustedReturn > 2 ? 'bg-green-900 text-green-200' :
+                                            strategy.riskAdjustedReturn > 1 ? 'bg-yellow-900 text-yellow-200' :
+                                            'bg-red-900 text-red-200'
+                                        }">
+                                            ${strategy.riskAdjustedReturn > 2 ? 'Excellent' :
+                                              strategy.riskAdjustedReturn > 1 ? 'Good' : 'Poor'}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 grid grid-cols-2 gap-4">
+                    <div class="p-3 bg-black/30 rounded">
+                        <div class="text-sm font-medium text-orange-300 mb-1">🏆 Best Strategy</div>
+                        <div class="text-white">${strategies[0]?.name || 'N/A'}</div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            Return: ${strategies[0]?.metrics?.finalReturn?.toFixed(2) || 'N/A'}% | 
+                            Sharpe: ${strategies[0]?.metrics?.sharpeRatio || 'N/A'}
+                        </div>
+                    </div>
+                    <div class="p-3 bg-black/30 rounded">
+                        <div class="text-sm font-medium text-orange-300 mb-1">📊 Benchmark</div>
+                        <div class="text-white">Buy & Hold ${benchmark.symbol}</div>
+                        <div class="text-xs text-gray-400 mt-1">
+                            Return: ${benchmark.return.toFixed(2)}% | 
+                            Volatility: ${benchmark.volatility.toFixed(2)}%
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `
+        
+        document.getElementById('backtest-results').innerHTML += comparisonHtml
+    }
+
+    showNotification(message, type = 'info') {
+        // Create notification element
+        const notification = document.createElement('div')
+        notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+            type === 'success' ? 'bg-green-600 text-white' :
+            type === 'error' ? 'bg-red-600 text-white' :
+            type === 'warning' ? 'bg-yellow-600 text-black' :
+            'bg-blue-600 text-white'
+        }`
+        notification.textContent = message
+        
+        document.body.appendChild(notification)
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.style.opacity = '0'
+            setTimeout(() => {
+                document.body.removeChild(notification)
+            }, 300)
+        }, 5000)
     }
 
     updateBacktestCharts(results) {

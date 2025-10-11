@@ -2618,6 +2618,88 @@ app.get('/api/backtest/results/:strategyId', (c) => {
   return c.json({ error: 'Backtest not found' }, 404)
 })
 
+app.post('/api/backtest/monte-carlo', async (c) => {
+  try {
+    const config = await c.req.json()
+    const monteCarlo = new MonteCarloEngine()
+    const results = monteCarlo.runSimulation(config, config.iterations || 1000)
+    
+    return c.json({
+      success: true,
+      results: results,
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
+app.post('/api/backtest/compare', async (c) => {
+  try {
+    const baseConfig = await c.req.json()
+    const strategies = []
+    
+    // Generate strategy variations for comparison
+    const strategyTypes = ['PATTERN_ARBITRAGE', 'MEAN_REVERSION', 'MOMENTUM']
+    const confidenceLevels = [70, 80, 90]
+    const riskLevels = [0.01, 0.02, 0.03]
+    
+    let counter = 0
+    for (const strategyType of strategyTypes) {
+      for (const confidence of confidenceLevels) {
+        for (const risk of riskLevels) {
+          if (counter >= 9) break // Limit to 9 variations for performance
+          
+          const strategy = {
+            ...baseConfig,
+            strategyId: `compare_${strategyType}_${confidence}_${risk}_${Date.now()}`,
+            strategyType: strategyType,
+            parameters: {
+              ...baseConfig.parameters,
+              minConfidence: confidence,
+              riskPerTrade: risk
+            }
+          }
+          
+          const backtest = await backtestingEngine.runBacktest(strategy)
+          strategies.push({
+            name: `${strategyType.replace('_', ' ')} (${confidence}%, ${(risk*100).toFixed(1)}%)`,
+            metrics: {
+              finalReturn: backtest.metrics.totalReturn,
+              sharpeRatio: backtest.metrics.sharpeRatio,
+              maxDrawdown: backtest.metrics.maxDrawdown,
+              winRate: backtest.metrics.winRate
+            },
+            riskAdjustedReturn: parseFloat(backtest.metrics.sharpeRatio) || 0
+          })
+          counter++
+        }
+      }
+    }
+    
+    // Sort by risk-adjusted return (Sharpe ratio)
+    strategies.sort((a, b) => b.riskAdjustedReturn - a.riskAdjustedReturn)
+    
+    // Create benchmark (buy & hold simulation)
+    const benchmark = {
+      symbol: baseConfig.symbol,
+      return: 15 + (Math.random() - 0.5) * 30, // Simulated benchmark return
+      volatility: 15 + Math.random() * 10
+    }
+    
+    return c.json({
+      success: true,
+      results: {
+        strategies: strategies,
+        benchmark: benchmark
+      },
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    return c.json({ error: error.message }, 400)
+  }
+})
+
 app.get('/api/backtest/list', (c) => {
   const backtests = backtestingEngine.backtests || {}
   const backtestList = Object.keys(backtests).map(id => ({
@@ -3315,8 +3397,21 @@ app.get('/', (c) => {
                                         
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Initial Capital ($)</label>
-                                            <input id="initial-capital" type="number" value="100000" min="1000" 
+                                            <input id="initial-capital" type="number" value="100000" min="1000" max="10000000"
                                                    class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">Start Date</label>
+                                                <input id="start-date" type="date" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium mb-1">End Date</label>
+                                                <input id="end-date" type="date" 
+                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
