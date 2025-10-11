@@ -102,6 +102,8 @@ class TradingDashboard {
         })
         document.getElementById('current-time').textContent = timeString
     }
+    
+
 
     startDataRefresh() {
         this.loadSectionData(this.currentSection)
@@ -112,6 +114,10 @@ class TradingDashboard {
                 this.loadOrderBook()
                 this.loadSocialSentiment()
                 this.loadEconomicIndicators()
+                // Always update clustering data and metrics for real-time display
+                this.loadClusteringData()
+                // Force update clustering metrics even if not in clustering view
+                this.forceClusteringMetricsUpdate()
             }
         }, 2000) // Refresh every 2 seconds for live effect
     }
@@ -129,10 +135,8 @@ class TradingDashboard {
                     this.initializeCandlestickChart(),
                     this.startHyperbolicAnalysis()
                 ])
-                // Initialize clustering for hyperbolic space engine
-                if (this.currentVisualization === 'clustering') {
-                    this.initializeAssetClustering()
-                }
+                // Initialize clustering for hyperbolic space engine (always load data for metrics)
+                this.initializeAssetClustering()
                 break
             case 'portfolio':
                 await this.loadPortfolioData()
@@ -736,55 +740,150 @@ class TradingDashboard {
 
     drawPoincareVisualization() {
         const canvas = document.getElementById('poincare-disk')
+        if (!canvas) return
+        
         const ctx = canvas.getContext('2d')
         const centerX = canvas.width / 2
         const centerY = canvas.height / 2
-        const radius = 100
+        const radius = Math.min(canvas.width, canvas.height) * 0.4 // Scale with canvas size
+        const currentTime = Date.now()
         
-        // Clear canvas
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        // Clear canvas with subtle background
+        ctx.fillStyle = 'rgba(15, 20, 25, 0.95)'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
         
-        // Draw Poincaré disk boundary
+        // Enhanced Poincaré disk boundary with glow
+        const boundaryGradient = ctx.createRadialGradient(centerX, centerY, radius - 5, centerX, centerY, radius + 10)
+        boundaryGradient.addColorStop(0, 'transparent')
+        boundaryGradient.addColorStop(0.8, 'rgba(0, 212, 170, 0.3)')
+        boundaryGradient.addColorStop(1, 'rgba(0, 212, 170, 0.8)')
+        
+        ctx.fillStyle = boundaryGradient
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius + 5, 0, 2 * Math.PI)
+        ctx.fill()
+        
+        // Main disk boundary
         ctx.strokeStyle = '#00d4aa'
-        ctx.lineWidth = 2
+        ctx.lineWidth = 3
+        ctx.shadowColor = '#00d4aa'
+        ctx.shadowBlur = 8
         ctx.beginPath()
         ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
         ctx.stroke()
+        ctx.shadowBlur = 0
         
-        // Draw geodesic paths
-        ctx.strokeStyle = '#4ecdc4'
-        ctx.lineWidth = 1
+        // Enhanced animated geodesic paths with pattern recognition
+        const patternData = this.hyperbolicAnalysis || {}
+        const confidence = patternData.pattern?.confidence || 75
+        const pathCount = Math.floor(15 + (confidence / 100) * 10)
         
-        for (let i = 0; i < 20; i++) {
-            const angle1 = (Math.PI * 2 * i) / 20
-            const angle2 = angle1 + Math.PI / 3
+        for (let i = 0; i < pathCount; i++) {
+            const animationOffset = (currentTime + i * 100) / 2000
+            const baseAngle = (Math.PI * 2 * i) / pathCount
+            const angle1 = baseAngle + Math.sin(animationOffset) * 0.2
+            const angle2 = angle1 + Math.PI / 3 + Math.cos(animationOffset * 1.5) * 0.1
             
-            const x1 = centerX + Math.cos(angle1) * radius * 0.8
-            const y1 = centerY + Math.sin(angle1) * radius * 0.8
-            const x2 = centerX + Math.cos(angle2) * radius * 0.6
-            const y2 = centerY + Math.sin(angle2) * radius * 0.6
+            // Dynamic radius based on pattern strength
+            const radius1 = radius * (0.7 + Math.sin(animationOffset + i) * 0.2)
+            const radius2 = radius * (0.5 + Math.cos(animationOffset * 1.2 + i) * 0.2)
+            
+            const x1 = centerX + Math.cos(angle1) * radius1
+            const y1 = centerY + Math.sin(angle1) * radius1
+            const x2 = centerX + Math.cos(angle2) * radius2
+            const y2 = centerY + Math.sin(angle2) * radius2
+            
+            // Color based on pattern confidence and distance from center
+            const distance = Math.sqrt((x1 - centerX) ** 2 + (y1 - centerY) ** 2) / radius
+            const intensity = 1 - distance
+            const alpha = 0.3 + intensity * 0.4 + Math.sin(animationOffset + i) * 0.2
+            
+            const pathGradient = ctx.createLinearGradient(x1, y1, x2, y2)
+            pathGradient.addColorStop(0, `rgba(78, 205, 196, ${alpha})`)
+            pathGradient.addColorStop(0.5, `rgba(0, 212, 170, ${alpha * 1.2})`)
+            pathGradient.addColorStop(1, `rgba(78, 205, 196, ${alpha})`)
+            
+            ctx.strokeStyle = pathGradient
+            ctx.lineWidth = 1 + intensity
+            ctx.globalAlpha = alpha
             
             ctx.beginPath()
             ctx.moveTo(x1, y1)
-            ctx.lineTo(x2, y2)
+            
+            // Curved geodesic path
+            const controlX = centerX + (x1 - centerX + x2 - centerX) * 0.3
+            const controlY = centerY + (y1 - centerY + y2 - centerY) * 0.3
+            ctx.quadraticCurveTo(controlX, controlY, x2, y2)
             ctx.stroke()
         }
         
-        // Draw data points
-        ctx.fillStyle = '#ff6b6b'
-        for (let i = 0; i < 50; i++) {
-            const angle = Math.random() * Math.PI * 2
-            const r = Math.random() * radius * 0.9
-            const x = centerX + Math.cos(angle) * r
-            const y = centerY + Math.sin(angle) * r
+        ctx.globalAlpha = 1.0
+        
+        // Enhanced dynamic data points representing market patterns
+        const pointCount = Math.floor(30 + (confidence / 100) * 20)
+        
+        for (let i = 0; i < pointCount; i++) {
+            const animationPhase = (currentTime + i * 50) / 1500
+            const baseAngle = (Math.PI * 2 * i) / pointCount + Math.sin(animationPhase) * 0.5
+            const baseRadius = (0.3 + Math.sin(animationPhase + i) * 0.4) * radius
             
+            const x = centerX + Math.cos(baseAngle) * baseRadius
+            const y = centerY + Math.sin(baseAngle) * baseRadius
+            
+            // Point size and color based on position and pattern strength
+            const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2)
+            const normalizedDistance = distanceFromCenter / radius
+            
+            const pointSize = 2 + (1 - normalizedDistance) * 3 + Math.sin(animationPhase * 2 + i) * 1
+            
+            // Color coding for different pattern types
+            let pointColor
+            if (normalizedDistance < 0.3) {
+                pointColor = '#ff6b6b'  // Core pattern (red)
+            } else if (normalizedDistance < 0.6) {
+                pointColor = '#ffa502'  // Mid pattern (orange)
+            } else {
+                pointColor = '#4ecdc4'  // Edge pattern (teal)
+            }
+            
+            // Pulsing glow effect
+            const pulse = Math.sin(animationPhase * 3 + i) * 0.3 + 0.7
+            
+            // Draw point glow
+            const pointGradient = ctx.createRadialGradient(x, y, 0, x, y, pointSize * 2)
+            pointGradient.addColorStop(0, pointColor)
+            pointGradient.addColorStop(1, 'transparent')
+            
+            ctx.fillStyle = pointGradient
+            ctx.globalAlpha = pulse * 0.6
             ctx.beginPath()
-            ctx.arc(x, y, 2, 0, 2 * Math.PI)
+            ctx.arc(x, y, pointSize * 2, 0, 2 * Math.PI)
+            ctx.fill()
+            
+            // Draw main point
+            ctx.fillStyle = pointColor
+            ctx.globalAlpha = pulse
+            ctx.beginPath()
+            ctx.arc(x, y, pointSize, 0, 2 * Math.PI)
             ctx.fill()
         }
         
-        // Animate by redrawing periodically
-        setTimeout(() => this.drawPoincareVisualization(), 3000)
+        ctx.globalAlpha = 1.0
+        
+        // Add pattern confidence indicator in center
+        if (confidence > 0) {
+            ctx.fillStyle = `rgba(0, 212, 170, 0.8)`
+            ctx.font = 'bold 12px Arial, sans-serif'
+            ctx.textAlign = 'center'
+            ctx.textBaseline = 'middle'
+            ctx.fillText(`${confidence}%`, centerX, centerY - 8)
+            
+            ctx.font = '8px Arial, sans-serif'
+            ctx.fillText('Confidence', centerX, centerY + 5)
+        }
+        
+        // Continuous animation
+        setTimeout(() => this.drawPoincareVisualization(), 50)
     }
 
     // Enhanced Asset Clustering Visualization System
@@ -830,31 +929,61 @@ class TradingDashboard {
             patternsBtn.classList.remove('bg-accent', 'text-dark-bg')
             patternsBtn.classList.add('text-gray-300')
             this.currentVisualization = 'clustering'
+            
+            // Load clustering data immediately when switching to this view
+            this.loadClusteringData()
             this.startAssetClusteringUpdates()
         }
     }
 
     initializeAssetClustering() {
+        // Always load clustering data for metrics display
+        if (!this.clusteringData) {
+            console.log('Initializing clustering data for metrics...')
+            this.loadClusteringData()
+        }
+        
         // Initialize clustering canvas if not already done
         const canvas = document.getElementById('asset-clustering-disk')
         if (canvas && !canvas.initialized) {
             canvas.initialized = true
-            // Start loading clustering data
-            this.loadClusteringData()
+            console.log('Clustering canvas initialized')
         }
     }
 
     async loadClusteringData() {
         try {
             const response = await axios.get('/api/asset-clustering')
-            this.clusteringData = response.data.clustering
             
-            if (this.currentVisualization === 'clustering') {
-                this.drawAssetClustering()
+            if (response.data && response.data.clustering) {
+                this.clusteringData = response.data.clustering
+                
+                // Always update metrics when data is loaded
                 this.updateClusteringMetrics()
+                
+                // Draw visualization if in clustering mode
+                if (this.currentVisualization === 'clustering') {
+                    this.drawAssetClustering()
+                }
+            } else {
+                console.error('Invalid clustering data structure:', response.data)
             }
         } catch (error) {
             console.error('Error loading clustering data:', error)
+        }
+    }
+
+    forceClusteringMetricsUpdate() {
+        // Force update timestamp even when clustering view is not active
+        const timestampElement = document.getElementById('clustering-timestamp')
+        if (timestampElement) {
+            const now = new Date()
+            timestampElement.textContent = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            })
         }
     }
 
@@ -865,7 +994,7 @@ class TradingDashboard {
         const ctx = canvas.getContext('2d')
         const centerX = canvas.width / 2
         const centerY = canvas.height / 2
-        const radius = 100
+        const radius = Math.min(canvas.width, canvas.height) * 0.4 // Scale with canvas size
         
         // Clear canvas
         ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -900,35 +1029,98 @@ class TradingDashboard {
         if (!this.clusteringData.assets) return
         
         const assets = this.clusteringData.assets
+        const currentTime = Date.now()
         
-        // Draw lines between highly correlated assets (correlation > 0.5)
+        // Draw enhanced correlation lines with animations
         for (let i = 0; i < assets.length; i++) {
             for (let j = i + 1; j < assets.length; j++) {
                 const asset1 = assets[i]
                 const asset2 = assets[j]
                 const correlation = Math.abs(asset1.correlations[asset2.symbol] || 0)
                 
-                if (correlation > 0.3) { // Only show significant correlations
+                if (correlation > 0.25) { // Show more correlations for better visualization
                     const x1 = centerX + asset1.x * radius
                     const y1 = centerY + asset1.y * radius
                     const x2 = centerX + asset2.x * radius
                     const y2 = centerY + asset2.y * radius
                     
-                    // Line style based on correlation strength
-                    ctx.strokeStyle = correlation > 0.7 ? '#2ed573' : 
-                                     correlation > 0.5 ? '#ffa502' : '#4ecdc4'
-                    ctx.lineWidth = Math.max(1, correlation * 3)
-                    ctx.globalAlpha = 0.6
+                    // Enhanced line styling with gradients
+                    let strokeColor, glowColor
+                    if (correlation > 0.7) {
+                        strokeColor = '#2ed573'
+                        glowColor = '#2ed573'
+                    } else if (correlation > 0.5) {
+                        strokeColor = '#ffa502'
+                        glowColor = '#ffa502'
+                    } else if (correlation > 0.35) {
+                        strokeColor = '#4ecdc4'
+                        glowColor = '#4ecdc4'
+                    } else {
+                        strokeColor = '#6c757d'
+                        glowColor = '#6c757d'
+                    }
                     
-                    // Draw geodesic-like curve (simplified)
+                    // Animated line width and opacity
+                    const animationPhase = (currentTime + (i * j * 100)) / 2000
+                    const pulse = Math.sin(animationPhase) * 0.2 + 0.8
+                    const baseWidth = Math.max(0.5, correlation * 4)
+                    const animatedWidth = baseWidth * pulse
+                    
+                    // Draw glow effect first
+                    const glowGradient = ctx.createLinearGradient(x1, y1, x2, y2)
+                    glowGradient.addColorStop(0, glowColor + '40')
+                    glowGradient.addColorStop(0.5, glowColor + '80')
+                    glowGradient.addColorStop(1, glowColor + '40')
+                    
+                    ctx.strokeStyle = glowGradient
+                    ctx.lineWidth = animatedWidth + 2
+                    ctx.globalAlpha = 0.3 * pulse
+                    
+                    // Enhanced geodesic curve calculation
                     ctx.beginPath()
                     ctx.moveTo(x1, y1)
                     
-                    // Create curved line through disk center for more hyperbolic appearance
-                    const midX = centerX + (asset1.x + asset2.x) * radius * 0.3
-                    const midY = centerY + (asset1.y + asset2.y) * radius * 0.3
+                    // Calculate curved path that follows hyperbolic geometry
+                    const distance = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+                    const curvature = Math.min(0.5, correlation) * distance * 0.3
+                    
+                    // Control points for smooth hyperbolic curve
+                    const midX = (x1 + x2) / 2 + (y2 - y1) * curvature / distance
+                    const midY = (y1 + y2) / 2 - (x2 - x1) * curvature / distance
+                    
                     ctx.quadraticCurveTo(midX, midY, x2, y2)
                     ctx.stroke()
+                    
+                    // Draw main correlation line
+                    const mainGradient = ctx.createLinearGradient(x1, y1, x2, y2)
+                    mainGradient.addColorStop(0, strokeColor + 'CC')
+                    mainGradient.addColorStop(0.5, strokeColor)
+                    mainGradient.addColorStop(1, strokeColor + 'CC')
+                    
+                    ctx.strokeStyle = mainGradient
+                    ctx.lineWidth = animatedWidth
+                    ctx.globalAlpha = 0.7 + 0.3 * pulse
+                    
+                    ctx.beginPath()
+                    ctx.moveTo(x1, y1)
+                    ctx.quadraticCurveTo(midX, midY, x2, y2)
+                    ctx.stroke()
+                    
+                    // Add correlation strength indicator (small text at midpoint)
+                    if (correlation > 0.5) {
+                        const textX = midX
+                        const textY = midY
+                        const correlationText = (correlation * 100).toFixed(0) + '%'
+                        
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+                        ctx.font = '8px Arial, sans-serif'
+                        ctx.textAlign = 'center'
+                        ctx.textBaseline = 'middle'
+                        ctx.fillText(correlationText, textX + 1, textY + 1)
+                        
+                        ctx.fillStyle = '#ffffff'
+                        ctx.fillText(correlationText, textX, textY)
+                    }
                     
                     ctx.globalAlpha = 1.0
                 }
@@ -939,105 +1131,278 @@ class TradingDashboard {
     drawAssetNodes(ctx, centerX, centerY, radius) {
         if (!this.clusteringData.assets) return
         
-        this.clusteringData.assets.forEach(asset => {
+        const currentTime = Date.now()
+        
+        this.clusteringData.assets.forEach((asset, index) => {
             const x = centerX + asset.x * radius
             const y = centerY + asset.y * radius
             
-            // Node size based on market cap (logarithmic scale)
-            const nodeSize = Math.max(8, Math.min(20, Math.log10(asset.marketCap / 1e9) * 3))
+            // Enhanced node size with pulsing effect (scaled for larger canvas)
+            const baseSize = Math.max(12, Math.min(28, Math.log10(asset.marketCap / 1e9) * 4.5))
+            const pulse = Math.sin((currentTime + index * 100) / 1000) * 1.5
+            const nodeSize = baseSize + pulse
             
-            // Color based on price change
-            let fillColor
-            if (asset.priceChange > 0.01) fillColor = '#2ed573'      // Green for gains
-            else if (asset.priceChange < -0.01) fillColor = '#ff4757' // Red for losses  
-            else fillColor = '#4ecdc4'                                // Blue for stable
+            // Enhanced color system with gradients
+            let fillColor, secondaryColor
+            if (asset.priceChange > 0.01) {
+                fillColor = '#2ed573'
+                secondaryColor = '#20bf6b'
+            } else if (asset.priceChange < -0.01) {
+                fillColor = '#ff4757'
+                secondaryColor = '#ff3838'
+            } else {
+                fillColor = '#4ecdc4'
+                secondaryColor = '#26d0ce'
+            }
             
-            // Volatility glow effect
-            const glowRadius = nodeSize + asset.volatility * 100
-            const gradient = ctx.createRadialGradient(x, y, nodeSize, x, y, glowRadius)
-            gradient.addColorStop(0, fillColor)
-            gradient.addColorStop(1, 'transparent')
+            // Enhanced volatility glow with animation
+            const volatilityMultiplier = 1 + Math.sin((currentTime + index * 150) / 800) * 0.3
+            const glowRadius = nodeSize + (asset.volatility * 120 * volatilityMultiplier)
             
-            // Draw glow
-            ctx.fillStyle = gradient
-            ctx.globalAlpha = 0.3
+            // Multi-layer glow effect
+            const innerGradient = ctx.createRadialGradient(x, y, nodeSize * 0.3, x, y, nodeSize)
+            innerGradient.addColorStop(0, fillColor)
+            innerGradient.addColorStop(1, secondaryColor)
+            
+            const outerGradient = ctx.createRadialGradient(x, y, nodeSize, x, y, glowRadius)
+            outerGradient.addColorStop(0, fillColor + '80')
+            outerGradient.addColorStop(0.7, fillColor + '20')
+            outerGradient.addColorStop(1, 'transparent')
+            
+            // Draw outer glow
+            ctx.fillStyle = outerGradient
+            ctx.globalAlpha = 0.4
             ctx.beginPath()
             ctx.arc(x, y, glowRadius, 0, 2 * Math.PI)
             ctx.fill()
             
-            // Draw main node
+            // Draw main node with gradient
             ctx.globalAlpha = 1.0
-            ctx.fillStyle = fillColor
+            ctx.fillStyle = innerGradient
             ctx.beginPath()
             ctx.arc(x, y, nodeSize, 0, 2 * Math.PI)
             ctx.fill()
             
-            // Border for arbitrage opportunities
+            // Enhanced border effects
             if (this.hasArbitrageOpportunity(asset.symbol)) {
-                ctx.strokeStyle = '#ffa502'
-                ctx.lineWidth = 2
+                // Animated arbitrage border
+                const borderPulse = Math.sin((currentTime + index * 200) / 600) * 0.5 + 0.5
+                ctx.strokeStyle = `rgba(255, 165, 2, ${0.8 + borderPulse * 0.2})`
+                ctx.lineWidth = 3
                 ctx.stroke()
             }
             
-            // Asset symbol text
-            ctx.fillStyle = '#ffffff'
-            ctx.font = 'bold 10px monospace'
+            // High correlation indicator
+            const maxCorrelation = Math.max(...Object.values(asset.correlations || {}))
+            if (maxCorrelation > 0.7) {
+                ctx.strokeStyle = '#ffa502'
+                ctx.lineWidth = 2
+                ctx.setLineDash([3, 3])
+                ctx.stroke()
+                ctx.setLineDash([])
+            }
+            
+            // Enhanced text rendering with better shadows
+            const fontSize = Math.max(10, nodeSize * 0.6)
+            
+            // Multiple shadow layers for depth
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)'
+            ctx.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`
             ctx.textAlign = 'center'
             ctx.textBaseline = 'middle'
+            ctx.fillText(asset.symbol, x + 2, y + 2) // Heavy shadow
+            
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)'
+            ctx.fillText(asset.symbol, x + 1, y + 1) // Light shadow
+            
+            // Main text with subtle glow
+            ctx.fillStyle = '#ffffff'
+            ctx.shadowColor = fillColor
+            ctx.shadowBlur = 3
             ctx.fillText(asset.symbol, x, y)
+            ctx.shadowBlur = 0
+            
+            // Enhanced price change indicator
+            const priceChangeText = `${(asset.priceChange * 100).toFixed(1)}%`
+            const trendIcon = asset.priceChange > 0 ? '▲' : asset.priceChange < 0 ? '▼' : '●'
+            const changeColor = asset.priceChange > 0 ? '#2ed573' : asset.priceChange < 0 ? '#ff4757' : '#4ecdc4'
+            
+            ctx.fillStyle = changeColor
+            ctx.font = `bold ${Math.max(8, fontSize * 0.7)}px 'Segoe UI', Arial, sans-serif`
+            ctx.shadowColor = changeColor
+            ctx.shadowBlur = 2
+            ctx.fillText(`${trendIcon} ${priceChangeText}`, x, y + nodeSize + 15)
+            ctx.shadowBlur = 0
+            
+            // Market cap indicator (small circle)
+            const capSize = Math.min(nodeSize * 0.3, 6)
+            ctx.fillStyle = asset.marketCap > 1e12 ? '#ffd700' : asset.marketCap > 1e11 ? '#c0c0c0' : '#cd7f32'
+            ctx.beginPath()
+            ctx.arc(x + nodeSize * 0.7, y - nodeSize * 0.7, capSize, 0, 2 * Math.PI)
+            ctx.fill()
         })
     }
 
     drawClusterBoundaries(ctx, centerX, centerY, radius) {
-        // Draw transparent regions for different asset classes
-        const cryptoAssets = this.clusteringData.assets.filter(a => ['BTC', 'ETH', 'SOL'].includes(a.symbol))
-        
-        if (cryptoAssets.length > 0) {
-            // Calculate crypto cluster boundary
-            const avgX = cryptoAssets.reduce((sum, a) => sum + a.x, 0) / cryptoAssets.length
-            const avgY = cryptoAssets.reduce((sum, a) => sum + a.y, 0) / cryptoAssets.length
-            const avgDistance = cryptoAssets.reduce((sum, a) => sum + Math.sqrt(a.x*a.x + a.y*a.y), 0) / cryptoAssets.length
-            
-            // Draw cluster region
-            ctx.fillStyle = 'rgba(0, 212, 170, 0.1)'
-            ctx.beginPath()
-            ctx.arc(centerX + avgX * radius, centerY + avgY * radius, avgDistance * radius * 1.2, 0, 2 * Math.PI)
-            ctx.fill()
-            
-            // Cluster label
-            ctx.fillStyle = '#00d4aa'
-            ctx.font = '8px monospace'
-            ctx.textAlign = 'center'
-            ctx.fillText('CRYPTO', centerX + avgX * radius, centerY + avgY * radius - avgDistance * radius * 1.5)
+        // Define asset categories with colors
+        const categories = {
+            'crypto': { 
+                symbols: ['BTC', 'ETH', 'SOL'], 
+                color: 'rgba(0, 212, 170, 0.15)',
+                labelColor: '#00d4aa',
+                name: 'CRYPTO'
+            },
+            'equity': { 
+                symbols: ['SP500', 'NASDAQ', 'DOW'], 
+                color: 'rgba(46, 213, 115, 0.15)',
+                labelColor: '#2ed573',
+                name: 'EQUITY'
+            },
+            'international': { 
+                symbols: ['FTSE', 'NIKKEI', 'DAX'], 
+                color: 'rgba(255, 165, 2, 0.15)',
+                labelColor: '#ffa502',
+                name: 'INTL'
+            },
+            'commodities': { 
+                symbols: ['GOLD', 'SILVER', 'OIL'], 
+                color: 'rgba(255, 71, 87, 0.15)',
+                labelColor: '#ff4757',
+                name: 'COMM'
+            },
+            'forex': { 
+                symbols: ['EURUSD', 'GBPUSD', 'USDJPY'], 
+                color: 'rgba(78, 205, 196, 0.15)',
+                labelColor: '#4ecdc4',
+                name: 'FOREX'
+            }
         }
+        
+        // Draw cluster regions for each category
+        Object.entries(categories).forEach(([categoryKey, category]) => {
+            const categoryAssets = this.clusteringData.assets.filter(a => 
+                category.symbols.includes(a.symbol)
+            )
+            
+            if (categoryAssets.length > 0) {
+                // Calculate cluster center and boundary
+                const avgX = categoryAssets.reduce((sum, a) => sum + a.x, 0) / categoryAssets.length
+                const avgY = categoryAssets.reduce((sum, a) => sum + a.y, 0) / categoryAssets.length
+                const maxDistance = Math.max(...categoryAssets.map(a => Math.sqrt(a.x*a.x + a.y*a.y)))
+                
+                // Draw cluster region
+                ctx.fillStyle = category.color
+                ctx.beginPath()
+                ctx.arc(centerX + avgX * radius, centerY + avgY * radius, maxDistance * radius * 0.8, 0, 2 * Math.PI)
+                ctx.fill()
+                
+                // Cluster border
+                ctx.strokeStyle = category.labelColor
+                ctx.lineWidth = 1
+                ctx.setLineDash([5, 5])
+                ctx.stroke()
+                ctx.setLineDash([])
+                
+                // Enhanced cluster label
+                const labelX = centerX + avgX * radius
+                const labelY = centerY + avgY * radius - maxDistance * radius * 0.9
+                
+                // Label background
+                ctx.fillStyle = category.labelColor
+                const labelWidth = category.name.length * 8 + 10
+                ctx.fillRect(labelX - labelWidth/2, labelY - 10, labelWidth, 20)
+                
+                // Label text
+                ctx.fillStyle = '#000000'
+                ctx.font = 'bold 11px Arial, sans-serif'
+                ctx.textAlign = 'center'
+                ctx.textBaseline = 'middle'
+                ctx.fillText(category.name, labelX, labelY)
+            }
+        })
     }
 
     updateClusteringMetrics() {
-        if (!this.clusteringData) return
+        if (!this.clusteringData || !this.clusteringData.assets) {
+            return
+        }
         
-        // Calculate average correlation
+        // Calculate real-time average correlation with enhanced accuracy
         let totalCorrelation = 0
         let correlationCount = 0
+        let correlationValues = []
         
         this.clusteringData.assets.forEach(asset1 => {
-            this.clusteringData.assets.forEach(asset2 => {
-                if (asset1.symbol !== asset2.symbol) {
-                    totalCorrelation += Math.abs(asset1.correlations[asset2.symbol] || 0)
-                    correlationCount++
-                }
-            })
+            if (asset1.correlations) {
+                this.clusteringData.assets.forEach(asset2 => {
+                    if (asset1.symbol !== asset2.symbol && asset1.correlations[asset2.symbol] !== undefined) {
+                        const corrValue = Math.abs(asset1.correlations[asset2.symbol])
+                        totalCorrelation += corrValue
+                        correlationValues.push(corrValue)
+                        correlationCount++
+                    }
+                })
+            }
         })
         
         const avgCorrelation = correlationCount > 0 ? totalCorrelation / correlationCount : 0
         
-        // Update UI elements
-        document.getElementById('avg-correlation').textContent = avgCorrelation.toFixed(3)
+        // Calculate correlation variance for better stability assessment
+        let correlationVariance = 0
+        if (correlationValues.length > 0) {
+            correlationVariance = correlationValues.reduce((sum, val) => sum + Math.pow(val - avgCorrelation, 2), 0) / correlationValues.length
+        }
         
-        // Cluster stability (based on correlation variance)
-        const stability = avgCorrelation > 0.6 ? 'High' : avgCorrelation > 0.3 ? 'Medium' : 'Low'
+        // Enhanced stability calculation
+        let stability = 'Low'
+        let stabilityClass = 'text-loss'
+        let stabilityIcon = '🔴'
+        
+        if (avgCorrelation > 0.6 && correlationVariance < 0.1) {
+            stability = 'Very High'
+            stabilityClass = 'text-profit animate-pulse'
+            stabilityIcon = '🟢'
+        } else if (avgCorrelation > 0.4 && correlationVariance < 0.15) {
+            stability = 'High'
+            stabilityClass = 'text-profit'
+            stabilityIcon = '🟢'
+        } else if (avgCorrelation > 0.25) {
+            stability = 'Medium'
+            stabilityClass = 'text-warning'
+            stabilityIcon = '🟡'
+        }
+        
+        // Animate metric updates
+        this.animateMetricUpdate('cluster-asset-count', this.clusteringData.totalAssets || this.clusteringData.assets.length)
+        this.animateMetricUpdate('avg-correlation', avgCorrelation.toFixed(3))
+        
+        // Update cluster stability with enhanced presentation
         const stabilityElement = document.getElementById('cluster-stability')
-        stabilityElement.textContent = stability
-        stabilityElement.className = `text-${stability === 'High' ? 'profit' : stability === 'Medium' ? 'warning' : 'loss'}`
+        if (stabilityElement) {
+            stabilityElement.innerHTML = `${stabilityIcon} ${stability}`
+            stabilityElement.className = `${stabilityClass} font-semibold`
+        }
+        
+        // Update timestamp to show real-time updates
+        const timestampElement = document.getElementById('clustering-timestamp')
+        if (timestampElement) {
+            const now = new Date()
+            timestampElement.textContent = now.toLocaleTimeString('en-US', { 
+                hour12: false, 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            })
+        }
+        
+        // Update asset legend with enhanced information
+        this.updateEnhancedAssetLegend()
+        
+        // Add real-time correlation heatmap
+        this.updateCorrelationHeatmap()
+        
+        // Update clustering performance metrics
+        this.updateClusteringPerformance(avgCorrelation, correlationVariance, stabilityIcon)
     }
 
     updateAssetLegend() {
@@ -1091,6 +1456,166 @@ class TradingDashboard {
             clearInterval(this.clusteringAnimation)
             this.clusteringAnimation = null
         }
+    }
+    
+    // Enhanced animation for metric updates
+    animateMetricUpdate(elementId, newValue) {
+        const element = document.getElementById(elementId)
+        if (!element) return
+        
+        // Add smooth update animation with glow effect
+        element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+        element.style.transform = 'scale(1.15)'
+        element.style.textShadow = '0 0 10px rgba(0, 212, 170, 0.8)'
+        
+        setTimeout(() => {
+            element.textContent = newValue
+            element.style.transform = 'scale(1)'
+            element.style.textShadow = 'none'
+        }, 200)
+    }
+    
+    // Enhanced asset legend with real-time data
+    updateEnhancedAssetLegend() {
+        if (!this.clusteringData) return
+        
+        const legendContainer = document.getElementById('asset-legend')
+        if (!legendContainer) return
+        
+        const legendHtml = this.clusteringData.assets.map(asset => {
+            const priceChangePercent = (asset.priceChange * 100).toFixed(2)
+            const changeColor = asset.priceChange > 0 ? 'text-profit' : asset.priceChange < 0 ? 'text-loss' : 'text-gray-400'
+            const trendIcon = asset.priceChange > 0 ? '📈' : asset.priceChange < 0 ? '📉' : '➡️'
+            
+            // Calculate volatility indicator
+            const volatilityLevel = asset.volatility > 0.005 ? 'High' : asset.volatility > 0.003 ? 'Med' : 'Low'
+            const volatilityColor = asset.volatility > 0.005 ? 'text-loss' : asset.volatility > 0.003 ? 'text-warning' : 'text-profit'
+            
+            return `
+                <div class="flex items-center justify-between py-2 hover:bg-gray-700 rounded px-2 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 rounded-full mr-3 animate-pulse" style="background-color: ${
+                            asset.priceChange > 0.01 ? '#2ed573' : 
+                            asset.priceChange < -0.01 ? '#ff4757' : '#4ecdc4'
+                        }"></div>
+                        <div>
+                            <span class="font-semibold">${asset.symbol}</span>
+                            <div class="text-xs ${volatilityColor}">Vol: ${volatilityLevel}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="${changeColor} font-semibold">${trendIcon} ${priceChangePercent > 0 ? '+' : ''}${priceChangePercent}%</div>
+                        <div class="text-xs text-gray-400">$${asset.currentPrice ? asset.currentPrice.toLocaleString() : 'N/A'}</div>
+                    </div>
+                </div>
+            `
+        }).join('')
+        
+        legendContainer.innerHTML = legendHtml
+    }
+    
+    // Real-time correlation heatmap
+    updateCorrelationHeatmap() {
+        if (!this.clusteringData || !this.clusteringData.assets) return
+        
+        let heatmapContainer = document.getElementById('correlation-heatmap')
+        if (!heatmapContainer) {
+            // Create heatmap container if it doesn't exist
+            const legendContainer = document.getElementById('asset-legend')
+            if (legendContainer && legendContainer.parentNode) {
+                heatmapContainer = document.createElement('div')
+                heatmapContainer.id = 'correlation-heatmap'
+                heatmapContainer.className = 'mt-4 p-3 bg-gray-800 rounded-lg'
+                heatmapContainer.innerHTML = '<div class="text-gray-400 font-semibold mb-2 text-xs uppercase tracking-wide">Correlation Heatmap:</div>'
+                legendContainer.parentNode.insertBefore(heatmapContainer, legendContainer.nextSibling)
+            }
+        }
+        
+        if (!heatmapContainer) return
+        
+        // Create simplified correlation matrix display
+        const topCorrelations = []
+        
+        this.clusteringData.assets.forEach((asset1, i) => {
+            if (asset1.correlations) {
+                this.clusteringData.assets.forEach((asset2, j) => {
+                    if (i < j && asset1.correlations[asset2.symbol] !== undefined) {
+                        const correlation = asset1.correlations[asset2.symbol]
+                        if (Math.abs(correlation) > 0.3) {
+                            topCorrelations.push({
+                                pair: `${asset1.symbol}-${asset2.symbol}`,
+                                correlation: correlation,
+                                strength: Math.abs(correlation)
+                            })
+                        }
+                    }
+                })
+            }
+        })
+        
+        // Sort by correlation strength and take top 6
+        topCorrelations.sort((a, b) => b.strength - a.strength)
+        const displayCorrelations = topCorrelations.slice(0, 6)
+        
+        const heatmapHtml = `
+            <div class="text-gray-400 font-semibold mb-2 text-xs uppercase tracking-wide">Top Correlations:</div>
+            <div class="grid grid-cols-2 gap-1 text-xs">
+                ${displayCorrelations.map(item => {
+                    const color = item.correlation > 0.5 ? 'text-profit' : 
+                                 item.correlation > 0.3 ? 'text-warning' : 'text-gray-400'
+                    const bgColor = item.correlation > 0.5 ? 'bg-green-900' : 
+                                   item.correlation > 0.3 ? 'bg-yellow-900' : 'bg-gray-700'
+                    return `
+                        <div class="${bgColor} rounded p-1 text-center">
+                            <div class="font-semibold text-xs">${item.pair}</div>
+                            <div class="${color}">${(item.correlation * 100).toFixed(0)}%</div>
+                        </div>
+                    `
+                }).join('')}
+            </div>
+        `
+        
+        heatmapContainer.innerHTML = heatmapHtml
+    }
+    
+    // Clustering performance indicators
+    updateClusteringPerformance(avgCorrelation, correlationVariance, stabilityIcon) {
+        let performanceContainer = document.getElementById('clustering-performance')
+        if (!performanceContainer) {
+            // Create performance container
+            const mainContainer = document.querySelector('#poincare-clustering-view')
+            if (mainContainer) {
+                performanceContainer = document.createElement('div')
+                performanceContainer.id = 'clustering-performance'
+                performanceContainer.className = 'mt-4 grid grid-cols-3 gap-2 text-xs'
+                mainContainer.appendChild(performanceContainer)
+            }
+        }
+        
+        if (!performanceContainer) return
+        
+        // Calculate clustering efficiency score
+        const efficiency = Math.min(100, Math.max(0, (avgCorrelation * 100) - (correlationVariance * 50)))
+        const efficiencyColor = efficiency > 70 ? 'text-profit' : efficiency > 40 ? 'text-warning' : 'text-loss'
+        
+        // Calculate network density
+        const networkDensity = (avgCorrelation * 100).toFixed(1)
+        const densityColor = networkDensity > 50 ? 'text-accent' : 'text-gray-400'
+        
+        performanceContainer.innerHTML = `
+            <div class="bg-gray-800 rounded p-2 text-center">
+                <div class="${efficiencyColor} font-bold">${efficiency.toFixed(0)}%</div>
+                <div class="text-gray-400">Efficiency</div>
+            </div>
+            <div class="bg-gray-800 rounded p-2 text-center">
+                <div class="${densityColor} font-bold">${networkDensity}%</div>
+                <div class="text-gray-400">Density</div>
+            </div>
+            <div class="bg-gray-800 rounded p-2 text-center">
+                <div class="font-bold">${stabilityIcon}</div>
+                <div class="text-gray-400">Status</div>
+            </div>
+        `
     }
 
     async executeArbitrage(opportunity) {
