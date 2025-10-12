@@ -3476,14 +3476,33 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="bg-gray-800 rounded-lg p-4">
-                                        <h5 class="font-semibold mb-3 text-accent">📈 Equity Curve</h5>
-                                        <canvas id="equity-curve-chart" width="300" height="200"></canvas>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <!-- Equity Curve Chart -->
+                                    <div class="bg-gray-800 rounded-lg p-4 min-h-[400px]">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h5 class="font-semibold text-accent flex items-center">
+                                                <span class="text-2xl mr-2">📈</span>
+                                                <span>Equity Curve</span>
+                                            </h5>
+                                            <span class="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">Portfolio Value</span>
+                                        </div>
+                                        <div class="relative h-80">
+                                            <canvas id="equity-curve-chart" class="w-full h-full"></canvas>
+                                        </div>
                                     </div>
-                                    <div class="bg-gray-800 rounded-lg p-4">
-                                        <h5 class="font-semibold mb-3 text-accent">📉 Drawdown Chart</h5>
-                                        <canvas id="drawdown-chart" width="300" height="200"></canvas>
+                                    
+                                    <!-- Drawdown Chart -->
+                                    <div class="bg-gray-800 rounded-lg p-4 min-h-[400px]">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h5 class="font-semibold text-accent flex items-center">
+                                                <span class="text-2xl mr-2">📉</span>
+                                                <span>Drawdown Chart</span>
+                                            </h5>
+                                            <span class="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">Risk Analysis</span>
+                                        </div>
+                                        <div class="relative h-80">
+                                            <canvas id="drawdown-chart" class="w-full h-full"></canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
