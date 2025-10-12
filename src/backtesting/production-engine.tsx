@@ -231,11 +231,14 @@ export class ProductionBacktestingEngine {
   }
 
   /**
-   * Compare multiple strategies
+   * Compare multiple strategies with statistical significance testing
    */
   compareStrategies(strategyIds: string[]): {
     comparison: Record<string, any>,
-    rankings: Array<{strategyId: string, score: number}>
+    rankings: Array<{strategyId: string, score: number, rank: number}>,
+    statisticalTests: Record<string, any>,
+    performanceMatrix: Array<Array<number>>,
+    riskAdjustedRankings: Array<{strategyId: string, riskAdjustedScore: number}>
   } {
     const results = strategyIds
       .map(id => this.completedBacktests.get(id))
@@ -245,8 +248,12 @@ export class ProductionBacktestingEngine {
       throw new Error('No completed backtests found for comparison')
     }
 
+    if (results.length < 2) {
+      throw new Error('At least 2 strategies required for comparison')
+    }
+
     const comparison: Record<string, any> = {}
-    const metrics = ['totalReturn', 'sharpeRatio', 'maxDrawdown', 'winRate', 'profitFactor']
+    const metrics = ['totalReturn', 'sharpeRatio', 'maxDrawdown', 'winRate', 'profitFactor', 'sortinoRatio', 'calmarRatio', 'var95', 'cvar95']
     
     metrics.forEach(metric => {
       comparison[metric] = results.map(result => ({
@@ -255,22 +262,269 @@ export class ProductionBacktestingEngine {
       }))
     })
 
-    // Calculate composite score for ranking
-    const rankings = results.map(result => {
-      const score = 
-        result.performance.sharpeRatio * 0.3 +
-        (result.performance.totalReturn / 100) * 0.25 +
-        (1 / Math.max(result.performance.maxDrawdown, 1)) * 0.2 +
-        (result.performance.winRate / 100) * 0.15 +
-        Math.min(result.performance.profitFactor / 3, 1) * 0.1
+    // Statistical significance testing
+    const statisticalTests = this.performStatisticalTests(results)
+    
+    // Performance matrix for heat map visualization
+    const performanceMatrix = this.createPerformanceMatrix(results)
+    
+    // Enhanced composite scoring with risk adjustment
+    const rankings = results.map((result, index) => {
+      const perf = result.performance
+      
+      // Multi-factor scoring model
+      const returnScore = Math.min(perf.totalReturn / 50, 2) // Cap at 50% return = score 2
+      const riskScore = Math.max(0, 2 - perf.maxDrawdown / 20) // Lower drawdown = higher score
+      const consistencyScore = Math.min(perf.winRate / 50, 2) // Cap at 50% win rate = score 2
+      const efficiencyScore = Math.min(perf.sharpeRatio / 1.5, 2) // Cap at 1.5 Sharpe = score 2
+      const robustnessScore = Math.min(perf.sortinoRatio / 2, 2) // Cap at 2 Sortino = score 2
+      
+      const compositeScore = (
+        returnScore * 0.25 +
+        riskScore * 0.25 +
+        consistencyScore * 0.2 +
+        efficiencyScore * 0.2 +
+        robustnessScore * 0.1
+      )
 
       return {
         strategyId: result.config.strategyId,
-        score: Math.round(score * 100) / 100
+        score: Math.round(compositeScore * 100) / 100,
+        rank: index + 1
       }
     }).sort((a, b) => b.score - a.score)
+    
+    // Assign final ranks
+    rankings.forEach((ranking, index) => {
+      ranking.rank = index + 1
+    })
 
-    return { comparison, rankings }
+    // Risk-adjusted rankings using multiple criteria
+    const riskAdjustedRankings = results.map(result => {
+      const perf = result.performance
+      
+      // Risk-adjusted score using Information Ratio, Calmar Ratio, and Omega Ratio
+      const riskAdjustedScore = (
+        perf.sharpeRatio * 0.3 +
+        perf.sortinoRatio * 0.25 +
+        perf.calmarRatio * 0.2 +
+        (perf.informationRatio || 0) * 0.15 +
+        Math.min(perf.profitFactor / 2, 2) * 0.1 // Cap profit factor impact
+      )
+      
+      return {
+        strategyId: result.config.strategyId,
+        riskAdjustedScore: Math.round(riskAdjustedScore * 100) / 100
+      }
+    }).sort((a, b) => b.riskAdjustedScore - a.riskAdjustedScore)
+
+    return { 
+      comparison, 
+      rankings, 
+      statisticalTests,
+      performanceMatrix,
+      riskAdjustedRankings
+    }
+  }
+
+  /**
+   * Perform statistical significance tests between strategies
+   */
+  private performStatisticalTests(results: BacktestResult[]): Record<string, any> {
+    const tests: Record<string, any> = {
+      tTests: [],
+      correlationMatrix: [],
+      significanceMatrix: []
+    }
+
+    // Extract daily returns for each strategy
+    const strategyReturns: Record<string, number[]> = {}
+    
+    results.forEach(result => {
+      const dailyReturns: number[] = []
+      for (let i = 1; i < result.equity.length; i++) {
+        const ret = (result.equity[i].equity - result.equity[i-1].equity) / result.equity[i-1].equity
+        dailyReturns.push(ret)
+      }
+      strategyReturns[result.config.strategyId] = dailyReturns
+    })
+
+    // Pairwise t-tests for statistical significance
+    for (let i = 0; i < results.length; i++) {
+      for (let j = i + 1; j < results.length; j++) {
+        const strategy1 = results[i].config.strategyId
+        const strategy2 = results[j].config.strategyId
+        
+        const returns1 = strategyReturns[strategy1]
+        const returns2 = strategyReturns[strategy2]
+        
+        const tTest = this.performTTest(returns1, returns2)
+        
+        tests.tTests.push({
+          strategy1,
+          strategy2,
+          tStatistic: tTest.tStatistic,
+          pValue: tTest.pValue,
+          significant: tTest.pValue < 0.05,
+          confidenceLevel: tTest.pValue < 0.01 ? '99%' : tTest.pValue < 0.05 ? '95%' : 'Not Significant'
+        })
+      }
+    }
+
+    // Correlation matrix
+    const strategyIds = results.map(r => r.config.strategyId)
+    tests.correlationMatrix = this.calculateCorrelationMatrix(strategyReturns, strategyIds)
+    
+    // Significance matrix (p-values)
+    tests.significanceMatrix = this.createSignificanceMatrix(tests.tTests, strategyIds)
+
+    return tests
+  }
+
+  /**
+   * Perform Welch's t-test for unequal variances
+   */
+  private performTTest(sample1: number[], sample2: number[]): {tStatistic: number, pValue: number} {
+    const n1 = sample1.length
+    const n2 = sample2.length
+    
+    const mean1 = sample1.reduce((a, b) => a + b) / n1
+    const mean2 = sample2.reduce((a, b) => a + b) / n2
+    
+    const var1 = sample1.reduce((acc, x) => acc + Math.pow(x - mean1, 2), 0) / (n1 - 1)
+    const var2 = sample2.reduce((acc, x) => acc + Math.pow(x - mean2, 2), 0) / (n2 - 1)
+    
+    const pooledStdError = Math.sqrt(var1/n1 + var2/n2)
+    const tStatistic = (mean1 - mean2) / pooledStdError
+    
+    // Degrees of freedom (Welch's formula)
+    const df = Math.pow(var1/n1 + var2/n2, 2) / (Math.pow(var1/n1, 2)/(n1-1) + Math.pow(var2/n2, 2)/(n2-1))
+    
+    // Approximate p-value using t-distribution approximation
+    const pValue = this.calculateTTestPValue(Math.abs(tStatistic), df)
+    
+    return { tStatistic, pValue }
+  }
+
+  /**
+   * Approximate p-value calculation for t-test
+   */
+  private calculateTTestPValue(tStat: number, df: number): number {
+    // Simplified approximation - in production, use proper t-distribution
+    if (tStat < 1.96) return 0.05 + (1.96 - tStat) * 0.45 / 1.96
+    if (tStat < 2.58) return 0.01 + (2.58 - tStat) * 0.04 / 0.62
+    return 0.01 * Math.exp(-(tStat - 2.58))
+  }
+
+  /**
+   * Calculate correlation matrix between strategies
+   */
+  private calculateCorrelationMatrix(strategyReturns: Record<string, number[]>, strategyIds: string[]): number[][] {
+    const n = strategyIds.length
+    const matrix: number[][] = Array(n).fill(null).map(() => Array(n).fill(0))
+    
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        if (i === j) {
+          matrix[i][j] = 1.0
+        } else {
+          const returns1 = strategyReturns[strategyIds[i]]
+          const returns2 = strategyReturns[strategyIds[j]]
+          matrix[i][j] = this.calculateCorrelation(returns1, returns2)
+        }
+      }
+    }
+    
+    return matrix
+  }
+
+  /**
+   * Calculate Pearson correlation coefficient
+   */
+  private calculateCorrelation(x: number[], y: number[]): number {
+    const n = Math.min(x.length, y.length)
+    if (n < 2) return 0
+    
+    const meanX = x.slice(0, n).reduce((a, b) => a + b) / n
+    const meanY = y.slice(0, n).reduce((a, b) => a + b) / n
+    
+    let numerator = 0
+    let sumXSquared = 0
+    let sumYSquared = 0
+    
+    for (let i = 0; i < n; i++) {
+      const deltaX = x[i] - meanX
+      const deltaY = y[i] - meanY
+      numerator += deltaX * deltaY
+      sumXSquared += deltaX * deltaX
+      sumYSquared += deltaY * deltaY
+    }
+    
+    const denominator = Math.sqrt(sumXSquared * sumYSquared)
+    return denominator === 0 ? 0 : numerator / denominator
+  }
+
+  /**
+   * Create performance matrix for visualization
+   */
+  private createPerformanceMatrix(results: BacktestResult[]): number[][] {
+    const metrics = ['totalReturn', 'sharpeRatio', 'maxDrawdown', 'winRate', 'sortinoRatio']
+    const matrix: number[][] = []
+    
+    results.forEach(result => {
+      const row: number[] = []
+      metrics.forEach(metric => {
+        let value = result.performance[metric as keyof RiskMetrics] as number
+        
+        // Normalize metrics to 0-1 scale for visualization
+        switch (metric) {
+          case 'totalReturn':
+            value = Math.max(0, Math.min(1, (value + 50) / 100)) // -50% to +50% mapped to 0-1
+            break
+          case 'sharpeRatio':
+            value = Math.max(0, Math.min(1, (value + 2) / 4)) // -2 to +2 mapped to 0-1
+            break
+          case 'maxDrawdown':
+            value = Math.max(0, Math.min(1, 1 - value / 50)) // 0% to 50% drawdown mapped to 1-0
+            break
+          case 'winRate':
+            value = Math.max(0, Math.min(1, value / 100)) // 0% to 100% mapped to 0-1
+            break
+          case 'sortinoRatio':
+            value = Math.max(0, Math.min(1, (value + 2) / 4)) // -2 to +2 mapped to 0-1
+            break
+        }
+        row.push(value)
+      })
+      matrix.push(row)
+    })
+    
+    return matrix
+  }
+
+  /**
+   * Create significance matrix from t-test results
+   */
+  private createSignificanceMatrix(tTests: any[], strategyIds: string[]): number[][] {
+    const n = strategyIds.length
+    const matrix: number[][] = Array(n).fill(null).map(() => Array(n).fill(1.0))
+    
+    // Fill diagonal with 0 (perfect significance with self)
+    for (let i = 0; i < n; i++) {
+      matrix[i][i] = 0.0
+    }
+    
+    tTests.forEach(test => {
+      const i = strategyIds.indexOf(test.strategy1)
+      const j = strategyIds.indexOf(test.strategy2)
+      
+      if (i !== -1 && j !== -1) {
+        matrix[i][j] = test.pValue
+        matrix[j][i] = test.pValue
+      }
+    })
+    
+    return matrix
   }
 
   // ============================================================================
@@ -679,7 +933,7 @@ export class ProductionBacktestingEngine {
     // Generate all parameter combinations (for small parameter spaces)
     const combinations = this.generateParameterCombinations(parameterRanges)
     
-    for (const params of combinations.slice(0, 50)) { // Limit to 50 combinations
+    for (const params of combinations.slice(0, 100)) { // Increased to 100 combinations for better optimization
       const testConfig = {
         ...config,
         strategyId: `${config.strategyId}_opt_${Date.now()}`,

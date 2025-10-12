@@ -1337,17 +1337,20 @@ class MonteCarloEngine {
 // Enhanced Multi-Modal Fusion Hierarchical Clustering Engine
 class HierarchicalClusteringEngine {
   constructor() {
-    // Multi-asset universe from all market categories
+    // Comprehensive multi-asset universe - 100+ assets across all asset classes
     this.assets = {
-      crypto: ['BTC', 'ETH', 'SOL'],
-      equity: ['SP500', 'NASDAQ', 'DOW'],
-      international: ['FTSE', 'NIKKEI', 'DAX'],
-      commodities: ['GOLD', 'SILVER', 'OIL'],
-      forex: ['EURUSD', 'GBPUSD', 'USDJPY']
+      crypto: ['BTC', 'ETH', 'SOL', 'ADA', 'DOT', 'AVAX', 'MATIC', 'LINK', 'ATOM', 'XTZ', 'ALGO', 'VET', 'FIL', 'THETA', 'EOS', 'TRX', 'NEO', 'XLM', 'IOTA', 'DASH', 'ZEC', 'XMR', 'LTC', 'BCH', 'ETC', 'BSV'],
+      equity: ['SPY', 'QQQ', 'IWM', 'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'CRM', 'ADBE', 'INTC', 'CSCO', 'PEP', 'COST', 'CMCSA', 'AVGO', 'TXN', 'QCOM', 'TMUS', 'HON', 'UNP', 'AMGN', 'SBUX', 'GILD', 'MDLZ', 'BKNG'],
+      international: ['EFA', 'EEM', 'VEA', 'VWO', 'IEFA', 'IEMG', 'FTSE', 'NIKKEI', 'DAX', 'CAC', 'FTSE100', 'ASX', 'HSI', 'KOSPI', 'TSX', 'IBOV', 'MEXBOL', 'SENSEX', 'NIFTY', 'TAIEX'],
+      commodities: ['GLD', 'SLV', 'USO', 'UNG', 'DBA', 'DBB', 'DJP', 'PDBC', 'CORN', 'WEAT', 'SOYB', 'NIB', 'COW', 'BAL', 'JO', 'CAFE', 'SGG', 'CANE', 'JJN', 'LD', 'JJT', 'JJU', 'JJS', 'JJC', 'COPX'],
+      forex: ['EURUSD', 'GBPUSD', 'USDJPY', 'USDCHF', 'USDCAD', 'AUDUSD', 'NZDUSD', 'EURGBP', 'EURJPY', 'GBPJPY', 'CHFJPY', 'CADJPY', 'AUDJPY', 'NZDJPY', 'EURCHF', 'GBPCHF', 'AUDCHF', 'NZDCHF', 'EURCAD', 'GBPCAD'],
+      fixedIncome: ['TLT', 'IEF', 'SHY', 'TIP', 'LQD', 'HYG', 'JNK', 'EMB', 'AGG', 'BND', 'GOVT', 'CORP', 'MUB', 'VTEB', 'VCIT', 'VCSH', 'VGIT', 'VGSH', 'BSV', 'BIV', 'BLV', 'VMBS', 'VCEB', 'FLOT', 'NEAR'],
+      reits: ['VNQ', 'SCHH', 'RWR', 'USRT', 'FREL', 'XLRE', 'IYR', 'REZ', 'REM', 'MORT', 'KBWY', 'SRET', 'IFEU', 'VNQI', 'RWX', 'REET', 'WPS', 'RWXU', 'BBRE', 'PPTY']
     }
     
-    // Flatten assets for processing
+    // Flatten assets for processing - Total: 150+ assets
     this.allAssets = Object.values(this.assets).flat()
+    console.log(`✅ Initialized clustering engine with ${this.allAssets.length} assets across ${Object.keys(this.assets).length} asset classes`)
     
     // Multi-modal data fusion components
     this.fusionComponents = {
@@ -1561,7 +1564,7 @@ class HierarchicalClusteringEngine {
     for (const [category, assets] of Object.entries(this.assets)) {
       if (assets.includes(asset)) return category
     }
-    return 'unknown'
+    return 'equity' // Default to equity for unknown assets
   }
   
   getAssetPrice(asset, globalMarkets) {
@@ -3720,7 +3723,7 @@ app.post('/api/backtesting/monte-carlo', async (c) => {
     // Start Monte Carlo simulation asynchronously
     const simulationId = `${config.strategyId}_mc_${Date.now()}`
     
-    backtestingEngine.runMonteCarloSimulation(config, iterations || 1000, perturbationLevel || 0.1)
+    backtestingEngine.runMonteCarloSimulation(config, iterations || 10000, perturbationLevel || 0.1)
       .then(result => {
         console.log(`Monte Carlo simulation completed: ${simulationId}`)
       })

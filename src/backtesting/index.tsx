@@ -76,6 +76,22 @@ interface RiskMetrics {
   winRate: number
   profitFactor: number
   payoffRatio: number
+  // Enhanced metrics
+  omegaRatio?: number
+  kellyOptimalF?: number
+  martinRatio?: number
+  sterlingRatio?: number
+  burkeRatio?: number
+  skewness?: number
+  kurtosis?: number
+  stabilityRatio?: number
+  tailRatio?: number
+  conditionalDrawdown?: number
+  ulcerIndex?: number
+  painIndex?: number
+  gainToPainRatio?: number
+  lakePlacidRatio?: number
+  expectedShortfall?: number
 }
 
 interface BacktestConfig {
