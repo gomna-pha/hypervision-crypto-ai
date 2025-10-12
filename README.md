@@ -78,6 +78,76 @@ npm run build
 npx wrangler pages deploy dist --project-name gomna-trading
 ```
 
+## 🧪 **Production-Ready Backtesting Engine**
+
+### **Academic & Industry Standards Implementation**
+Our advanced backtesting engine eliminates common pitfalls and implements institutional-grade standards:
+
+#### **✅ Bias Elimination**
+- **Look-Ahead Bias**: Strict point-in-time data access
+- **Survivorship Bias**: Configurable asset universe handling
+- **Data-Snooping Bias**: Walk-forward optimization and out-of-sample testing
+
+#### **🛡️ Risk Management**
+- **Position Sizing**: Kelly Criterion and fixed fractional models
+- **Portfolio Risk**: Real-time portfolio-level risk monitoring
+- **Drawdown Controls**: Automatic position reduction during drawdowns
+- **Transaction Costs**: Realistic spread, slippage, and market impact modeling
+
+#### **📊 Performance Analytics**
+- **Academic Metrics**: Sharpe, Sortino, Calmar, Treynor ratios
+- **Risk Metrics**: VaR, CVaR, Maximum Drawdown Duration
+- **Attribution Analysis**: By asset, time period, and strategy component
+- **Factor Analysis**: Beta, Alpha, Information Ratio, Tracking Error
+
+### **API Endpoints**
+
+```bash
+# Strategy Templates
+GET /api/backtesting/strategy-templates
+
+# Quick Backtests
+POST /api/backtesting/quick-test
+{
+  "templateId": "MEAN_REVERSION_BTC",
+  "initialCapital": 100000
+}
+
+# Custom Backtests
+POST /api/backtesting/run
+{
+  "strategyId": "my_strategy_v1",
+  "name": "MOMENTUM_BREAKOUT",
+  "symbols": ["BTC", "ETH"],
+  "startDate": "2023-01-01",
+  "endDate": "2024-01-01",
+  "initialCapital": 100000,
+  "strategyParameters": {...},
+  "riskManagement": {...}
+}
+
+# Results & Status
+GET /api/backtesting/status/:strategyId
+GET /api/backtesting/results
+GET /api/backtesting/result/:strategyId
+
+# Advanced Analysis
+POST /api/backtesting/compare
+POST /api/backtesting/walk-forward
+POST /api/backtesting/monte-carlo
+```
+
+### **Strategy Templates**
+1. **Bitcoin Mean Reversion** - Z-score based mean reversion for BTC
+2. **Multi-Crypto Momentum** - Breakout strategy for BTC/ETH/SOL
+3. **RSI Divergence Equity** - RSI divergence for SPY/QQQ
+
+### **Advanced Features**
+- **Walk-Forward Optimization**: Prevents overfitting with out-of-sample validation
+- **Monte Carlo Simulation**: Robustness testing with parameter perturbation
+- **Market Microstructure**: Realistic bid-ask spreads and volume patterns
+- **Transaction Cost Models**: Square-root market impact and realistic slippage
+
 ## 🌐 Live URLs
 
 - **Production**: https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev
