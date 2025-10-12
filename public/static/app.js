@@ -114,10 +114,9 @@ class TradingDashboard {
                 this.loadOrderBook()
                 this.loadSocialSentiment()
                 this.loadEconomicIndicators()
-                // Always update clustering data and metrics for real-time display
-                this.loadClusteringData()
-                // Force update clustering metrics even if not in clustering view
-                this.forceClusteringMetricsUpdate()
+                // Temporarily disable clustering to avoid DOM errors
+                // this.loadClusteringData()
+                // this.forceClusteringMetricsUpdate()
             }
         }, 2000) // Refresh every 2 seconds for live effect
     }
@@ -135,8 +134,8 @@ class TradingDashboard {
                     this.initializeCandlestickChart(),
                     this.startHyperbolicAnalysis()
                 ])
-                // Initialize clustering for hyperbolic space engine (always load data for metrics)
-                this.initializeAssetClustering()
+                // Temporarily disable clustering to avoid DOM errors
+                // this.initializeAssetClustering()
                 break
             case 'portfolio':
                 await this.loadPortfolioData()
