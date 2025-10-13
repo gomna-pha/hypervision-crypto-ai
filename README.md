@@ -41,13 +41,23 @@
 ### 🎯 API Endpoints
 
 ```bash
-GET /api/hello                    # Health check
-GET /api/market-data             # Live market feeds
-GET /api/asset-clustering        # Dynamic clustering data
-GET /api/hyperbolic-analysis     # Pattern analysis results  
-GET /api/arbitrage-opportunities # Live arbitrage feeds
-GET /api/social-sentiment        # Sentiment analysis
-GET /api/economic-indicators     # Economic data
+# Core Market Data
+GET /api/hello                      # Health check
+GET /api/market-data                # Live market feeds
+GET /api/asset-clustering           # Dynamic clustering data
+GET /api/hyperbolic-analysis        # Pattern analysis results
+GET /api/social-sentiment           # Sentiment analysis
+GET /api/economic-indicators        # Economic data
+
+# 🚀 NEW: Advanced Arbitrage & Optimization
+GET /api/arbitrage-opportunities    # Enhanced global arbitrage engine
+GET /api/hyperbolic-nav-optimization # Hyperbolic NAV optimization
+POST /api/hyperbolic-nav-optimization # Custom optimization parameters
+
+# Backtesting Engine
+GET /api/backtesting/strategy-templates # Strategy templates
+POST /api/backtesting/run              # Run custom backtest
+GET /api/backtesting/results           # Get results
 ```
 
 ### 📈 Data Models
@@ -154,11 +164,13 @@ POST /api/backtesting/monte-carlo
 
 ## 🌐 Live URLs
 
-- **🚀 Enhanced Production**: https://3000-i03nn7g8mkvf26feh21mr-cc2fbc16.sandbox.novita.ai
-- **📊 Advanced Backtesting API**: https://3000-i03nn7g8mkvf26feh21mr-cc2fbc16.sandbox.novita.ai/api/backtesting/strategy-templates
-- **💹 Real-Time Trading**: https://3000-i03nn7g8mkvf26feh21mr-cc2fbc16.sandbox.novita.ai/api/market-data
+- **🚀 Enhanced Production**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai
+- **📊 Advanced Backtesting API**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai/api/backtesting/strategy-templates
+- **💹 Real-Time Trading**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai/api/market-data
+- **🌍 Global Arbitrage Engine**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai/api/arbitrage-opportunities
+- **📐 Hyperbolic NAV Optimization**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai/api/hyperbolic-nav-optimization
 - **📈 GitHub Repository**: https://github.com/gomna-pha/hypervision-crypto-ai
-- **🔧 Full API Documentation**: https://3000-i03nn7g8mkvf26feh21mr-cc2fbc16.sandbox.novita.ai/api/
+- **🔧 Full API Documentation**: https://3000-igf7rswjqg5jv53c2261x-82b888ba.sandbox.novita.ai/api/
 
 ## 📱 User Guide
 
@@ -199,6 +211,15 @@ POST /api/backtesting/monte-carlo
 - **Asset Coverage**: **7 asset classes** with realistic transaction costs
 - **Statistical Testing**: **T-tests, correlation analysis, significance matrices**
 
+### **🚀 NEW: Advanced Global Arbitrage & Hyperbolic Optimization**
+- **🌍 Global Markets**: Americas, Europe, Asia-Pacific, MENA regions covered
+- **📊 Hyperbolic Geometry**: Poincaré disk model for NAV optimization
+- **🎯 Arbitrage Types**: 8 different strategies including AI-enhanced multi-modal
+- **📐 Mathematical Models**: Riemannian metrics, geodesic variance, curvature adjustment
+- **🤖 AI Integration**: Multi-modal fusion signals (Hyperbolic CNN + LSTM + FinBERT)
+- **⚡ Optimization**: Gradient descent in hyperbolic space with adaptive step sizing
+- **🔢 Risk Management**: Kelly Criterion, geometric Sharpe ratio, hyperbolic diversification
+
 ## 🎨 Visualization Features
 
 ### Hyperbolic Space Analysis
@@ -231,7 +252,7 @@ POST /api/backtesting/monte-carlo
 - **Risk Management**: 🟢 **35+ Professional Risk Metrics**
 - **Monte Carlo**: 🟢 **10,000+ Iterations (Industry Standard)**
 - **Last Updated**: **October 2024**
-- **Version**: **3.0.0 - Industry-Grade Enhancement**
+- **Version**: **4.0.0 - Advanced Global Arbitrage & Hyperbolic NAV Optimization**
 
 ## 🤝 Contributing
 
