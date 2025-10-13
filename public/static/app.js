@@ -353,6 +353,18 @@ class TradingDashboard {
             const container = document.getElementById('arbitrage-opportunities')
             const lastScan = document.getElementById('last-scan')
             
+            // Save which details sections are currently open
+            const openDetailsStates = {}
+            const existingCards = container.querySelectorAll('.arbitrage-card')
+            existingCards.forEach(card => {
+                const index = card.dataset.index
+                const detailsDiv = card.querySelector('.arbitrage-details')
+                const toggleButton = card.querySelector('.toggle-details')
+                if (detailsDiv && !detailsDiv.classList.contains('hidden')) {
+                    openDetailsStates[index] = true
+                }
+            })
+            
             lastScan.textContent = new Date().toLocaleTimeString('en-US', { 
                 hour12: true,
                 hour: '2-digit',
@@ -552,6 +564,23 @@ class TradingDashboard {
                     </div>
                 `
             }).join('')
+            
+            // Restore previously open details sections after DOM update
+            setTimeout(() => {
+                Object.keys(openDetailsStates).forEach(index => {
+                    const card = container.querySelector(`.arbitrage-card[data-index="${index}"]`)
+                    if (card) {
+                        const detailsDiv = card.querySelector('.arbitrage-details')
+                        const toggleButton = card.querySelector('.toggle-details')
+                        if (detailsDiv && toggleButton) {
+                            detailsDiv.classList.remove('hidden')
+                            toggleButton.textContent = 'Hide Details'
+                            toggleButton.classList.add('bg-accent', 'text-dark-bg')
+                            toggleButton.classList.remove('bg-gray-700', 'text-white')
+                        }
+                    }
+                })
+            }, 50) // Small delay to ensure DOM is updated
             
         } catch (error) {
             console.error('Error loading arbitrage opportunities:', error)
