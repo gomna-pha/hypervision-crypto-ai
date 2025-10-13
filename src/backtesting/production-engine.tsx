@@ -973,6 +973,18 @@ export class ProductionBacktestingEngine {
   }
 
   private perturbParameters(params: any, perturbationLevel: number): any {
+    // Handle null/undefined params
+    if (!params || typeof params !== 'object') {
+      console.warn('perturbParameters: params is null/undefined, returning default parameters')
+      return {
+        entryThreshold: 0.02 * (1 + (Math.random() - 0.5) * 2 * perturbationLevel),
+        exitThreshold: 0.01 * (1 + (Math.random() - 0.5) * 2 * perturbationLevel),
+        stopLoss: 0.05 * (1 + (Math.random() - 0.5) * 2 * perturbationLevel),
+        takeProfit: 0.03 * (1 + (Math.random() - 0.5) * 2 * perturbationLevel),
+        maxPositionSize: 0.1 * (1 + (Math.random() - 0.5) * 2 * perturbationLevel)
+      }
+    }
+    
     const perturbed = { ...params }
     
     for (const [key, value] of Object.entries(params)) {

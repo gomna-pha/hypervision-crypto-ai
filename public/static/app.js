@@ -51,6 +51,25 @@ class TradingDashboard {
         })
     }
 
+    setupProfessionalControls() {
+        // AI Agent controls with error handling
+        const startAIBtn = document.getElementById('start-ai-agent')
+        if (startAIBtn) {
+            startAIBtn.addEventListener('click', () => this.startAIAgent())
+        }
+
+        const stopAIBtn = document.getElementById('stop-ai-agent')
+        if (stopAIBtn) {
+            stopAIBtn.addEventListener('click', () => this.stopAIAgent())
+        }
+
+        // Enhanced Monte Carlo
+        const enhancedMonteCarloBtn = document.getElementById('run-monte-carlo')
+        if (enhancedMonteCarloBtn) {
+            enhancedMonteCarloBtn.addEventListener('click', () => this.runAdvancedMonteCarloSimulation())
+        }
+    }
+
     setupEventListeners() {
         // Chat functionality
         const chatInput = document.getElementById('chat-input')
@@ -76,6 +95,9 @@ class TradingDashboard {
                 this.sendChatMessage()
             })
         })
+
+        // Setup professional trading controls
+        this.setupProfessionalControls()
 
         // Execute arbitrage buttons and Details toggle (will be added dynamically)
         document.addEventListener('click', (e) => {
@@ -2315,7 +2337,7 @@ class TradingDashboard {
     }
 
     setupBacktestingControls() {
-        // Run backtest button
+        // Enhanced backtesting controls
         const runBacktestBtn = document.getElementById('run-backtest')
         if (runBacktestBtn) {
             runBacktestBtn.addEventListener('click', () => this.runBacktest())
@@ -2324,13 +2346,480 @@ class TradingDashboard {
         // Monte Carlo simulation button
         const runMonteCarloBtn = document.getElementById('run-monte-carlo')
         if (runMonteCarloBtn) {
-            runMonteCarloBtn.addEventListener('click', () => this.runMonteCarloSimulation())
+            runMonteCarloBtn.addEventListener('click', () => this.runAdvancedMonteCarloSimulation())
         }
 
         // Compare strategies button
         const compareBtn = document.getElementById('compare-strategies')
         if (compareBtn) {
             compareBtn.addEventListener('click', () => this.compareStrategies())
+        }
+        
+        // 🚀 NEW: Enhanced backtesting controls
+        const arbitrageBtn = document.getElementById('run-arbitrage-strategy')
+        if (arbitrageBtn) {
+            arbitrageBtn.addEventListener('click', () => this.runArbitrageStrategy())
+        }
+        
+        const assetUniverseBtn = document.getElementById('load-asset-universe')
+        if (assetUniverseBtn) {
+            assetUniverseBtn.addEventListener('click', () => this.loadAssetUniverse())
+        }
+        
+        const riskAnalysisBtn = document.getElementById('run-risk-analysis')
+        if (riskAnalysisBtn) {
+            riskAnalysisBtn.addEventListener('click', () => this.runComprehensiveRiskAnalysis())
+        }
+        
+        const multiAssetOptBtn = document.getElementById('run-multi-asset-optimization')
+        if (multiAssetOptBtn) {
+            multiAssetOptBtn.addEventListener('click', () => this.runMultiAssetOptimization())
+        }
+        
+        // Initialize enhanced backtesting interface
+        this.initializeEnhancedBacktesting()
+    }
+    
+    // 🚀 Enhanced Backtesting Features
+    async initializeEnhancedBacktesting() {
+        console.log('🚀 Initializing enhanced backtesting features...')
+        
+        // Load asset universe
+        try {
+            const response = await fetch('/api/backtesting/asset-universe')
+            const assetData = await response.json()
+            
+            console.log(`📊 Loaded ${assetData.totalAssets} assets across ${Object.keys(assetData.assetClasses).length} asset classes`)
+            this.displayAssetUniverse(assetData)
+            
+        } catch (error) {
+            console.error('Error loading asset universe:', error)
+        }
+        
+        // Load arbitrage templates
+        try {
+            const response = await fetch('/api/backtesting/arbitrage-templates')
+            const templates = await response.json()
+            
+            console.log(`📈 Loaded ${templates.count} arbitrage strategy templates`)
+            this.displayArbitrageTemplates(templates)
+            
+        } catch (error) {
+            console.error('Error loading arbitrage templates:', error)
+        }
+    }
+    
+    displayAssetUniverse(assetData) {
+        const container = document.getElementById('asset-universe-display')
+        if (!container) return
+        
+        container.innerHTML = `
+            <div class="bg-card-bg p-4 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold text-accent mb-3">🌍 Global Asset Universe</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 text-sm">
+                    ${Object.entries(assetData.assetClasses).map(([className, data]) => `
+                        <div class="bg-dark-bg p-3 rounded border border-gray-600 hover:border-accent transition-colors">
+                            <div class="font-semibold text-accent">${className.replace(/_/g, ' ').toUpperCase()}</div>
+                            <div class="text-gray-300">${data.count} assets</div>
+                            <div class="text-xs text-gray-400 mt-1">${data.symbols.slice(0, 3).join(', ')}${data.symbols.length > 3 ? '...' : ''}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="mt-4 text-center">
+                    <span class="text-2xl font-bold text-profit">${assetData.totalAssets}</span>
+                    <span class="text-gray-300 ml-2">Total Assets Available</span>
+                </div>
+            </div>
+        `
+    }
+    
+    displayArbitrageTemplates(templates) {
+        const container = document.getElementById('arbitrage-templates-display')
+        if (!container) return
+        
+        container.innerHTML = `
+            <div class="bg-card-bg p-4 rounded-lg border border-gray-700">
+                <h3 class="text-lg font-bold text-accent mb-3">⚡ Arbitrage Strategy Templates</h3>
+                <div class="space-y-3">
+                    ${templates.templates.map(template => `
+                        <div class="bg-dark-bg p-3 rounded border border-gray-600 hover:border-accent transition-colors cursor-pointer"
+                             onclick="window.tradingDashboard.runQuickArbitrageTest('${template.strategyId}')">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <div class="font-semibold text-white">${template.name}</div>
+                                    <div class="text-sm text-gray-400 mt-1">${template.description}</div>
+                                    <div class="text-xs text-accent mt-2">
+                                        Assets: ${template.symbols.join(', ')} | 
+                                        Target Sharpe: ${template.targetSharpe} |
+                                        Max DD: ${(template.maxDrawdown * 100).toFixed(1)}%
+                                    </div>
+                                </div>
+                                <div class="text-xs text-profit font-mono">
+                                    ${template.type.toUpperCase()}
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `
+    }
+    
+    async runArbitrageStrategy() {
+        console.log('🚀 Running arbitrage strategy...')
+        
+        // Show loading state
+        const resultsContainer = document.getElementById('arbitrage-results')
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="bg-card-bg p-6 rounded-lg border border-gray-700 text-center">
+                    <i class="fas fa-spinner fa-spin text-accent text-2xl mb-3"></i>
+                    <div class="text-white">Running arbitrage strategy analysis...</div>
+                    <div class="text-sm text-gray-400 mt-2">Scanning cross-exchange opportunities...</div>
+                </div>
+            `
+        }
+        
+        try {
+            const strategyConfig = {
+                strategyId: 'RELIABLE_ARBITRAGE_DEMO',
+                name: 'Reliable Demo Arbitrage',
+                symbols: ['BTC', 'ETH'],
+                entryThreshold: 0.02,
+                exitThreshold: 0.01,
+                stopLoss: 0.05,
+                takeProfit: 0.03,
+                maxPositionSize: 0.1
+            }
+            
+            const response = await fetch('/api/backtesting/arbitrage-strategy', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(strategyConfig)
+            })
+            
+            const result = await response.json()
+            console.log('✅ Arbitrage strategy completed:', result)
+            
+            this.displayArbitrageResults(result)
+            
+        } catch (error) {
+            console.error('❌ Error running arbitrage strategy:', error)
+            if (resultsContainer) {
+                resultsContainer.innerHTML = `
+                    <div class="bg-card-bg p-6 rounded-lg border border-red-500 text-center">
+                        <i class="fas fa-exclamation-triangle text-loss text-2xl mb-3"></i>
+                        <div class="text-white">Strategy execution failed</div>
+                        <div class="text-sm text-gray-400 mt-2">Please try again or check configuration</div>
+                    </div>
+                `
+            }
+        }
+    }
+    
+    displayArbitrageResults(result) {
+        console.log('📊 Displaying arbitrage results:', result)
+        
+        const resultsContainer = document.getElementById('arbitrage-results')
+        if (!resultsContainer) return
+        
+        if (!result.success) {
+            resultsContainer.innerHTML = `
+                <div class="bg-card-bg p-6 rounded-lg border border-red-500">
+                    <h3 class="text-lg font-bold text-loss mb-4">
+                        ❌ Strategy Execution Failed
+                    </h3>
+                    <p class="text-gray-300">${result.error || 'Unknown error occurred'}</p>
+                </div>
+            `
+            return
+        }
+        
+        const results = result.results || result
+        
+        resultsContainer.innerHTML = `
+            <div class="bg-card-bg p-6 rounded-lg border border-accent">
+                <h3 class="text-lg font-bold text-accent mb-4">
+                    📊 Strategy Results: ${result.strategyId || 'Unknown'}
+                </h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-accent">${results.totalTrades || 0}</div>
+                        <div class="text-sm text-gray-400">Total Trades</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-profit">${results.winRate || 0}%</div>
+                        <div class="text-sm text-gray-400">Win Rate</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold ${results.totalReturn >= 0 ? 'text-profit' : 'text-loss'}">
+                            ${results.totalReturn >= 0 ? '+' : ''}${results.totalReturn || 0}%
+                        </div>
+                        <div class="text-sm text-gray-400">Total Return</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-accent">${results.sharpeRatio || 0}</div>
+                        <div class="text-sm text-gray-400">Sharpe Ratio</div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Strategy Summary:</h4>
+                    <p class="text-gray-300 text-sm">${results.summary || 'Strategy executed successfully.'}</p>
+                </div>
+                
+                ${results.trades && results.trades.length > 0 ? `
+                    <div class="mb-4">
+                        <h4 class="font-semibold mb-2">Recent Trades:</h4>
+                        <div class="max-h-60 overflow-y-auto">
+                            <table class="w-full text-sm">
+                                <thead class="text-gray-400">
+                                    <tr class="border-b border-gray-700">
+                                        <th class="text-left py-2">Time</th>
+                                        <th class="text-left py-2">Side</th>
+                                        <th class="text-left py-2">Price</th>
+                                        <th class="text-left py-2">Qty</th>
+                                        <th class="text-right py-2">Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-300">
+                                    ${results.trades.slice(0, 10).map(trade => `
+                                        <tr class="border-b border-gray-800">
+                                            <td class="py-1">${new Date(trade.timestamp).toLocaleTimeString()}</td>
+                                            <td class="py-1">
+                                                <span class="text-${trade.side === 'buy' ? 'profit' : 'accent'} font-semibold">
+                                                    ${trade.side.toUpperCase()}
+                                                </span>
+                                            </td>
+                                            <td class="py-1">$${trade.price.toLocaleString()}</td>
+                                            <td class="py-1">${trade.quantity}</td>
+                                            <td class="py-1 text-right ${trade.profit >= 0 ? 'text-profit' : 'text-loss'}">
+                                                ${trade.profit >= 0 ? '+' : ''}$${trade.profit.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="flex gap-2 mt-4">
+                    <button onclick="tradingDashboard.runMonteCarloSimulation('${result.strategyId || 'TEST'}')" 
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm">
+                        🎲 Run Monte Carlo
+                    </button>
+                    <button onclick="tradingDashboard.runArbitrageStrategy()" 
+                            class="px-4 py-2 bg-accent hover:bg-accent/80 rounded text-sm">
+                        🔄 Run Again
+                    </button>
+                </div>
+            </div>
+        `
+    }
+    
+    async runQuickArbitrageTest(templateId) {
+        console.log(`🚀 Running quick arbitrage test for template: ${templateId}`)
+        
+        // Show loading state
+        const resultsContainer = document.getElementById('quick-test-results')
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="bg-card-bg p-6 rounded-lg border border-gray-700 text-center">
+                    <i class="fas fa-rocket fa-bounce text-accent text-2xl mb-3"></i>
+                    <div class="text-white">Running Quick Arbitrage Test...</div>
+                    <div class="text-sm text-gray-400 mt-2">Template: ${templateId}</div>
+                </div>
+            `
+        }
+        
+        try {
+            const response = await fetch('/api/backtesting/quick-arbitrage-test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ templateId, timeRange: 90 })
+            })
+            
+            const result = await response.json()
+            console.log('✅ Quick arbitrage test completed:', result)
+            
+            // Display results
+            if (resultsContainer) {
+                resultsContainer.innerHTML = `
+                    <div class="bg-card-bg p-6 rounded-lg border border-accent">
+                        <h3 class="text-lg font-bold text-accent mb-4">
+                            📊 ${result.strategy} - Results
+                        </h3>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-profit">${result.summary.totalOpportunities}</div>
+                                <div class="text-sm text-gray-400">Opportunities</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-accent">${result.summary.profitableOpportunities}</div>
+                                <div class="text-sm text-gray-400">Profitable</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-profit">${result.summary.totalProfit}</div>
+                                <div class="text-sm text-gray-400">Total Return</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-white">${result.summary.sharpeRatio}</div>
+                                <div class="text-sm text-gray-400">Sharpe Ratio</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-loss">${result.summary.maxDrawdown}</div>
+                                <div class="text-sm text-gray-400">Max Drawdown</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-bold text-accent">${result.summary.confidence}%</div>
+                                <div class="text-sm text-gray-400">Confidence</div>
+                            </div>
+                        </div>
+                        <div class="text-center text-sm text-gray-400">
+                            Analysis Period: ${result.timeRange} | Strategy: ${result.templateId}
+                        </div>
+                    </div>
+                `
+            }
+            
+        } catch (error) {
+            console.error('❌ Error running quick arbitrage test:', error)
+        }
+    }
+    
+    async runAdvancedMonteCarloSimulation() {
+        console.log('🎲 Running advanced Monte Carlo simulation...')
+        
+        const resultsContainer = document.getElementById('monte-carlo-results')
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="bg-card-bg p-6 rounded-lg border border-gray-700 text-center">
+                    <i class="fas fa-dice fa-spin text-accent text-2xl mb-3"></i>
+                    <div class="text-white">Running Advanced Monte Carlo Simulation...</div>
+                    <div class="text-sm text-gray-400 mt-2">10,000 iterations with fat-tailed distributions</div>
+                </div>
+            `
+        }
+        
+        try {
+            const config = {
+                strategyConfig: {
+                    name: 'Demo Strategy',
+                    strategyId: 'DEMO_MC'
+                },
+                iterations: 10000,
+                confidenceLevels: [90, 95, 99],
+                stressScenarios: ['market_crash', '2008_crisis', 'covid_2020'],
+                distributionType: 'fat_tailed_student_t'
+            }
+            
+            const response = await fetch('/api/backtesting/advanced-monte-carlo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            
+            const result = await response.json()
+            console.log('✅ Monte Carlo simulation completed:', result)
+            
+            this.displayMonteCarloResults(result)
+            
+        } catch (error) {
+            console.error('❌ Error running Monte Carlo simulation:', error)
+        }
+    }
+    
+    displayMonteCarloResults(result) {
+        const container = document.getElementById('monte-carlo-results')
+        if (!container) return
+        
+        const mcResults = result.monteCarloResults
+        
+        container.innerHTML = `
+            <div class="bg-card-bg p-6 rounded-lg border border-accent">
+                <h3 class="text-lg font-bold text-accent mb-4">
+                    🎲 Advanced Monte Carlo Results (${mcResults.iterations.toLocaleString()} iterations)
+                </h3>
+                
+                <!-- Statistics Grid -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-dark-bg p-3 rounded border border-gray-600 text-center">
+                        <div class="text-lg font-bold text-profit">${(mcResults.statistics.meanReturn * 100).toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Mean Return</div>
+                    </div>
+                    <div class="bg-dark-bg p-3 rounded border border-gray-600 text-center">
+                        <div class="text-lg font-bold text-white">${(mcResults.statistics.stdReturn * 100).toFixed(2)}%</div>
+                        <div class="text-xs text-gray-400">Volatility</div>
+                    </div>
+                    <div class="bg-dark-bg p-3 rounded border border-gray-600 text-center">
+                        <div class="text-lg font-bold text-accent">${mcResults.statistics.skewness.toFixed(2)}</div>
+                        <div class="text-xs text-gray-400">Skewness</div>
+                    </div>
+                    <div class="bg-dark-bg p-3 rounded border border-gray-600 text-center">
+                        <div class="text-lg font-bold text-white">${mcResults.statistics.kurtosis.toFixed(2)}</div>
+                        <div class="text-xs text-gray-400">Kurtosis</div>
+                    </div>
+                </div>
+                
+                <!-- Risk Metrics -->
+                <div class="bg-dark-bg p-4 rounded border border-gray-600 mb-4">
+                    <h4 class="text-accent font-semibold mb-3">Tail Risk Analysis</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div>
+                            <div class="text-gray-400">95% VaR</div>
+                            <div class="font-mono text-loss">${(mcResults.riskMetrics.expectedShortfall95 * 100).toFixed(2)}%</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">99% VaR</div>
+                            <div class="font-mono text-loss">${(mcResults.riskMetrics.expectedShortfall99 * 100).toFixed(2)}%</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">Prob. of Loss</div>
+                            <div class="font-mono text-white">${mcResults.riskMetrics.probabilityOfLoss.toFixed(1)}%</div>
+                        </div>
+                        <div>
+                            <div class="text-gray-400">Max DD (99%)</div>
+                            <div class="font-mono text-loss">${(mcResults.riskMetrics.maxDrawdown99 * 100).toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stress Tests -->
+                <div class="bg-dark-bg p-4 rounded border border-gray-600">
+                    <h4 class="text-accent font-semibold mb-3">Stress Test Results</h4>
+                    <div class="space-y-2">
+                        ${mcResults.stressTests.map(test => `
+                            <div class="flex justify-between items-center text-sm">
+                                <div class="text-white">${test.scenario.replace(/_/g, ' ').toUpperCase()}</div>
+                                <div class="text-loss font-mono">${(test.impactOnReturn * 100).toFixed(2)}%</div>
+                                <div class="text-xs px-2 py-1 rounded ${test.severity === 3 ? 'bg-red-900' : test.severity === 2 ? 'bg-yellow-900' : 'bg-green-900'}">
+                                    Severity ${test.severity}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `
+    }
+    
+    async loadAssetUniverse() {
+        console.log('🌍 Loading comprehensive asset universe...')
+        
+        try {
+            const response = await fetch('/api/backtesting/asset-universe')
+            const assetData = await response.json()
+            
+            this.displayAssetUniverse(assetData)
+            
+            // Show success notification
+            this.showNotification(`✅ Loaded ${assetData.totalAssets} assets across ${Object.keys(assetData.assetClasses).length} asset classes`, 'success')
+            
+        } catch (error) {
+            console.error('Error loading asset universe:', error)
+            this.showNotification('❌ Failed to load asset universe', 'error')
         }
     }
 
@@ -2563,36 +3052,145 @@ class TradingDashboard {
         return true
     }
 
-    async runMonteCarloSimulation() {
-        try {
-            const strategyConfig = this.getBacktestConfiguration()
-            
-            if (!this.validateBacktestConfig(strategyConfig)) {
-                this.showNotification('❌ Invalid configuration for Monte Carlo simulation.', 'error')
-                return
-            }
-
-            const resultsContainer = document.getElementById('backtest-results')
+    async runMonteCarloSimulation(strategyId = 'MC_TEST') {
+        console.log('🎲 Running Monte Carlo simulation for:', strategyId)
+        
+        // Show loading state
+        const resultsContainer = document.getElementById('monte-carlo-results')
+        if (resultsContainer) {
             resultsContainer.innerHTML = `
-                <div class="flex items-center justify-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500 mr-3"></div>
-                    <span>Running Monte Carlo simulation (1000 iterations)...</span>
+                <div class="bg-card-bg p-6 rounded-lg border border-gray-700 text-center">
+                    <i class="fas fa-dice fa-spin text-purple-500 text-2xl mb-3"></i>
+                    <div class="text-white">Running Monte Carlo Simulation...</div>
+                    <div class="text-sm text-gray-400 mt-2">Analyzing risk scenarios...</div>
                 </div>
             `
-
-            const response = await axios.post('/api/backtest/monte-carlo', {
-                ...strategyConfig,
-                iterations: 1000
-            })
-            const { results } = response.data
-
-            this.displayMonteCarloResults(results)
-            this.showNotification('✅ Monte Carlo simulation completed!', 'success')
-
-        } catch (error) {
-            console.error('Monte Carlo simulation error:', error)
-            this.showNotification('❌ Monte Carlo simulation failed.', 'error')
         }
+        
+        try {
+            const mcConfig = {
+                strategyId: strategyId,
+                name: 'Monte Carlo Test',
+                symbols: ['BTC', 'ETH'],
+                entryThreshold: 0.02,
+                exitThreshold: 0.01,
+                stopLoss: 0.05,
+                takeProfit: 0.03,
+                maxPositionSize: 0.1,
+                iterations: 50
+            }
+            
+            const response = await fetch('/api/backtesting/reliable-monte-carlo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(mcConfig)
+            })
+            
+            const result = await response.json()
+            console.log('✅ Monte Carlo completed:', result)
+            
+            this.displayMonteCarloResults(result)
+            
+        } catch (error) {
+            console.error('❌ Monte Carlo simulation error:', error)
+            
+            const resultsContainer = document.getElementById('monte-carlo-results')
+            if (resultsContainer) {
+                resultsContainer.innerHTML = `
+                    <div class="bg-card-bg p-6 rounded-lg border border-red-500 text-center">
+                        <i class="fas fa-exclamation-triangle text-loss text-2xl mb-3"></i>
+                        <div class="text-white">Monte Carlo simulation failed</div>
+                        <div class="text-sm text-gray-400 mt-2">Please try again or check configuration</div>
+                    </div>
+                `
+            }
+        }
+    }
+    
+    displayMonteCarloResults(result) {
+        console.log('📊 Displaying Monte Carlo results:', result)
+        
+        const resultsContainer = document.getElementById('monte-carlo-results')
+        if (!resultsContainer) return
+        
+        if (!result.success) {
+            resultsContainer.innerHTML = `
+                <div class="bg-card-bg p-6 rounded-lg border border-red-500">
+                    <h3 class="text-lg font-bold text-loss mb-4">
+                        ❌ Monte Carlo Simulation Failed
+                    </h3>
+                    <p class="text-gray-300">${result.error || 'Unknown error occurred'}</p>
+                </div>
+            `
+            return
+        }
+        
+        const results = result.results || result
+        
+        resultsContainer.innerHTML = `
+            <div class="bg-card-bg p-6 rounded-lg border border-purple-500">
+                <h3 class="text-lg font-bold text-purple-400 mb-4">
+                    🎲 Monte Carlo Risk Analysis (${result.iterations || 50} iterations)
+                </h3>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-accent">${results.meanReturn || 0}%</div>
+                        <div class="text-sm text-gray-400">Average Return</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-warning">±${results.stdReturn || 0}%</div>
+                        <div class="text-sm text-gray-400">Volatility (1σ)</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-profit">${results.successRate || 0}%</div>
+                        <div class="text-sm text-gray-400">Success Rate</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-loss">${results.worstCase || 0}%</div>
+                        <div class="text-sm text-gray-400">Worst Case</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-profit">${results.bestCase || 0}%</div>
+                        <div class="text-sm text-gray-400">Best Case</div>
+                    </div>
+                    <div class="text-center p-4 bg-gray-800 rounded-lg">
+                        <div class="text-2xl font-bold text-purple-400">95%</div>
+                        <div class="text-sm text-gray-400">Confidence Level</div>
+                    </div>
+                </div>
+                
+                ${results.confidenceInterval95 ? `
+                    <div class="mb-4 p-4 bg-gray-800 rounded-lg">
+                        <h4 class="font-semibold mb-2 text-purple-400">95% Confidence Interval:</h4>
+                        <div class="text-center">
+                            <span class="text-loss font-semibold">${results.confidenceInterval95.lower.toFixed(2)}%</span>
+                            <span class="text-gray-400 mx-4">to</span>
+                            <span class="text-profit font-semibold">${results.confidenceInterval95.upper.toFixed(2)}%</span>
+                        </div>
+                        <p class="text-sm text-gray-400 text-center mt-2">
+                            95% of outcomes fall within this range
+                        </p>
+                    </div>
+                ` : ''}
+                
+                <div class="mb-4">
+                    <h4 class="font-semibold mb-2">Risk Assessment:</h4>
+                    <p class="text-gray-300 text-sm">${result.summary || 'Monte Carlo simulation completed successfully.'}</p>
+                </div>
+                
+                <div class="flex gap-2 mt-4">
+                    <button onclick="tradingDashboard.runMonteCarloSimulation('${result.strategyId || 'MC_TEST'}')" 
+                            class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded text-sm">
+                        🔄 Run Again
+                    </button>
+                    <button onclick="tradingDashboard.runArbitrageStrategy()" 
+                            class="px-4 py-2 bg-accent hover:bg-accent/80 rounded text-sm">
+                        📊 Back to Strategy
+                    </button>
+                </div>
+            </div>
+        `
     }
 
     async compareStrategies() {
@@ -3886,9 +4484,336 @@ class TradingDashboard {
             }
         })
     }
+
+    // Professional AI Agent Management Functions
+    async initializeLegendarySystems() {
+        try {
+            console.log('Initializing legendary trading systems...')
+            
+            const response = await fetch('/api/legendary/initialize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                this.showSystemMessage('Legendary systems initialized successfully', 'success')
+                this.updateLegendarySystemsStatus()
+                return result
+            } else {
+                this.showSystemMessage('Failed to initialize legendary systems', 'error')
+                return null
+            }
+        } catch (error) {
+            console.error('Error initializing legendary systems:', error)
+            this.showSystemMessage('System initialization error', 'error')
+            return null
+        }
+    }
+
+    async updateLegendarySystemsStatus() {
+        try {
+            const response = await fetch('/api/legendary/status')
+            const result = await response.json()
+            
+            if (result.success) {
+                // Update status indicators in the UI
+                const statusElements = {
+                    'advanced-ai-status': result.status.systems.advancedAI,
+                    'institutional-analytics-status': result.status.systems.institutionalAnalytics,
+                    'professional-portfolio-status': result.status.systems.professionalPortfolio,
+                    'market-intelligence-status': result.status.systems.marketIntelligence
+                }
+                
+                Object.entries(statusElements).forEach(([elementId, status]) => {
+                    const element = document.getElementById(elementId)
+                    if (element) {
+                        element.textContent = status
+                        element.className = status === 'OPERATIONAL' ? 'text-profit' : 'text-loss'
+                    }
+                })
+            }
+        } catch (error) {
+            console.error('Error updating legendary systems status:', error)
+        }
+    }
+
+    async startAIAgent() {
+        try {
+            console.log('Starting AI agent...')
+            
+            const config = {
+                riskTolerance: 'medium',
+                targetReturn: 8.0,
+                maxDrawdown: 12.0,
+                autoOptimize: true,
+                reportingInterval: 5
+            }
+            
+            const response = await fetch('/api/ai-agent/start', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                this.showSystemMessage('AI Agent started successfully', 'success')
+                this.updateAIAgentStatus()
+                return result
+            } else {
+                this.showSystemMessage(`AI Agent start failed: ${result.error}`, 'error')
+                return null
+            }
+        } catch (error) {
+            console.error('Error starting AI agent:', error)
+            this.showSystemMessage('AI Agent connection error', 'error')
+            return null
+        }
+    }
+
+    async stopAIAgent() {
+        try {
+            const response = await fetch('/api/ai-agent/stop', {
+                method: 'POST'
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                this.showSystemMessage('AI Agent stopped successfully', 'success')
+                this.updateAIAgentStatus()
+            } else {
+                this.showSystemMessage(`AI Agent stop failed: ${result.error}`, 'error')
+            }
+        } catch (error) {
+            console.error('Error stopping AI agent:', error)
+            this.showSystemMessage('AI Agent connection error', 'error')
+        }
+    }
+
+    async updateAIAgentStatus() {
+        try {
+            const response = await fetch('/api/ai-agent/status')
+            const result = await response.json()
+            
+            const statusElement = document.getElementById('ai-agent-status')
+            if (statusElement) {
+                if (result.success) {
+                    statusElement.textContent = result.status
+                    statusElement.className = result.status === 'ACTIVE' ? 'text-profit' : 'text-warning'
+                } else {
+                    statusElement.textContent = 'ERROR'
+                    statusElement.className = 'text-loss'
+                }
+            }
+        } catch (error) {
+            console.error('Error updating AI agent status:', error)
+        }
+    }
+
+    async runAdvancedMonteCarloSimulation() {
+        try {
+            console.log('Running advanced Monte Carlo simulation...')
+            
+            const config = {
+                strategyId: 'PROFESSIONAL_MC',
+                symbols: ['BTC', 'ETH', 'SOL', 'AAPL', 'GOOGL'],
+                iterations: 1000,
+                confidenceLevel: 0.95,
+                timeHorizon: 30
+            }
+            
+            this.showSystemMessage('Running Monte Carlo simulation...', 'info')
+            
+            const response = await fetch('/api/backtesting/reliable-monte-carlo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(config)
+            })
+            
+            const result = await response.json()
+            
+            if (result.success) {
+                this.displayMonteCarloResults(result.results)
+                this.showSystemMessage('Monte Carlo simulation completed', 'success')
+            } else {
+                this.showSystemMessage(`Monte Carlo failed: ${result.error}`, 'error')
+            }
+        } catch (error) {
+            console.error('Error running Monte Carlo:', error)
+            this.showSystemMessage('Monte Carlo simulation error', 'error')
+        }
+    }
+
+    displayMonteCarloResults(results) {
+        const container = document.getElementById('monte-carlo-results')
+        if (!container) return
+        
+        container.innerHTML = `
+            <div class="bg-gray-900 rounded-lg p-4 space-y-4">
+                <h3 class="text-lg font-semibold text-white mb-3">Monte Carlo Analysis Results</h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-800 p-3 rounded">
+                        <div class="text-sm text-gray-400">Mean Return</div>
+                        <div class="text-lg font-semibold text-profit">${results.meanReturn?.toFixed(2)}%</div>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded">
+                        <div class="text-sm text-gray-400">Success Rate</div>
+                        <div class="text-lg font-semibold text-accent">${results.successRate?.toFixed(1)}%</div>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded">
+                        <div class="text-sm text-gray-400">Best Case</div>
+                        <div class="text-lg font-semibold text-profit">${results.bestCase?.toFixed(2)}%</div>
+                    </div>
+                    <div class="bg-gray-800 p-3 rounded">
+                        <div class="text-sm text-gray-400">Worst Case</div>
+                        <div class="text-lg font-semibold text-loss">${results.worstCase?.toFixed(2)}%</div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-800 p-3 rounded">
+                    <div class="text-sm text-gray-400 mb-2">Risk Metrics</div>
+                    <div class="text-sm space-y-1">
+                        <div>VaR (95%): <span class="text-loss">${results.var95?.toFixed(2)}%</span></div>
+                        <div>CVaR (95%): <span class="text-loss">${results.cvar95?.toFixed(2)}%</span></div>
+                        <div>Volatility: <span class="text-warning">${results.volatility?.toFixed(2)}%</span></div>
+                    </div>
+                </div>
+            </div>
+        `
+    }
+
+    showSystemMessage(message, type = 'info') {
+        const colors = {
+            success: 'bg-profit text-dark-bg',
+            error: 'bg-loss text-white',
+            warning: 'bg-warning text-dark-bg',
+            info: 'bg-accent text-dark-bg'
+        }
+        
+        const messageElement = document.createElement('div')
+        messageElement.className = `fixed top-4 right-4 p-3 rounded-lg z-50 ${colors[type]} animate-fade-in`
+        messageElement.textContent = message
+        
+        document.body.appendChild(messageElement)
+        
+        setTimeout(() => {
+            messageElement.remove()
+        }, 4000)
+    }
+
+    // Enhanced event listener setup for professional features
+    setupEnhancedEventListeners() {
+        // AI Agent controls
+        const startAIBtn = document.getElementById('start-ai-agent')
+        if (startAIBtn) {
+            startAIBtn.addEventListener('click', () => this.startAIAgent())
+        }
+
+        const stopAIBtn = document.getElementById('stop-ai-agent')
+        if (stopAIBtn) {
+            stopAIBtn.addEventListener('click', () => this.stopAIAgent())
+        }
+
+        // Legendary systems controls
+        const initializeLegendaryBtn = document.getElementById('initialize-legendary')
+        if (initializeLegendaryBtn) {
+            initializeLegendaryBtn.addEventListener('click', () => this.initializeLegendarySystems())
+        }
+
+        // Enhanced Monte Carlo
+        const enhancedMonteCarloBtn = document.getElementById('run-enhanced-monte-carlo')
+        if (enhancedMonteCarloBtn) {
+            enhancedMonteCarloBtn.addEventListener('click', () => this.runAdvancedMonteCarloSimulation())
+        }
+
+        // Multi-timeframe analysis
+        const multiTimeframeBtn = document.getElementById('multi-tf-analysis')
+        if (multiTimeframeBtn) {
+            multiTimeframeBtn.addEventListener('click', () => this.loadMultiTimeframeAnalysis())
+        }
+
+        // Cross-asset analysis
+        const crossAssetBtn = document.getElementById('cross-asset-analysis')
+        if (crossAssetBtn) {
+            crossAssetBtn.addEventListener('click', () => this.loadCrossAssetAnalysis())
+        }
+
+        // Intelligence report
+        const intelligenceBtn = document.getElementById('intelligence-report')
+        if (intelligenceBtn) {
+            intelligenceBtn.addEventListener('click', () => this.loadIntelligenceReport())
+        }
+    }
+
+    async loadMultiTimeframeAnalysis() {
+        try {
+            const response = await fetch('/api/portfolio/multi-timeframe')
+            const result = await response.json()
+            
+            if (result.success) {
+                this.displayMultiTimeframeData(result.signals)
+            }
+        } catch (error) {
+            console.error('Error loading multi-timeframe analysis:', error)
+        }
+    }
+
+    async loadCrossAssetAnalysis() {
+        try {
+            const response = await fetch('/api/portfolio/cross-asset-arbitrage')
+            const result = await response.json()
+            
+            if (result.success) {
+                this.displayCrossAssetData(result.opportunities)
+            }
+        } catch (error) {
+            console.error('Error loading cross-asset analysis:', error)
+        }
+    }
+
+    async loadIntelligenceReport() {
+        try {
+            const response = await fetch('/api/intelligence/latest')
+            const result = await response.json()
+            
+            if (result.success) {
+                this.displayIntelligenceData(result.intelligence)
+            }
+        } catch (error) {
+            console.error('Error loading intelligence report:', error)
+        }
+    }
+
+    displayMultiTimeframeData(signals) {
+        console.log('Multi-timeframe signals loaded:', signals)
+    }
+
+    displayCrossAssetData(opportunities) {
+        console.log('Cross-asset opportunities loaded:', opportunities)
+    }
+
+    displayIntelligenceData(intelligence) {
+        console.log('Market intelligence loaded:', intelligence)
+    }
 }
 
 // Initialize the dashboard when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new TradingDashboard()
+    const dashboard = new TradingDashboard()
+    
+    // Setup enhanced event listeners after DOM is ready
+    setTimeout(() => {
+        dashboard.setupEnhancedEventListeners()
+    }, 1000)
 })
