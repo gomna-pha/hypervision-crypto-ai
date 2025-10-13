@@ -77,11 +77,29 @@ class TradingDashboard {
             })
         })
 
-        // Execute arbitrage buttons (will be added dynamically)
+        // Execute arbitrage buttons and Details toggle (will be added dynamically)
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('execute-arbitrage')) {
                 const opportunityData = JSON.parse(e.target.dataset.opportunity)
                 this.executeArbitrage(opportunityData)
+            }
+            
+            // Details toggle functionality
+            if (e.target.classList.contains('toggle-details')) {
+                const index = e.target.dataset.index
+                const detailsDiv = e.target.closest('.arbitrage-card').querySelector('.arbitrage-details')
+                
+                if (detailsDiv.classList.contains('hidden')) {
+                    detailsDiv.classList.remove('hidden')
+                    e.target.textContent = 'Hide Details'
+                    e.target.classList.add('bg-accent', 'text-dark-bg')
+                    e.target.classList.remove('bg-gray-700', 'text-white')
+                } else {
+                    detailsDiv.classList.add('hidden')
+                    e.target.textContent = 'Details'
+                    e.target.classList.remove('bg-accent', 'text-dark-bg')
+                    e.target.classList.add('bg-gray-700', 'text-white')
+                }
             }
         })
 
@@ -343,66 +361,192 @@ class TradingDashboard {
             })
             
             container.innerHTML = opportunities.map((opp, index) => {
-                const icon = opp.type.includes('Cross') ? '📊' : 
-                           opp.type.includes('Triangular') ? '📐' : '🧠'
+                // Professional type indicators without emojis
+                const typeClass = opp.type.includes('Cross') ? 'bg-blue-500' : 
+                                opp.type.includes('Triangular') ? 'bg-purple-500' : 
+                                opp.type.includes('AI-Enhanced') ? 'bg-green-500' :
+                                opp.type.includes('Hyperbolic') ? 'bg-orange-500' : 'bg-gray-500'
+                
+                const typeLabel = opp.type.includes('Cross') ? 'CROSS' : 
+                                opp.type.includes('Triangular') ? 'TRIANG' : 
+                                opp.type.includes('AI-Enhanced') ? 'AI-ML' :
+                                opp.type.includes('Hyperbolic') ? 'HYPER' : 'STAT'
                 
                 return `
-                    <div class="border border-gray-700 rounded-lg p-4 hover:border-accent transition-colors">
+                    <div class="border border-gray-700 rounded-lg p-4 hover:border-accent transition-colors arbitrage-card" data-index="${index}">
                         <div class="flex items-center justify-between mb-3">
                             <div class="flex items-center">
-                                <span class="text-xl mr-2">${icon}</span>
+                                <span class="text-xs font-bold px-2 py-1 rounded ${typeClass} text-white mr-3">${typeLabel}</span>
                                 <div>
                                     <div class="font-semibold text-accent">${opp.type}</div>
                                     <div class="text-sm text-gray-400">${opp.pair}</div>
                                 </div>
                             </div>
                             <div class="text-right">
-                                <div class="text-lg font-bold text-profit">+${opp.profit}% ($${opp.profitUSD})</div>
+                                <div class="text-lg font-bold text-profit">+${opp.profit}% ($${opp.profitUSD?.toLocaleString() || opp.profitUSD})</div>
                                 <div class="text-sm text-gray-400">Est. ${opp.executionTime} execution</div>
                             </div>
                         </div>
                         
-                        ${opp.buyPrice ? `
-                            <div class="grid grid-cols-3 gap-4 text-sm mb-3">
-                                <div>
-                                    <div class="text-gray-400">Buy Price:</div>
-                                    <div class="font-semibold">$${opp.buyPrice.toFixed(2)}</div>
+                        <!-- Basic Overview -->
+                        <div class="arbitrage-overview">
+                            ${opp.buyPrice ? `
+                                <div class="grid grid-cols-3 gap-4 text-sm mb-3">
+                                    <div>
+                                        <div class="text-gray-400">Buy Price:</div>
+                                        <div class="font-semibold">$${opp.buyPrice.toFixed(2)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">Sell Price:</div>
+                                        <div class="font-semibold">$${opp.sellPrice.toFixed(2)}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">Volume:</div>
+                                        <div class="font-semibold">${opp.volume} ${opp.pair?.split(' ')[0] || 'BTC'}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-gray-400">Sell Price:</div>
-                                    <div class="font-semibold">$${opp.sellPrice.toFixed(2)}</div>
+                            ` : ''}
+                            
+                            ${opp.zScore ? `
+                                <div class="grid grid-cols-3 gap-4 text-sm mb-3">
+                                    <div>
+                                        <div class="text-gray-400">Z-Score:</div>
+                                        <div class="font-semibold">${opp.zScore}σ</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">Correlation:</div>
+                                        <div class="font-semibold">${opp.correlation}</div>
+                                    </div>
+                                    <div>
+                                        <div class="text-gray-400">FinBERT:</div>
+                                        <div class="font-semibold">+${opp.finBERT}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-gray-400">Volume:</div>
-                                    <div class="font-semibold">${opp.volume} BTC</div>
+                            ` : ''}
+                            
+                            ${opp.confidence ? `
+                                <div class="flex justify-between items-center text-sm mb-3">
+                                    <span class="text-gray-400">Confidence Level:</span>
+                                    <span class="font-semibold text-accent">${opp.confidence}%</span>
                                 </div>
-                            </div>
-                        ` : ''}
-                        
-                        ${opp.zScore ? `
-                            <div class="grid grid-cols-3 gap-4 text-sm mb-3">
-                                <div>
-                                    <div class="text-gray-400">Z-Score:</div>
-                                    <div class="font-semibold">${opp.zScore}σ</div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Detailed Information (Hidden by default) -->
+                        <div class="arbitrage-details hidden mt-4 pt-4 border-t border-gray-700">
+                            ${opp.aiSignal ? `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-accent mb-2">AI Fusion Components</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-400">Hyperbolic CNN:</div>
+                                            <div class="font-semibold">${opp.signalComponents?.hyperbolicCNN || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">LSTM-Transformer:</div>
+                                            <div class="font-semibold">${opp.signalComponents?.lstmTransformer || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">FinBERT:</div>
+                                            <div class="font-semibold">${opp.signalComponents?.finBERT || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Classical:</div>
+                                            <div class="font-semibold">${opp.signalComponents?.classicalArbitrage || 'N/A'}</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-gray-400">Correlation:</div>
-                                    <div class="font-semibold">${opp.correlation}</div>
+                            ` : ''}
+                            
+                            ${opp.hyperbolicMetrics ? `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-accent mb-2">Hyperbolic Space Metrics</h4>
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-400">Distance:</div>
+                                            <div class="font-semibold">${opp.hyperbolicMetrics.distance?.toFixed(4) || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Angle:</div>
+                                            <div class="font-semibold">${opp.hyperbolicMetrics.angle?.toFixed(4) || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Curvature:</div>
+                                            <div class="font-semibold">${opp.hyperbolicMetrics.curvature || 'N/A'}</div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <div class="text-gray-400">FinBERT:</div>
-                                    <div class="font-semibold">+${opp.finBERT}</div>
+                            ` : ''}
+                            
+                            ${opp.region ? `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-accent mb-2">Geographic Information</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-400">Region:</div>
+                                            <div class="font-semibold">${opp.region}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Transfer Time:</div>
+                                            <div class="font-semibold">${opp.transferTime || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Buy Exchange:</div>
+                                            <div class="font-semibold">${opp.buyExchange || 'N/A'}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Sell Exchange:</div>
+                                            <div class="font-semibold">${opp.sellExchange || 'N/A'}</div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ` : ''}
+                            ` : ''}
+
+                            ${opp.riskMetrics ? `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-accent mb-2">Risk Analysis</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-400">Distance Risk:</div>
+                                            <div class="font-semibold">${opp.riskMetrics.distanceRisk}%</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Volatility Risk:</div>
+                                            <div class="font-semibold">${opp.riskMetrics.volatilityRisk}%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+
+                            ${opp.spaceGeometry ? `
+                                <div class="mb-4">
+                                    <h4 class="font-semibold text-accent mb-2">Space Geometry</h4>
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <div class="text-gray-400">Model:</div>
+                                            <div class="font-semibold">${opp.spaceGeometry.model}</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Coordinates:</div>
+                                            <div class="font-semibold">[${opp.spaceGeometry.coordinates?.map(c => c.toFixed(3)).join(', ') || 'N/A'}]</div>
+                                        </div>
+                                        <div>
+                                            <div class="text-gray-400">Curvature:</div>
+                                            <div class="font-semibold">${opp.spaceGeometry.curvature}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
                         
                         <div class="flex space-x-2">
                             <button class="execute-arbitrage bg-accent text-dark-bg px-4 py-2 rounded text-sm font-semibold hover:bg-opacity-80 flex items-center"
                                     data-opportunity='${JSON.stringify(opp)}'>
-                                ⚡ Execute Arbitrage
+                                Execute Arbitrage
                             </button>
-                            <button class="bg-gray-700 text-white px-4 py-2 rounded text-sm hover:bg-gray-600">
-                                📊 Details
+                            <button class="toggle-details bg-gray-700 text-white px-4 py-2 rounded text-sm hover:bg-gray-600" 
+                                    data-index="${index}">
+                                Details
                             </button>
                         </div>
                     </div>
