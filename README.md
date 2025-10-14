@@ -24,6 +24,10 @@ A **professional-grade, AI-enhanced arbitrage trading system** that delivers **1
 **URL**: https://3000-i5rfq5u4tjtv4lqd3cdng-5185f4aa.sandbox.novita.ai
 **Status**: 🟢 **LIVE & FULLY OPERATIONAL**
 
+### **📁 GitHub Repository**
+**Repository**: https://github.com/gomna-pha/hypervision-crypto-ai
+**Status**: 🟢 **UPDATED & SYNCHRONIZED**
+
 ### **🔑 Key Features to Test**
 1. **Navigate to BACKTESTING section**
 2. **Run Arbitrage Strategies** - Guaranteed working results
@@ -221,5 +225,6 @@ curl -X POST -H "Content-Type: application/json" \
 
 **🎉 This system represents the successful completion of your vision: a world-class, AI-enhanced arbitrage trading platform that exceeds both industry and academic standards. Ready for professional deployment!**
 
-**Last Updated**: October 13, 2025  
+**Last Updated**: October 14, 2025  
 **Status**: 🟢 **FULLY OPERATIONAL & PRODUCTION-READY**
+**GitHub Repository**: https://github.com/gomna-pha/hypervision-crypto-ai
