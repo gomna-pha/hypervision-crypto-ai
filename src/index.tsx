@@ -3737,13 +3737,22 @@ app.get('/', (c) => {
             theme: {
               extend: {
                 colors: {
-                  'dark-bg': '#0f1419',
-                  'card-bg': '#1a1f29',
-                  'accent': '#00d4aa',
-                  'danger': '#ff4757',
-                  'warning': '#ffa502',
-                  'profit': '#2ed573',
-                  'loss': '#ff4757'
+                  // 95% Cream Color Variations (replacing dark theme)
+                  'dark-bg': '#f7f5f3',           // Primary cream background
+                  'card-bg': '#f4f2ef',           // Medium cream for cards
+                  'accent': '#1e2a4a',            // Navy for accents (0.5%)
+                  'danger': '#d4a574',            // Cream-tinted danger
+                  'warning': '#e6d0a0',           // Cream-tinted warning
+                  'profit': '#d4e6d4',            // Cream-tinted success
+                  'loss': '#f0d4d4',              // Cream-tinted error
+                  
+                  // Additional cream variations
+                  'cream-light': '#faf9f7',       // Lightest cream
+                  'cream-medium': '#f4f2ef',      // Medium cream
+                  'cream-dark': '#f0ede9',        // Darker cream
+                  'cream-accent': '#ece8e3',      // Accent cream
+                  'text-primary': '#2d2925',      // Dark brown text
+                  'text-secondary': '#5a524a'     // Medium brown text
                 }
               }
             }
@@ -3751,9 +3760,9 @@ app.get('/', (c) => {
         </script>
         <link href="/static/style.css" rel="stylesheet">
     </head>
-    <body class="bg-dark-bg text-white font-mono">
+    <body class="bg-dark-bg text-text-primary font-mono">
         <!-- Navigation -->
-        <nav class="bg-card-bg border-b border-gray-700 px-6 py-3">
+        <nav class="bg-card-bg border-b border-cream-dark px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-8">
                     <h1 class="text-2xl font-bold text-accent">GOMNA</h1>
@@ -3787,7 +3796,7 @@ app.get('/', (c) => {
                         </button>
                     </div>
                 </div>
-                <div class="text-sm text-gray-400">
+                <div class="text-sm text-text-secondary">
                     <span id="current-time"></span>
                 </div>
             </div>
@@ -3801,8 +3810,8 @@ app.get('/', (c) => {
                 <div id="dashboard" class="section active">
                     <!-- Dashboard Header -->
                     <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-white mb-2">Trading Dashboard</h2>
-                        <p class="text-gray-400 text-lg">Real-time arbitrage monitoring with hyperbolic space analysis</p>
+                        <h2 class="text-3xl font-bold text-text-primary mb-2">Trading Dashboard</h2>
+                        <p class="text-text-secondary text-lg">Real-time arbitrage monitoring with hyperbolic space analysis</p>
                     </div>
 
                     <!-- Top Row: Core Trading Data -->
@@ -3810,13 +3819,13 @@ app.get('/', (c) => {
                         <!-- Live Market Feeds -->
                         <div class="col-span-4 bg-card-bg rounded-xl p-6 border-l-4 border-accent">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-broadcast-tower mr-3 text-accent text-lg"></i>
                                     Market Feeds
                                 </h3>
                                 <div class="flex items-center space-x-2">
                                     <div class="w-2 h-2 bg-profit rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-gray-400 font-medium">LIVE</span>
+                                    <span class="text-xs text-text-secondary font-medium">LIVE</span>
                                 </div>
                             </div>
                             
@@ -3824,7 +3833,7 @@ app.get('/', (c) => {
                                 <!-- Market data will be populated here -->
                             </div>
                             
-                            <div class="border-t border-gray-700 pt-4">
+                            <div class="border-t border-cream-dark pt-4">
                                 <h4 class="text-sm font-bold mb-3 text-warning uppercase tracking-wide">Cross-Exchange Spreads</h4>
                                 <div id="spreads" class="space-y-2 text-sm">
                                     <!-- Spreads will be populated here -->
@@ -3835,13 +3844,13 @@ app.get('/', (c) => {
                         <!-- Social Sentiment & Economic Data -->
                         <div class="col-span-4 bg-card-bg rounded-xl p-6 border-l-4 border-profit">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-chart-line mr-3 text-profit text-lg"></i>
                                     Market Sentiment
                                 </h3>
                                 <div class="flex items-center space-x-2">
                                     <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-gray-400 font-medium">AUTO</span>
+                                    <span class="text-xs text-text-secondary font-medium">AUTO</span>
                                 </div>
                             </div>
                             
@@ -3849,7 +3858,7 @@ app.get('/', (c) => {
                                 <!-- Sentiment data will be populated here -->
                             </div>
                             
-                            <div class="border-t border-gray-700 pt-4">
+                            <div class="border-t border-cream-dark pt-4">
                                 <h4 class="text-sm font-bold mb-3 text-accent uppercase tracking-wide">Economic Indicators</h4>
                                 <div id="economic-indicators" class="space-y-2 text-sm">
                                     <!-- Economic data will be populated here -->
@@ -3860,7 +3869,7 @@ app.get('/', (c) => {
                         <!-- Enhanced Hyperbolic Space Engine -->
                         <div class="col-span-4 bg-card-bg rounded-xl p-6 border-l-4 border-warning">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-atom mr-3 text-accent text-lg"></i>
                                     Hyperbolic Engine
                                 </h3>
@@ -3871,11 +3880,11 @@ app.get('/', (c) => {
                             
                             <!-- Visualization Toggle -->
                             <div class="flex justify-center mb-4">
-                                <div class="bg-gray-700 rounded-lg p-1 flex">
+                                <div class="bg-cream-dark rounded-lg p-1 flex">
                                     <button id="viz-toggle-patterns" class="px-4 py-2 rounded text-xs font-semibold bg-accent text-dark-bg transition-all">
                                         Patterns
                                     </button>
-                                    <button id="viz-toggle-clustering" class="px-4 py-2 rounded text-xs font-semibold text-gray-300 hover:text-white transition-all">
+                                    <button id="viz-toggle-clustering" class="px-4 py-2 rounded text-xs font-semibold text-gray-300 hover:text-text-primary transition-all">
                                         Asset Clustering
                                     </button>
                                 </div>
@@ -3887,7 +3896,7 @@ app.get('/', (c) => {
                                     <div class="text-warning font-semibold text-sm">Pattern Analysis Model</div>
                                 </div>
                                 <div id="hyperbolic-canvas" class="mb-4">
-                                    <canvas id="poincare-disk" width="350" height="350" class="mx-auto bg-gray-900 rounded-full shadow-lg"></canvas>
+                                    <canvas id="poincare-disk" width="350" height="350" class="mx-auto bg-cream-light rounded-full shadow-lg"></canvas>
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between items-center">
@@ -3911,7 +3920,7 @@ app.get('/', (c) => {
                                     <div class="text-profit font-semibold text-sm">Real-Time Asset Clustering</div>
                                 </div>
                                 <div id="clustering-canvas" class="mb-4">
-                                    <canvas id="asset-clustering-disk" width="350" height="350" class="mx-auto bg-gray-900 rounded-full shadow-lg"></canvas>
+                                    <canvas id="asset-clustering-disk" width="350" height="350" class="mx-auto bg-cream-light rounded-full shadow-lg"></canvas>
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between items-center">
@@ -3926,15 +3935,15 @@ app.get('/', (c) => {
                                         <span class="text-gray-300">Cluster Stability:</span>
                                         <span id="cluster-stability" class="${clusteringMetrics.stabilityClass} font-semibold">${clusteringMetrics.stability}</span>
                                     </div>
-                                    <div class="flex justify-between items-center border-t border-gray-700 pt-2 mt-2">
-                                        <span class="text-gray-400 text-xs">Last Updated:</span>
-                                        <span id="clustering-timestamp" class="text-gray-400 text-xs font-mono"></span>
+                                    <div class="flex justify-between items-center border-t border-cream-dark pt-2 mt-2">
+                                        <span class="text-text-secondary text-xs">Last Updated:</span>
+                                        <span id="clustering-timestamp" class="text-text-secondary text-xs font-mono"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- Asset Legend -->
-                                <div class="mt-4 p-3 bg-gray-800 rounded-lg">
-                                    <div class="text-gray-400 font-semibold mb-2 text-xs uppercase tracking-wide">Asset Legend:</div>
+                                <div class="mt-4 p-3 bg-cream-accent rounded-lg">
+                                    <div class="text-text-secondary font-semibold mb-2 text-xs uppercase tracking-wide">Asset Legend:</div>
                                     <div id="asset-legend" class="space-y-1 text-xs">
                                         <!-- Will be populated dynamically -->
                                     </div>
@@ -3948,7 +3957,7 @@ app.get('/', (c) => {
                         <!-- Arbitrage Opportunities - Full Width -->
                         <div class="col-span-12 bg-card-bg rounded-xl p-6 border-l-4 border-profit">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-bullseye mr-3 text-accent text-lg"></i>
                                     Live Arbitrage Opportunities
                                 </h3>
@@ -3956,7 +3965,7 @@ app.get('/', (c) => {
                                     <span id="active-count" class="bg-gradient-to-r from-profit to-accent text-dark-bg px-4 py-2 rounded-lg text-sm font-bold">
                                         6 ACTIVE
                                     </span>
-                                    <span class="text-sm text-gray-400 flex items-center">
+                                    <span class="text-sm text-text-secondary flex items-center">
                                         <i class="fas fa-clock mr-2"></i>
                                         Last scan: <span id="last-scan" class="ml-1 font-semibold"></span>
                                     </span>
@@ -3973,7 +3982,7 @@ app.get('/', (c) => {
                         <!-- Strategy Performance -->
                         <div class="col-span-6 bg-card-bg rounded-xl p-6 border-l-4 border-accent">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-chart-bar mr-3 text-accent text-lg"></i>
                                     Strategy Performance
                                 </h3>
@@ -3983,21 +3992,21 @@ app.get('/', (c) => {
                             </div>
                             
                             <div class="grid grid-cols-2 gap-6">
-                                <div class="text-center p-4 bg-gray-800 rounded-lg">
+                                <div class="text-center p-4 bg-cream-accent rounded-lg">
                                     <div class="text-3xl font-bold text-profit mb-2">+$4,260</div>
-                                    <div class="text-sm text-gray-400 font-medium">Total P&L Today</div>
+                                    <div class="text-sm text-text-secondary font-medium">Total P&L Today</div>
                                 </div>
-                                <div class="text-center p-4 bg-gray-800 rounded-lg">
+                                <div class="text-center p-4 bg-cream-accent rounded-lg">
                                     <div class="text-3xl font-bold text-accent mb-2">82.7%</div>
-                                    <div class="text-sm text-gray-400 font-medium">Combined Win Rate</div>
+                                    <div class="text-sm text-text-secondary font-medium">Combined Win Rate</div>
                                 </div>
-                                <div class="text-center p-4 bg-gray-800 rounded-lg">
-                                    <div class="text-3xl font-bold text-white mb-2">50</div>
-                                    <div class="text-sm text-gray-400 font-medium">Total Executions</div>
+                                <div class="text-center p-4 bg-cream-accent rounded-lg">
+                                    <div class="text-3xl font-bold text-text-primary mb-2">50</div>
+                                    <div class="text-sm text-text-secondary font-medium">Total Executions</div>
                                 </div>
-                                <div class="text-center p-4 bg-gray-800 rounded-lg">
+                                <div class="text-center p-4 bg-cream-accent rounded-lg">
                                     <div class="text-3xl font-bold text-warning mb-2">47μs</div>
-                                    <div class="text-sm text-gray-400 font-medium">Avg Execution Time</div>
+                                    <div class="text-sm text-text-secondary font-medium">Avg Execution Time</div>
                                 </div>
                             </div>
                         </div>
@@ -4005,16 +4014,16 @@ app.get('/', (c) => {
                         <!-- Order Book -->
                         <div class="col-span-6 bg-card-bg rounded-xl p-6 border-l-4 border-warning">
                             <div class="flex items-center justify-between mb-6">
-                                <h3 class="text-xl font-bold text-white flex items-center">
+                                <h3 class="text-xl font-bold text-text-primary flex items-center">
                                     <i class="fas fa-list mr-3 text-accent text-lg"></i>
                                     Order Book Depth
                                 </h3>
                                 <div class="flex items-center space-x-2">
                                     <div class="w-2 h-2 bg-warning rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-gray-400 font-medium">DEPTH</span>
+                                    <span class="text-xs text-text-secondary font-medium">DEPTH</span>
                                 </div>
                             </div>
-                            <div id="order-book" class="bg-gray-800 rounded-lg p-4">
+                            <div id="order-book" class="bg-cream-accent rounded-lg p-4">
                                 <!-- Order book will be populated here -->
                             </div>
                         </div>
@@ -4037,16 +4046,16 @@ app.get('/', (c) => {
                                     <div class="flex items-center space-x-4">
                                         <div class="flex space-x-2">
                                             <button class="symbol-btn active bg-accent text-dark-bg px-3 py-1 rounded font-semibold text-sm" data-symbol="BTC">BTC</button>
-                                            <button class="symbol-btn bg-gray-700 text-white px-3 py-1 rounded font-semibold text-sm hover:bg-gray-600" data-symbol="ETH">ETH</button>
-                                            <button class="symbol-btn bg-gray-700 text-white px-3 py-1 rounded font-semibold text-sm hover:bg-gray-600" data-symbol="SOL">SOL</button>
+                                            <button class="symbol-btn bg-cream-dark text-text-primary px-3 py-1 rounded font-semibold text-sm hover:bg-gray-600" data-symbol="ETH">ETH</button>
+                                            <button class="symbol-btn bg-cream-dark text-text-primary px-3 py-1 rounded font-semibold text-sm hover:bg-gray-600" data-symbol="SOL">SOL</button>
                                         </div>
                                         <div class="flex space-x-2">
                                             <button class="timeframe-btn active bg-accent text-dark-bg px-3 py-1 rounded text-sm font-semibold" data-timeframe="1m">1m</button>
-                                            <button class="timeframe-btn bg-gray-700 text-white px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="5m">5m</button>
-                                            <button class="timeframe-btn bg-gray-700 text-white px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="15m">15m</button>
-                                            <button class="timeframe-btn bg-gray-700 text-white px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="1h">1h</button>
+                                            <button class="timeframe-btn bg-cream-dark text-text-primary px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="5m">5m</button>
+                                            <button class="timeframe-btn bg-cream-dark text-text-primary px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="15m">15m</button>
+                                            <button class="timeframe-btn bg-cream-dark text-text-primary px-3 py-1 rounded text-sm hover:bg-gray-600" data-timeframe="1h">1h</button>
                                         </div>
-                                        <button id="analyze-chart" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-1 rounded text-sm font-semibold hover:from-purple-600 hover:to-pink-600">
+                                        <button id="analyze-chart" class="bg-gradient-to-r from-purple-500 to-pink-500 text-text-primary px-4 py-1 rounded text-sm font-semibold hover:from-purple-600 hover:to-pink-600">
                                             <i class="fas fa-brain mr-2"></i>Analyze Pattern
                                         </button>
                                     </div>
@@ -4054,14 +4063,14 @@ app.get('/', (c) => {
                                 
                                 <!-- Candlestick Chart -->
                                 <div class="col-span-8">
-                                    <div class="bg-gray-900 rounded-lg p-4" style="height: 400px;">
+                                    <div class="bg-cream-light rounded-lg p-4" style="height: 400px;">
                                         <canvas id="candlestick-chart" width="600" height="350"></canvas>
                                     </div>
                                 </div>
                                 
                                 <!-- Hyperbolic CNN Analysis Panel -->
                                 <div class="col-span-4 space-y-4">
-                                    <div class="bg-gray-800 rounded-lg p-4">
+                                    <div class="bg-cream-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">🎯 Pattern Analysis</h4>
                                         <div id="pattern-analysis" class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4083,7 +4092,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
                                     
-                                    <div class="bg-gray-800 rounded-lg p-4">
+                                    <div class="bg-cream-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">⚗️ Hyperbolic Metrics</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4101,7 +4110,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
                                     
-                                    <div class="bg-gray-800 rounded-lg p-4">
+                                    <div class="bg-cream-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">⚡ Arbitrage Timing</h4>
                                         <div id="arbitrage-timing" class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4117,7 +4126,7 @@ app.get('/', (c) => {
                                                 <span id="risk-level" class="text-profit">--</span>
                                             </div>
                                         </div>
-                                        <div id="timing-recommendation" class="mt-3 p-2 bg-gray-900 rounded text-xs">
+                                        <div id="timing-recommendation" class="mt-3 p-2 bg-cream-light rounded text-xs">
                                             Monitoring market patterns...
                                         </div>
                                     </div>
@@ -4129,7 +4138,7 @@ app.get('/', (c) => {
                                 
                                 <!-- Real-time Pattern Alerts -->
                                 <div class="col-span-12 mt-4">
-                                    <div class="bg-gray-800 rounded-lg p-4">
+                                    <div class="bg-cream-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 flex items-center">
                                             <i class="fas fa-bell mr-2 text-warning"></i>
                                             Real-time Pattern Alerts
@@ -4197,7 +4206,7 @@ app.get('/', (c) => {
 
                             <div class="mt-6">
                                 <h4 class="text-md font-semibold mb-3 text-warning"><i class="fas fa-chart-line mr-2"></i>Economic Trends</h4>
-                                <div id="economic-trends-chart" class="bg-gray-900 rounded-lg p-2">
+                                <div id="economic-trends-chart" class="bg-cream-light rounded-lg p-2">
                                     <canvas id="trends-chart" width="300" height="200"></canvas>
                                 </div>
                             </div>
@@ -4223,7 +4232,7 @@ app.get('/', (c) => {
                                 <i class="fas fa-robot mr-2 text-accent"></i>
                                 GOMNA AI Assistant
                             </h3>
-                            <div id="chat-container" class="h-96 overflow-y-auto bg-gray-900 rounded p-4 mb-4">
+                            <div id="chat-container" class="h-96 overflow-y-auto bg-cream-light rounded p-4 mb-4">
                                 <div class="chat-message ai-message mb-4">
                                     <div class="font-semibold text-accent mb-1">GOMNA AI</div>
                                     <div>Welcome to your advanced trading assistant! I can help you with real-time market analysis, arbitrage evaluation, risk assessment, and trading strategy recommendations. What would you like to analyze?</div>
@@ -4231,19 +4240,19 @@ app.get('/', (c) => {
                             </div>
                             <div class="flex space-x-2">
                                 <input type="text" id="chat-input" placeholder="Ask me anything about trading..." 
-                                       class="flex-1 bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white">
+                                       class="flex-1 bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary">
                                 <button id="send-message" class="bg-accent text-dark-bg px-4 py-2 rounded hover:bg-opacity-80">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
                             </div>
                             <div class="mt-4 flex space-x-2 text-sm">
-                                <button class="quick-query bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded" data-query="Analyze current market opportunities">
+                                <button class="quick-query bg-cream-dark hover:bg-gray-600 px-3 py-1 rounded" data-query="Analyze current market opportunities">
                                     <i class="fas fa-chart-line mr-1"></i>Market Analysis
                                 </button>
-                                <button class="quick-query bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded" data-query="Assess portfolio risk">
+                                <button class="quick-query bg-cream-dark hover:bg-gray-600 px-3 py-1 rounded" data-query="Assess portfolio risk">
                                     <i class="fas fa-shield-alt mr-1"></i>Risk Assessment
                                 </button>
-                                <button class="quick-query bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded" data-query="Explain arbitrage strategy">
+                                <button class="quick-query bg-cream-dark hover:bg-gray-600 px-3 py-1 rounded" data-query="Explain arbitrage strategy">
                                     <i class="fas fa-exchange-alt mr-1"></i>Arbitrage Strategy
                                 </button>
                             </div>
@@ -4272,37 +4281,37 @@ app.get('/', (c) => {
                 <div id="backtesting" class="section">
                     <!-- Header -->
                     <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-white mb-2 flex items-center">
+                        <h2 class="text-3xl font-bold text-text-primary mb-2 flex items-center">
                             <i class="fas fa-chart-bar mr-3 text-accent"></i>
                             Professional Backtesting Engine
                             <span class="ml-4 text-sm">
                                 <span class="bg-accent text-dark-bg px-3 py-1 rounded-full text-xs font-bold">INSTITUTIONAL GRADE</span>
                             </span>
                         </h2>
-                        <p class="text-gray-400 text-lg">Professional-grade backtesting with 150+ assets, advanced arbitrage strategies, and comprehensive risk analytics</p>
+                        <p class="text-text-secondary text-lg">Professional-grade backtesting with 150+ assets, advanced arbitrage strategies, and comprehensive risk analytics</p>
                     </div>
 
                     <!-- Quick Stats Bar -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                        <div class="bg-card-bg p-4 rounded-lg border border-gray-700 text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
                             <div class="text-2xl font-bold text-accent">150+</div>
-                            <div class="text-xs text-gray-400 uppercase tracking-wide">Total Assets</div>
+                            <div class="text-xs text-text-secondary uppercase tracking-wide">Total Assets</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-gray-700 text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
                             <div class="text-2xl font-bold text-profit">35+</div>
-                            <div class="text-xs text-gray-400 uppercase tracking-wide">Risk Metrics</div>
+                            <div class="text-xs text-text-secondary uppercase tracking-wide">Risk Metrics</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-gray-700 text-center">
-                            <div class="text-2xl font-bold text-white">7</div>
-                            <div class="text-xs text-gray-400 uppercase tracking-wide">Asset Classes</div>
+                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                            <div class="text-2xl font-bold text-text-primary">7</div>
+                            <div class="text-xs text-text-secondary uppercase tracking-wide">Asset Classes</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-gray-700 text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
                             <div class="text-2xl font-bold text-accent">4</div>
-                            <div class="text-xs text-gray-400 uppercase tracking-wide">Arbitrage Types</div>
+                            <div class="text-xs text-text-secondary uppercase tracking-wide">Arbitrage Types</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-gray-700 text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
                             <div class="text-2xl font-bold text-profit">10K+</div>
-                            <div class="text-xs text-gray-400 uppercase tracking-wide">Monte Carlo</div>
+                            <div class="text-xs text-text-secondary uppercase tracking-wide">Monte Carlo</div>
                         </div>
                     </div>
 
@@ -4312,14 +4321,14 @@ app.get('/', (c) => {
                         <div class="col-span-4 space-y-6">
                             <!-- Asset Universe Display -->
                             <div id="asset-universe-display">
-                                <div class="bg-card-bg p-4 rounded-lg border border-gray-700">
+                                <div class="bg-card-bg p-4 rounded-lg border border-cream-dark">
                                     <div class="flex items-center justify-between mb-3">
                                         <h3 class="text-lg font-bold text-accent"><i class="fas fa-globe mr-2"></i>Asset Universe</h3>
                                         <button id="load-asset-universe" class="text-xs bg-accent text-dark-bg px-2 py-1 rounded hover:bg-opacity-80">
                                             Load
                                         </button>
                                     </div>
-                                    <div class="text-center text-gray-400 py-4">
+                                    <div class="text-center text-text-secondary py-4">
                                         <i class="fas fa-globe text-2xl mb-2"></i>
                                         <div class="text-sm">Click Load to see 150+ assets</div>
                                     </div>
@@ -4327,19 +4336,19 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Strategy Configuration -->
-                            <div class="bg-card-bg rounded-lg p-4 border border-gray-700">
+                            <div class="bg-card-bg rounded-lg p-4 border border-cream-dark">
                                 <h4 class="font-semibold mb-3 text-accent">Strategy Configuration</h4>
                                 
                                 <div class="space-y-3">
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Strategy Name</label>
                                         <input id="strategy-name" type="text" placeholder="Advanced Arbitrage Strategy" 
-                                               class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                               class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                     </div>
                                     
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Strategy Type</label>
-                                        <select id="strategy-type" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                        <select id="strategy-type" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                             <option value="SPATIAL_ARBITRAGE">🔄 Spatial Arbitrage</option>
                                             <option value="STATISTICAL_ARBITRAGE">📊 Statistical Arbitrage</option>
                                             <option value="TRIANGULAR_ARBITRAGE">📐 Triangular Arbitrage</option>
@@ -4351,7 +4360,7 @@ app.get('/', (c) => {
                                     
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Asset Selection</label>
-                                        <select id="asset-class" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm mb-2">
+                                        <select id="asset-class" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm mb-2">
                                             <option value="mixed">🌍 Mixed Assets (Recommended)</option>
                                             <option value="crypto">₿ Cryptocurrency (25 assets)</option>
                                             <option value="equity_us_large">🇺🇸 US Large Cap (30 assets)</option>
@@ -4366,11 +4375,11 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Initial Capital ($)</label>
                                             <input id="initial-capital" type="number" value="1000000" min="10000" max="100000000"
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Time Range</label>
-                                            <select id="time-range" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                            <select id="time-range" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                                 <option value="90">3 Months</option>
                                                 <option value="180">6 Months</option>
                                                 <option value="365" selected>1 Year</option>
@@ -4382,7 +4391,7 @@ app.get('/', (c) => {
                             </div>
                             
                             <!-- Advanced Risk Parameters -->
-                            <div class="bg-card-bg rounded-lg p-4 border border-gray-700">
+                            <div class="bg-card-bg rounded-lg p-4 border border-cream-dark">
                                 <h4 class="font-semibold mb-3 text-accent">Risk Management</h4>
                                 
                                 <div class="space-y-3">
@@ -4390,12 +4399,12 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Risk Per Trade (%)</label>
                                             <input id="risk-per-trade" type="number" value="1" min="0.1" max="5" step="0.1" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Max Drawdown (%)</label>
                                             <input id="max-drawdown" type="number" value="5" min="1" max="20" step="0.5" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                     </div>
                                     
@@ -4403,12 +4412,12 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Min Confidence (%)</label>
                                             <input id="min-confidence" type="number" value="85" min="50" max="100" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">VaR Limit (%)</label>
                                             <input id="var-limit" type="number" value="3" min="1" max="10" step="0.5" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                     </div>
                                 </div>
@@ -4419,18 +4428,18 @@ app.get('/', (c) => {
                                 <button id="run-backtest" class="w-full bg-gradient-to-r from-accent to-profit text-dark-bg py-3 rounded-lg font-semibold hover:from-opacity-80 transition-all">
                                     <i class="fas fa-rocket mr-2"></i>Run Enhanced Backtest
                                 </button>
-                                <button id="run-arbitrage-strategy" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-2 rounded-lg font-semibold hover:from-blue-600 transition-all">
+                                <button id="run-arbitrage-strategy" class="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-text-primary py-2 rounded-lg font-semibold hover:from-blue-600 transition-all">
                                     <i class="fas fa-exchange-alt mr-2"></i>Quick Arbitrage Test
                                 </button>
                                 <div class="grid grid-cols-2 gap-2">
-                                    <button id="run-monte-carlo" class="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-2 rounded-lg font-semibold text-sm hover:from-purple-600">
+                                    <button id="run-monte-carlo" class="bg-gradient-to-r from-purple-500 to-pink-500 text-text-primary py-2 rounded-lg font-semibold text-sm hover:from-purple-600">
                                         <i class="fas fa-dice mr-1"></i>Monte Carlo
                                     </button>
-                                    <button id="run-risk-analysis" class="bg-gradient-to-r from-orange-500 to-red-500 text-white py-2 rounded-lg font-semibold text-sm hover:from-orange-600">
+                                    <button id="run-risk-analysis" class="bg-gradient-to-r from-orange-500 to-red-500 text-text-primary py-2 rounded-lg font-semibold text-sm hover:from-orange-600">
                                         <i class="fas fa-shield-alt mr-1"></i>Risk Analysis
                                     </button>
                                 </div>
-                                <button id="run-multi-asset-optimization" class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white py-2 rounded-lg font-semibold hover:from-green-600 transition-all">
+                                <button id="run-multi-asset-optimization" class="w-full bg-gradient-to-r from-green-500 to-teal-500 text-text-primary py-2 rounded-lg font-semibold hover:from-green-600 transition-all">
                                     <i class="fas fa-cogs mr-2"></i>Multi-Asset Optimization
                                 </button>
                             </div>
@@ -4440,9 +4449,9 @@ app.get('/', (c) => {
                         <div class="col-span-8 space-y-6">
                             <!-- Arbitrage Templates Display -->
                             <div id="arbitrage-templates-display">
-                                <div class="bg-card-bg p-4 rounded-lg border border-gray-700">
+                                <div class="bg-card-bg p-4 rounded-lg border border-cream-dark">
                                     <h3 class="text-lg font-bold text-accent mb-3"><i class="fas fa-rocket mr-2"></i>Professional Strategy Templates</h3>
-                                    <div class="text-center text-gray-400 py-4">
+                                    <div class="text-center text-text-secondary py-4">
                                         <i class="fas fa-cogs text-2xl mb-2"></i>
                                         <div class="text-sm">Loading professional arbitrage strategies...</div>
                                     </div>
@@ -4451,31 +4460,31 @@ app.get('/', (c) => {
 
                             <!-- Quick Test Results -->
                             <div id="quick-test-results">
-                                <div class="bg-card-bg p-6 rounded-lg border border-gray-700 text-center">
+                                <div class="bg-card-bg p-6 rounded-lg border border-cream-dark text-center">
                                     <h3 class="text-lg font-bold text-accent mb-4"><i class="fas fa-chart-bar mr-2"></i>Strategy Test Results</h3>
-                                    <div class="text-gray-400">Select a strategy template above to run a quick test</div>
+                                    <div class="text-text-secondary">Select a strategy template above to run a quick test</div>
                                 </div>
                             </div>
 
                             <!-- Enhanced Results Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Arbitrage Results -->
-                                <div id="arbitrage-results" class="bg-card-bg rounded-lg p-4 border border-gray-700">
+                                <div id="arbitrage-results" class="bg-card-bg rounded-lg p-4 border border-cream-dark">
                                     <h4 class="font-semibold mb-3 text-accent flex items-center">
                                         <i class="fas fa-exchange-alt mr-2"></i>Arbitrage Analysis
                                     </h4>
-                                    <div class="text-center text-gray-400 py-8">
+                                    <div class="text-center text-text-secondary py-8">
                                         <i class="fas fa-chart-line text-3xl mb-3"></i>
                                         <div>Run arbitrage strategy to see opportunities</div>
                                     </div>
                                 </div>
                                 
                                 <!-- Monte Carlo Results -->
-                                <div id="monte-carlo-results" class="bg-card-bg rounded-lg p-4 border border-gray-700">
+                                <div id="monte-carlo-results" class="bg-card-bg rounded-lg p-4 border border-cream-dark">
                                     <h4 class="font-semibold mb-3 text-accent flex items-center">
                                         <i class="fas fa-dice mr-2"></i>Monte Carlo Simulation
                                     </h4>
-                                    <div class="text-center text-gray-400 py-8">
+                                    <div class="text-center text-text-secondary py-8">
                                         <i class="fas fa-random text-3xl mb-3"></i>
                                         <div>Run Monte Carlo for risk analysis</div>
                                     </div>
@@ -4485,13 +4494,13 @@ app.get('/', (c) => {
                             <!-- Classic Charts -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Equity Curve Chart -->
-                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-gray-700">
+                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-cream-dark">
                                     <div class="flex items-center justify-between mb-4">
                                         <h5 class="font-semibold text-accent flex items-center">
                                             <span class="text-2xl mr-2">📈</span>
                                             <span>Enhanced Equity Curve</span>
                                         </h5>
-                                        <span class="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">Portfolio Value</span>
+                                        <span class="text-xs text-text-secondary bg-cream-dark px-2 py-1 rounded">Portfolio Value</span>
                                     </div>
                                     <div class="relative h-80">
                                         <canvas id="equity-curve-chart" class="w-full h-full"></canvas>
@@ -4499,13 +4508,13 @@ app.get('/', (c) => {
                                 </div>
                                 
                                 <!-- Risk Analysis Chart -->
-                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-gray-700">
+                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-cream-dark">
                                     <div class="flex items-center justify-between mb-4">
                                         <h5 class="font-semibold text-accent flex items-center">
                                             <span class="text-2xl mr-2">🛡️</span>
                                             <span>Risk Analytics</span>
                                         </h5>
-                                        <span class="text-xs text-gray-400 bg-gray-700 px-2 py-1 rounded">VaR & Tail Risk</span>
+                                        <span class="text-xs text-text-secondary bg-cream-dark px-2 py-1 rounded">VaR & Tail Risk</span>
                                     </div>
                                     <div class="relative h-80">
                                         <canvas id="drawdown-chart" class="w-full h-full"></canvas>
@@ -4514,13 +4523,13 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Professional Metrics Display -->
-                            <div class="bg-card-bg rounded-lg p-6 border border-gray-700">
+                            <div class="bg-card-bg rounded-lg p-6 border border-cream-dark">
                                 <h4 class="font-semibold mb-4 text-accent flex items-center">
                                     <i class="fas fa-chart-bar mr-2"></i>Professional Risk Metrics (35+)
                                 </h4>
                                 <div id="professional-metrics" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 text-sm">
                                     <!-- Metrics will be populated here -->
-                                    <div class="text-center text-gray-400">
+                                    <div class="text-center text-text-secondary">
                                         <i class="fas fa-analytics text-2xl mb-2"></i>
                                         <div>Run analysis to see comprehensive risk metrics</div>
                                     </div>
@@ -4533,14 +4542,14 @@ app.get('/', (c) => {
                 <!-- Professional AI Trading Agent Section -->
                 <div id="ai-agent" class="section">
                     <div class="mb-8">
-                        <h2 class="text-3xl font-bold text-white mb-2 flex items-center">
+                        <h2 class="text-3xl font-bold text-text-primary mb-2 flex items-center">
                             <i class="fas fa-brain mr-3 text-accent"></i>
                             AI Trading Agent
                             <span class="ml-4 text-sm">
                                 <span class="bg-profit text-dark-bg px-3 py-1 rounded-full text-xs font-bold">AUTONOMOUS</span>
                             </span>
                         </h2>
-                        <p class="text-gray-400 text-lg">Advanced autonomous agent for sophisticated market analysis and institutional-grade decision-making</p>
+                        <p class="text-text-secondary text-lg">Advanced autonomous agent for sophisticated market analysis and institutional-grade decision-making</p>
                     </div>
 
                     <div class="grid grid-cols-12 gap-6">
@@ -4548,19 +4557,19 @@ app.get('/', (c) => {
                         <div class="col-span-4 space-y-6">
                             <!-- Agent Status -->
                             <div class="bg-card-bg p-6 rounded-lg border-l-4 border-accent">
-                                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-power-off mr-2 text-accent"></i>
                                     Agent Control
                                 </h3>
                                 
                                 <div class="space-y-4">
-                                    <div class="bg-gray-800 p-4 rounded-lg">
+                                    <div class="bg-cream-accent p-4 rounded-lg">
                                         <div class="flex justify-between items-center mb-2">
-                                            <span class="text-sm text-gray-400">Status</span>
+                                            <span class="text-sm text-text-secondary">Status</span>
                                             <span id="ai-agent-status" class="text-warning">NOT_INITIALIZED</span>
                                         </div>
                                         <div class="flex justify-between items-center">
-                                            <span class="text-sm text-gray-400">Performance</span>
+                                            <span class="text-sm text-text-secondary">Performance</span>
                                             <span class="text-accent">Ready</span>
                                         </div>
                                     </div>
@@ -4569,7 +4578,7 @@ app.get('/', (c) => {
                                         <button id="start-ai-agent" class="w-full bg-gradient-to-r from-profit to-accent text-dark-bg py-3 rounded-lg font-semibold hover:from-opacity-80 transition-all">
                                             <i class="fas fa-play mr-2"></i>Start AI Agent
                                         </button>
-                                        <button id="stop-ai-agent" class="w-full bg-gradient-to-r from-loss to-warning text-white py-2 rounded-lg font-semibold hover:from-opacity-80 transition-all">
+                                        <button id="stop-ai-agent" class="w-full bg-gradient-to-r from-loss to-warning text-text-primary py-2 rounded-lg font-semibold hover:from-opacity-80 transition-all">
                                             <i class="fas fa-stop mr-2"></i>Stop Agent
                                         </button>
                                     </div>
@@ -4578,24 +4587,24 @@ app.get('/', (c) => {
 
                             <!-- Legendary Systems -->
                             <div class="bg-card-bg p-6 rounded-lg border-l-4 border-profit">
-                                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-rocket mr-2 text-profit"></i>
                                     Advanced Systems
                                 </h3>
                                 
                                 <div class="space-y-3">
-                                    <button id="initialize-legendary" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-2 rounded-lg font-semibold hover:from-purple-700 transition-all text-sm">
+                                    <button id="initialize-legendary" class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-text-primary py-2 rounded-lg font-semibold hover:from-purple-700 transition-all text-sm">
                                         <i class="fas fa-cogs mr-2"></i>Initialize Legendary Systems
                                     </button>
                                     
                                     <div class="grid grid-cols-3 gap-2 text-xs">
-                                        <button id="multi-tf-analysis" class="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition-all">
+                                        <button id="multi-tf-analysis" class="bg-cream-dark hover:bg-gray-600 text-text-primary py-2 rounded transition-all">
                                             Multi-TF
                                         </button>
-                                        <button id="cross-asset-analysis" class="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition-all">
+                                        <button id="cross-asset-analysis" class="bg-cream-dark hover:bg-gray-600 text-text-primary py-2 rounded transition-all">
                                             Cross-Asset
                                         </button>
-                                        <button id="intelligence-report" class="bg-gray-700 hover:bg-gray-600 text-white py-2 rounded transition-all">
+                                        <button id="intelligence-report" class="bg-cream-dark hover:bg-gray-600 text-text-primary py-2 rounded transition-all">
                                             Intelligence
                                         </button>
                                     </div>
@@ -4606,31 +4615,31 @@ app.get('/', (c) => {
                         <!-- AI Intelligence Dashboard -->
                         <div class="col-span-8 space-y-6">
                             <!-- Market Intelligence -->
-                            <div class="bg-card-bg p-6 rounded-lg border border-gray-700">
-                                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                            <div class="bg-card-bg p-6 rounded-lg border border-cream-dark">
+                                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-brain mr-2 text-accent"></i>
                                     AI Market Intelligence Dashboard
                                     <span class="ml-2 text-xs bg-profit text-dark-bg px-2 py-1 rounded">PROFESSIONAL GRADE</span>
                                 </h3>
                                 
                                 <div class="grid grid-cols-4 gap-4 mb-6">
-                                    <div class="bg-gray-800 p-4 rounded-lg text-center">
-                                        <div class="text-sm text-gray-400 mb-1">Market Sentiment</div>
+                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                        <div class="text-sm text-text-secondary mb-1">Market Sentiment</div>
                                         <div class="text-lg font-bold text-profit">BULLISH</div>
                                         <div class="text-xs text-gray-500">Confidence: 87.3%</div>
                                     </div>
-                                    <div class="bg-gray-800 p-4 rounded-lg text-center">
-                                        <div class="text-sm text-gray-400 mb-1">Risk Level</div>
+                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                        <div class="text-sm text-text-secondary mb-1">Risk Level</div>
                                         <div class="text-lg font-bold text-warning">MODERATE</div>
                                         <div class="text-xs text-gray-500">Score: 6.2/10</div>
                                     </div>
-                                    <div class="bg-gray-800 p-4 rounded-lg text-center">
-                                        <div class="text-sm text-gray-400 mb-1">Volatility Index</div>
+                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                        <div class="text-sm text-text-secondary mb-1">Volatility Index</div>
                                         <div class="text-lg font-bold text-accent">24.7%</div>
                                         <div class="text-xs text-gray-500">Trend: INCREASING</div>
                                     </div>
-                                    <div class="bg-gray-800 p-4 rounded-lg text-center">
-                                        <div class="text-sm text-gray-400 mb-1">Arbitrage Score</div>
+                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                        <div class="text-sm text-text-secondary mb-1">Arbitrage Score</div>
                                         <div class="text-lg font-bold text-profit">8.4/10</div>
                                         <div class="text-xs text-gray-500">Opportunities: 12</div>
                                     </div>
@@ -4638,7 +4647,7 @@ app.get('/', (c) => {
 
                                 <!-- AI Analysis and Recommendations -->
                                 <div class="grid grid-cols-2 gap-6">
-                                    <div class="bg-gray-900 p-4 rounded-lg">
+                                    <div class="bg-cream-light p-4 rounded-lg">
                                         <h4 class="font-semibold mb-3 text-accent">AI Market Analysis</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex items-start space-x-2">
@@ -4664,7 +4673,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
 
-                                    <div class="bg-gray-900 p-4 rounded-lg">
+                                    <div class="bg-cream-light p-4 rounded-lg">
                                         <h4 class="font-semibold mb-3 text-accent">AI Recommendations</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex items-start space-x-2">
@@ -4693,19 +4702,19 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Market Intelligence Report -->
-                            <div class="bg-card-bg p-6 rounded-lg border border-gray-700">
-                                <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                            <div class="bg-card-bg p-6 rounded-lg border border-cream-dark">
+                                <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-file-alt mr-2 text-accent"></i>
                                     Market Intelligence Report
                                 </h3>
                                 
-                                <div class="bg-gray-900 p-4 rounded-lg font-mono text-sm">
+                                <div class="bg-cream-light p-4 rounded-lg font-mono text-sm">
                                     <div class="text-accent font-bold mb-3">REAL-TIME MARKET INTELLIGENCE REPORT</div>
-                                    <div class="text-gray-400 mb-3">Generated: <span id="report-timestamp">2025-10-13T06:23:14.806Z</span></div>
+                                    <div class="text-text-secondary mb-3">Generated: <span id="report-timestamp">2025-10-13T06:23:14.806Z</span></div>
                                     
                                     <div class="space-y-3">
                                         <div>
-                                            <div class="text-white font-semibold mb-1">MARKET SENTIMENT OVERVIEW:</div>
+                                            <div class="text-text-primary font-semibold mb-1">MARKET SENTIMENT OVERVIEW:</div>
                                             <div class="ml-2 text-gray-300">
                                                 <div><i class="fas fa-newspaper text-profit mr-1"></i> News Sentiment: POSITIVE (0.32)</div>
                                                 <div><i class="fas fa-chart-bar text-accent mr-1"></i> Fear & Greed: 67 (GREEDY)</div>
@@ -4714,16 +4723,16 @@ app.get('/', (c) => {
                                         </div>
                                         
                                         <div>
-                                            <div class="text-white font-semibold mb-1">INSTITUTIONAL FLOW ANALYSIS:</div>
+                                            <div class="text-text-primary font-semibold mb-1">INSTITUTIONAL FLOW ANALYSIS:</div>
                                             <div class="ml-2 text-gray-300">
                                                 <div><i class="fas fa-coins text-profit mr-1"></i> BTC: ACCUMULATION ($15.2M net)</div>
-                                                <div><i class="fas fa-coins text-gray-400 mr-1"></i> ETH: NEUTRAL ($-2.1M net)</div>
+                                                <div><i class="fas fa-coins text-text-secondary mr-1"></i> ETH: NEUTRAL ($-2.1M net)</div>
                                                 <div><i class="fas fa-coins text-profit mr-1"></i> SOL: ACCUMULATION ($8.7M net)</div>
                                             </div>
                                         </div>
                                         
                                         <div>
-                                            <div class="text-white font-semibold mb-1">STRATEGIC IMPLICATIONS:</div>
+                                            <div class="text-text-primary font-semibold mb-1">STRATEGIC IMPLICATIONS:</div>
                                             <div class="ml-2 text-gray-300">
                                                 <div><i class="fas fa-bullseye text-accent mr-1"></i> Current regime favors momentum strategies</div>
                                                 <div><i class="fas fa-balance-scale text-profit mr-1"></i> Institutional flow suggests ACCUMULATIVE positioning</div>
@@ -4751,20 +4760,20 @@ app.get('/', (c) => {
                         <div class="grid grid-cols-12 gap-6">
                             <!-- Account Creation & Management -->
                             <div class="col-span-4 space-y-4">
-                                <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="bg-cream-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Account Setup</h4>
                                     
                                     <div class="space-y-3">
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Account Name</label>
                                             <input id="paper-account-name" type="text" placeholder="My Trading Account" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Initial Balance ($)</label>
                                             <input id="paper-initial-balance" type="number" value="100000" min="1000" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <button id="create-paper-account" class="w-full bg-accent text-dark-bg py-2 rounded font-semibold hover:bg-opacity-80">
@@ -4773,14 +4782,14 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 
-                                <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="bg-cream-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Place Order</h4>
                                     
                                     <div class="space-y-3">
                                         <div class="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Symbol</label>
-                                                <select id="paper-symbol" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                <select id="paper-symbol" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="BTC">BTC</option>
                                                     <option value="ETH">ETH</option>
                                                     <option value="SOL">SOL</option>
@@ -4788,7 +4797,7 @@ app.get('/', (c) => {
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Side</label>
-                                                <select id="paper-side" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                <select id="paper-side" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="BUY">BUY</option>
                                                     <option value="SELL">SELL</option>
                                                 </select>
@@ -4799,11 +4808,11 @@ app.get('/', (c) => {
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Quantity</label>
                                                 <input id="paper-quantity" type="number" value="0.1" min="0.001" step="0.001" 
-                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Order Type</label>
-                                                <select id="paper-order-type" class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                <select id="paper-order-type" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="MARKET">MARKET</option>
                                                     <option value="LIMIT">LIMIT</option>
                                                 </select>
@@ -4813,19 +4822,19 @@ app.get('/', (c) => {
                                         <div id="limit-price-container" class="hidden">
                                             <label class="block text-sm font-medium mb-1">Limit Price ($)</label>
                                             <input id="paper-limit-price" type="number" step="0.01" 
-                                                   class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <div class="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Stop Loss ($)</label>
                                                 <input id="paper-stop-loss" type="number" step="0.01" 
-                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Take Profit ($)</label>
                                                 <input id="paper-take-profit" type="number" step="0.01" 
-                                                       class="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white text-sm">
+                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                         </div>
                                         
@@ -4835,7 +4844,7 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 
-                                <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="bg-cream-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Auto Trading</h4>
                                     <div class="space-y-3">
                                         <div class="flex items-center justify-between">
@@ -4845,7 +4854,7 @@ app.get('/', (c) => {
                                                 <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
                                             </label>
                                         </div>
-                                        <div id="auto-trading-status" class="text-xs text-gray-400">
+                                        <div id="auto-trading-status" class="text-xs text-text-secondary">
                                             Auto trading disabled
                                         </div>
                                     </div>
@@ -4855,35 +4864,35 @@ app.get('/', (c) => {
                             <!-- Account Summary & Positions -->
                             <div class="col-span-8 space-y-4">
                                 <div class="grid grid-cols-4 gap-4">
-                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
                                         <div id="paper-balance" class="text-2xl font-bold text-accent">$0</div>
-                                        <div class="text-sm text-gray-400">Available Balance</div>
+                                        <div class="text-sm text-text-secondary">Available Balance</div>
                                     </div>
-                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
                                         <div id="paper-equity" class="text-2xl font-bold text-profit">$0</div>
-                                        <div class="text-sm text-gray-400">Total Equity</div>
+                                        <div class="text-sm text-text-secondary">Total Equity</div>
                                     </div>
-                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
                                         <div id="paper-pnl" class="text-2xl font-bold">$0</div>
-                                        <div class="text-sm text-gray-400">Total P&L</div>
+                                        <div class="text-sm text-text-secondary">Total P&L</div>
                                     </div>
-                                    <div class="bg-gray-800 rounded-lg p-4 text-center">
+                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
                                         <div id="paper-return" class="text-2xl font-bold">0%</div>
-                                        <div class="text-sm text-gray-400">Total Return</div>
+                                        <div class="text-sm text-text-secondary">Total Return</div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="bg-cream-accent rounded-lg p-4">
                                     <h5 class="font-semibold mb-3 text-accent"><i class="fas fa-list mr-2"></i>Current Positions</h5>
-                                    <div id="paper-positions" class="text-center text-gray-400 py-4">
+                                    <div id="paper-positions" class="text-center text-text-secondary py-4">
                                         No positions yet...
                                     </div>
                                 </div>
                                 
-                                <div class="bg-gray-800 rounded-lg p-4">
+                                <div class="bg-cream-accent rounded-lg p-4">
                                     <h5 class="font-semibold mb-3 text-accent">📜 Trade History</h5>
                                     <div id="paper-trade-history" class="max-h-64 overflow-y-auto">
-                                        <div class="text-center text-gray-400 py-4">
+                                        <div class="text-center text-text-secondary py-4">
                                             No trades yet...
                                         </div>
                                     </div>

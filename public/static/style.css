@@ -1,19 +1,19 @@
-/* Trading Dashboard Styles */
+/* Trading Dashboard Styles - Cream Theme */
 
 body {
   font-family: 'JetBrains Mono', 'Consolas', monospace;
-  background: linear-gradient(135deg, #0f1419 0%, #1a1f29 100%);
+  background: linear-gradient(135deg, #f7f5f3 0%, #f4f2ef 100%);
   overflow-x: hidden;
 }
 
 /* Navigation Styles */
 .nav-item {
-  @apply px-4 py-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-700 transition-all duration-200 font-medium;
+  @apply px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-cream-accent transition-all duration-200 font-medium;
 }
 
 .nav-item.active {
-  @apply bg-gradient-to-r from-teal-500 to-cyan-500 text-white;
-  box-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+  @apply bg-accent text-cream-light;
+  box-shadow: 0 0 20px rgba(30, 42, 74, 0.2);
 }
 
 /* Section Management */
@@ -31,130 +31,130 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Enhanced Card Styles */
+/* Enhanced Card Styles - Cream Theme */
 .bg-card-bg {
-  background: rgba(26, 31, 41, 0.85);
+  background: rgba(244, 242, 239, 0.9);
   backdrop-filter: blur(15px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(45, 41, 37, 0.1);
   box-shadow: 
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 4px 6px -1px rgba(45, 41, 37, 0.1),
+    0 2px 4px -1px rgba(45, 41, 37, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bg-card-bg:hover {
   transform: translateY(-1px);
   box-shadow: 
-    0 10px 15px -3px rgba(0, 0, 0, 0.1),
-    0 4px 6px -2px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    0 10px 15px -3px rgba(45, 41, 37, 0.1),
+    0 4px 6px -2px rgba(45, 41, 37, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-/* Glowing Effects */
+/* Color Effects - Cream Theme */
 .text-accent {
-  color: #00d4aa;
-  text-shadow: 0 0 10px rgba(0, 212, 170, 0.3);
+  color: #1e2a4a;
+  text-shadow: 0 0 10px rgba(30, 42, 74, 0.3);
 }
 
 .text-profit {
-  color: #2ed573;
-  text-shadow: 0 0 10px rgba(46, 213, 115, 0.3);
+  color: #8b7355;
+  text-shadow: 0 0 10px rgba(139, 115, 85, 0.3);
 }
 
 .text-loss {
-  color: #ff4757;
-  text-shadow: 0 0 10px rgba(255, 71, 87, 0.3);
+  color: #a67c5a;
+  text-shadow: 0 0 10px rgba(166, 124, 90, 0.3);
 }
 
 .text-warning {
-  color: #ffa502;
-  text-shadow: 0 0 10px rgba(255, 165, 2, 0.3);
+  color: #b8956b;
+  text-shadow: 0 0 10px rgba(184, 149, 107, 0.3);
 }
 
-/* Button Styles */
+/* Button Styles - Cream Theme */
 .execute-arbitrage {
-  background: linear-gradient(45deg, #00d4aa, #2ed573);
+  background: linear-gradient(45deg, #1e2a4a, #2c3e50);
   transition: all 0.3s ease;
 }
 
 .execute-arbitrage:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 20px rgba(0, 212, 170, 0.4);
+  box-shadow: 0 5px 20px rgba(30, 42, 74, 0.4);
 }
 
-/* Chat Styles */
+/* Chat Styles - Cream Theme */
 .chat-message {
   border-left: 3px solid transparent;
   padding-left: 12px;
 }
 
 .ai-message {
-  border-left-color: #00d4aa;
-  background: rgba(0, 212, 170, 0.1);
+  border-left-color: #1e2a4a;
+  background: rgba(30, 42, 74, 0.1);
   border-radius: 0 8px 8px 0;
   padding: 8px 12px;
 }
 
 .user-message {
-  border-left-color: #4ecdc4;
-  background: rgba(78, 205, 196, 0.1);
+  border-left-color: #5a524a;
+  background: rgba(90, 82, 74, 0.1);
   border-radius: 0 8px 8px 0;
   padding: 8px 12px;
   margin-left: auto;
   max-width: 80%;
 }
 
-/* Pulse Animation for Live Data */
+/* Pulse Animation for Live Data - Cream Theme */
 .pulse-dot {
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(0, 212, 170, 0.7);
+    box-shadow: 0 0 0 0 rgba(30, 42, 74, 0.7);
   }
   70% {
-    box-shadow: 0 0 0 10px rgba(0, 212, 170, 0);
+    box-shadow: 0 0 0 10px rgba(30, 42, 74, 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(0, 212, 170, 0);
+    box-shadow: 0 0 0 0 rgba(30, 42, 74, 0);
   }
 }
 
-/* Scrollbar Styles */
+/* Scrollbar Styles - Cream Theme */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1f29;
+  background: #f4f2ef;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00d4aa;
+  background: #1e2a4a;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #2ed573;
+  background: #2c3e50;
 }
 
-/* Table Styles */
+/* Table Styles - Cream Theme */
 table {
   border-collapse: separate;
   border-spacing: 0;
 }
 
 table th, table td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(45, 41, 37, 0.1);
 }
 
 table tr:hover {
-  background: rgba(0, 212, 170, 0.05);
+  background: rgba(30, 42, 74, 0.05);
 }
 
-/* Loading States */
+/* Loading States - Cream Theme */
 .loading {
   position: relative;
   overflow: hidden;
@@ -171,7 +171,7 @@ table tr:hover {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(0, 212, 170, 0.2),
+    rgba(30, 42, 74, 0.2),
     transparent
   );
   animation: shimmer 2s infinite;
@@ -183,21 +183,21 @@ table tr:hover {
   }
 }
 
-/* Professional Header Styles */
+/* Professional Header Styles - Cream Theme */
 .dashboard-header {
-  background: linear-gradient(135deg, rgba(0, 212, 170, 0.1) 0%, rgba(46, 213, 115, 0.1) 100%);
-  border-left: 4px solid #00d4aa;
+  background: linear-gradient(135deg, rgba(30, 42, 74, 0.1) 0%, rgba(90, 82, 74, 0.1) 100%);
+  border-left: 4px solid #1e2a4a;
   padding: 2rem;
   margin-bottom: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(45, 41, 37, 0.1);
 }
 
-/* Enhanced Section Headers */
+/* Enhanced Section Headers - Cream Theme */
 .section-header {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #ffffff;
+  color: #2d2925;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
@@ -211,7 +211,7 @@ table tr:hover {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #00d4aa 0%, transparent 100%);
+  background: linear-gradient(90deg, #1e2a4a 0%, transparent 100%);
   border-radius: 1px;
 }
 
@@ -222,7 +222,7 @@ table tr:hover {
   margin-bottom: 2rem;
 }
 
-/* Status Indicators */
+/* Status Indicators - Cream Theme */
 .status-indicator {
   display: flex;
   align-items: center;
@@ -240,20 +240,20 @@ table tr:hover {
   animation: pulse 2s infinite;
 }
 
-/* Enhanced Metrics Cards */
+/* Enhanced Metrics Cards - Cream Theme */
 .metric-card {
-  background: rgba(55, 65, 81, 0.8);
+  background: rgba(240, 237, 233, 0.8);
   border-radius: 0.75rem;
   padding: 1.5rem;
   text-align: center;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(45, 41, 37, 0.1);
 }
 
 .metric-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  border-color: rgba(0, 212, 170, 0.3);
+  box-shadow: 0 10px 25px rgba(45, 41, 37, 0.15);
+  border-color: rgba(30, 42, 74, 0.3);
 }
 
 .metric-value {
@@ -265,35 +265,35 @@ table tr:hover {
 
 .metric-label {
   font-size: 0.875rem;
-  color: #9ca3af;
+  color: #5a524a;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.025em;
 }
 
-/* Professional Border Accents */
+/* Professional Border Accents - Cream Theme */
 .border-accent-left {
-  border-left: 4px solid #00d4aa;
+  border-left: 4px solid #1e2a4a;
 }
 
 .border-profit-left {
-  border-left: 4px solid #2ed573;
+  border-left: 4px solid #8b7355;
 }
 
 .border-warning-left {
-  border-left: 4px solid #ffa502;
+  border-left: 4px solid #b8956b;
 }
 
 .border-danger-left {
-  border-left: 4px solid #ff4757;
+  border-left: 4px solid #a67c5a;
 }
 
-/* Enhanced Visualization Containers */
+/* Enhanced Visualization Containers - Cream Theme */
 .visualization-container {
-  background: rgba(17, 24, 39, 0.8);
+  background: rgba(250, 249, 247, 0.8);
   border-radius: 0.75rem;
   padding: 1rem;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 2px 4px rgba(45, 41, 37, 0.1);
 }
 
 /* Mobile Responsiveness */
@@ -337,24 +337,24 @@ table tr:hover {
   }
 }
 
-/* Hyperbolic Visualization */
+/* Hyperbolic Visualization - Cream Theme */
 #poincare-disk {
-  border: 2px solid #00d4aa;
-  box-shadow: 0 0 20px rgba(0, 212, 170, 0.3);
+  border: 2px solid #1e2a4a;
+  box-shadow: 0 0 20px rgba(30, 42, 74, 0.3);
 }
 
-/* Arbitrage Cards */
+/* Arbitrage Cards - Cream Theme */
 .arbitrage-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(45, 41, 37, 0.2);
 }
 
-/* Quick Query Buttons */
+/* Quick Query Buttons - Cream Theme */
 .quick-query {
   transition: all 0.2s ease;
 }
 
 .quick-query:hover {
   transform: scale(1.05);
-  box-shadow: 0 3px 10px rgba(0, 212, 170, 0.2);
+  box-shadow: 0 3px 10px rgba(30, 42, 74, 0.2);
 }
