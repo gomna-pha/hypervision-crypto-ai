@@ -5,5 +5,6 @@ export default defineConfig({
   plugins: [pages()],
   build: {
     outDir: 'dist'
-  }
+  },
+  base: '/hypervision-crypto-ai/'
 })

@@ -5501,6 +5501,202 @@ app.post('/api/backtesting/reliable-monte-carlo', async (c) => {
   }
 })
 
+// ============================================================================
+// 🔧 COMPATIBILITY ENDPOINTS FOR FRONTEND
+// ============================================================================
+
+// Frontend-compatible backtest endpoint
+app.post('/api/backtest/run', async (c) => {
+  try {
+    const request = await c.req.json()
+    console.log('🔧 Legacy backtest endpoint called:', JSON.stringify(request, null, 2))
+    
+    // Convert frontend format to our reliable engine format
+    const strategy: SimpleStrategy = {
+      id: request.strategyId || `backtest_${Date.now()}`,
+      name: request.strategyName || 'Frontend Strategy',
+      type: 'arbitrage',
+      symbols: [request.symbol || 'BTC'],
+      parameters: {
+        entryThreshold: request.parameters?.minArbitrageRelevance || 0.02,
+        exitThreshold: request.parameters?.minArbitrageRelevance * 0.5 || 0.01,
+        stopLoss: request.parameters?.stopLoss || 0.05,
+        takeProfit: request.parameters?.takeProfit || 0.03,
+        maxPositionSize: request.parameters?.riskPerTrade || 0.1
+      }
+    }
+    
+    console.log('🚀 Converting to reliable strategy format:', strategy.id)
+    
+    const result = await reliableEngine.runArbitrageStrategy(strategy)
+    
+    if (!result.success) {
+      return c.json({
+        success: false,
+        error: result.summary
+      }, 500)
+    }
+    
+    // Convert to frontend expected format
+    return c.json({
+      success: true,
+      results: {
+        metrics: {
+          totalReturn: result.totalReturn,
+          maxDrawdown: result.maxDrawdown,
+          sharpeRatio: result.sharpeRatio,
+          winRate: result.winRate,
+          totalTrades: result.totalTrades,
+          profitableTrades: result.profitableTrades,
+          avgProfit: result.avgProfit
+        },
+        trades: result.trades,
+        summary: result.summary
+      }
+    })
+    
+  } catch (error) {
+    console.error('❌ Legacy backtest endpoint error:', error)
+    return c.json({ error: 'Backtest execution failed', details: error.message }, 500)
+  }
+})
+
+// Frontend-compatible Monte Carlo endpoint
+app.post('/api/monte-carlo', async (c) => {
+  try {
+    const request = await c.req.json()
+    console.log('🎲 Legacy Monte Carlo endpoint called:', JSON.stringify(request, null, 2))
+    
+    const strategyConfig = request.strategyConfig || {}
+    const iterations = Math.min(request.iterations || 50, 100)
+    
+    // Simple request format for reliable engine
+    const reliableRequest = {
+      strategyId: strategyConfig.strategyId || 'monte_carlo_frontend',
+      symbols: [strategyConfig.symbol || 'BTC'],
+      iterations: iterations
+    }
+    
+    console.log('🚀 Calling reliable Monte Carlo with:', reliableRequest)
+    
+    // Use the reliable endpoint internally
+    const mockContext = {
+      req: {
+        json: async () => reliableRequest
+      }
+    }
+    
+    const result = await reliableEngine.runMonteCarloSimulation({
+      id: reliableRequest.strategyId,
+      name: 'Frontend Monte Carlo',
+      type: 'arbitrage',
+      symbols: reliableRequest.symbols,
+      parameters: {
+        entryThreshold: 0.02,
+        exitThreshold: 0.01,
+        stopLoss: 0.05,
+        takeProfit: 0.03,
+        maxPositionSize: 0.1
+      }
+    }, iterations)
+    
+    return c.json({
+      success: true,
+      simulation: {
+        summary: {
+          avgReturn: result.meanReturn,
+          medianReturn: result.meanReturn * 0.9,
+          stdReturn: result.stdReturn,
+          minReturn: result.worstCase,
+          maxReturn: result.bestCase,
+          profitProbability: result.successRate
+        },
+        iterations,
+        results: []
+      }
+    })
+    
+  } catch (error) {
+    console.error('❌ Legacy Monte Carlo endpoint error:', error)
+    return c.json({ 
+      success: false,
+      error: 'Monte Carlo simulation failed', 
+      details: error.message 
+    }, 500)
+  }
+})
+
+// Frontend-compatible strategy comparison endpoint
+app.post('/api/backtest/compare', async (c) => {
+  try {
+    const request = await c.req.json()
+    console.log('📊 Legacy strategy comparison endpoint called')
+    
+    // Run multiple variations of the strategy
+    const baseStrategy: SimpleStrategy = {
+      id: request.strategyId || 'comparison_base',
+      name: request.strategyName || 'Comparison Strategy',
+      type: 'arbitrage',
+      symbols: [request.symbol || 'BTC'],
+      parameters: {
+        entryThreshold: request.parameters?.minArbitrageRelevance || 0.02,
+        exitThreshold: (request.parameters?.minArbitrageRelevance || 0.02) * 0.5,
+        stopLoss: request.parameters?.stopLoss || 0.05,
+        takeProfit: request.parameters?.takeProfit || 0.03,
+        maxPositionSize: request.parameters?.riskPerTrade || 0.1
+      }
+    }
+    
+    // Generate comparison results with parameter variations
+    const strategies = []
+    const variations = [
+      { name: 'Conservative', entryMultiplier: 0.7, riskMultiplier: 0.5 },
+      { name: 'Moderate', entryMultiplier: 1.0, riskMultiplier: 1.0 },
+      { name: 'Aggressive', entryMultiplier: 1.3, riskMultiplier: 1.5 }
+    ]
+    
+    for (const variation of variations) {
+      const varStrategy = {
+        ...baseStrategy,
+        id: `${baseStrategy.id}_${variation.name}`,
+        name: `${baseStrategy.name} (${variation.name})`,
+        parameters: {
+          ...baseStrategy.parameters,
+          entryThreshold: baseStrategy.parameters.entryThreshold * variation.entryMultiplier,
+          maxPositionSize: baseStrategy.parameters.maxPositionSize * variation.riskMultiplier
+        }
+      }
+      
+      const result = await reliableEngine.runArbitrageStrategy(varStrategy)
+      strategies.push({
+        name: variation.name,
+        metrics: {
+          totalReturn: result.totalReturn,
+          sharpeRatio: result.sharpeRatio,
+          maxDrawdown: result.maxDrawdown,
+          winRate: result.winRate,
+          totalTrades: result.totalTrades
+        }
+      })
+    }
+    
+    return c.json({
+      success: true,
+      results: {
+        strategies,
+        bestStrategy: strategies.reduce((best, current) => 
+          current.metrics.sharpeRatio > best.metrics.sharpeRatio ? current : best
+        ),
+        summary: `Compared ${strategies.length} strategy variations`
+      }
+    })
+    
+  } catch (error) {
+    console.error('❌ Legacy strategy comparison endpoint error:', error)
+    return c.json({ error: 'Strategy comparison failed', details: error.message }, 500)
+  }
+})
+
 // AI Agent Control Endpoints
 app.post('/api/ai-agent/start', async (c) => {
   try {

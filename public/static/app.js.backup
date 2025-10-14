@@ -3044,35 +3044,11 @@ class TradingDashboard {
     }
 
     validateBacktestConfig(config) {
-        // More lenient validation with sensible defaults
-        console.log("🔍 Validating config:", config)
-        
-        if (!config) return false
-        
-        // Allow any strategy name, use default if empty
-        if (!config.strategyName) config.strategyName = "Demo Strategy"
-        
-        // Allow any symbol, use BTC if empty
-        if (!config.symbol) config.symbol = "BTC"
-        
-        // Allow any timeframe, use 1h if empty
-        if (!config.timeframe) config.timeframe = "1h"
-        
-        // Validate capital range more leniently
-        if (!config.initialCapital || config.initialCapital < 100) config.initialCapital = 100000
-        if (config.initialCapital > 50000000) config.initialCapital = 50000000
-        
-        // Ensure parameters exist
-        if (!config.parameters) config.parameters = {}
-        
-        // Set safe defaults for parameters
-        if (!config.parameters.minConfidence || config.parameters.minConfidence < 0) config.parameters.minConfidence = 75
-        if (config.parameters.minConfidence > 100) config.parameters.minConfidence = 95
-        
-        if (!config.parameters.riskPerTrade || config.parameters.riskPerTrade < 0.001) config.parameters.riskPerTrade = 0.02
-        if (config.parameters.riskPerTrade > 0.2) config.parameters.riskPerTrade = 0.1
-        
-        console.log("✅ Config validated and normalized:", config)
+        if (!config.strategyName || config.strategyName.trim() === '') return false
+        if (!config.symbol || !config.timeframe) return false
+        if (config.initialCapital < 1000 || config.initialCapital > 10000000) return false
+        if (config.parameters.minConfidence < 50 || config.parameters.minConfidence > 100) return false
+        if (config.parameters.riskPerTrade < 0.001 || config.parameters.riskPerTrade > 0.1) return false
         return true
     }
 
@@ -3247,34 +3223,21 @@ class TradingDashboard {
     }
 
     getBacktestConfiguration() {
-        // Safe getter function with fallbacks for missing form elements
-        const safeGet = (id, defaultValue = "") => {
-            const element = document.getElementById(id)
-            return element ? (element.value || defaultValue) : defaultValue
-        }
-        
-        const safeGetFloat = (id, defaultValue = 0) => {
-            const element = document.getElementById(id)
-            if (!element) return defaultValue
-            const value = parseFloat(element.value)
-            return isNaN(value) ? defaultValue : value
-        }
-        
         return {
             strategyId: `backtest_${Date.now()}`,
-            strategyName: safeGet("strategy-name", "Demo Strategy"),
-            symbol: safeGet("backtest-symbol", "BTC"),
-            timeframe: safeGet("backtest-timeframe", "1h"),
-            strategyType: safeGet("strategy-type", "arbitrage"),
-            initialCapital: safeGetFloat("initial-capital", 100000),
+            strategyName: document.getElementById('strategy-name').value || 'Unnamed Strategy',
+            symbol: document.getElementById('backtest-symbol').value,
+            timeframe: document.getElementById('backtest-timeframe').value,
+            strategyType: document.getElementById('strategy-type').value,
+            initialCapital: parseFloat(document.getElementById('initial-capital').value),
             startDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
             endDate: new Date().toISOString(),
             parameters: {
-                minConfidence: safeGetFloat("min-confidence", 75),
-                riskPerTrade: safeGetFloat("risk-per-trade", 2) / 100,
-                stopLoss: safeGetFloat("stop-loss", 5) / 100,
-                takeProfit: safeGetFloat("take-profit", 3) / 100,
-                minArbitrageRelevance: safeGetFloat("min-arbitrage-relevance", 0.02)
+                minConfidence: parseFloat(document.getElementById('min-confidence').value),
+                riskPerTrade: parseFloat(document.getElementById('risk-per-trade').value) / 100,
+                stopLoss: parseFloat(document.getElementById('stop-loss').value) / 100,
+                takeProfit: parseFloat(document.getElementById('take-profit').value) / 100,
+                minArbitrageRelevance: parseFloat(document.getElementById('min-arbitrage-relevance').value)
             }
         }
     }
