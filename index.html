@@ -3,138 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOMNA HyperVision Crypto AI</title>
+    <title>GOMNA Institutional Investment Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-financial@0.2.1/dist/chartjs-chart-financial.min.js"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              'dark-bg': '#0f1419',
-              'card-bg': '#1a1f29',
-              'accent': '#00d4aa',
-              'profit': '#2ed573',
-              'loss': '#ff4757'
+              // 95% Cream Color Variations
+              'cream-primary': '#f7f5f3',      // Primary cream background
+              'cream-light': '#faf9f7',        // Lightest cream for highlights
+              'cream-medium': '#f4f2ef',       // Medium cream for cards
+              'cream-dark': '#f0ede9',         // Darker cream for borders
+              'cream-accent': '#ece8e3',       // Accent cream for subtle elements
+              'cream-muted': '#e8e4de',        // Muted cream for disabled states
+              'cream-shadow': '#e4dfd8',       // Shadow cream for depth
+              
+              // 0.5% Navy Blue Accents (Minimal Usage)
+              'navy-primary': '#1e2a4a',       // Primary navy for critical accents
+              'navy-text': '#2c3e50',          // Navy for important text
+              
+              // Professional Status Colors (Cream-tinted)
+              'success': '#d4e6d4',            // Cream-tinted green
+              'warning': '#f2e6d0',            // Cream-tinted amber  
+              'error': '#f0d4d4',              // Cream-tinted red
+              'info': '#d0e4f0',               // Cream-tinted blue
+              
+              // Text Colors
+              'text-primary': '#2d2925',       // Dark brown for primary text
+              'text-secondary': '#5a524a',     // Medium brown for secondary text
+              'text-muted': '#8b8379'          // Light brown for muted text
             }
           }
         }
       }
     </script>
-    <style>
-        .gradient-text { 
-            background: linear-gradient(45deg, #00d4aa, #2ed573); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-        }
-        .glassmorphism { 
-            backdrop-filter: blur(10px); 
-            background: rgba(26, 31, 41, 0.8); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-    </style>
+  <link rel="stylesheet" crossorigin href="/hypervision-crypto-ai/assets/main-B5mH996i.css">
 </head>
-<body class="bg-dark-bg text-white font-mono">
-    <!-- Hero Section -->
-    <div class="relative min-h-screen bg-gradient-to-br from-dark-bg via-card-bg to-dark-bg flex items-center">
-        <div class="max-w-6xl mx-auto px-6 text-center">
-            <h1 class="text-6xl font-bold gradient-text mb-6">
-                🧠 GOMNA HyperVision
-            </h1>
-            <p class="text-2xl text-gray-300 mb-8">
-                Enterprise-Grade AI Trading Dashboard
-            </p>
-            <p class="text-lg text-gray-400 mb-12 max-w-4xl mx-auto">
-                Advanced real-time trading system with hyperbolic space analysis, Monte Carlo backtesting, 
-                and multi-modal AI fusion architecture. Professional-grade tools for serious traders.
-            </p>
-            
-            <!-- Live Status -->
-            <div class="glassmorphism rounded-xl p-8 mb-8 max-w-4xl mx-auto">
-                <div class="flex items-center justify-center space-x-4 mb-6">
-                    <div class="w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
-                    <span class="text-2xl font-bold text-green-300">🟢 SYSTEM ONLINE</span>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-accent">15</div>
-                        <div class="text-sm text-gray-400">Live Assets</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-profit">82.7%</div>
-                        <div class="text-sm text-gray-400">Win Rate</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-3xl font-bold text-purple-300">47μs</div>
-                        <div class="text-sm text-gray-400">Execution Time</div>
-                    </div>
-                </div>
-                
-                <!-- Launch Button -->
-                <a href="https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev" 
-                   class="inline-block bg-gradient-to-r from-accent to-profit text-dark-bg px-12 py-4 rounded-xl text-xl font-bold hover:shadow-2xl transition-all duration-300 transform hover:scale-105 mb-4"
-                   target="_blank">
-                    🚀 Launch Live Dashboard
-                </a>
-                
-                <div class="text-sm text-green-200">
-                    ✅ Real-time clustering • Enterprise backtesting • Monte Carlo simulation
+<body class="bg-cream-primary text-text-primary font-sans antialiased">
+    <!-- Navigation -->
+    <nav class="bg-cream-medium border-b border-cream-dark px-8 py-4 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-10">
+                <h1 class="text-3xl font-bold text-navy-primary tracking-wide">GOMNA</h1>
+                <div class="flex space-x-6">
+                    <button class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-chart-line mr-3"></i>Operations Center
+                    </button>
+                    <button class="nav-item" data-section="portfolio">
+                        <i class="fas fa-briefcase mr-3"></i>Asset Management
+                    </button>
+                    <button class="nav-item" data-section="markets">
+                        <i class="fas fa-globe mr-3"></i>Market Intelligence
+                    </button>
+                    <button class="nav-item" data-section="economic-data">
+                        <i class="fas fa-chart-bar mr-3"></i>Economic Research
+                    </button>
+                    <button class="nav-item" data-section="transparency">
+                        <i class="fas fa-microscope mr-3"></i>Model Analytics
+                    </button>
+                    <button class="nav-item" data-section="assistant">
+                        <i class="fas fa-robot mr-3"></i>Research Assistant
+                    </button>
+                    <button class="nav-item" data-section="backtesting">
+                        <i class="fas fa-chart-area mr-3"></i>Strategy Testing
+                    </button>
+                    <button class="nav-item" data-section="ai-agent">
+                        <i class="fas fa-brain mr-3"></i>Autonomous Systems
+                    </button>
+                    <button class="nav-item" data-section="paper-trading">
+                        <i class="fas fa-file-invoice-dollar mr-3"></i>Simulation Trading
+                    </button>
                 </div>
             </div>
-            
-            <!-- Key Features -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-3">🧠</div>
-                    <h3 class="text-lg font-bold text-accent mb-2">AI Fusion</h3>
-                    <p class="text-sm text-gray-300">40% CNN + 25% LSTM + 20% FinBERT + 15% Classical</p>
+            <div class="text-sm text-text-secondary font-medium">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-clock text-navy-primary"></i>
+                    <span id="current-time" class="tracking-wide"></span>
                 </div>
-                
-                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-3">📊</div>
-                    <h3 class="text-lg font-bold text-profit mb-2">Live Clustering</h3>
-                    <p class="text-sm text-gray-300">Real-time asset correlation with hyperbolic visualization</p>
-                </div>
-                
-                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-3">🧪</div>
-                    <h3 class="text-lg font-bold text-purple-300 mb-2">Enterprise Testing</h3>
-                    <p class="text-sm text-gray-300">Monte Carlo simulation & strategy comparison</p>
-                </div>
-                
-                <div class="glassmorphism rounded-xl p-6 hover:transform hover:scale-105 transition-all">
-                    <div class="text-4xl mb-3">⚡</div>
-                    <h3 class="text-lg font-bold text-yellow-300 mb-2">Edge Computing</h3>
-                    <p class="text-sm text-gray-300">Cloudflare Workers for global low-latency</p>
-                </div>
-            </div>
-            
-            <!-- Footer Links -->
-            <div class="flex justify-center space-x-8 text-gray-400">
-                <a href="https://github.com/gomna-pha/hypervision-crypto-ai" target="_blank" 
-                   class="hover:text-accent transition-colors">
-                    <i class="fab fa-github mr-2"></i>Source Code
-                </a>
-                <a href="https://3000-i49tbhfmni210ftpsfd1u-6532622b.e2b.dev" target="_blank"
-                   class="hover:text-profit transition-colors">
-                    <i class="fas fa-chart-line mr-2"></i>Live Dashboard
-                </a>
             </div>
         </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex">
+        <!-- Main Dashboard -->
+        <main class="flex-1 p-8 bg-cream-light min-h-screen">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section active">
+                <!-- Dashboard Header -->
+                <div class="mb-10 dashboard-header">
+                    <h2 class="text-4xl font-bold text-navy-primary mb-3 tracking-wide">Institutional Investment Operations Center</h2>
+                    <p class="text-text-secondary text-xl font-medium">Advanced Quantitative Research & Portfolio Optimization Platform</p>
+                </div>
+
+                <!-- Top Row: Core Trading Data -->
+                <div class="grid grid-cols-12 gap-8 mb-8">
+                    <!-- Real-Time Market Intelligence -->
+                    <div class="col-span-4 bg-cream-medium rounded-xl p-8 border-l-6 border-navy-primary">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-navy-primary flex items-center tracking-wide">
+                                <i class="fas fa-satellite-dish mr-3 text-navy-primary text-xl"></i>
+                                Market Intelligence Feed
+                            </h3>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-success rounded-full animate-pulse border-2 border-cream-accent"></div>
+                                <span class="text-sm text-text-primary font-semibold uppercase tracking-wider">OPERATIONAL</span>
+                            </div>
+                        </div>
+                        
+                        <div id="market-feeds" class="space-y-5 mb-8">
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-lg font-bold text-navy-primary">BTC/USD</div>
+                                <div class="text-2xl font-bold text-success">$67,234.56</div>
+                                <div class="text-sm text-text-secondary">+2.4% (24h)</div>
+                            </div>
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-lg font-bold text-navy-primary">ETH/USD</div>
+                                <div class="text-2xl font-bold text-success">$3,456.08</div>
+                                <div class="text-sm text-text-secondary">+1.8% (24h)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Research Analytics -->
+                    <div class="col-span-4 bg-cream-medium rounded-xl p-8 border-l-6 border-success">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-navy-primary flex items-center tracking-wide">
+                                <i class="fas fa-chart-line mr-3 text-navy-primary text-xl"></i>
+                                Market Research Analytics
+                            </h3>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-3 h-3 bg-success rounded-full animate-pulse border-2 border-cream-accent"></div>
+                                <span class="text-sm text-text-primary font-semibold uppercase tracking-wider">AUTOMATED</span>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-base font-semibold text-navy-primary">Market Sentiment</div>
+                                <div class="text-xl font-bold text-success">BULLISH</div>
+                                <div class="text-sm text-text-secondary">Confidence: 87.3%</div>
+                            </div>
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-base font-semibold text-navy-primary">Volatility Index</div>
+                                <div class="text-xl font-bold text-warning">MODERATE</div>
+                                <div class="text-sm text-text-secondary">VIX: 23.4</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mathematical Analytics Engine -->
+                    <div class="col-span-4 bg-cream-medium rounded-xl p-8 border-l-6 border-info">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-navy-primary flex items-center tracking-wide">
+                                <i class="fas fa-atom mr-3 text-navy-primary text-xl"></i>
+                                Mathematical Analytics Engine
+                            </h3>
+                            <span class="bg-navy-primary text-cream-light px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide">
+                                ENHANCED
+                            </span>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-base font-semibold text-navy-primary">Pattern Analysis</div>
+                                <div class="text-xl font-bold text-navy-primary">791 Paths</div>
+                                <div class="text-sm text-text-secondary">Efficiency: 99.5%</div>
+                            </div>
+                            <div class="p-4 bg-cream-accent rounded-lg">
+                                <div class="text-base font-semibold text-navy-primary">Asset Correlation</div>
+                                <div class="text-xl font-bold text-navy-primary">0.743</div>
+                                <div class="text-sm text-text-secondary">Stability: High</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Performance Analytics -->
+                <div class="grid grid-cols-12 gap-8 mb-8">
+                    <div class="col-span-12 bg-cream-medium rounded-xl p-8 border-l-6 border-success">
+                        <div class="flex items-center justify-between mb-8">
+                            <h3 class="text-2xl font-bold text-navy-primary flex items-center tracking-wide">
+                                <i class="fas fa-chart-bar mr-3 text-navy-primary text-xl"></i>
+                                Portfolio Performance Analytics
+                            </h3>
+                            <span class="bg-navy-primary text-cream-light px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide">
+                                REAL-TIME
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-4 gap-8">
+                            <div class="text-center p-6 bg-cream-accent rounded-lg border border-cream-shadow">
+                                <div class="text-4xl font-bold text-success mb-3">+$4,260</div>
+                                <div class="text-base text-text-secondary font-semibold">Daily Portfolio P&L</div>
+                            </div>
+                            <div class="text-center p-6 bg-cream-accent rounded-lg border border-cream-shadow">
+                                <div class="text-4xl font-bold text-navy-primary mb-3">82.7%</div>
+                                <div class="text-base text-text-secondary font-semibold">Strategy Success Rate</div>
+                            </div>
+                            <div class="text-center p-6 bg-cream-accent rounded-lg border border-cream-shadow">
+                                <div class="text-4xl font-bold text-navy-primary mb-3">50</div>
+                                <div class="text-base text-text-secondary font-semibold">Total Transactions</div>
+                            </div>
+                            <div class="text-center p-6 bg-cream-accent rounded-lg border border-cream-shadow">
+                                <div class="text-4xl font-bold text-info mb-3">47μs</div>
+                                <div class="text-base text-text-secondary font-semibold">Avg Execution Latency</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Status Banner -->
+                <div class="bg-navy-primary text-cream-light p-6 rounded-xl text-center">
+                    <div class="text-2xl font-bold mb-2">🚀 GOMNA INSTITUTIONAL INVESTMENT PLATFORM</div>
+                    <div class="text-lg">Professional Trading Operations Center - Live & Operational</div>
+                    <div class="mt-4 flex justify-center space-x-8">
+                        <div class="text-sm"><strong>Repository:</strong> <a href="https://github.com/gomna-pha/hypervision-crypto-ai" class="underline">GitHub</a></div>
+                        <div class="text-sm"><strong>Status:</strong> ✅ LIVE</div>
+                        <div class="text-sm"><strong>Build:</strong> v2.0.0</div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
+
+    <!-- Include JavaScript -->
+    <script src="./app.js"></script>
     
     <script>
-        // Add some interactive animations
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.glassmorphism');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', function() {
-                    this.style.transform = 'translateY(-5px) scale(1.02)';
-                });
-                card.addEventListener('mouseleave', function() {
-                    this.style.transform = 'translateY(0) scale(1)';
-                });
+        // Update time
+        function updateTime() {
+            document.getElementById('current-time').textContent = new Date().toLocaleTimeString();
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
             });
         });
     </script>

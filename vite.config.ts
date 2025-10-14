@@ -1,10 +1,16 @@
 import { defineConfig } from 'vite'
-import pages from '@hono/vite-cloudflare-pages'
 
 export default defineConfig({
-  plugins: [pages()],
   build: {
-    outDir: 'dist'
+    outDir: 'dist',
+    rollupOptions: {
+      input: {
+        main: 'index.html'
+      }
+    }
   },
-  base: '/hypervision-crypto-ai/'
+  base: '/hypervision-crypto-ai/',
+  server: {
+    port: 3000
+  }
 })
