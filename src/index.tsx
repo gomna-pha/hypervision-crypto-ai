@@ -3737,22 +3737,30 @@ app.get('/', (c) => {
             theme: {
               extend: {
                 colors: {
-                  // 95% Cream Color Variations (replacing dark theme)
-                  'dark-bg': '#f7f5f3',           // Primary cream background
-                  'card-bg': '#f4f2ef',           // Medium cream for cards
-                  'accent': '#1e2a4a',            // Navy for accents (0.5%)
-                  'danger': '#d4a574',            // Cream-tinted danger
-                  'warning': '#e6d0a0',           // Cream-tinted warning
-                  'profit': '#d4e6d4',            // Cream-tinted success
-                  'loss': '#f0d4d4',              // Cream-tinted error
+                  // 95% Navy Blue Variations (primary color scheme)
+                  'dark-bg': '#1e2a4a',           // Primary navy background
+                  'card-bg': '#243552',           // Medium navy for cards
+                  'accent': '#f7f5f3',            // Cream for accents (5%)
+                  'danger': '#ff6b7a',            // Navy-tinted danger
+                  'warning': '#ffb347',           // Navy-tinted warning
+                  'profit': '#4ecdc4',            // Navy-tinted success
+                  'loss': '#ff6b7a',              // Navy-tinted error
                   
-                  // Additional cream variations
-                  'cream-light': '#faf9f7',       // Lightest cream
-                  'cream-medium': '#f4f2ef',      // Medium cream
-                  'cream-dark': '#f0ede9',        // Darker cream
-                  'cream-accent': '#ece8e3',      // Accent cream
-                  'text-primary': '#2d2925',      // Dark brown text
-                  'text-secondary': '#5a524a'     // Medium brown text
+                  // Additional navy variations (95% navy palette)
+                  'navy-primary': '#1e2a4a',      // Primary navy
+                  'navy-light': '#2c3e50',        // Lighter navy
+                  'navy-medium': '#243552',       // Medium navy
+                  'navy-dark': '#1a2238',         // Darker navy
+                  'navy-accent': '#34495e',       // Accent navy
+                  
+                  // Cream accents (5% usage)
+                  'cream-light': '#faf9f7',       // Lightest cream accent
+                  'cream-medium': '#f4f2ef',      // Medium cream accent
+                  'cream-accent': '#f7f5f3',      // Primary cream accent
+                  
+                  // Text colors for navy theme
+                  'text-primary': '#f7f5f3',      // Cream text on navy
+                  'text-secondary': '#d4d1cd'     // Light cream text
                 }
               }
             }
@@ -3762,7 +3770,7 @@ app.get('/', (c) => {
     </head>
     <body class="bg-dark-bg text-text-primary font-mono">
         <!-- Navigation -->
-        <nav class="bg-card-bg border-b border-cream-dark px-6 py-3">
+        <nav class="bg-card-bg border-b border-navy-accent px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-8">
                     <h1 class="text-2xl font-bold text-accent">GOMNA</h1>
@@ -3833,7 +3841,7 @@ app.get('/', (c) => {
                                 <!-- Market data will be populated here -->
                             </div>
                             
-                            <div class="border-t border-cream-dark pt-4">
+                            <div class="border-t border-navy-accent pt-4">
                                 <h4 class="text-sm font-bold mb-3 text-warning uppercase tracking-wide">Cross-Exchange Spreads</h4>
                                 <div id="spreads" class="space-y-2 text-sm">
                                     <!-- Spreads will be populated here -->
@@ -3858,7 +3866,7 @@ app.get('/', (c) => {
                                 <!-- Sentiment data will be populated here -->
                             </div>
                             
-                            <div class="border-t border-cream-dark pt-4">
+                            <div class="border-t border-navy-accent pt-4">
                                 <h4 class="text-sm font-bold mb-3 text-accent uppercase tracking-wide">Economic Indicators</h4>
                                 <div id="economic-indicators" class="space-y-2 text-sm">
                                     <!-- Economic data will be populated here -->
@@ -3896,7 +3904,7 @@ app.get('/', (c) => {
                                     <div class="text-warning font-semibold text-sm">Pattern Analysis Model</div>
                                 </div>
                                 <div id="hyperbolic-canvas" class="mb-4">
-                                    <canvas id="poincare-disk" width="350" height="350" class="mx-auto bg-cream-light rounded-full shadow-lg"></canvas>
+                                    <canvas id="poincare-disk" width="350" height="350" class="mx-auto bg-navy-dark rounded-full shadow-lg"></canvas>
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between items-center">
@@ -3920,7 +3928,7 @@ app.get('/', (c) => {
                                     <div class="text-profit font-semibold text-sm">Real-Time Asset Clustering</div>
                                 </div>
                                 <div id="clustering-canvas" class="mb-4">
-                                    <canvas id="asset-clustering-disk" width="350" height="350" class="mx-auto bg-cream-light rounded-full shadow-lg"></canvas>
+                                    <canvas id="asset-clustering-disk" width="350" height="350" class="mx-auto bg-navy-dark rounded-full shadow-lg"></canvas>
                                 </div>
                                 <div class="space-y-2 text-sm">
                                     <div class="flex justify-between items-center">
@@ -3935,14 +3943,14 @@ app.get('/', (c) => {
                                         <span class="text-gray-300">Cluster Stability:</span>
                                         <span id="cluster-stability" class="${clusteringMetrics.stabilityClass} font-semibold">${clusteringMetrics.stability}</span>
                                     </div>
-                                    <div class="flex justify-between items-center border-t border-cream-dark pt-2 mt-2">
+                                    <div class="flex justify-between items-center border-t border-navy-accent pt-2 mt-2">
                                         <span class="text-text-secondary text-xs">Last Updated:</span>
                                         <span id="clustering-timestamp" class="text-text-secondary text-xs font-mono"></span>
                                     </div>
                                 </div>
                                 
                                 <!-- Asset Legend -->
-                                <div class="mt-4 p-3 bg-cream-accent rounded-lg">
+                                <div class="mt-4 p-3 bg-navy-accent rounded-lg">
                                     <div class="text-text-secondary font-semibold mb-2 text-xs uppercase tracking-wide">Asset Legend:</div>
                                     <div id="asset-legend" class="space-y-1 text-xs">
                                         <!-- Will be populated dynamically -->
@@ -3992,19 +4000,19 @@ app.get('/', (c) => {
                             </div>
                             
                             <div class="grid grid-cols-2 gap-6">
-                                <div class="text-center p-4 bg-cream-accent rounded-lg">
+                                <div class="text-center p-4 bg-navy-accent rounded-lg">
                                     <div class="text-3xl font-bold text-profit mb-2">+$4,260</div>
                                     <div class="text-sm text-text-secondary font-medium">Total P&L Today</div>
                                 </div>
-                                <div class="text-center p-4 bg-cream-accent rounded-lg">
+                                <div class="text-center p-4 bg-navy-accent rounded-lg">
                                     <div class="text-3xl font-bold text-accent mb-2">82.7%</div>
                                     <div class="text-sm text-text-secondary font-medium">Combined Win Rate</div>
                                 </div>
-                                <div class="text-center p-4 bg-cream-accent rounded-lg">
+                                <div class="text-center p-4 bg-navy-accent rounded-lg">
                                     <div class="text-3xl font-bold text-text-primary mb-2">50</div>
                                     <div class="text-sm text-text-secondary font-medium">Total Executions</div>
                                 </div>
-                                <div class="text-center p-4 bg-cream-accent rounded-lg">
+                                <div class="text-center p-4 bg-navy-accent rounded-lg">
                                     <div class="text-3xl font-bold text-warning mb-2">47μs</div>
                                     <div class="text-sm text-text-secondary font-medium">Avg Execution Time</div>
                                 </div>
@@ -4023,7 +4031,7 @@ app.get('/', (c) => {
                                     <span class="text-xs text-text-secondary font-medium">DEPTH</span>
                                 </div>
                             </div>
-                            <div id="order-book" class="bg-cream-accent rounded-lg p-4">
+                            <div id="order-book" class="bg-navy-accent rounded-lg p-4">
                                 <!-- Order book will be populated here -->
                             </div>
                         </div>
@@ -4063,14 +4071,14 @@ app.get('/', (c) => {
                                 
                                 <!-- Candlestick Chart -->
                                 <div class="col-span-8">
-                                    <div class="bg-cream-light rounded-lg p-4" style="height: 400px;">
+                                    <div class="bg-navy-dark rounded-lg p-4" style="height: 400px;">
                                         <canvas id="candlestick-chart" width="600" height="350"></canvas>
                                     </div>
                                 </div>
                                 
                                 <!-- Hyperbolic CNN Analysis Panel -->
                                 <div class="col-span-4 space-y-4">
-                                    <div class="bg-cream-accent rounded-lg p-4">
+                                    <div class="bg-navy-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">🎯 Pattern Analysis</h4>
                                         <div id="pattern-analysis" class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4092,7 +4100,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
                                     
-                                    <div class="bg-cream-accent rounded-lg p-4">
+                                    <div class="bg-navy-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">⚗️ Hyperbolic Metrics</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4110,7 +4118,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
                                     
-                                    <div class="bg-cream-accent rounded-lg p-4">
+                                    <div class="bg-navy-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 text-accent">⚡ Arbitrage Timing</h4>
                                         <div id="arbitrage-timing" class="space-y-2 text-sm">
                                             <div class="flex justify-between">
@@ -4126,7 +4134,7 @@ app.get('/', (c) => {
                                                 <span id="risk-level" class="text-profit">--</span>
                                             </div>
                                         </div>
-                                        <div id="timing-recommendation" class="mt-3 p-2 bg-cream-light rounded text-xs">
+                                        <div id="timing-recommendation" class="mt-3 p-2 bg-navy-dark rounded text-xs">
                                             Monitoring market patterns...
                                         </div>
                                     </div>
@@ -4138,7 +4146,7 @@ app.get('/', (c) => {
                                 
                                 <!-- Real-time Pattern Alerts -->
                                 <div class="col-span-12 mt-4">
-                                    <div class="bg-cream-accent rounded-lg p-4">
+                                    <div class="bg-navy-accent rounded-lg p-4">
                                         <h4 class="font-semibold mb-3 flex items-center">
                                             <i class="fas fa-bell mr-2 text-warning"></i>
                                             Real-time Pattern Alerts
@@ -4206,7 +4214,7 @@ app.get('/', (c) => {
 
                             <div class="mt-6">
                                 <h4 class="text-md font-semibold mb-3 text-warning"><i class="fas fa-chart-line mr-2"></i>Economic Trends</h4>
-                                <div id="economic-trends-chart" class="bg-cream-light rounded-lg p-2">
+                                <div id="economic-trends-chart" class="bg-navy-dark rounded-lg p-2">
                                     <canvas id="trends-chart" width="300" height="200"></canvas>
                                 </div>
                             </div>
@@ -4232,7 +4240,7 @@ app.get('/', (c) => {
                                 <i class="fas fa-robot mr-2 text-accent"></i>
                                 GOMNA AI Assistant
                             </h3>
-                            <div id="chat-container" class="h-96 overflow-y-auto bg-cream-light rounded p-4 mb-4">
+                            <div id="chat-container" class="h-96 overflow-y-auto bg-navy-dark rounded p-4 mb-4">
                                 <div class="chat-message ai-message mb-4">
                                     <div class="font-semibold text-accent mb-1">GOMNA AI</div>
                                     <div>Welcome to your advanced trading assistant! I can help you with real-time market analysis, arbitrage evaluation, risk assessment, and trading strategy recommendations. What would you like to analyze?</div>
@@ -4240,7 +4248,7 @@ app.get('/', (c) => {
                             </div>
                             <div class="flex space-x-2">
                                 <input type="text" id="chat-input" placeholder="Ask me anything about trading..." 
-                                       class="flex-1 bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary">
+                                       class="flex-1 bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary">
                                 <button id="send-message" class="bg-accent text-dark-bg px-4 py-2 rounded hover:bg-opacity-80">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>
@@ -4293,23 +4301,23 @@ app.get('/', (c) => {
 
                     <!-- Quick Stats Bar -->
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-navy-accent text-center">
                             <div class="text-2xl font-bold text-accent">150+</div>
                             <div class="text-xs text-text-secondary uppercase tracking-wide">Total Assets</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-navy-accent text-center">
                             <div class="text-2xl font-bold text-profit">35+</div>
                             <div class="text-xs text-text-secondary uppercase tracking-wide">Risk Metrics</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-navy-accent text-center">
                             <div class="text-2xl font-bold text-text-primary">7</div>
                             <div class="text-xs text-text-secondary uppercase tracking-wide">Asset Classes</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-navy-accent text-center">
                             <div class="text-2xl font-bold text-accent">4</div>
                             <div class="text-xs text-text-secondary uppercase tracking-wide">Arbitrage Types</div>
                         </div>
-                        <div class="bg-card-bg p-4 rounded-lg border border-cream-dark text-center">
+                        <div class="bg-card-bg p-4 rounded-lg border border-navy-accent text-center">
                             <div class="text-2xl font-bold text-profit">10K+</div>
                             <div class="text-xs text-text-secondary uppercase tracking-wide">Monte Carlo</div>
                         </div>
@@ -4321,7 +4329,7 @@ app.get('/', (c) => {
                         <div class="col-span-4 space-y-6">
                             <!-- Asset Universe Display -->
                             <div id="asset-universe-display">
-                                <div class="bg-card-bg p-4 rounded-lg border border-cream-dark">
+                                <div class="bg-card-bg p-4 rounded-lg border border-navy-accent">
                                     <div class="flex items-center justify-between mb-3">
                                         <h3 class="text-lg font-bold text-accent"><i class="fas fa-globe mr-2"></i>Asset Universe</h3>
                                         <button id="load-asset-universe" class="text-xs bg-accent text-dark-bg px-2 py-1 rounded hover:bg-opacity-80">
@@ -4336,19 +4344,19 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Strategy Configuration -->
-                            <div class="bg-card-bg rounded-lg p-4 border border-cream-dark">
+                            <div class="bg-card-bg rounded-lg p-4 border border-navy-accent">
                                 <h4 class="font-semibold mb-3 text-accent">Strategy Configuration</h4>
                                 
                                 <div class="space-y-3">
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Strategy Name</label>
                                         <input id="strategy-name" type="text" placeholder="Advanced Arbitrage Strategy" 
-                                               class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                               class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                     </div>
                                     
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Strategy Type</label>
-                                        <select id="strategy-type" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                        <select id="strategy-type" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                             <option value="SPATIAL_ARBITRAGE">🔄 Spatial Arbitrage</option>
                                             <option value="STATISTICAL_ARBITRAGE">📊 Statistical Arbitrage</option>
                                             <option value="TRIANGULAR_ARBITRAGE">📐 Triangular Arbitrage</option>
@@ -4360,7 +4368,7 @@ app.get('/', (c) => {
                                     
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Asset Selection</label>
-                                        <select id="asset-class" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm mb-2">
+                                        <select id="asset-class" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm mb-2">
                                             <option value="mixed">🌍 Mixed Assets (Recommended)</option>
                                             <option value="crypto">₿ Cryptocurrency (25 assets)</option>
                                             <option value="equity_us_large">🇺🇸 US Large Cap (30 assets)</option>
@@ -4375,11 +4383,11 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Initial Capital ($)</label>
                                             <input id="initial-capital" type="number" value="1000000" min="10000" max="100000000"
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Time Range</label>
-                                            <select id="time-range" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                            <select id="time-range" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                                 <option value="90">3 Months</option>
                                                 <option value="180">6 Months</option>
                                                 <option value="365" selected>1 Year</option>
@@ -4391,7 +4399,7 @@ app.get('/', (c) => {
                             </div>
                             
                             <!-- Advanced Risk Parameters -->
-                            <div class="bg-card-bg rounded-lg p-4 border border-cream-dark">
+                            <div class="bg-card-bg rounded-lg p-4 border border-navy-accent">
                                 <h4 class="font-semibold mb-3 text-accent">Risk Management</h4>
                                 
                                 <div class="space-y-3">
@@ -4399,12 +4407,12 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Risk Per Trade (%)</label>
                                             <input id="risk-per-trade" type="number" value="1" min="0.1" max="5" step="0.1" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Max Drawdown (%)</label>
                                             <input id="max-drawdown" type="number" value="5" min="1" max="20" step="0.5" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                     </div>
                                     
@@ -4412,12 +4420,12 @@ app.get('/', (c) => {
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Min Confidence (%)</label>
                                             <input id="min-confidence" type="number" value="85" min="50" max="100" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">VaR Limit (%)</label>
                                             <input id="var-limit" type="number" value="3" min="1" max="10" step="0.5" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                     </div>
                                 </div>
@@ -4449,7 +4457,7 @@ app.get('/', (c) => {
                         <div class="col-span-8 space-y-6">
                             <!-- Arbitrage Templates Display -->
                             <div id="arbitrage-templates-display">
-                                <div class="bg-card-bg p-4 rounded-lg border border-cream-dark">
+                                <div class="bg-card-bg p-4 rounded-lg border border-navy-accent">
                                     <h3 class="text-lg font-bold text-accent mb-3"><i class="fas fa-rocket mr-2"></i>Professional Strategy Templates</h3>
                                     <div class="text-center text-text-secondary py-4">
                                         <i class="fas fa-cogs text-2xl mb-2"></i>
@@ -4460,7 +4468,7 @@ app.get('/', (c) => {
 
                             <!-- Quick Test Results -->
                             <div id="quick-test-results">
-                                <div class="bg-card-bg p-6 rounded-lg border border-cream-dark text-center">
+                                <div class="bg-card-bg p-6 rounded-lg border border-navy-accent text-center">
                                     <h3 class="text-lg font-bold text-accent mb-4"><i class="fas fa-chart-bar mr-2"></i>Strategy Test Results</h3>
                                     <div class="text-text-secondary">Select a strategy template above to run a quick test</div>
                                 </div>
@@ -4469,7 +4477,7 @@ app.get('/', (c) => {
                             <!-- Enhanced Results Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Arbitrage Results -->
-                                <div id="arbitrage-results" class="bg-card-bg rounded-lg p-4 border border-cream-dark">
+                                <div id="arbitrage-results" class="bg-card-bg rounded-lg p-4 border border-navy-accent">
                                     <h4 class="font-semibold mb-3 text-accent flex items-center">
                                         <i class="fas fa-exchange-alt mr-2"></i>Arbitrage Analysis
                                     </h4>
@@ -4480,7 +4488,7 @@ app.get('/', (c) => {
                                 </div>
                                 
                                 <!-- Monte Carlo Results -->
-                                <div id="monte-carlo-results" class="bg-card-bg rounded-lg p-4 border border-cream-dark">
+                                <div id="monte-carlo-results" class="bg-card-bg rounded-lg p-4 border border-navy-accent">
                                     <h4 class="font-semibold mb-3 text-accent flex items-center">
                                         <i class="fas fa-dice mr-2"></i>Monte Carlo Simulation
                                     </h4>
@@ -4494,7 +4502,7 @@ app.get('/', (c) => {
                             <!-- Classic Charts -->
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <!-- Equity Curve Chart -->
-                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-cream-dark">
+                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-navy-accent">
                                     <div class="flex items-center justify-between mb-4">
                                         <h5 class="font-semibold text-accent flex items-center">
                                             <span class="text-2xl mr-2">📈</span>
@@ -4508,7 +4516,7 @@ app.get('/', (c) => {
                                 </div>
                                 
                                 <!-- Risk Analysis Chart -->
-                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-cream-dark">
+                                <div class="bg-card-bg rounded-lg p-4 min-h-[400px] border border-navy-accent">
                                     <div class="flex items-center justify-between mb-4">
                                         <h5 class="font-semibold text-accent flex items-center">
                                             <span class="text-2xl mr-2">🛡️</span>
@@ -4523,7 +4531,7 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Professional Metrics Display -->
-                            <div class="bg-card-bg rounded-lg p-6 border border-cream-dark">
+                            <div class="bg-card-bg rounded-lg p-6 border border-navy-accent">
                                 <h4 class="font-semibold mb-4 text-accent flex items-center">
                                     <i class="fas fa-chart-bar mr-2"></i>Professional Risk Metrics (35+)
                                 </h4>
@@ -4563,7 +4571,7 @@ app.get('/', (c) => {
                                 </h3>
                                 
                                 <div class="space-y-4">
-                                    <div class="bg-cream-accent p-4 rounded-lg">
+                                    <div class="bg-navy-accent p-4 rounded-lg">
                                         <div class="flex justify-between items-center mb-2">
                                             <span class="text-sm text-text-secondary">Status</span>
                                             <span id="ai-agent-status" class="text-warning">NOT_INITIALIZED</span>
@@ -4615,7 +4623,7 @@ app.get('/', (c) => {
                         <!-- AI Intelligence Dashboard -->
                         <div class="col-span-8 space-y-6">
                             <!-- Market Intelligence -->
-                            <div class="bg-card-bg p-6 rounded-lg border border-cream-dark">
+                            <div class="bg-card-bg p-6 rounded-lg border border-navy-accent">
                                 <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-brain mr-2 text-accent"></i>
                                     AI Market Intelligence Dashboard
@@ -4623,22 +4631,22 @@ app.get('/', (c) => {
                                 </h3>
                                 
                                 <div class="grid grid-cols-4 gap-4 mb-6">
-                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                    <div class="bg-navy-accent p-4 rounded-lg text-center">
                                         <div class="text-sm text-text-secondary mb-1">Market Sentiment</div>
                                         <div class="text-lg font-bold text-profit">BULLISH</div>
                                         <div class="text-xs text-gray-500">Confidence: 87.3%</div>
                                     </div>
-                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                    <div class="bg-navy-accent p-4 rounded-lg text-center">
                                         <div class="text-sm text-text-secondary mb-1">Risk Level</div>
                                         <div class="text-lg font-bold text-warning">MODERATE</div>
                                         <div class="text-xs text-gray-500">Score: 6.2/10</div>
                                     </div>
-                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                    <div class="bg-navy-accent p-4 rounded-lg text-center">
                                         <div class="text-sm text-text-secondary mb-1">Volatility Index</div>
                                         <div class="text-lg font-bold text-accent">24.7%</div>
                                         <div class="text-xs text-gray-500">Trend: INCREASING</div>
                                     </div>
-                                    <div class="bg-cream-accent p-4 rounded-lg text-center">
+                                    <div class="bg-navy-accent p-4 rounded-lg text-center">
                                         <div class="text-sm text-text-secondary mb-1">Arbitrage Score</div>
                                         <div class="text-lg font-bold text-profit">8.4/10</div>
                                         <div class="text-xs text-gray-500">Opportunities: 12</div>
@@ -4647,7 +4655,7 @@ app.get('/', (c) => {
 
                                 <!-- AI Analysis and Recommendations -->
                                 <div class="grid grid-cols-2 gap-6">
-                                    <div class="bg-cream-light p-4 rounded-lg">
+                                    <div class="bg-navy-dark p-4 rounded-lg">
                                         <h4 class="font-semibold mb-3 text-accent">AI Market Analysis</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex items-start space-x-2">
@@ -4673,7 +4681,7 @@ app.get('/', (c) => {
                                         </div>
                                     </div>
 
-                                    <div class="bg-cream-light p-4 rounded-lg">
+                                    <div class="bg-navy-dark p-4 rounded-lg">
                                         <h4 class="font-semibold mb-3 text-accent">AI Recommendations</h4>
                                         <div class="space-y-2 text-sm">
                                             <div class="flex items-start space-x-2">
@@ -4702,13 +4710,13 @@ app.get('/', (c) => {
                             </div>
 
                             <!-- Market Intelligence Report -->
-                            <div class="bg-card-bg p-6 rounded-lg border border-cream-dark">
+                            <div class="bg-card-bg p-6 rounded-lg border border-navy-accent">
                                 <h3 class="text-lg font-bold text-text-primary mb-4 flex items-center">
                                     <i class="fas fa-file-alt mr-2 text-accent"></i>
                                     Market Intelligence Report
                                 </h3>
                                 
-                                <div class="bg-cream-light p-4 rounded-lg font-mono text-sm">
+                                <div class="bg-navy-dark p-4 rounded-lg font-mono text-sm">
                                     <div class="text-accent font-bold mb-3">REAL-TIME MARKET INTELLIGENCE REPORT</div>
                                     <div class="text-text-secondary mb-3">Generated: <span id="report-timestamp">2025-10-13T06:23:14.806Z</span></div>
                                     
@@ -4760,20 +4768,20 @@ app.get('/', (c) => {
                         <div class="grid grid-cols-12 gap-6">
                             <!-- Account Creation & Management -->
                             <div class="col-span-4 space-y-4">
-                                <div class="bg-cream-accent rounded-lg p-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Account Setup</h4>
                                     
                                     <div class="space-y-3">
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Account Name</label>
                                             <input id="paper-account-name" type="text" placeholder="My Trading Account" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Initial Balance ($)</label>
                                             <input id="paper-initial-balance" type="number" value="100000" min="1000" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <button id="create-paper-account" class="w-full bg-accent text-dark-bg py-2 rounded font-semibold hover:bg-opacity-80">
@@ -4782,14 +4790,14 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 
-                                <div class="bg-cream-accent rounded-lg p-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Place Order</h4>
                                     
                                     <div class="space-y-3">
                                         <div class="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Symbol</label>
-                                                <select id="paper-symbol" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                <select id="paper-symbol" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="BTC">BTC</option>
                                                     <option value="ETH">ETH</option>
                                                     <option value="SOL">SOL</option>
@@ -4797,7 +4805,7 @@ app.get('/', (c) => {
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Side</label>
-                                                <select id="paper-side" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                <select id="paper-side" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="BUY">BUY</option>
                                                     <option value="SELL">SELL</option>
                                                 </select>
@@ -4808,11 +4816,11 @@ app.get('/', (c) => {
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Quantity</label>
                                                 <input id="paper-quantity" type="number" value="0.1" min="0.001" step="0.001" 
-                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                       class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Order Type</label>
-                                                <select id="paper-order-type" class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                <select id="paper-order-type" class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                                     <option value="MARKET">MARKET</option>
                                                     <option value="LIMIT">LIMIT</option>
                                                 </select>
@@ -4822,19 +4830,19 @@ app.get('/', (c) => {
                                         <div id="limit-price-container" class="hidden">
                                             <label class="block text-sm font-medium mb-1">Limit Price ($)</label>
                                             <input id="paper-limit-price" type="number" step="0.01" 
-                                                   class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                   class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                         </div>
                                         
                                         <div class="grid grid-cols-2 gap-2">
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Stop Loss ($)</label>
                                                 <input id="paper-stop-loss" type="number" step="0.01" 
-                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                       class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium mb-1">Take Profit ($)</label>
                                                 <input id="paper-take-profit" type="number" step="0.01" 
-                                                       class="w-full bg-cream-light border border-cream-dark rounded px-3 py-2 text-text-primary text-sm">
+                                                       class="w-full bg-navy-dark border border-navy-accent rounded px-3 py-2 text-text-primary text-sm">
                                             </div>
                                         </div>
                                         
@@ -4844,7 +4852,7 @@ app.get('/', (c) => {
                                     </div>
                                 </div>
                                 
-                                <div class="bg-cream-accent rounded-lg p-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
                                     <h4 class="font-semibold mb-3 text-accent">Auto Trading</h4>
                                     <div class="space-y-3">
                                         <div class="flex items-center justify-between">
@@ -4864,32 +4872,32 @@ app.get('/', (c) => {
                             <!-- Account Summary & Positions -->
                             <div class="col-span-8 space-y-4">
                                 <div class="grid grid-cols-4 gap-4">
-                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
                                         <div id="paper-balance" class="text-2xl font-bold text-accent">$0</div>
                                         <div class="text-sm text-text-secondary">Available Balance</div>
                                     </div>
-                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
                                         <div id="paper-equity" class="text-2xl font-bold text-profit">$0</div>
                                         <div class="text-sm text-text-secondary">Total Equity</div>
                                     </div>
-                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
                                         <div id="paper-pnl" class="text-2xl font-bold">$0</div>
                                         <div class="text-sm text-text-secondary">Total P&L</div>
                                     </div>
-                                    <div class="bg-cream-accent rounded-lg p-4 text-center">
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
                                         <div id="paper-return" class="text-2xl font-bold">0%</div>
                                         <div class="text-sm text-text-secondary">Total Return</div>
                                     </div>
                                 </div>
                                 
-                                <div class="bg-cream-accent rounded-lg p-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
                                     <h5 class="font-semibold mb-3 text-accent"><i class="fas fa-list mr-2"></i>Current Positions</h5>
                                     <div id="paper-positions" class="text-center text-text-secondary py-4">
                                         No positions yet...
                                     </div>
                                 </div>
                                 
-                                <div class="bg-cream-accent rounded-lg p-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
                                     <h5 class="font-semibold mb-3 text-accent">📜 Trade History</h5>
                                     <div id="paper-trade-history" class="max-h-64 overflow-y-auto">
                                         <div class="text-center text-text-secondary py-4">
