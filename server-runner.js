@@ -4,7 +4,8 @@
  */
 
 import { serve } from '@hono/node-server';
-import app from './arbitrage/server.js';
+// Import TypeScript module using dynamic import
+const { default: app } = await import('./arbitrage/server.ts');
 
 const port = process.env.PORT || 4000;
 
