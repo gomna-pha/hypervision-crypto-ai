@@ -14,6 +14,44 @@ import IntelligentTradingAssistant, { type AIAssistantConfig } from './ai-assist
 import MultimodalDataFusionEngine from './ai-integration/multimodal-data-fusion'
 import type { BacktestConfig } from './backtesting/index'
 
+// Agent-Based LLM Arbitrage Platform Imports
+interface ArbitrageAgentOutput {
+  agent_name: string;
+  timestamp: string;
+  key_signal: number;
+  confidence: number;
+  features: Record<string, any>;
+  metadata?: Record<string, any>;
+}
+
+interface FusionPrediction {
+  predicted_spread_pct: number;
+  confidence: number;
+  direction: 'converge' | 'diverge' | 'stable';
+  expected_time_s: number;
+  arbitrage_plan: {
+    buy_exchange: string;
+    sell_exchange: string;
+    pair: string;
+    notional_usd: number;
+    estimated_profit_usd: number;
+    max_position_time_sec: number;
+  };
+  rationale: string;
+  risk_flags: string[];
+  aos_score: number;
+  timestamp: string;
+}
+
+interface AgentHealthStatus {
+  agent_name: string;
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  last_update: string;
+  error_count: number;
+  uptime_seconds: number;
+  data_freshness_ms: number;
+}
+
 const app = new Hono()
 
 // Initialize Reliable Backtesting Engine (Primary)
@@ -34,6 +72,591 @@ console.log('🔄 Multimodal data fusion started')
 // Keep other engines for compatibility
 const backtestingEngine = new ProductionBacktestingEngine()
 const enterpriseEngine = new EnterpriseBacktestingEngine()
+
+// ====== AGENT-BASED LLM ARBITRAGE PLATFORM ======
+
+/**
+ * Agent-Based Arbitrage Platform Core Components
+ */
+class ArbitrageAgentRegistry {
+  private agents: Map<string, any> = new Map();
+  private isRunning = false;
+  
+  constructor() {
+    this.initializeAgents();
+  }
+  
+  private initializeAgents(): void {
+    // Initialize simplified agents for demo
+    const agentConfigs = {
+      economic: { name: 'economic', enabled: true, polling_interval_ms: 10000, confidence_min: 0.5 },
+      sentiment: { name: 'sentiment', enabled: true, polling_interval_ms: 5000, confidence_min: 0.4 },
+      price: { name: 'price', enabled: true, polling_interval_ms: 1000, confidence_min: 0.6 },
+      volume: { name: 'volume', enabled: true, polling_interval_ms: 2000, confidence_min: 0.2 },
+      trade: { name: 'trade', enabled: true, polling_interval_ms: 3000, confidence_min: 0.4 },
+      image: { name: 'image', enabled: true, polling_interval_ms: 15000, confidence_min: 0.6 }
+    };
+    
+    Object.values(agentConfigs).forEach(config => {
+      this.agents.set(config.name, new ArbitrageAgent(config));
+    });
+  }
+  
+  async startAll(): Promise<void> {
+    this.isRunning = true;
+    for (const [name, agent] of this.agents) {
+      await agent.start();
+      console.log(`🤖 Started agent: ${name}`);
+    }
+  }
+  
+  async stopAll(): Promise<void> {
+    this.isRunning = false;
+    for (const [name, agent] of this.agents) {
+      await agent.stop();
+    }
+  }
+  
+  getAllOutputs(): Record<string, ArbitrageAgentOutput | null> {
+    const outputs: Record<string, ArbitrageAgentOutput | null> = {};
+    for (const [name, agent] of this.agents) {
+      outputs[name] = agent.getLatestOutput();
+    }
+    return outputs;
+  }
+  
+  getSystemHealth(): Record<string, AgentHealthStatus> {
+    const health: Record<string, AgentHealthStatus> = {};
+    for (const [name, agent] of this.agents) {
+      health[name] = agent.getHealthStatus();
+    }
+    return health;
+  }
+  
+  getAgent(name: string): any {
+    return this.agents.get(name);
+  }
+}
+
+class ArbitrageAgent {
+  private config: any;
+  private isRunning = false;
+  private lastOutput: ArbitrageAgentOutput | null = null;
+  private errorCount = 0;
+  private startTime = Date.now();
+  private intervalId: NodeJS.Timeout | null = null;
+  
+  constructor(config: any) {
+    this.config = config;
+  }
+  
+  async start(): Promise<void> {
+    if (this.isRunning || !this.config.enabled) return;
+    
+    this.isRunning = true;
+    this.startTime = Date.now();
+    
+    // Initial data collection
+    await this.collectData();
+    
+    // Set up periodic collection
+    this.intervalId = setInterval(async () => {
+      await this.collectData();
+    }, this.config.polling_interval_ms);
+  }
+  
+  async stop(): Promise<void> {
+    if (!this.isRunning) return;
+    
+    this.isRunning = false;
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+  }
+  
+  private async collectData(): Promise<void> {
+    try {
+      const output = await this.generateAgentData();
+      this.lastOutput = output;
+      this.errorCount = 0;
+    } catch (error) {
+      this.errorCount++;
+      console.error(`Agent ${this.config.name} error:`, error);
+    }
+  }
+  
+  private async generateAgentData(): Promise<ArbitrageAgentOutput> {
+    const timestamp = new Date().toISOString();
+    const baseSignal = (Math.random() - 0.5) * 2; // -1 to 1
+    const confidence = 0.3 + Math.random() * 0.6; // 0.3 to 0.9
+    
+    const features = this.generateAgentSpecificFeatures();
+    
+    return {
+      agent_name: this.config.name,
+      timestamp,
+      key_signal: baseSignal,
+      confidence,
+      features,
+      metadata: {
+        data_source: 'simulation',
+        collection_time_ms: Math.floor(Math.random() * 50 + 10)
+      }
+    };
+  }
+  
+  private generateAgentSpecificFeatures(): Record<string, any> {
+    switch (this.config.name) {
+      case 'economic':
+        return {
+          cpi_yoy: 3.2 + (Math.random() - 0.5) * 0.4,
+          fed_funds_rate: 5.25 + (Math.random() - 0.5) * 0.25,
+          unemployment_rate: 3.8 + (Math.random() - 0.5) * 0.3,
+          m2_growth_yoy: 2.1 + (Math.random() - 0.5) * 1.0,
+          vix_level: 18.5 + (Math.random() - 0.5) * 8.0
+        };
+      
+      case 'sentiment':
+        return {
+          twitter_sentiment: Math.random(),
+          twitter_mention_volume: Math.floor(Math.random() * 10000 + 1000),
+          reddit_sentiment: Math.random(),
+          google_trends_crypto: Math.floor(Math.random() * 100),
+          fear_greed_index: Math.floor(Math.random() * 100)
+        };
+      
+      case 'price':
+        return {
+          btc_price: 67234 + (Math.random() - 0.5) * 2000,
+          eth_price: 3456 + (Math.random() - 0.5) * 200,
+          volatility_1m: Math.random() * 0.05,
+          cross_exchange_spreads: {
+            'binance_coinbase_btc': 0.001 + Math.random() * 0.01,
+            'coinbase_kraken_eth': 0.0005 + Math.random() * 0.008
+          },
+          orderbook_imbalance: (Math.random() - 0.5) * 0.2
+        };
+      
+      case 'volume':
+        return {
+          btc_volume_1m: Math.floor(Math.random() * 50000 + 10000),
+          eth_volume_1m: Math.floor(Math.random() * 30000 + 8000),
+          liquidity_index: Math.random(),
+          volume_spike_detected: Math.random() > 0.8,
+          market_depth_usd: Math.floor(Math.random() * 5000000 + 1000000)
+        };
+      
+      case 'trade':
+        return {
+          execution_quality: Math.random(),
+          slippage_estimate_bps: Math.floor(Math.random() * 15 + 5),
+          market_impact: Math.random() * 0.01,
+          fill_ratio: 0.85 + Math.random() * 0.14,
+          latency_ms: Math.floor(Math.random() * 100 + 20)
+        };
+      
+      case 'image':
+        return {
+          orderbook_heatmap_bullish: Math.random(),
+          support_resistance_strength: Math.random(),
+          pattern_detected: ['ascending_triangle', 'bull_flag', 'consolidation'][Math.floor(Math.random() * 3)],
+          visual_confidence: Math.random(),
+          chart_anomaly_score: Math.random()
+        };
+      
+      default:
+        return {};
+    }
+  }
+  
+  getLatestOutput(): ArbitrageAgentOutput | null {
+    return this.lastOutput;
+  }
+  
+  getHealthStatus(): AgentHealthStatus {
+    const now = Date.now();
+    const uptimeSeconds = Math.floor((now - this.startTime) / 1000);
+    const dataFreshnessMs = this.lastOutput 
+      ? now - new Date(this.lastOutput.timestamp).getTime()
+      : Infinity;
+    
+    let status: 'healthy' | 'degraded' | 'unhealthy' = 'healthy';
+    
+    if (!this.isRunning) {
+      status = 'unhealthy';
+    } else if (this.errorCount > 5 || dataFreshnessMs > 30000) {
+      status = 'degraded';
+    } else if (this.errorCount > 10) {
+      status = 'unhealthy';
+    }
+    
+    return {
+      agent_name: this.config.name,
+      status,
+      last_update: this.lastOutput?.timestamp || 'never',
+      error_count: this.errorCount,
+      uptime_seconds: uptimeSeconds,
+      data_freshness_ms: dataFreshnessMs
+    };
+  }
+}
+
+class LLMFusionBrain {
+  private predictionHistory: FusionPrediction[] = [];
+  
+  async generatePrediction(agents: Record<string, ArbitrageAgentOutput>): Promise<FusionPrediction> {
+    const timestamp = new Date().toISOString();
+    
+    // Simulate LLM analysis (in production, this would call Claude/GPT-4)
+    const validAgents = this.filterValidAgents(agents);
+    const aosScore = this.calculateAOS(validAgents);
+    const prediction = this.simulateLLMPrediction(validAgents, aosScore, timestamp);
+    
+    this.predictionHistory.push(prediction);
+    if (this.predictionHistory.length > 100) {
+      this.predictionHistory = this.predictionHistory.slice(-50);
+    }
+    
+    return prediction;
+  }
+  
+  private filterValidAgents(agents: Record<string, ArbitrageAgentOutput>): Record<string, ArbitrageAgentOutput> {
+    const validAgents: Record<string, ArbitrageAgentOutput> = {};
+    const now = Date.now();
+    const maxAge = 30000; // 30 seconds
+    
+    for (const [name, agent] of Object.entries(agents)) {
+      if (!agent) continue;
+      
+      const age = now - new Date(agent.timestamp).getTime();
+      if (age > maxAge) continue;
+      
+      if (agent.confidence < 0.3) continue;
+      
+      validAgents[name] = agent;
+    }
+    
+    return validAgents;
+  }
+  
+  private calculateAOS(agents: Record<string, ArbitrageAgentOutput>): number {
+    const weights = { price: 0.4, sentiment: 0.25, volume: 0.2, image: 0.05, risk: -0.1 };
+    let score = 0;
+    let totalWeight = 0;
+    
+    for (const [name, agent] of Object.entries(agents)) {
+      const weight = weights[name as keyof typeof weights] || 0;
+      if (weight !== 0) {
+        score += agent.key_signal * weight * agent.confidence;
+        totalWeight += Math.abs(weight);
+      }
+    }
+    
+    return totalWeight > 0 ? score / totalWeight : 0;
+  }
+  
+  private simulateLLMPrediction(agents: Record<string, ArbitrageAgentOutput>, aosScore: number, timestamp: string): FusionPrediction {
+    const spreadBase = 0.005; // 0.5% base spread
+    const spreadVariation = Math.abs(aosScore) * 0.01; // Up to 1% additional
+    const predictedSpread = spreadBase + spreadVariation;
+    
+    const confidence = Math.max(0.5, Math.min(0.95, 0.7 + Math.abs(aosScore) * 0.3));
+    
+    const direction = aosScore > 0.1 ? 'converge' : aosScore < -0.1 ? 'diverge' : 'stable';
+    
+    const expectedTimeS = Math.floor(300 + Math.random() * 1500); // 5-30 minutes
+    
+    const exchanges = ['binance', 'coinbase', 'kraken'];
+    const buyExchange = exchanges[Math.floor(Math.random() * exchanges.length)];
+    let sellExchange = exchanges[Math.floor(Math.random() * exchanges.length)];
+    while (sellExchange === buyExchange) {
+      sellExchange = exchanges[Math.floor(Math.random() * exchanges.length)];
+    }
+    
+    const pairs = ['BTC-USDT', 'ETH-USDT', 'BTC-USD', 'ETH-USD'];
+    const pair = pairs[Math.floor(Math.random() * pairs.length)];
+    
+    const notionalUsd = 25000 + Math.floor(Math.random() * 175000); // $25k - $200k
+    const estimatedProfitUsd = notionalUsd * predictedSpread * 0.7; // 70% capture efficiency
+    
+    const rationale = this.generateRationale(agents, aosScore, direction);
+    const riskFlags = this.generateRiskFlags(agents, predictedSpread);
+    
+    return {
+      predicted_spread_pct: predictedSpread,
+      confidence,
+      direction,
+      expected_time_s: expectedTimeS,
+      arbitrage_plan: {
+        buy_exchange: buyExchange,
+        sell_exchange: sellExchange,
+        pair,
+        notional_usd: notionalUsd,
+        estimated_profit_usd: estimatedProfitUsd,
+        max_position_time_sec: expectedTimeS
+      },
+      rationale,
+      risk_flags: riskFlags,
+      aos_score: aosScore,
+      timestamp
+    };
+  }
+  
+  private generateRationale(agents: Record<string, ArbitrageAgentOutput>, aosScore: number, direction: string): string {
+    const reasons = [];
+    
+    if (agents.price?.key_signal > 0.1) {
+      reasons.push('positive price momentum detected');
+    }
+    
+    if (agents.sentiment?.key_signal > 0.1) {
+      reasons.push('bullish sentiment signals');
+    }
+    
+    if (agents.volume?.key_signal > 0.1) {
+      reasons.push('increased trading volume');
+    }
+    
+    if (Math.abs(aosScore) > 0.2) {
+      reasons.push(`strong AOS score (${aosScore.toFixed(3)})`);
+    }
+    
+    const baseRationale = `Multi-modal analysis suggests ${direction} opportunity`;
+    
+    if (reasons.length > 0) {
+      return `${baseRationale} based on ${reasons.join(', ')}`;
+    }
+    
+    return baseRationale;
+  }
+  
+  private generateRiskFlags(agents: Record<string, ArbitrageAgentOutput>, spread: number): string[] {
+    const flags = [];
+    
+    if (spread > 0.015) {
+      flags.push('high_spread_warning');
+    }
+    
+    if (agents.volume?.features?.liquidity_index < 0.3) {
+      flags.push('low_liquidity');
+    }
+    
+    if (agents.price?.features?.volatility_1m > 0.03) {
+      flags.push('high_volatility');
+    }
+    
+    if (agents.trade?.features?.slippage_estimate_bps > 25) {
+      flags.push('high_slippage_risk');
+    }
+    
+    return flags;
+  }
+  
+  getPredictionHistory(limit = 20): FusionPrediction[] {
+    return this.predictionHistory.slice(-limit);
+  }
+  
+  getFusionStatistics() {
+    if (this.predictionHistory.length === 0) {
+      return {
+        total_predictions: 0,
+        avg_confidence: 0,
+        avg_spread_predicted: 0,
+        direction_distribution: {},
+        avg_time_horizon_s: 0
+      };
+    }
+    
+    const totalPredictions = this.predictionHistory.length;
+    const avgConfidence = this.predictionHistory.reduce((sum, p) => sum + p.confidence, 0) / totalPredictions;
+    const avgSpread = this.predictionHistory.reduce((sum, p) => sum + p.predicted_spread_pct, 0) / totalPredictions;
+    const avgTimeHorizon = this.predictionHistory.reduce((sum, p) => sum + p.expected_time_s, 0) / totalPredictions;
+    
+    const directionCounts: Record<string, number> = {};
+    for (const prediction of this.predictionHistory) {
+      directionCounts[prediction.direction] = (directionCounts[prediction.direction] || 0) + 1;
+    }
+    
+    return {
+      total_predictions: totalPredictions,
+      avg_confidence: avgConfidence,
+      avg_spread_predicted: avgSpread,
+      direction_distribution: directionCounts,
+      avg_time_horizon_s: avgTimeHorizon
+    };
+  }
+}
+
+class ArbitrageDecisionEngine {
+  private executionHistory: any[] = [];
+  private systemStatus = {
+    circuit_breaker_active: false,
+    active_trades_count: 0,
+    current_exposure_pct: 0,
+    unhealthy_apis: [],
+    event_blackout_active: false,
+    last_decision_timestamp: new Date().toISOString()
+  };
+  
+  async makeDecision(prediction: FusionPrediction, agents: Record<string, ArbitrageAgentOutput>): Promise<any> {
+    const timestamp = new Date().toISOString();
+    const decisionId = `DEC_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+    
+    const executionPlan = {
+      approved: false,
+      prediction,
+      execution_params: {
+        buy_exchange: prediction.arbitrage_plan.buy_exchange,
+        sell_exchange: prediction.arbitrage_plan.sell_exchange,
+        pair: prediction.arbitrage_plan.pair,
+        notional_usd: prediction.arbitrage_plan.notional_usd,
+        max_slippage_bps: 20,
+        time_limit_sec: prediction.expected_time_s
+      },
+      risk_assessment: {
+        risk_score: 0,
+        confidence_adjusted: prediction.confidence,
+        expected_sharpe: 0,
+        max_drawdown_estimate: 0
+      },
+      constraint_results: {
+        global_constraints_passed: false,
+        agent_constraints_passed: false,
+        bounds_checks_passed: false,
+        failed_constraints: [],
+        warnings: []
+      },
+      timestamp,
+      decision_id: decisionId
+    };
+    
+    // Simplified decision logic for demo
+    const riskScore = this.calculateRiskScore(prediction, agents);
+    executionPlan.risk_assessment.risk_score = riskScore;
+    
+    const passesConstraints = this.checkConstraints(prediction, agents);
+    executionPlan.constraint_results.global_constraints_passed = passesConstraints.global;
+    executionPlan.constraint_results.agent_constraints_passed = passesConstraints.agents;
+    executionPlan.constraint_results.bounds_checks_passed = passesConstraints.bounds;
+    
+    // Approval logic
+    const allChecksPassed = passesConstraints.global && passesConstraints.agents && passesConstraints.bounds;
+    const riskAcceptable = riskScore <= 0.7;
+    const confidenceAcceptable = prediction.confidence >= 0.6;
+    
+    executionPlan.approved = allChecksPassed && riskAcceptable && confidenceAcceptable;
+    
+    if (!executionPlan.approved) {
+      if (!allChecksPassed) executionPlan.constraint_results.failed_constraints.push('Constraint violations detected');
+      if (!riskAcceptable) executionPlan.constraint_results.failed_constraints.push(`Risk score too high: ${riskScore.toFixed(3)}`);
+      if (!confidenceAcceptable) executionPlan.constraint_results.failed_constraints.push(`Confidence too low: ${prediction.confidence.toFixed(3)}`);
+    }
+    
+    this.executionHistory.push(executionPlan);
+    if (this.executionHistory.length > 200) {
+      this.executionHistory = this.executionHistory.slice(-100);
+    }
+    
+    console.log(`🎯 Decision ${decisionId}: ${executionPlan.approved ? '✅ APPROVED' : '❌ REJECTED'} - Risk: ${riskScore.toFixed(3)}, Confidence: ${prediction.confidence.toFixed(3)}`);
+    
+    return executionPlan;
+  }
+  
+  private calculateRiskScore(prediction: FusionPrediction, agents: Record<string, ArbitrageAgentOutput>): number {
+    let riskFactors = [];
+    
+    // Volatility risk
+    const volatility = agents.price?.features?.volatility_1m || 0.02;
+    riskFactors.push(volatility * 10); // Scale to 0-1 range
+    
+    // Liquidity risk
+    const liquidityIndex = agents.volume?.features?.liquidity_index || 0.5;
+    riskFactors.push(1 - liquidityIndex);
+    
+    // Spread risk
+    const spreadRisk = Math.min(1, prediction.predicted_spread_pct / 0.02); // Normalize to 2%
+    riskFactors.push(spreadRisk);
+    
+    // Time risk
+    const timeRisk = Math.min(1, prediction.expected_time_s / 3600); // Normalize to 1 hour
+    riskFactors.push(timeRisk);
+    
+    return Math.max(0, Math.min(1, riskFactors.reduce((sum, r) => sum + r, 0) / riskFactors.length));
+  }
+  
+  private checkConstraints(prediction: FusionPrediction, agents: Record<string, ArbitrageAgentOutput>): {
+    global: boolean;
+    agents: boolean;
+    bounds: boolean;
+  } {
+    // Simplified constraint checking
+    const globalPassed = 
+      !this.systemStatus.circuit_breaker_active &&
+      this.systemStatus.active_trades_count < 5 &&
+      this.systemStatus.current_exposure_pct < 3.0;
+    
+    const agentsPassed = 
+      Object.keys(agents).length >= 3 && // Need at least 3 agents
+      Object.values(agents).every(agent => agent.confidence >= 0.3);
+    
+    const boundsPassed = 
+      prediction.predicted_spread_pct >= 0.001 && // Min 0.1% spread
+      prediction.confidence >= 0.5 &&
+      prediction.arbitrage_plan.estimated_profit_usd >= 50; // Min $50 profit
+    
+    return {
+      global: globalPassed,
+      agents: agentsPassed,
+      bounds: boundsPassed
+    };
+  }
+  
+  getSystemStatus() {
+    return { ...this.systemStatus };
+  }
+  
+  getExecutionHistory(limit = 50) {
+    return this.executionHistory.slice(-limit);
+  }
+  
+  getDecisionStatistics() {
+    if (this.executionHistory.length === 0) {
+      return {
+        total_decisions: 0,
+        approval_rate: 0,
+        avg_risk_score: 0,
+        avg_notional_usd: 0,
+        common_rejection_reasons: []
+      };
+    }
+    
+    const approved = this.executionHistory.filter(p => p.approved).length;
+    const approvalRate = approved / this.executionHistory.length;
+    const avgRiskScore = this.executionHistory.reduce((sum, p) => sum + p.risk_assessment.risk_score, 0) / this.executionHistory.length;
+    const avgNotional = this.executionHistory.reduce((sum, p) => sum + p.execution_params.notional_usd, 0) / this.executionHistory.length;
+    
+    return {
+      total_decisions: this.executionHistory.length,
+      approval_rate: approvalRate,
+      avg_risk_score: avgRiskScore,
+      avg_notional_usd: avgNotional,
+      common_rejection_reasons: ['Constraint violations detected', 'Risk score too high', 'Confidence too low']
+    };
+  }
+}
+
+// Initialize the Agent-Based LLM Arbitrage Platform
+const arbitrageAgentRegistry = new ArbitrageAgentRegistry();
+const llmFusionBrain = new LLMFusionBrain();
+const arbitrageDecisionEngine = new ArbitrageDecisionEngine();
+
+// Start the arbitrage platform
+arbitrageAgentRegistry.startAll().then(() => {
+  console.log('🚀 Agent-Based LLM Arbitrage Platform started successfully!');
+}).catch(error => {
+  console.error('Failed to start arbitrage platform:', error);
+});
 
 // Enable CORS for API routes
 app.use('/api/*', cors())
@@ -886,6 +1509,243 @@ app.get('/api/arbitrage-opportunities', (c) => {
 app.get('/api/signals', (c) => {
   return c.json(generateArbitrageOpportunities())
 })
+
+// ====== AGENT-BASED LLM ARBITRAGE PLATFORM API ENDPOINTS ======
+
+// Agent Status and Health Monitoring
+app.get('/api/arbitrage-platform/agents/status', (c) => {
+  const agentOutputs = arbitrageAgentRegistry.getAllOutputs();
+  const systemHealth = arbitrageAgentRegistry.getSystemHealth();
+  
+  return c.json({
+    agents: agentOutputs,
+    health: systemHealth,
+    platform_status: 'operational',
+    timestamp: new Date().toISOString(),
+    total_agents: Object.keys(agentOutputs).length,
+    healthy_agents: Object.values(systemHealth).filter(h => h.status === 'healthy').length
+  });
+});
+
+// Individual Agent Data
+app.get('/api/arbitrage-platform/agents/:name', (c) => {
+  const agentName = c.req.param('name');
+  const agent = arbitrageAgentRegistry.getAgent(agentName);
+  
+  if (!agent) {
+    return c.json({ error: `Agent '${agentName}' not found` }, 404);
+  }
+  
+  return c.json({
+    name: agentName,
+    output: agent.getLatestOutput(),
+    health: agent.getHealthStatus(),
+    timestamp: new Date().toISOString()
+  });
+});
+
+// LLM Fusion Brain Predictions
+app.get('/api/arbitrage-platform/fusion/predict', async (c) => {
+  try {
+    const agentOutputs = arbitrageAgentRegistry.getAllOutputs();
+    
+    // Filter out null outputs
+    const validOutputs: Record<string, ArbitrageAgentOutput> = {};
+    for (const [name, output] of Object.entries(agentOutputs)) {
+      if (output) {
+        validOutputs[name] = output;
+      }
+    }
+    
+    if (Object.keys(validOutputs).length === 0) {
+      return c.json({ error: 'No valid agent data available for fusion' }, 400);
+    }
+    
+    const prediction = await llmFusionBrain.generatePrediction(validOutputs);
+    
+    return c.json({
+      prediction,
+      agent_count: Object.keys(validOutputs).length,
+      fusion_timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return c.json({ error: 'Fusion prediction failed', details: error.message }, 500);
+  }
+});
+
+// Fusion Brain Statistics
+app.get('/api/arbitrage-platform/fusion/stats', (c) => {
+  const stats = llmFusionBrain.getFusionStatistics();
+  const history = llmFusionBrain.getPredictionHistory(10);
+  
+  return c.json({
+    statistics: stats,
+    recent_predictions: history,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Decision Engine Analysis
+app.post('/api/arbitrage-platform/decision/analyze', async (c) => {
+  try {
+    const agentOutputs = arbitrageAgentRegistry.getAllOutputs();
+    
+    // Filter out null outputs
+    const validOutputs: Record<string, ArbitrageAgentOutput> = {};
+    for (const [name, output] of Object.entries(agentOutputs)) {
+      if (output) {
+        validOutputs[name] = output;
+      }
+    }
+    
+    if (Object.keys(validOutputs).length === 0) {
+      return c.json({ error: 'No valid agent data available for decision analysis' }, 400);
+    }
+    
+    // Generate prediction first
+    const prediction = await llmFusionBrain.generatePrediction(validOutputs);
+    
+    // Make decision
+    const decision = await arbitrageDecisionEngine.makeDecision(prediction, validOutputs);
+    
+    return c.json({
+      decision,
+      prediction_used: prediction,
+      agent_count: Object.keys(validOutputs).length,
+      analysis_timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    return c.json({ error: 'Decision analysis failed', details: error.message }, 500);
+  }
+});
+
+// Decision Engine Status
+app.get('/api/arbitrage-platform/decision/status', (c) => {
+  const systemStatus = arbitrageDecisionEngine.getSystemStatus();
+  const executionHistory = arbitrageDecisionEngine.getExecutionHistory(20);
+  const statistics = arbitrageDecisionEngine.getDecisionStatistics();
+  
+  return c.json({
+    system_status: systemStatus,
+    recent_decisions: executionHistory,
+    statistics,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Complete Arbitrage Pipeline (End-to-End)
+app.get('/api/arbitrage-platform/pipeline/full', async (c) => {
+  try {
+    const startTime = Date.now();
+    
+    // Step 1: Get all agent data
+    const agentOutputs = arbitrageAgentRegistry.getAllOutputs();
+    const systemHealth = arbitrageAgentRegistry.getSystemHealth();
+    
+    // Filter valid outputs
+    const validOutputs: Record<string, ArbitrageAgentOutput> = {};
+    for (const [name, output] of Object.entries(agentOutputs)) {
+      if (output) {
+        validOutputs[name] = output;
+      }
+    }
+    
+    if (Object.keys(validOutputs).length < 3) {
+      return c.json({ 
+        error: 'Insufficient agent data for full pipeline', 
+        available_agents: Object.keys(validOutputs).length,
+        required_minimum: 3
+      }, 400);
+    }
+    
+    // Step 2: Generate LLM fusion prediction
+    const prediction = await llmFusionBrain.generatePrediction(validOutputs);
+    
+    // Step 3: Make decision
+    const decision = await arbitrageDecisionEngine.makeDecision(prediction, validOutputs);
+    
+    const processingTime = Date.now() - startTime;
+    
+    return c.json({
+      pipeline_result: {
+        agents: {
+          data: validOutputs,
+          health: systemHealth,
+          count: Object.keys(validOutputs).length
+        },
+        fusion: {
+          prediction,
+          aos_score: prediction.aos_score,
+          confidence: prediction.confidence
+        },
+        decision: {
+          approved: decision.approved,
+          risk_score: decision.risk_assessment.risk_score,
+          execution_plan: decision.execution_params,
+          constraint_results: decision.constraint_results
+        }
+      },
+      performance: {
+        processing_time_ms: processingTime,
+        agent_collection_time_ms: Math.max(...Object.values(validOutputs).map(a => a.metadata?.collection_time_ms || 0)),
+        timestamp: new Date().toISOString()
+      },
+      pipeline_status: 'completed'
+    });
+  } catch (error) {
+    return c.json({ 
+      error: 'Full pipeline execution failed', 
+      details: error.message,
+      pipeline_status: 'failed',
+      timestamp: new Date().toISOString()
+    }, 500);
+  }
+});
+
+// Platform Overview Dashboard Data
+app.get('/api/arbitrage-platform/overview', (c) => {
+  const agentOutputs = arbitrageAgentRegistry.getAllOutputs();
+  const systemHealth = arbitrageAgentRegistry.getSystemHealth();
+  const fusionStats = llmFusionBrain.getFusionStatistics();
+  const decisionStats = arbitrageDecisionEngine.getDecisionStatistics();
+  const systemStatus = arbitrageDecisionEngine.getSystemStatus();
+  
+  const healthyAgents = Object.values(systemHealth).filter(h => h.status === 'healthy').length;
+  const totalAgents = Object.keys(systemHealth).length;
+  
+  const recentPredictions = llmFusionBrain.getPredictionHistory(5);
+  const recentDecisions = arbitrageDecisionEngine.getExecutionHistory(5);
+  
+  return c.json({
+    platform_overview: {
+      system_health: {
+        overall_status: healthyAgents === totalAgents ? 'healthy' : 
+                       healthyAgents > totalAgents * 0.7 ? 'degraded' : 'unhealthy',
+        healthy_agents: healthyAgents,
+        total_agents: totalAgents,
+        health_percentage: totalAgents > 0 ? (healthyAgents / totalAgents) * 100 : 0
+      },
+      fusion_performance: {
+        total_predictions: fusionStats.total_predictions,
+        avg_confidence: fusionStats.avg_confidence,
+        avg_spread_predicted: fusionStats.avg_spread_predicted * 100, // Convert to percentage
+        direction_distribution: fusionStats.direction_distribution
+      },
+      decision_performance: {
+        total_decisions: decisionStats.total_decisions,
+        approval_rate: decisionStats.approval_rate * 100, // Convert to percentage
+        avg_risk_score: decisionStats.avg_risk_score,
+        avg_notional_usd: decisionStats.avg_notional_usd
+      },
+      system_status: systemStatus,
+      recent_activity: {
+        predictions: recentPredictions,
+        decisions: recentDecisions
+      }
+    },
+    timestamp: new Date().toISOString()
+  });
+});
 
 // Live Strategy Performance Metrics
 app.get('/api/arbitrage/strategy-performance', (c) => {
@@ -4150,6 +5010,9 @@ app.get('/', (c) => {
                         <button class="nav-item" data-section="paper-trading">
                             <i class="fas fa-file-invoice-dollar mr-2"></i>PAPER TRADING
                         </button>
+                        <button class="nav-item" data-section="agent-arbitrage">
+                            <i class="fas fa-robot mr-2"></i>AGENT ARBITRAGE
+                        </button>
                     </div>
                 </div>
                 <div class="text-sm text-text-secondary">
@@ -5250,6 +6113,187 @@ app.get('/', (c) => {
                                     <div id="paper-trade-history" class="max-h-64 overflow-y-auto">
                                         <div class="text-center text-text-secondary py-4">
                                             No trades yet...
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent-Based LLM Arbitrage Platform Section -->
+                <div id="agent-arbitrage" class="section">
+                    <div class="bg-card-bg rounded-lg p-6">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center">
+                            <i class="fas fa-robot mr-2 text-accent"></i>
+                            Agent-Based LLM Arbitrage Platform
+                            <span class="ml-auto text-sm">
+                                <span class="bg-gradient-to-r from-profit to-accent text-dark-bg px-2 py-1 rounded text-xs font-semibold">AI POWERED</span>
+                            </span>
+                        </h3>
+                        
+                        <div class="grid grid-cols-12 gap-6">
+                            <!-- Platform Status -->
+                            <div class="col-span-4 space-y-4">
+                                <div class="bg-navy-accent rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">🤖 Platform Status</h4>
+                                    <div id="agent-platform-status" class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>System Status:</span>
+                                            <span class="text-accent font-mono" id="system-status">Loading...</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Active Agents:</span>
+                                            <span class="text-profit font-mono" id="active-agents">0/6</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Health Score:</span>
+                                            <span class="text-accent font-mono" id="health-score">0%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Last Update:</span>
+                                            <span class="text-text-secondary font-mono text-xs" id="last-update">Never</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-navy-accent rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">🧠 LLM Fusion Brain</h4>
+                                    <div id="fusion-brain-status" class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>Total Predictions:</span>
+                                            <span class="text-accent font-mono" id="total-predictions">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Avg Confidence:</span>
+                                            <span class="text-profit font-mono" id="avg-confidence">0%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Avg Spread:</span>
+                                            <span class="text-accent font-mono" id="avg-spread">0.00%</span>
+                                        </div>
+                                        <button id="generate-prediction" class="w-full mt-3 bg-accent text-dark-bg py-2 rounded text-xs font-semibold hover:bg-opacity-80">
+                                            <i class="fas fa-brain mr-1"></i>Generate Prediction
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="bg-navy-accent rounded-lg p-4">
+                                    <h4 class="font-semibold mb-3 text-accent">⚖️ Decision Engine</h4>
+                                    <div id="decision-engine-status" class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>Total Decisions:</span>
+                                            <span class="text-accent font-mono" id="total-decisions">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Approval Rate:</span>
+                                            <span class="text-profit font-mono" id="approval-rate">0%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Avg Risk Score:</span>
+                                            <span class="text-warning font-mono" id="avg-risk-score">0.00</span>
+                                        </div>
+                                        <button id="run-decision-analysis" class="w-full mt-3 bg-gradient-to-r from-profit to-accent text-dark-bg py-2 rounded text-xs font-semibold hover:from-opacity-80">
+                                            <i class="fas fa-cogs mr-1"></i>Run Analysis
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Agent Data & Live Pipeline -->
+                            <div class="col-span-8 space-y-4">
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
+                                        <div class="text-2xl font-bold text-accent" id="pipeline-status">READY</div>
+                                        <div class="text-sm text-text-secondary">Pipeline Status</div>
+                                    </div>
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
+                                        <div class="text-2xl font-bold text-profit" id="processing-time">0ms</div>
+                                        <div class="text-sm text-text-secondary">Processing Time</div>
+                                    </div>
+                                    <div class="bg-navy-accent rounded-lg p-4 text-center">
+                                        <div class="text-2xl font-bold text-warning" id="aos-score">0.000</div>
+                                        <div class="text-sm text-text-secondary">AOS Score</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-navy-accent rounded-lg p-4">
+                                    <h5 class="font-semibold mb-3 text-accent flex items-center justify-between">
+                                        <span><i class="fas fa-users mr-2"></i>Agent Status Dashboard</span>
+                                        <button id="refresh-agents" class="bg-accent text-dark-bg px-3 py-1 rounded text-xs font-semibold hover:bg-opacity-80">
+                                            <i class="fas fa-sync mr-1"></i>Refresh
+                                        </button>
+                                    </h5>
+                                    <div id="agent-status-grid" class="grid grid-cols-2 gap-3">
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">📊 Economic Agent</span>
+                                                <span class="health-indicator" id="economic-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="economic-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">😊 Sentiment Agent</span>
+                                                <span class="health-indicator" id="sentiment-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="sentiment-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">💰 Price Agent</span>
+                                                <span class="health-indicator" id="price-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="price-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">📈 Volume Agent</span>
+                                                <span class="health-indicator" id="volume-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="volume-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">🔄 Trade Agent</span>
+                                                <span class="health-indicator" id="trade-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="trade-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                        <div class="bg-navy-dark p-3 rounded">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-accent font-semibold">📸 Image Agent</span>
+                                                <span class="health-indicator" id="image-health">🔴</span>
+                                            </div>
+                                            <div class="text-xs text-text-secondary" id="image-data">
+                                                No data available
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-navy-accent rounded-lg p-4">
+                                    <h5 class="font-semibold mb-3 text-accent flex items-center justify-between">
+                                        <span>🚀 Full Pipeline Execution</span>
+                                        <button id="run-full-pipeline" class="bg-gradient-to-r from-profit to-accent text-dark-bg px-4 py-2 rounded font-semibold hover:from-opacity-80">
+                                            <i class="fas fa-play mr-1"></i>Execute Pipeline
+                                        </button>
+                                    </h5>
+                                    <div id="pipeline-results" class="max-h-64 overflow-y-auto">
+                                        <div class="text-center text-text-secondary py-8">
+                                            <i class="fas fa-rocket text-4xl mb-3 text-accent opacity-50"></i>
+                                            <p>Click "Execute Pipeline" to run the complete Agent-Based LLM Arbitrage analysis</p>
+                                            <p class="text-xs mt-2">This will collect agent data → generate LLM prediction → make decision</p>
                                         </div>
                                     </div>
                                 </div>
