@@ -104,6 +104,17 @@ const arbitrageData = {
   }
 };
 
+// Professional platform route (main)
+app.get('/pro', (c) => {
+  try {
+    const htmlContent = readFileSync('./gomna-professional.html', 'utf8');
+    return c.html(htmlContent);
+  } catch (error) {
+    console.error('Error serving professional HTML:', error);
+    return c.html('<h1>Professional version not found</h1>', 404);
+  }
+});
+
 // Working demo route
 app.get('/demo', (c) => {
   try {
@@ -115,100 +126,12 @@ app.get('/demo', (c) => {
   }
 });
 
-// Main dashboard route
+// Redirect root to professional version
 app.get('/', (c) => {
-  try {
-    const htmlContent = readFileSync('./src/index.tsx', 'utf8');
-    
-    // Extract just the HTML content from the template literal
-    const htmlMatch = htmlContent.match(/return c\.html\(`([\s\S]*?)`\)/);
-    if (htmlMatch) {
-      let html = htmlMatch[1];
-      
-      // Replace template variables with actual values
-      const clusteringMetrics = {
-        assetCount: 15,
-        avgCorrelation: '0.734',
-        stability: 'High',
-        stabilityClass: 'text-profit',
-        lastUpdate: new Date().toLocaleTimeString(),
-        agentPlatformStatus: {
-          operational: true,
-          healthyAgents: 6,
-          totalAgents: 6,
-          healthPercentage: 100
-        }
-      };
-      
-      const marketData = {
-        BTC: { price: 67234.56, change24h: 2.34 },
-        ETH: { price: 3456.08, change24h: 1.87 },
-        SOL: { price: 123.45, change24h: 4.56 }
-      };
-      
-      // Simple template replacement
-      html = html.replace(/\$\{clusteringMetrics\.assetCount\}/g, clusteringMetrics.assetCount);
-      html = html.replace(/\$\{clusteringMetrics\.avgCorrelation\}/g, clusteringMetrics.avgCorrelation);
-      html = html.replace(/\$\{clusteringMetrics\.stability\}/g, clusteringMetrics.stability);
-      html = html.replace(/\$\{clusteringMetrics\.stabilityClass\}/g, clusteringMetrics.stabilityClass);
-      html = html.replace(/\$\{clusteringMetrics\.lastUpdate\}/g, clusteringMetrics.lastUpdate);
-      
-      // Market data replacements
-      html = html.replace(/\$\{marketData\.BTC\.price\}/g, marketData.BTC.price);
-      html = html.replace(/\$\{marketData\.ETH\.price\}/g, marketData.ETH.price);
-      html = html.replace(/\$\{marketData\.SOL\.price\}/g, marketData.SOL.price);
-      
-      return c.html(html);
-    }
-  } catch (error) {
-    console.error('Error serving HTML:', error);
-  }
-  
-  // Fallback HTML if reading fails
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Agent-Based LLM Arbitrage Platform</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-900 text-white">
-        <div class="container mx-auto p-6">
-            <h1 class="text-4xl font-bold mb-6 text-center">🤖 Agent-Based LLM Arbitrage Platform</h1>
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h2 class="text-2xl font-semibold mb-4">Platform Status: <span class="text-green-400">ONLINE</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">Agents Active</h3>
-                        <p class="text-3xl font-bold text-green-400">6/6</p>
-                    </div>
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">System Health</h3>
-                        <p class="text-3xl font-bold text-green-400">100%</p>
-                    </div>
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">Predictions</h3>
-                        <p class="text-3xl font-bold text-blue-400">Live</p>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <p><strong>API Endpoints Available:</strong></p>
-                    <ul class="list-disc ml-6 space-y-1">
-                        <li><a href="/api/arbitrage-platform/agents/status" class="text-blue-400 hover:underline">Agent Status</a></li>
-                        <li><a href="/api/arbitrage-platform/fusion/predict" class="text-blue-400 hover:underline">Fusion Prediction</a></li>
-                        <li><a href="/api/arbitrage-platform/overview" class="text-blue-400 hover:underline">Platform Overview</a></li>
-                        <li><a href="/api/arbitrage-platform/pipeline/full" class="text-blue-400 hover:underline">Full Pipeline</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-  `);
+  return c.redirect('/pro');
 });
+
+
 
 // Agent-based arbitrage platform API endpoints
 app.get('/api/arbitrage-platform/agents/status', (c) => {
