@@ -1,50 +1,56 @@
 /**
  * Volume Agent - Liquidity and Volume Dynamics Analysis
- * Analyzes volume patterns, liquidity metrics, and detects volume spikes/dry-ups
- * Provides insights into market liquidity conditions affecting arbitrage opportunities
+ * Analyzes trading volume patterns, liquidity metrics, and market depth
+ * Detects volume spikes, dry-ups, and unusual trading activity
  */
 
 import { BaseAgent, AgentConfig, AgentOutput } from '../../core/base-agent.js';
+import axios from 'axios';
 
 export interface VolumeData {
   pair: string;
-  volume_1m_base: number;           // Volume in base currency (BTC)
-  volume_1m_quote: number;          // Volume in quote currency (USD/USDT)
-  trade_count_1m: number;           // Number of trades in last minute
-  avg_trade_size: number;           // Average trade size
-  large_trade_count: number;        // Count of large trades (>$10k)
-  buy_volume_1m: number;           // Buy-side volume
-  sell_volume_1m: number;          // Sell-side volume
-  timestamp: number;
+  exchange: string;
+  volume_1m: number;           // Base asset volume in 1 minute
+  quote_volume_1m: number;     // Quote currency volume in USD
+  trade_count_1m: number;      // Number of trades in 1 minute
+  liquidity_index: number;     // Orderbook depth relative to threshold
+  buy_sell_volume_ratio: number; // Ratio of buy vs sell volume
+  volume_spike_flag: boolean;  // Whether current volume is unusually high
+  avg_trade_size: number;      // Average trade size
+  large_trade_count: number;   // Count of unusually large trades
 }
 
 export interface VolumeFeatures {
-  liquidity_index: number;          // Normalized liquidity score [0, 1]
-  buy_sell_volume_ratio: number;    // Ratio of buy to sell volume
-  volume_spike_flag: number;        // Volume anomaly detection [0, 1]
-  trade_size_momentum: number;      // Change in average trade size [-1, 1]
-  market_depth_score: number;       // Aggregate orderbook depth score [0, 1]
-  volume_concentration: number;      // How concentrated volume is across exchanges [0, 1]
+  overall_liquidity_index: number;    // Combined liquidity across exchanges
+  volume_momentum: number;            // Rate of volume change
+  liquidity_asymmetry: number;       // Imbalance between exchanges
+  market_depth_score: number;        // Overall market depth quality
+  volume_concentration: number;       // How concentrated volume is
+  activity_intensity: number;         // Trading activity intensity
 }
 
-interface ExchangeVolumeData {
+export interface LiquidityMetrics {
   exchange: string;
   pair: string;
-  volume_1m: number;
-  orderbook_depth: number;
-  timestamp: number;
+  bid_depth_usd: number;        // USD value at various spread levels
+  ask_depth_usd: number;
+  bid_depth_levels: number[];   // Depth at 0.1%, 0.5%, 1% spreads
+  ask_depth_levels: number[];
+  spread_impact: number[];      // Price impact for various order sizes
 }
 
 export class VolumeAgent extends BaseAgent {
-  private volumeData: Map<string, VolumeData> = new Map();
   private volumeHistory: Map<string, VolumeData[]> = new Map();
-  private exchangeVolumes: Map<string, ExchangeVolumeData> = new Map();
+  private liquidityCache: Map<string, LiquidityMetrics> = new Map();
+  private lastVolumeUpdate: number = 0;
   
-  // Volume thresholds for anomaly detection
-  private readonly LARGE_TRADE_THRESHOLD = 10000; // $10k USD
-  private readonly VOLUME_SPIKE_MULTIPLIER = 3;   // 3x normal volume
-  private readonly MIN_LIQUIDITY_THRESHOLD = 100000; // $100k
-  
+  // Configuration
+  private readonly EXCHANGES = ['binance', 'coinbase', 'kraken'];
+  private readonly PAIRS = ['BTC-USDT', 'ETH-USDT', 'BTC-USD', 'ETH-USD'];
+  private readonly VOLUME_SPIKE_THRESHOLD = 2.0; // 2x normal volume
+  private readonly MIN_LIQUIDITY_USD = 100000;
+  private readonly LARGE_TRADE_THRESHOLD = 50000; // USD value
+
   constructor(config: AgentConfig) {
     super(config);
   }
@@ -53,22 +59,24 @@ export class VolumeAgent extends BaseAgent {
     const timestamp = this.getCurrentTimestamp();
 
     try {
-      // Collect volume data from multiple sources
-      await this.collectVolumeMetrics();
-
-      // Get aggregated volume data for primary pairs
-      const btcVolumeData = this.getAggregatedVolumeData('BTC-USDT');
-      const ethVolumeData = this.getAggregatedVolumeData('ETH-USDT');
-
-      // Calculate volume features
-      const features = this.calculateVolumeFeatures(btcVolumeData, ethVolumeData);
-
-      // Calculate key signal (liquidity health score)
-      const keySignal = features.liquidity_index;
-
-      // Calculate confidence based on data quality and coverage
-      const confidence = this.calculateVolumeConfidence([btcVolumeData, ethVolumeData]);
-
+      // Collect volume data from all exchanges
+      const volumeDataPoints = await this.collectVolumeData();
+      
+      // Calculate liquidity metrics
+      const liquidityMetrics = await this.calculateLiquidityMetrics();
+      
+      // Calculate derived features
+      const features = this.calculateFeatures(volumeDataPoints, liquidityMetrics);
+      
+      // Calculate key signal (liquidity and volume quality score)
+      const keySignal = this.calculateKeySignal(features);
+      
+      // Calculate confidence based on data completeness
+      const confidence = this.calculateDataConfidence(volumeDataPoints);
+      
+      // Update historical data
+      this.updateHistoricalData(volumeDataPoints);
+      
       return {
         agent_name: 'VolumeAgent',
         timestamp,
@@ -76,21 +84,13 @@ export class VolumeAgent extends BaseAgent {
         confidence,
         features: {
           ...features,
-          btc_volume_data: btcVolumeData ? {
-            volume_1m_usd: btcVolumeData.volume_1m_quote,
-            trade_count: btcVolumeData.trade_count_1m,
-            buy_sell_ratio: btcVolumeData.buy_volume_1m / (btcVolumeData.sell_volume_1m || 1)
-          } : null,
-          eth_volume_data: ethVolumeData ? {
-            volume_1m_usd: ethVolumeData.volume_1m_quote,
-            trade_count: ethVolumeData.trade_count_1m,
-            buy_sell_ratio: ethVolumeData.buy_volume_1m / (ethVolumeData.sell_volume_1m || 1)
-          } : null
+          volume_data_points: volumeDataPoints.length,
+          liquidity_metrics_count: liquidityMetrics.length
         },
         metadata: {
-          tracked_pairs: this.volumeData.size,
-          exchange_count: new Set(Array.from(this.exchangeVolumes.values()).map(v => v.exchange)).size,
-          data_coverage_pct: Math.min(100, (this.exchangeVolumes.size / 6) * 100) // Target 6 exchange-pair combinations
+          exchanges_tracked: this.EXCHANGES,
+          pairs_tracked: this.PAIRS,
+          historical_depth: this.getHistoricalDepth()
         }
       };
 
@@ -101,366 +101,862 @@ export class VolumeAgent extends BaseAgent {
   }
 
   /**
-   * Collect volume metrics from various sources
+   * Collect volume data from all exchanges
    */
-  private async collectVolumeMetrics(): Promise<void> {
-    const pairs = ['BTC-USDT', 'ETH-USDT', 'BTC-USD', 'ETH-USD'];
-    const exchanges = ['binance', 'coinbase', 'kraken'];
+  private async collectVolumeData(): Promise<VolumeData[]> {
+    const volumePromises: Promise<VolumeData[]>[] = [];
 
-    // In production, this would pull real-time data from exchange APIs
-    // For now, we'll simulate realistic volume data
-    
-    for (const exchange of exchanges) {
-      for (const pair of pairs) {
-        const exchangeVolumeData = await this.fetchExchangeVolumeData(exchange, pair);
-        if (exchangeVolumeData) {
-          this.exchangeVolumes.set(`${exchange}_${pair}`, exchangeVolumeData);
-        }
+    for (const exchange of this.EXCHANGES) {
+      volumePromises.push(this.collectExchangeVolumeData(exchange));
+    }
+
+    const results = await Promise.allSettled(volumePromises);
+    const volumeData: VolumeData[] = [];
+
+    for (const result of results) {
+      if (result.status === 'fulfilled' && result.value) {
+        volumeData.push(...result.value);
       }
     }
 
-    // Aggregate volume data by pair
-    for (const pair of pairs) {
-      const aggregatedData = this.aggregateVolumeByPair(pair);
-      if (aggregatedData) {
-        this.volumeData.set(pair, aggregatedData);
-        this.updateVolumeHistory(pair, aggregatedData);
-      }
+    return volumeData;
+  }
+
+  /**
+   * Collect volume data from specific exchange
+   */
+  private async collectExchangeVolumeData(exchange: string): Promise<VolumeData[]> {
+    switch (exchange) {
+      case 'binance':
+        return await this.collectBinanceVolumeData();
+      case 'coinbase':
+        return await this.collectCoinbaseVolumeData();
+      case 'kraken':
+        return await this.collectKrakenVolumeData();
+      default:
+        return [];
     }
   }
 
   /**
-   * Fetch volume data from a specific exchange (simulated for demo)
+   * Collect Binance volume data
    */
-  private async fetchExchangeVolumeData(exchange: string, pair: string): Promise<ExchangeVolumeData | null> {
+  private async collectBinanceVolumeData(): Promise<VolumeData[]> {
     try {
-      // Simulate API call with realistic data
-      const baseVolume = this.getBaseVolumeForPair(pair);
-      const exchangeMultiplier = this.getExchangeMultiplier(exchange);
-      
-      // Add some randomness to simulate market dynamics
-      const randomFactor = 0.7 + (Math.random() * 0.6); // 0.7 to 1.3 multiplier
-      
-      const volume_1m = baseVolume * exchangeMultiplier * randomFactor;
-      const orderbook_depth = volume_1m * 50; // Approximate depth relationship
+      const symbols = ['BTCUSDT', 'ETHUSDT'];
+      const volumeData: VolumeData[] = [];
 
-      return {
-        exchange,
-        pair,
-        volume_1m,
-        orderbook_depth,
-        timestamp: Date.now()
-      };
+      // Get 24hr ticker statistics
+      const tickerResponse = await axios.get('https://api.binance.com/api/v3/ticker/24hr', {
+        timeout: 5000
+      });
 
+      // Get recent trades for volume analysis
+      for (const symbol of symbols) {
+        try {
+          const tradesResponse = await axios.get('https://api.binance.com/api/v3/aggTrades', {
+            params: { symbol, limit: 1000 },
+            timeout: 5000
+          });
+
+          const ticker = tickerResponse.data.find((t: any) => t.symbol === symbol);
+          if (ticker && tradesResponse.data) {
+            const volumeInfo = this.processBinanceTrades(
+              tradesResponse.data,
+              ticker,
+              this.normalizePair(symbol)
+            );
+            volumeData.push(volumeInfo);
+          }
+        } catch (error) {
+          console.warn(`Binance ${symbol} volume collection error:`, error.message);
+        }
+      }
+
+      return volumeData;
     } catch (error) {
-      console.warn(`Failed to fetch volume data from ${exchange} for ${pair}:`, error.message);
+      console.warn('Binance volume collection error:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Process Binance trades for volume analysis
+   */
+  private processBinanceTrades(trades: any[], ticker: any, pair: string): VolumeData {
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    
+    const recentTrades = trades.filter(trade => trade.T >= oneMinuteAgo);
+    
+    let volume1m = 0;
+    let quoteVolume1m = 0;
+    let buyVolume = 0;
+    let sellVolume = 0;
+    let tradeCount1m = recentTrades.length;
+    let largeTrades = 0;
+    
+    for (const trade of recentTrades) {
+      const qty = parseFloat(trade.q);
+      const price = parseFloat(trade.p);
+      const quoteQty = qty * price;
+      
+      volume1m += qty;
+      quoteVolume1m += quoteQty;
+      
+      if (trade.m) { // Buyer is maker (sell order)
+        sellVolume += quoteQty;
+      } else { // Buyer is taker (buy order)
+        buyVolume += quoteQty;
+      }
+      
+      if (quoteQty >= this.LARGE_TRADE_THRESHOLD) {
+        largeTrades++;
+      }
+    }
+
+    const avgTradeSize = tradeCount1m > 0 ? quoteVolume1m / tradeCount1m : 0;
+    const buySellRatio = sellVolume > 0 ? buyVolume / sellVolume : 1;
+    
+    // Calculate volume spike detection
+    const historical = this.getHistoricalVolume('binance', pair);
+    const avgHistoricalVolume = this.calculateAverageVolume(historical);
+    const volumeSpike = avgHistoricalVolume > 0 && 
+                       (quoteVolume1m / avgHistoricalVolume) >= this.VOLUME_SPIKE_THRESHOLD;
+
+    // Calculate liquidity index from orderbook depth (simplified)
+    const liquidityIndex = this.estimateLiquidityIndex(parseFloat(ticker.count), quoteVolume1m);
+
+    return {
+      pair,
+      exchange: 'binance',
+      volume_1m: volume1m,
+      quote_volume_1m: quoteVolume1m,
+      trade_count_1m: tradeCount1m,
+      liquidity_index: liquidityIndex,
+      buy_sell_volume_ratio: buySellRatio,
+      volume_spike_flag: volumeSpike,
+      avg_trade_size: avgTradeSize,
+      large_trade_count: largeTrades
+    };
+  }
+
+  /**
+   * Collect Coinbase volume data
+   */
+  private async collectCoinbaseVolumeData(): Promise<VolumeData[]> {
+    try {
+      const products = ['BTC-USD', 'ETH-USD'];
+      const volumeData: VolumeData[] = [];
+
+      for (const product of products) {
+        try {
+          // Get 24hr stats
+          const statsResponse = await axios.get(`https://api.exchange.coinbase.com/products/${product}/stats`, {
+            timeout: 5000
+          });
+
+          // Get recent trades
+          const tradesResponse = await axios.get(`https://api.exchange.coinbase.com/products/${product}/trades`, {
+            params: { limit: 100 },
+            timeout: 5000
+          });
+
+          if (statsResponse.data && tradesResponse.data) {
+            const volumeInfo = this.processCoinbaseTrades(
+              tradesResponse.data,
+              statsResponse.data,
+              this.normalizePair(product)
+            );
+            volumeData.push(volumeInfo);
+          }
+        } catch (error) {
+          console.warn(`Coinbase ${product} volume collection error:`, error.message);
+        }
+      }
+
+      return volumeData;
+    } catch (error) {
+      console.warn('Coinbase volume collection error:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Process Coinbase trades for volume analysis
+   */
+  private processCoinbaseTrades(trades: any[], stats: any, pair: string): VolumeData {
+    const now = new Date();
+    const oneMinuteAgo = new Date(now.getTime() - 60000);
+    
+    const recentTrades = trades.filter(trade => 
+      new Date(trade.time) >= oneMinuteAgo
+    );
+    
+    let volume1m = 0;
+    let quoteVolume1m = 0;
+    let buyVolume = 0;
+    let sellVolume = 0;
+    let largeTrades = 0;
+    
+    for (const trade of recentTrades) {
+      const size = parseFloat(trade.size);
+      const price = parseFloat(trade.price);
+      const quoteSize = size * price;
+      
+      volume1m += size;
+      quoteVolume1m += quoteSize;
+      
+      if (trade.side === 'buy') {
+        buyVolume += quoteSize;
+      } else {
+        sellVolume += quoteSize;
+      }
+      
+      if (quoteSize >= this.LARGE_TRADE_THRESHOLD) {
+        largeTrades++;
+      }
+    }
+
+    const avgTradeSize = recentTrades.length > 0 ? quoteVolume1m / recentTrades.length : 0;
+    const buySellRatio = sellVolume > 0 ? buyVolume / sellVolume : 1;
+    
+    // Volume spike detection
+    const dailyVolume = parseFloat(stats.volume) / (24 * 60); // Convert to per-minute
+    const volumeSpike = dailyVolume > 0 && (quoteVolume1m / dailyVolume) >= this.VOLUME_SPIKE_THRESHOLD;
+    
+    // Estimate liquidity index
+    const liquidityIndex = this.estimateLiquidityIndex(recentTrades.length, quoteVolume1m);
+
+    return {
+      pair,
+      exchange: 'coinbase',
+      volume_1m: volume1m,
+      quote_volume_1m: quoteVolume1m,
+      trade_count_1m: recentTrades.length,
+      liquidity_index: liquidityIndex,
+      buy_sell_volume_ratio: buySellRatio,
+      volume_spike_flag: volumeSpike,
+      avg_trade_size: avgTradeSize,
+      large_trade_count: largeTrades
+    };
+  }
+
+  /**
+   * Collect Kraken volume data
+   */
+  private async collectKrakenVolumeData(): Promise<VolumeData[]> {
+    try {
+      const pairs = ['XBTUSD', 'ETHUSD'];
+      const volumeData: VolumeData[] = [];
+
+      // Get ticker information
+      const tickerResponse = await axios.get('https://api.kraken.com/0/public/Ticker', {
+        params: { pair: pairs.join(',') },
+        timeout: 5000
+      });
+
+      if (tickerResponse.data?.result) {
+        for (const [krakenPair, data] of Object.entries(tickerResponse.data.result)) {
+          const normalizedPair = this.normalizeKrakenPair(krakenPair);
+          
+          // Kraken doesn't provide 1-minute volume directly, so estimate from 24hr
+          const dailyVolume = parseFloat((data as any).v[1]); // 24hr volume
+          const volume1m = dailyVolume / (24 * 60); // Rough estimate
+          
+          // Get recent trades for more detailed analysis
+          try {
+            const tradesResponse = await axios.get('https://api.kraken.com/0/public/Trades', {
+              params: { pair: krakenPair },
+              timeout: 5000
+            });
+
+            if (tradesResponse.data?.result?.[krakenPair]) {
+              const volumeInfo = this.processKrakenTrades(
+                tradesResponse.data.result[krakenPair],
+                data as any,
+                normalizedPair
+              );
+              volumeData.push(volumeInfo);
+            }
+          } catch (error) {
+            console.warn(`Kraken ${krakenPair} trades error:`, error.message);
+            
+            // Fallback to ticker data only
+            const volumeInfo = this.createKrakenVolumeFromTicker(data as any, normalizedPair);
+            volumeData.push(volumeInfo);
+          }
+        }
+      }
+
+      return volumeData;
+    } catch (error) {
+      console.warn('Kraken volume collection error:', error.message);
+      return [];
+    }
+  }
+
+  /**
+   * Process Kraken trades for volume analysis
+   */
+  private processKrakenTrades(trades: any[], ticker: any, pair: string): VolumeData {
+    const now = Date.now() / 1000; // Kraken uses seconds
+    const oneMinuteAgo = now - 60;
+    
+    const recentTrades = trades.filter(trade => trade[2] >= oneMinuteAgo);
+    
+    let volume1m = 0;
+    let quoteVolume1m = 0;
+    let largeTrades = 0;
+    
+    for (const trade of recentTrades) {
+      const price = parseFloat(trade[0]);
+      const size = parseFloat(trade[1]);
+      const quoteSize = size * price;
+      
+      volume1m += size;
+      quoteVolume1m += quoteSize;
+      
+      if (quoteSize >= this.LARGE_TRADE_THRESHOLD) {
+        largeTrades++;
+      }
+    }
+
+    const avgTradeSize = recentTrades.length > 0 ? quoteVolume1m / recentTrades.length : 0;
+    
+    // Volume spike detection (use 24hr volume as baseline)
+    const dailyVolume = parseFloat(ticker.v[1]) / (24 * 60);
+    const volumeSpike = dailyVolume > 0 && (volume1m / dailyVolume) >= this.VOLUME_SPIKE_THRESHOLD;
+    
+    // Estimate liquidity index
+    const liquidityIndex = this.estimateLiquidityIndex(recentTrades.length, quoteVolume1m);
+
+    return {
+      pair,
+      exchange: 'kraken',
+      volume_1m: volume1m,
+      quote_volume_1m: quoteVolume1m,
+      trade_count_1m: recentTrades.length,
+      liquidity_index: liquidityIndex,
+      buy_sell_volume_ratio: 1.0, // Kraken doesn't provide taker side info easily
+      volume_spike_flag: volumeSpike,
+      avg_trade_size: avgTradeSize,
+      large_trade_count: largeTrades
+    };
+  }
+
+  /**
+   * Create Kraken volume data from ticker only (fallback)
+   */
+  private createKrakenVolumeFromTicker(ticker: any, pair: string): VolumeData {
+    const dailyVolume = parseFloat(ticker.v[1]) / (24 * 60); // Estimate 1-minute volume
+    const dailyTrades = parseInt(ticker.t[1]) / (24 * 60); // Estimate 1-minute trades
+    
+    return {
+      pair,
+      exchange: 'kraken',
+      volume_1m: dailyVolume,
+      quote_volume_1m: dailyVolume * parseFloat(ticker.c[0]), // Estimate using current price
+      trade_count_1m: Math.round(dailyTrades),
+      liquidity_index: this.estimateLiquidityIndex(dailyTrades, dailyVolume),
+      buy_sell_volume_ratio: 1.0,
+      volume_spike_flag: false, // Can't detect without historical data
+      avg_trade_size: dailyTrades > 0 ? dailyVolume / dailyTrades : 0,
+      large_trade_count: 0
+    };
+  }
+
+  /**
+   * Calculate liquidity metrics for all exchange-pair combinations
+   */
+  private async calculateLiquidityMetrics(): Promise<LiquidityMetrics[]> {
+    const liquidityMetrics: LiquidityMetrics[] = [];
+    
+    // For each exchange-pair combination, calculate orderbook depth metrics
+    for (const exchange of this.EXCHANGES) {
+      for (const pair of this.PAIRS) {
+        try {
+          const metrics = await this.calculateExchangeLiquidityMetrics(exchange, pair);
+          if (metrics) {
+            liquidityMetrics.push(metrics);
+          }
+        } catch (error) {
+          console.warn(`Liquidity metrics error for ${exchange} ${pair}:`, error.message);
+        }
+      }
+    }
+    
+    return liquidityMetrics;
+  }
+
+  /**
+   * Calculate liquidity metrics for specific exchange-pair
+   */
+  private async calculateExchangeLiquidityMetrics(exchange: string, pair: string): Promise<LiquidityMetrics | null> {
+    try {
+      let orderbook: any = null;
+      
+      switch (exchange) {
+        case 'binance':
+          orderbook = await this.getBinanceOrderbook(this.denormalizePair(pair, 'binance'));
+          break;
+        case 'coinbase':
+          orderbook = await this.getCoinbaseOrderbook(this.denormalizePair(pair, 'coinbase'));
+          break;
+        case 'kraken':
+          orderbook = await this.getKrakenOrderbook(this.denormalizePair(pair, 'kraken'));
+          break;
+      }
+      
+      if (!orderbook) return null;
+      
+      return this.processOrderbookForLiquidity(orderbook, exchange, pair);
+      
+    } catch (error) {
+      console.warn(`Failed to get orderbook for ${exchange} ${pair}:`, error.message);
       return null;
     }
   }
 
   /**
-   * Get base volume for a trading pair (realistic estimates)
+   * Get Binance orderbook
    */
-  private getBaseVolumeForPair(pair: string): number {
-    const baseVolumes = {
-      'BTC-USDT': 50000,   // $50k per minute
-      'BTC-USD': 30000,    // $30k per minute
-      'ETH-USDT': 25000,   // $25k per minute
-      'ETH-USD': 15000     // $15k per minute
-    };
-    
-    return baseVolumes[pair as keyof typeof baseVolumes] || 10000;
+  private async getBinanceOrderbook(symbol: string): Promise<any> {
+    const response = await axios.get('https://api.binance.com/api/v3/depth', {
+      params: { symbol, limit: 100 },
+      timeout: 5000
+    });
+    return response.data;
   }
 
   /**
-   * Get exchange-specific volume multiplier
+   * Get Coinbase orderbook
    */
-  private getExchangeMultiplier(exchange: string): number {
-    const multipliers = {
-      'binance': 1.5,    // Highest volume
-      'coinbase': 1.0,   // Base reference
-      'kraken': 0.7      // Lower volume
-    };
-    
-    return multipliers[exchange as keyof typeof multipliers] || 0.5;
+  private async getCoinbaseOrderbook(productId: string): Promise<any> {
+    const response = await axios.get(`https://api.exchange.coinbase.com/products/${productId}/book`, {
+      params: { level: 2 },
+      timeout: 5000
+    });
+    return response.data;
   }
 
   /**
-   * Aggregate volume data across exchanges for a pair
+   * Get Kraken orderbook
    */
-  private aggregateVolumeByPair(pair: string): VolumeData | null {
-    const exchangeData = Array.from(this.exchangeVolumes.values())
-      .filter(data => this.normalizePair(data.pair) === this.normalizePair(pair));
+  private async getKrakenOrderbook(pair: string): Promise<any> {
+    const response = await axios.get('https://api.kraken.com/0/public/Depth', {
+      params: { pair, count: 100 },
+      timeout: 5000
+    });
+    return response.data?.result?.[Object.keys(response.data.result)[0]];
+  }
 
-    if (exchangeData.length === 0) return null;
-
-    // Aggregate volume metrics
-    const totalVolume = exchangeData.reduce((sum, data) => sum + data.volume_1m, 0);
-    const totalDepth = exchangeData.reduce((sum, data) => sum + data.orderbook_depth, 0);
+  /**
+   * Process orderbook data to calculate liquidity metrics
+   */
+  private processOrderbookForLiquidity(orderbook: any, exchange: string, pair: string): LiquidityMetrics {
+    const bids = orderbook.bids || orderbook.b || [];
+    const asks = orderbook.asks || orderbook.a || [];
     
-    // Simulate additional metrics (in production, calculate from real trade data)
-    const tradeCount = Math.floor(totalVolume / 500) + Math.floor(Math.random() * 50);
-    const avgTradeSize = totalVolume / (tradeCount || 1);
-    const largeTradeCount = Math.floor(tradeCount * 0.05 * Math.random());
+    if (bids.length === 0 || asks.length === 0) {
+      return {
+        exchange,
+        pair,
+        bid_depth_usd: 0,
+        ask_depth_usd: 0,
+        bid_depth_levels: [0, 0, 0],
+        ask_depth_levels: [0, 0, 0],
+        spread_impact: [0, 0, 0]
+      };
+    }
     
-    // Simulate buy/sell split with some bias
-    const buyBias = 0.45 + (Math.random() * 0.1); // 45-55% buy ratio
-    const buyVolume = totalVolume * buyBias;
-    const sellVolume = totalVolume * (1 - buyBias);
-
+    const bestBid = parseFloat(bids[0][0]);
+    const bestAsk = parseFloat(asks[0][0]);
+    const midPrice = (bestBid + bestAsk) / 2;
+    
+    // Calculate depth at different spread levels (0.1%, 0.5%, 1.0%)
+    const spreadLevels = [0.001, 0.005, 0.01];
+    const bidDepthLevels: number[] = [];
+    const askDepthLevels: number[] = [];
+    const spreadImpact: number[] = [];
+    
+    for (const spreadLevel of spreadLevels) {
+      const bidPriceLevel = bestBid * (1 - spreadLevel);
+      const askPriceLevel = bestAsk * (1 + spreadLevel);
+      
+      let bidDepth = 0;
+      let askDepth = 0;
+      
+      // Calculate bid depth
+      for (const [price, size] of bids) {
+        const priceNum = parseFloat(price);
+        if (priceNum >= bidPriceLevel) {
+          bidDepth += priceNum * parseFloat(size);
+        } else {
+          break;
+        }
+      }
+      
+      // Calculate ask depth
+      for (const [price, size] of asks) {
+        const priceNum = parseFloat(price);
+        if (priceNum <= askPriceLevel) {
+          askDepth += priceNum * parseFloat(size);
+        } else {
+          break;
+        }
+      }
+      
+      bidDepthLevels.push(bidDepth);
+      askDepthLevels.push(askDepth);
+      
+      // Calculate spread impact (how much price moves with $10k order)
+      const testOrderSize = 10000; // $10k
+      const impact = this.calculatePriceImpact(bids, asks, testOrderSize, midPrice);
+      spreadImpact.push(impact);
+    }
+    
     return {
+      exchange,
       pair,
-      volume_1m_base: totalVolume / this.getEstimatedPrice(pair),
-      volume_1m_quote: totalVolume,
-      trade_count_1m: tradeCount,
-      avg_trade_size: avgTradeSize,
-      large_trade_count: largeTradeCount,
-      buy_volume_1m: buyVolume,
-      sell_volume_1m: sellVolume,
-      timestamp: Date.now()
+      bid_depth_usd: bidDepthLevels[1], // 0.5% spread level
+      ask_depth_usd: askDepthLevels[1],
+      bid_depth_levels: bidDepthLevels,
+      ask_depth_levels: askDepthLevels,
+      spread_impact: spreadImpact
     };
   }
 
   /**
-   * Get estimated price for volume calculations
+   * Calculate price impact for given order size
    */
-  private getEstimatedPrice(pair: string): number {
-    const prices = {
-      'BTC-USDT': 42000,
-      'BTC-USD': 42000,
-      'ETH-USDT': 2500,
-      'ETH-USD': 2500
-    };
+  private calculatePriceImpact(bids: any[], asks: any[], orderSizeUSD: number, midPrice: number): number {
+    // Simulate market buy order
+    let remainingSize = orderSizeUSD;
+    let totalCost = 0;
+    let totalQuantity = 0;
     
-    return prices[pair as keyof typeof prices] || 1;
+    for (const [price, size] of asks) {
+      const priceNum = parseFloat(price);
+      const sizeNum = parseFloat(size);
+      const levelValue = priceNum * sizeNum;
+      
+      if (remainingSize <= levelValue) {
+        const quantityTaken = remainingSize / priceNum;
+        totalCost += remainingSize;
+        totalQuantity += quantityTaken;
+        break;
+      } else {
+        totalCost += levelValue;
+        totalQuantity += sizeNum;
+        remainingSize -= levelValue;
+      }
+    }
+    
+    if (totalQuantity === 0) return 1; // 100% impact if no liquidity
+    
+    const avgExecutionPrice = totalCost / totalQuantity;
+    const impact = Math.abs(avgExecutionPrice - midPrice) / midPrice;
+    
+    return Math.min(1, impact); // Cap at 100%
   }
 
   /**
-   * Update volume history for trend analysis
+   * Estimate liquidity index from trade data
    */
-  private updateVolumeHistory(pair: string, data: VolumeData): void {
-    if (!this.volumeHistory.has(pair)) {
-      this.volumeHistory.set(pair, []);
-    }
-
-    const history = this.volumeHistory.get(pair)!;
-    history.push(data);
-
-    // Keep only last 60 data points (1 hour of minute data)
-    if (history.length > 60) {
-      history.shift();
-    }
+  private estimateLiquidityIndex(tradeCount: number, volume: number): number {
+    // Simple heuristic: higher trade count and volume = better liquidity
+    const tradeScore = Math.min(1, tradeCount / 100); // Normalize to 100 trades/minute
+    const volumeScore = Math.min(1, volume / this.MIN_LIQUIDITY_USD);
+    
+    return (tradeScore + volumeScore) / 2;
   }
 
   /**
-   * Get aggregated volume data for a specific pair
+   * Calculate derived volume features
    */
-  private getAggregatedVolumeData(pair: string): VolumeData | null {
-    return this.volumeData.get(pair) || null;
-  }
-
-  /**
-   * Calculate volume-related features
-   */
-  private calculateVolumeFeatures(btcData: VolumeData | null, ethData: VolumeData | null): VolumeFeatures {
-    if (!btcData && !ethData) {
-      return this.getDefaultVolumeFeatures();
+  private calculateFeatures(volumeData: VolumeData[], liquidityMetrics: LiquidityMetrics[]): VolumeFeatures {
+    if (volumeData.length === 0) {
+      return {
+        overall_liquidity_index: 0,
+        volume_momentum: 0,
+        liquidity_asymmetry: 0,
+        market_depth_score: 0,
+        volume_concentration: 0,
+        activity_intensity: 0
+      };
     }
-
-    const primaryData = btcData || ethData!;
-
-    // Liquidity Index: based on total volume and depth
-    const liquidityIndex = this.calculateLiquidityIndex(primaryData);
-
-    // Buy/Sell Volume Ratio
-    const buySellRatio = primaryData.sell_volume_1m > 0 
-      ? primaryData.buy_volume_1m / primaryData.sell_volume_1m 
-      : 1;
-    const normalizedBuySellRatio = this.normalize(buySellRatio, 0.5, 2, false); // 0.5 to 2.0 range
-
-    // Volume Spike Detection
-    const volumeSpikeFlag = this.detectVolumeSpike(primaryData);
-
-    // Trade Size Momentum
-    const tradeSizeMomentum = this.calculateTradeSizeMomentum(primaryData);
-
-    // Market Depth Score
-    const marketDepthScore = this.calculateMarketDepthScore();
-
-    // Volume Concentration across exchanges
-    const volumeConcentration = this.calculateVolumeConcentration(primaryData.pair);
-
+    
+    // Overall liquidity index (average across all data points)
+    const overallLiquidityIndex = volumeData.reduce((sum, v) => sum + v.liquidity_index, 0) / volumeData.length;
+    
+    // Volume momentum (change from previous period)
+    const volumeMomentum = this.calculateVolumeMomentum(volumeData);
+    
+    // Liquidity asymmetry (difference between best and worst exchange)
+    const liquidityAsymmetry = this.calculateLiquidityAsymmetry(volumeData);
+    
+    // Market depth score (from orderbook analysis)
+    const marketDepthScore = this.calculateMarketDepthScore(liquidityMetrics);
+    
+    // Volume concentration (how concentrated volume is across exchanges)
+    const volumeConcentration = this.calculateVolumeConcentration(volumeData);
+    
+    // Activity intensity (trades per minute normalized)
+    const totalTrades = volumeData.reduce((sum, v) => sum + v.trade_count_1m, 0);
+    const activityIntensity = Math.min(1, totalTrades / (this.EXCHANGES.length * 100));
+    
     return {
-      liquidity_index: liquidityIndex,
-      buy_sell_volume_ratio: normalizedBuySellRatio,
-      volume_spike_flag: volumeSpikeFlag,
-      trade_size_momentum: tradeSizeMomentum,
+      overall_liquidity_index: overallLiquidityIndex,
+      volume_momentum: volumeMomentum,
+      liquidity_asymmetry: liquidityAsymmetry,
       market_depth_score: marketDepthScore,
-      volume_concentration: volumeConcentration
+      volume_concentration: volumeConcentration,
+      activity_intensity: activityIntensity
     };
   }
 
   /**
-   * Calculate liquidity index based on volume and depth
+   * Calculate volume momentum from historical data
    */
-  private calculateLiquidityIndex(data: VolumeData): number {
-    // Combine volume and trade count for liquidity assessment
-    const volumeScore = Math.min(1, data.volume_1m_quote / 100000); // Normalize to $100k
-    const tradeCountScore = Math.min(1, data.trade_count_1m / 100); // Normalize to 100 trades
-    const avgTradeSizeScore = Math.min(1, data.avg_trade_size / 1000); // Normalize to $1k
-
-    // Weighted combination
-    return (volumeScore * 0.5) + (tradeCountScore * 0.3) + (avgTradeSizeScore * 0.2);
-  }
-
-  /**
-   * Detect volume spikes using historical comparison
-   */
-  private detectVolumeSpike(data: VolumeData): number {
-    const history = this.volumeHistory.get(data.pair);
+  private calculateVolumeMomentum(volumeData: VolumeData[]): number {
+    const currentVolume = volumeData.reduce((sum, v) => sum + v.quote_volume_1m, 0);
     
-    if (!history || history.length < 10) {
-      return 0; // Not enough history
+    // Get historical average
+    const historicalVolumes: number[] = [];
+    for (const data of volumeData) {
+      const key = `${data.exchange}_${data.pair}`;
+      const history = this.volumeHistory.get(key) || [];
+      if (history.length > 0) {
+        const avgHistorical = history.reduce((sum, h) => sum + h.quote_volume_1m, 0) / history.length;
+        historicalVolumes.push(avgHistorical);
+      }
     }
-
-    // Calculate average volume over last 10 periods (excluding current)
-    const recentHistory = history.slice(-11, -1); // Last 10, excluding current
-    const avgVolume = recentHistory.reduce((sum, h) => sum + h.volume_1m_quote, 0) / recentHistory.length;
-
-    if (avgVolume === 0) return 0;
-
-    // Check if current volume is significantly higher
-    const volumeMultiplier = data.volume_1m_quote / avgVolume;
     
-    if (volumeMultiplier >= this.VOLUME_SPIKE_MULTIPLIER) {
-      return 1; // Clear spike detected
-    } else if (volumeMultiplier >= this.VOLUME_SPIKE_MULTIPLIER * 0.7) {
-      return 0.5; // Moderate spike
+    if (historicalVolumes.length === 0) return 0;
+    
+    const avgHistoricalVolume = historicalVolumes.reduce((sum, v) => sum + v, 0) / historicalVolumes.length;
+    
+    if (avgHistoricalVolume === 0) return 0;
+    
+    // Calculate momentum as percentage change
+    const momentum = (currentVolume - avgHistoricalVolume) / avgHistoricalVolume;
+    
+    return Math.max(-1, Math.min(1, momentum)); // Clamp to [-1, 1]
+  }
+
+  /**
+   * Calculate liquidity asymmetry between exchanges
+   */
+  private calculateLiquidityAsymmetry(volumeData: VolumeData[]): number {
+    if (volumeData.length < 2) return 0;
+    
+    const liquidityIndices = volumeData.map(v => v.liquidity_index);
+    const maxLiquidity = Math.max(...liquidityIndices);
+    const minLiquidity = Math.min(...liquidityIndices);
+    
+    if (maxLiquidity === 0) return 0;
+    
+    return (maxLiquidity - minLiquidity) / maxLiquidity;
+  }
+
+  /**
+   * Calculate market depth score from liquidity metrics
+   */
+  private calculateMarketDepthScore(liquidityMetrics: LiquidityMetrics[]): number {
+    if (liquidityMetrics.length === 0) return 0;
+    
+    let totalDepthScore = 0;
+    
+    for (const metrics of liquidityMetrics) {
+      const bidDepth = metrics.bid_depth_usd;
+      const askDepth = metrics.ask_depth_usd;
+      const avgDepth = (bidDepth + askDepth) / 2;
+      
+      // Normalize depth score
+      const depthScore = Math.min(1, avgDepth / this.MIN_LIQUIDITY_USD);
+      totalDepthScore += depthScore;
     }
-
-    return 0; // No spike
+    
+    return totalDepthScore / liquidityMetrics.length;
   }
 
   /**
-   * Calculate trade size momentum
+   * Calculate volume concentration (Herfindahl index)
    */
-  private calculateTradeSizeMomentum(data: VolumeData): number {
-    const history = this.volumeHistory.get(data.pair);
+  private calculateVolumeConcentration(volumeData: VolumeData[]): number {
+    const totalVolume = volumeData.reduce((sum, v) => sum + v.quote_volume_1m, 0);
     
-    if (!history || history.length < 2) return 0;
-
-    const previousData = history[history.length - 1];
+    if (totalVolume === 0) return 1; // Maximum concentration if no volume
     
-    if (previousData.avg_trade_size === 0) return 0;
-
-    const sizeChange = (data.avg_trade_size - previousData.avg_trade_size) / previousData.avg_trade_size;
-    return this.normalize(sizeChange, -0.5, 0.5, true); // ±50% change range
+    let herfindahlIndex = 0;
+    
+    for (const data of volumeData) {
+      const marketShare = data.quote_volume_1m / totalVolume;
+      herfindahlIndex += marketShare * marketShare;
+    }
+    
+    return herfindahlIndex; // Higher value = more concentrated
   }
 
   /**
-   * Calculate market depth score across exchanges
+   * Calculate key signal (volume and liquidity quality score)
    */
-  private calculateMarketDepthScore(): number {
-    const depths = Array.from(this.exchangeVolumes.values()).map(data => data.orderbook_depth);
+  private calculateKeySignal(features: VolumeFeatures): number {
+    // Weight different volume factors
+    const weights = {
+      liquidity_index: 0.3,      // Overall liquidity availability
+      market_depth_score: 0.25,  // Orderbook depth quality
+      activity_intensity: 0.2,   // Trading activity level
+      volume_momentum: 0.15,     // Volume trend direction
+      liquidity_asymmetry: -0.1  // Penalty for asymmetric liquidity (negative weight)
+    };
     
-    if (depths.length === 0) return 0.5;
-
-    const totalDepth = depths.reduce((sum, depth) => sum + depth, 0);
-    const avgDepth = totalDepth / depths.length;
+    const signal = (
+      features.overall_liquidity_index * weights.liquidity_index +
+      features.market_depth_score * weights.market_depth_score +
+      features.activity_intensity * weights.activity_intensity +
+      Math.abs(features.volume_momentum) * weights.volume_momentum +
+      features.liquidity_asymmetry * weights.liquidity_asymmetry // This reduces the score
+    );
     
-    // Normalize to expected depth levels
-    return Math.min(1, avgDepth / 1000000); // Normalize to $1M
+    return Math.max(0, Math.min(1, signal));
   }
 
   /**
-   * Calculate volume concentration (how evenly distributed volume is)
+   * Calculate confidence based on data completeness
    */
-  private calculateVolumeConcentration(pair: string): number {
-    const pairData = Array.from(this.exchangeVolumes.values())
-      .filter(data => this.normalizePair(data.pair) === this.normalizePair(pair));
-
-    if (pairData.length <= 1) return 1; // Fully concentrated
-
-    const volumes = pairData.map(data => data.volume_1m);
-    const totalVolume = volumes.reduce((sum, vol) => sum + vol, 0);
+  private calculateDataConfidence(volumeData: VolumeData[]): number {
+    if (volumeData.length === 0) return 0;
     
-    if (totalVolume === 0) return 1;
-
-    // Calculate Herfindahl-Hirschman Index (HHI) for concentration
-    const hhi = volumes.reduce((sum, vol) => {
-      const share = vol / totalVolume;
-      return sum + (share * share);
-    }, 0);
-
-    // Normalize HHI: 1/n (perfectly distributed) to 1 (fully concentrated)
-    const minHHI = 1 / pairData.length;
-    const normalizedHHI = (hhi - minHHI) / (1 - minHHI);
+    // Data completeness factor
+    const expectedDataPoints = this.EXCHANGES.length * this.PAIRS.length;
+    const completeness = Math.min(1, volumeData.length / expectedDataPoints);
     
-    return Math.max(0, Math.min(1, normalizedHHI));
+    // Data quality factor (based on non-zero values)
+    let qualityScore = 0;
+    for (const data of volumeData) {
+      let fieldScore = 0;
+      const fields = ['volume_1m', 'quote_volume_1m', 'trade_count_1m', 'liquidity_index'];
+      
+      for (const field of fields) {
+        if (data[field as keyof VolumeData] > 0) {
+          fieldScore++;
+        }
+      }
+      
+      qualityScore += fieldScore / fields.length;
+    }
+    
+    const avgQuality = qualityScore / volumeData.length;
+    
+    // Recency factor (always fresh for real-time data)
+    const recencyFactor = 1.0;
+    
+    return Math.max(0.1, completeness * avgQuality * recencyFactor);
   }
 
   /**
-   * Calculate confidence based on data quality
+   * Update historical volume data
    */
-  private calculateVolumeConfidence(volumeDataArray: (VolumeData | null)[]): number {
-    const validData = volumeDataArray.filter(data => data !== null) as VolumeData[];
-    
-    if (validData.length === 0) return 0;
-
-    // Data coverage factor
-    const coverageFactor = validData.length / volumeDataArray.length;
-
-    // Exchange coverage factor
-    const uniqueExchanges = new Set(Array.from(this.exchangeVolumes.values()).map(v => v.exchange)).size;
-    const exchangeCoverageFactor = Math.min(1, uniqueExchanges / 3); // Target 3 exchanges
-
-    // Volume significance factor (higher volume = higher confidence)
-    const avgVolume = validData.reduce((sum, data) => sum + data.volume_1m_quote, 0) / validData.length;
-    const volumeSignificanceFactor = Math.min(1, avgVolume / 50000); // Target $50k+ volume
-
-    // Data freshness factor
-    const now = Date.now();
-    const avgAge = validData.reduce((sum, data) => sum + (now - data.timestamp), 0) / validData.length;
-    const freshnessFactor = Math.max(0, 1 - (avgAge / 120000)); // 2 minutes max age
-
-    return Math.max(0.1, coverageFactor * exchangeCoverageFactor * volumeSignificanceFactor * freshnessFactor);
+  private updateHistoricalData(volumeData: VolumeData[]): void {
+    for (const data of volumeData) {
+      const key = `${data.exchange}_${data.pair}`;
+      
+      if (!this.volumeHistory.has(key)) {
+        this.volumeHistory.set(key, []);
+      }
+      
+      const history = this.volumeHistory.get(key)!;
+      history.push(data);
+      
+      // Keep only last 60 data points (1 hour of minute data)
+      if (history.length > 60) {
+        history.shift();
+      }
+    }
   }
 
   /**
-   * Normalize pair names
+   * Get historical volume for specific exchange-pair
+   */
+  private getHistoricalVolume(exchange: string, pair: string): VolumeData[] {
+    const key = `${exchange}_${pair}`;
+    return this.volumeHistory.get(key) || [];
+  }
+
+  /**
+   * Calculate average volume from historical data
+   */
+  private calculateAverageVolume(historicalData: VolumeData[]): number {
+    if (historicalData.length === 0) return 0;
+    
+    const totalVolume = historicalData.reduce((sum, data) => sum + data.quote_volume_1m, 0);
+    return totalVolume / historicalData.length;
+  }
+
+  /**
+   * Get historical data depth for metadata
+   */
+  private getHistoricalDepth(): Record<string, number> {
+    const depth: Record<string, number> = {};
+    
+    for (const [key, history] of this.volumeHistory) {
+      depth[key] = history.length;
+    }
+    
+    return depth;
+  }
+
+  /**
+   * Normalize pair name
    */
   private normalizePair(pair: string): string {
-    return pair.replace(/[-\/]/g, '-').toUpperCase();
+    return pair.toUpperCase()
+      .replace('USDT', '-USDT')
+      .replace(/^(.+?)USD$/, '$1-USD')
+      .replace(/^(.+?)USDT$/, '$1-USDT');
   }
 
   /**
-   * Get default volume features
+   * Denormalize pair for exchange APIs
    */
-  private getDefaultVolumeFeatures(): VolumeFeatures {
-    return {
-      liquidity_index: 0.5,
-      buy_sell_volume_ratio: 0.5,
-      volume_spike_flag: 0,
-      trade_size_momentum: 0,
-      market_depth_score: 0.5,
-      volume_concentration: 0.5
+  private denormalizePair(pair: string, exchange: string): string {
+    switch (exchange) {
+      case 'binance':
+        return pair.replace('-', '');
+      case 'coinbase':
+        return pair;
+      case 'kraken':
+        return pair.replace('BTC-', 'XBT').replace('-', '');
+      default:
+        return pair;
+    }
+  }
+
+  /**
+   * Normalize Kraken pair names
+   */
+  private normalizeKrakenPair(krakenPair: string): string {
+    const mapping: Record<string, string> = {
+      'XXBTZUSD': 'BTC-USD',
+      'XETHZUSD': 'ETH-USD',
+      'XBTUSD': 'BTC-USD',
+      'ETHUSD': 'ETH-USD'
     };
+    
+    return mapping[krakenPair] || krakenPair;
   }
 
   /**
    * Get volume summary for debugging
    */
   getVolumeSummary(): string {
-    const summaries: string[] = [];
+    const totalEntries = Array.from(this.volumeHistory.values()).length;
+    const totalHistoricalPoints = Array.from(this.volumeHistory.values())
+      .reduce((sum, history) => sum + history.length, 0);
     
-    for (const [pair, data] of this.volumeData) {
-      const volume = (data.volume_1m_quote / 1000).toFixed(0);
-      const trades = data.trade_count_1m;
-      const buySellRatio = (data.buy_volume_1m / (data.sell_volume_1m || 1)).toFixed(2);
-      summaries.push(`${pair}: $${volume}k vol, ${trades} trades, B/S: ${buySellRatio}`);
-    }
-    
-    return summaries.length > 0 ? summaries.join(', ') : 'No volume data available';
+    return `${totalEntries} exchange-pairs tracked, ${totalHistoricalPoints} historical data points`;
   }
 }
 
@@ -473,7 +969,7 @@ export function createVolumeAgent(): VolumeAgent {
     enabled: true,
     polling_interval_ms: 60 * 1000, // 1 minute
     confidence_min: 0.2,
-    data_age_max_ms: 3 * 60 * 1000, // 3 minutes
+    data_age_max_ms: 2 * 60 * 1000, // 2 minutes max age
     retry_attempts: 3,
     retry_backoff_ms: 2000
   };

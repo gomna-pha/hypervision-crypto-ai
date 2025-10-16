@@ -1,15 +1,16 @@
 /**
- * Decision Engine - Deterministic Constraint & Bounds Checking
- * Enforces hard constraints, risk bounds, and safety limits before execution
- * Provides auditable, deterministic decision-making for arbitrage opportunities
+ * Decision Engine - Deterministic Constraints & Bounds Management
+ * Applies hard constraints, bounds checking, and risk management rules
+ * Ensures all trading decisions meet safety and regulatory requirements
  */
 
-import { FusionPrediction } from '../core/fusion/fusion-brain.js';
+import { FusionPrediction, ArbitragePlan } from '../core/fusion/fusion-brain.js';
 import { AgentOutput } from '../core/base-agent.js';
 import yaml from 'yaml';
 import { readFileSync } from 'fs';
 
-export interface GlobalConstraints {
+export interface DecisionConstraints {
+  // Global Constraints (Hard Limits)
   max_open_exposure_pct_of_NAV: number;
   api_health_pause_threshold: number;
   event_blackout_sec: number;
@@ -19,33 +20,8 @@ export interface GlobalConstraints {
   circuit_breaker_drawdown_pct: number;
 }
 
-export interface AgentConstraints {
-  economic: {
-    data_age_max_hours: number;
-    confidence_min: number;
-  };
-  sentiment: {
-    mention_volume_min: number;
-    confidence_min: number;
-  };
-  price: {
-    min_24h_volume_usd: number;
-    orderbook_depth_min_usd: number;
-    latency_max_ms: number;
-  };
-  volume: {
-    liquidity_index_min: number;
-  };
-  trade: {
-    slippage_max_pct: number;
-  };
-  image: {
-    visual_confidence_min: number;
-    image_age_max_sec: number;
-  };
-}
-
 export interface DecisionBounds {
+  // Decision Engine Bounds
   min_spread_pct_for_execution: number;
   llm_confidence_threshold: number;
   min_expected_net_profit_usd: number;
@@ -53,657 +29,583 @@ export interface DecisionBounds {
   max_simultaneous_trades: number;
   max_slippage_pct_estimate: number;
   z_threshold_k: number;
-  max_position_size_pct: number;
-  stop_loss_pct: number;
-  take_profit_pct: number;
+}
+
+export interface AgentConstraints {
+  economic: {
+    data_age_max_hours: number;
+    confidence_min: number;
+  };
+  sentiment: {
+    min_mention_volume: number;
+    confidence_min: number;
+  };
+  price: {
+    min_24h_volume_usd: number;
+    orderbook_depth_usd_min: number;
+    latency_ms_max: number;
+  };
+  volume: {
+    liquidity_index_min: number;
+  };
+  trade: {
+    slippage_estimate_max_pct: number;
+  };
+  image: {
+    visual_confidence_min: number;
+    image_age_max_sec: number;
+  };
+}
+
+export interface DecisionResult {
+  approved: boolean;
+  execution_plan?: ExecutionPlan;
+  rejection_reasons?: string[];
+  risk_assessment: RiskAssessment;
+  decision_metadata: {
+    aos_score: number;
+    constraint_checks: Record<string, boolean>;
+    bound_checks: Record<string, boolean>;
+    agent_health: Record<string, boolean>;
+    timestamp: string;
+  };
 }
 
 export interface ExecutionPlan {
-  approved: boolean;
-  prediction: FusionPrediction;
+  trade_id: string;
+  arbitrage_plan: ArbitragePlan;
+  risk_limits: {
+    max_position_size_usd: number;
+    stop_loss_pct: number;
+    take_profit_pct: number;
+    max_hold_time_sec: number;
+  };
   execution_params: {
-    buy_exchange: string;
-    sell_exchange: string;
-    pair: string;
-    notional_usd: number;
-    max_slippage_bps: number;
-    time_limit_sec: number;
-    stop_loss_price?: number;
-    take_profit_price?: number;
+    order_type: 'market' | 'limit' | 'post_only';
+    slippage_tolerance_pct: number;
+    retry_attempts: number;
+    timeout_sec: number;
   };
-  risk_assessment: {
-    risk_score: number;           // 0-1, higher = riskier
-    confidence_adjusted: number;  // LLM confidence adjusted for constraints
-    expected_sharpe: number;      // Expected Sharpe ratio for this trade
-    max_drawdown_estimate: number; // Estimated maximum drawdown
+  monitoring: {
+    price_alerts: number[];
+    time_alerts: number[];
+    risk_alerts: string[];
   };
-  constraint_results: {
-    global_constraints_passed: boolean;
-    agent_constraints_passed: boolean;
-    bounds_checks_passed: boolean;
-    failed_constraints: string[];
-    warnings: string[];
-  };
-  timestamp: string;
-  decision_id: string;
 }
 
-export interface SystemStatus {
-  circuit_breaker_active: boolean;
-  active_trades_count: number;
-  current_exposure_pct: number;
-  unhealthy_apis: string[];
-  event_blackout_active: boolean;
-  last_decision_timestamp: string;
+export interface RiskAssessment {
+  overall_risk_score: number;      // 0-1 scale (1 = highest risk)
+  liquidity_risk: number;          // Risk of insufficient liquidity
+  execution_risk: number;          // Risk of poor execution
+  market_risk: number;             // Market movement risk
+  operational_risk: number;        // System/API risk
+  concentration_risk: number;      // Portfolio concentration risk
+  risk_factors: string[];          // List of identified risk factors
 }
 
-/**
- * Decision Engine Class - Deterministic Arbitrage Decision Making
- */
+export interface PortfolioState {
+  current_exposure_usd: number;
+  open_positions: number;
+  nav_estimate_usd: number;
+  recent_pnl_usd: number;
+  drawdown_from_peak_pct: number;
+}
+
 export class DecisionEngine {
-  private config: {
-    constraints: GlobalConstraints;
-    agent_constraints: AgentConstraints;
-    bounds: DecisionBounds;
-  };
-  
-  private systemStatus: SystemStatus;
-  private executionHistory: ExecutionPlan[] = [];
-  private circuitBreakerTriggered: number = 0;
-  private currentDrawdown: number = 0;
-  private portfolioValue: number = 1000000; // $1M default NAV
-  
-  // Event blackout periods (economic announcements, etc.)
-  private eventBlackouts: Array<{ start: Date; end: Date; reason: string }> = [];
-  
-  // Exchange health tracking
-  private exchangeHealth: Map<string, { healthy: boolean; last_check: number }> = new Map();
-  
+  private constraints: DecisionConstraints;
+  private bounds: DecisionBounds;
+  private agentConstraints: AgentConstraints;
+  private portfolioState: PortfolioState;
+  private authorizedExchanges: Set<string>;
+  private eventBlacklist: Array<{ start: number; end: number; event: string }> = [];
+  private activePositions: Map<string, ExecutionPlan> = new Map();
+  private decisionHistory: DecisionResult[] = [];
+
   constructor(configPath: string = './arbitrage/config/platform.yaml') {
-    this.loadConfiguration(configPath);
-    this.initializeSystemStatus();
+    const config = this.loadConfig(configPath);
+    this.constraints = config.constraints;
+    this.bounds = config.bounds;
+    this.agentConstraints = config.agent_constraints;
+    this.authorizedExchanges = new Set(config.authorized_exchanges || ['binance', 'coinbase', 'kraken']);
+    
+    // Initialize portfolio state
+    this.portfolioState = {
+      current_exposure_usd: 0,
+      open_positions: 0,
+      nav_estimate_usd: 1000000, // $1M default NAV for demo
+      recent_pnl_usd: 0,
+      drawdown_from_peak_pct: 0
+    };
   }
 
   /**
-   * Main decision function - evaluate prediction and generate execution plan
+   * Main decision process - evaluate fusion prediction
    */
-  async makeDecision(
+  async evaluateDecision(
     prediction: FusionPrediction,
     agents: Record<string, AgentOutput>
-  ): Promise<ExecutionPlan> {
+  ): Promise<DecisionResult> {
     const timestamp = new Date().toISOString();
-    const decisionId = this.generateDecisionId();
-
-    const executionPlan: ExecutionPlan = {
-      approved: false,
-      prediction,
-      execution_params: {
-        buy_exchange: prediction.arbitrage_plan.buy_exchange,
-        sell_exchange: prediction.arbitrage_plan.sell_exchange,
-        pair: prediction.arbitrage_plan.pair,
-        notional_usd: prediction.arbitrage_plan.notional_usd,
-        max_slippage_bps: 20, // 20 basis points default
-        time_limit_sec: prediction.expected_time_s
-      },
-      risk_assessment: {
-        risk_score: 0,
-        confidence_adjusted: prediction.confidence,
-        expected_sharpe: 0,
-        max_drawdown_estimate: 0
-      },
-      constraint_results: {
-        global_constraints_passed: false,
-        agent_constraints_passed: false,
-        bounds_checks_passed: false,
-        failed_constraints: [],
-        warnings: []
-      },
-      timestamp,
-      decision_id: decisionId
-    };
 
     try {
       // Step 1: Check global constraints
-      const globalResult = this.checkGlobalConstraints(prediction, agents);
-      executionPlan.constraint_results.global_constraints_passed = globalResult.passed;
-      executionPlan.constraint_results.failed_constraints.push(...globalResult.failures);
-      executionPlan.constraint_results.warnings.push(...globalResult.warnings);
-
+      const constraintChecks = this.checkGlobalConstraints(agents);
+      
       // Step 2: Check agent-specific constraints
-      const agentResult = this.checkAgentConstraints(agents);
-      executionPlan.constraint_results.agent_constraints_passed = agentResult.passed;
-      executionPlan.constraint_results.failed_constraints.push(...agentResult.failures);
-      executionPlan.constraint_results.warnings.push(...agentResult.warnings);
-
+      const agentHealthChecks = this.checkAgentConstraints(agents);
+      
       // Step 3: Check decision bounds
-      const boundsResult = this.checkDecisionBounds(prediction);
-      executionPlan.constraint_results.bounds_checks_passed = boundsResult.passed;
-      executionPlan.constraint_results.failed_constraints.push(...boundsResult.failures);
-      executionPlan.constraint_results.warnings.push(...boundsResult.warnings);
-
+      const boundChecks = this.checkDecisionBounds(prediction);
+      
       // Step 4: Calculate risk assessment
-      executionPlan.risk_assessment = this.calculateRiskAssessment(prediction, agents);
-
-      // Step 5: Final approval decision
-      const allChecksPassed = globalResult.passed && agentResult.passed && boundsResult.passed;
-      const riskAcceptable = executionPlan.risk_assessment.risk_score <= 0.7;
-      const confidenceAcceptable = executionPlan.risk_assessment.confidence_adjusted >= this.config.bounds.llm_confidence_threshold;
-
-      executionPlan.approved = allChecksPassed && riskAcceptable && confidenceAcceptable;
-
-      // Step 6: Enhance execution parameters if approved
-      if (executionPlan.approved) {
-        this.enhanceExecutionParameters(executionPlan);
-        this.updateSystemStatus(executionPlan);
+      const riskAssessment = this.calculateRiskAssessment(prediction, agents);
+      
+      // Step 5: Make final decision
+      const approved = this.makeFinalDecision(
+        constraintChecks,
+        agentHealthChecks,
+        boundChecks,
+        riskAssessment
+      );
+      
+      // Step 6: Generate execution plan if approved
+      let executionPlan: ExecutionPlan | undefined;
+      let rejectionReasons: string[] | undefined;
+      
+      if (approved) {
+        executionPlan = this.generateExecutionPlan(prediction, riskAssessment);
+        
+        // Register the active position
+        this.activePositions.set(executionPlan.trade_id, executionPlan);
+        this.updatePortfolioState(executionPlan);
+      } else {
+        rejectionReasons = this.generateRejectionReasons(
+          constraintChecks,
+          agentHealthChecks,
+          boundChecks,
+          riskAssessment
+        );
       }
-
-      // Step 7: Log decision
-      this.logDecision(executionPlan);
-      this.executionHistory.push(executionPlan);
-      this.trimExecutionHistory();
-
-      console.log(`Decision ${decisionId}: ${executionPlan.approved ? 'APPROVED' : 'REJECTED'} - Risk: ${executionPlan.risk_assessment.risk_score.toFixed(3)}, Confidence: ${executionPlan.risk_assessment.confidence_adjusted.toFixed(3)}`);
-
-      return executionPlan;
-
+      
+      const result: DecisionResult = {
+        approved,
+        execution_plan: executionPlan,
+        rejection_reasons: rejectionReasons,
+        risk_assessment: riskAssessment,
+        decision_metadata: {
+          aos_score: prediction.aos_score,
+          constraint_checks: constraintChecks,
+          bound_checks: boundChecks,
+          agent_health: agentHealthChecks,
+          timestamp
+        }
+      };
+      
+      // Store decision for audit
+      this.decisionHistory.push(result);
+      this.trimDecisionHistory();
+      
+      console.log(`Decision: ${approved ? 'APPROVED' : 'REJECTED'} - Risk: ${riskAssessment.overall_risk_score.toFixed(3)}`);
+      
+      return result;
+      
     } catch (error) {
-      console.error('Decision Engine error:', error);
-      executionPlan.constraint_results.failed_constraints.push(`Decision engine error: ${error.message}`);
-      return executionPlan;
+      console.error('Decision engine evaluation failed:', error);
+      throw error;
     }
   }
 
   /**
    * Check global constraints (hard limits)
    */
-  private checkGlobalConstraints(prediction: FusionPrediction, agents: Record<string, AgentOutput>): {
-    passed: boolean;
-    failures: string[];
-    warnings: string[];
-  } {
-    const failures: string[] = [];
-    const warnings: string[] = [];
-
+  private checkGlobalConstraints(agents: Record<string, AgentOutput>): Record<string, boolean> {
+    const checks: Record<string, boolean> = {};
+    
     // Check exposure limits
-    const newExposure = (prediction.arbitrage_plan.notional_usd / this.portfolioValue) * 100;
-    if (this.systemStatus.current_exposure_pct + newExposure > this.config.constraints.max_open_exposure_pct_of_NAV * 100) {
-      failures.push(`Exposure limit exceeded: ${(this.systemStatus.current_exposure_pct + newExposure).toFixed(2)}% > ${(this.config.constraints.max_open_exposure_pct_of_NAV * 100).toFixed(2)}%`);
-    }
-
-    // Check API health
-    if (this.systemStatus.unhealthy_apis.length >= this.config.constraints.api_health_pause_threshold) {
-      failures.push(`Too many unhealthy APIs: ${this.systemStatus.unhealthy_apis.length} >= ${this.config.constraints.api_health_pause_threshold}`);
-    }
-
-    // Check event blackout
-    if (this.systemStatus.event_blackout_active) {
-      failures.push('Trading paused due to economic event blackout period');
-    }
-
-    // Check circuit breaker
-    if (this.systemStatus.circuit_breaker_active) {
-      failures.push('Circuit breaker is active due to excessive drawdown');
-    }
-
-    // Check concurrent trades limit
-    if (this.systemStatus.active_trades_count >= this.config.bounds.max_simultaneous_trades) {
-      failures.push(`Maximum concurrent trades reached: ${this.systemStatus.active_trades_count} >= ${this.config.bounds.max_simultaneous_trades}`);
-    }
-
-    // Check authorized exchanges
-    if (this.config.constraints.authorized_exchanges_only) {
-      const authorizedExchanges = ['binance', 'coinbase', 'kraken'];
-      const plan = prediction.arbitrage_plan;
-      
-      if (!authorizedExchanges.includes(plan.buy_exchange)) {
-        failures.push(`Unauthorized buy exchange: ${plan.buy_exchange}`);
-      }
-      
-      if (!authorizedExchanges.includes(plan.sell_exchange)) {
-        failures.push(`Unauthorized sell exchange: ${plan.sell_exchange}`);
-      }
-    }
-
+    const exposurePct = this.portfolioState.current_exposure_usd / this.portfolioState.nav_estimate_usd;
+    checks['max_exposure'] = exposurePct <= this.constraints.max_open_exposure_pct_of_NAV;
+    
+    // Check API health (count unhealthy agents)
+    const unhealthyAgents = Object.values(agents).filter(agent => 
+      !agent || agent.confidence < 0.3
+    ).length;
+    checks['api_health'] = unhealthyAgents < this.constraints.api_health_pause_threshold;
+    
+    // Check event blackout periods
+    checks['event_blackout'] = !this.isInEventBlackout();
+    
     // Check data freshness
     const now = Date.now();
-    const predictionAge = now - new Date(prediction.timestamp).getTime();
+    const staleAgents = Object.values(agents).filter(agent => 
+      !agent || (now - new Date(agent.timestamp).getTime()) > (this.constraints.data_freshness_max_sec * 1000)
+    ).length;
+    checks['data_freshness'] = staleAgents === 0;
     
-    if (predictionAge > this.config.constraints.data_freshness_max_sec * 1000) {
-      failures.push(`Prediction is stale: ${predictionAge}ms > ${this.config.constraints.data_freshness_max_sec * 1000}ms`);
-    }
-
-    return {
-      passed: failures.length === 0,
-      failures,
-      warnings
-    };
+    // Check circuit breaker
+    checks['circuit_breaker'] = this.portfolioState.drawdown_from_peak_pct <= this.constraints.circuit_breaker_drawdown_pct;
+    
+    // Check concurrent agents
+    checks['concurrent_agents'] = Object.keys(agents).length <= this.constraints.max_concurrent_agents;
+    
+    return checks;
   }
 
   /**
    * Check agent-specific constraints
    */
-  private checkAgentConstraints(agents: Record<string, AgentOutput>): {
-    passed: boolean;
-    failures: string[];
-    warnings: string[];
-  } {
-    const failures: string[] = [];
-    const warnings: string[] = [];
+  private checkAgentConstraints(agents: Record<string, AgentOutput>): Record<string, boolean> {
+    const checks: Record<string, boolean> = {};
     const now = Date.now();
-
-    // Economic agent constraints
+    
+    // Economic agent checks
     if (agents['economic']) {
-      const agent = agents['economic'];
-      const ageHours = (now - new Date(agent.timestamp).getTime()) / (1000 * 60 * 60);
-      
-      if (ageHours > this.config.agent_constraints.economic.data_age_max_hours) {
-        failures.push(`Economic data too old: ${ageHours.toFixed(1)}h > ${this.config.agent_constraints.economic.data_age_max_hours}h`);
-      }
-      
-      if (agent.confidence < this.config.agent_constraints.economic.confidence_min) {
-        failures.push(`Economic confidence too low: ${agent.confidence.toFixed(3)} < ${this.config.agent_constraints.economic.confidence_min}`);
-      }
+      const age = (now - new Date(agents['economic'].timestamp).getTime()) / (1000 * 60 * 60);
+      checks['economic_age'] = age <= this.agentConstraints.economic.data_age_max_hours;
+      checks['economic_confidence'] = agents['economic'].confidence >= this.agentConstraints.economic.confidence_min;
     } else {
-      warnings.push('Economic agent data not available');
+      checks['economic_age'] = false;
+      checks['economic_confidence'] = false;
     }
-
-    // Sentiment agent constraints
+    
+    // Sentiment agent checks
     if (agents['sentiment']) {
-      const agent = agents['sentiment'];
-      const mentionVolume = agent.features?.twitter_mention_volume || 0;
-      
-      if (mentionVolume < this.config.agent_constraints.sentiment.mention_volume_min) {
-        warnings.push(`Low sentiment mention volume: ${mentionVolume} < ${this.config.agent_constraints.sentiment.mention_volume_min}`);
-      }
-      
-      if (agent.confidence < this.config.agent_constraints.sentiment.confidence_min) {
-        failures.push(`Sentiment confidence too low: ${agent.confidence.toFixed(3)} < ${this.config.agent_constraints.sentiment.confidence_min}`);
-      }
+      const mentionVolume = agents['sentiment'].features?.mention_volume || 0;
+      checks['sentiment_volume'] = mentionVolume >= this.agentConstraints.sentiment.min_mention_volume;
+      checks['sentiment_confidence'] = agents['sentiment'].confidence >= this.agentConstraints.sentiment.confidence_min;
     } else {
-      warnings.push('Sentiment agent data not available');
+      checks['sentiment_volume'] = false;
+      checks['sentiment_confidence'] = false;
     }
-
-    // Price agent constraints
+    
+    // Price agent checks
     if (agents['price']) {
-      const agent = agents['price'];
-      const volume24h = agent.features?.exchange_data?.['binance_BTC-USDT']?.volume_1m * 60 * 24 || 0;
-      const orderbookDepth = agent.features?.exchange_data?.['binance_BTC-USDT']?.orderbook_depth_usd || 0;
+      const volume24h = agents['price'].features?.volume_24h_usd || 0;
+      const orderbookDepth = agents['price'].features?.orderbook_depth_usd || 0;
+      const latency = agents['price'].features?.api_latency_ms || Infinity;
       
-      if (volume24h < this.config.agent_constraints.price.min_24h_volume_usd) {
-        failures.push(`Insufficient 24h volume: $${volume24h.toFixed(0)} < $${this.config.agent_constraints.price.min_24h_volume_usd}`);
-      }
-      
-      if (orderbookDepth < this.config.agent_constraints.price.orderbook_depth_min_usd) {
-        failures.push(`Insufficient orderbook depth: $${orderbookDepth.toFixed(0)} < $${this.config.agent_constraints.price.orderbook_depth_min_usd}`);
-      }
+      checks['price_volume'] = volume24h >= this.agentConstraints.price.min_24h_volume_usd;
+      checks['price_depth'] = orderbookDepth >= this.agentConstraints.price.orderbook_depth_usd_min;
+      checks['price_latency'] = latency <= this.agentConstraints.price.latency_ms_max;
     } else {
-      failures.push('Price agent data is required but not available');
+      checks['price_volume'] = false;
+      checks['price_depth'] = false;
+      checks['price_latency'] = false;
     }
-
-    // Volume agent constraints
+    
+    // Volume agent checks
     if (agents['volume']) {
-      const agent = agents['volume'];
-      const liquidityIndex = agent.features?.liquidity_index || 0;
-      
-      if (liquidityIndex < this.config.agent_constraints.volume.liquidity_index_min) {
-        failures.push(`Liquidity index too low: ${liquidityIndex.toFixed(3)} < ${this.config.agent_constraints.volume.liquidity_index_min}`);
-      }
+      const liquidityIndex = agents['volume'].features?.liquidity_index || 0;
+      checks['volume_liquidity'] = liquidityIndex >= this.agentConstraints.volume.liquidity_index_min;
     } else {
-      warnings.push('Volume agent data not available');
+      checks['volume_liquidity'] = false;
     }
-
-    // Trade agent constraints
+    
+    // Trade agent checks
     if (agents['trade']) {
-      const agent = agents['trade'];
-      const slippage = agent.features?.btc_trade_data?.slippage_estimate_bps || 0;
-      
-      if (slippage > this.config.agent_constraints.trade.slippage_max_pct * 10000) {
-        failures.push(`Slippage estimate too high: ${slippage}bps > ${this.config.agent_constraints.trade.slippage_max_pct * 10000}bps`);
-      }
+      const slippageEstimate = agents['trade'].features?.slippage_estimate || 1;
+      checks['trade_slippage'] = slippageEstimate <= this.agentConstraints.trade.slippage_estimate_max_pct;
     } else {
-      warnings.push('Trade agent data not available');
+      checks['trade_slippage'] = false;
     }
-
-    return {
-      passed: failures.length === 0,
-      failures,
-      warnings
-    };
+    
+    // Image agent checks
+    if (agents['image']) {
+      const visualConfidence = agents['image'].features?.visual_confidence || 0;
+      const imageAge = (now - new Date(agents['image'].timestamp).getTime()) / 1000;
+      
+      checks['image_confidence'] = visualConfidence >= this.agentConstraints.image.visual_confidence_min;
+      checks['image_age'] = imageAge <= this.agentConstraints.image.image_age_max_sec;
+    } else {
+      checks['image_confidence'] = true; // Image agent is optional
+      checks['image_age'] = true;
+    }
+    
+    return checks;
   }
 
   /**
    * Check decision bounds (thresholds)
    */
-  private checkDecisionBounds(prediction: FusionPrediction): {
-    passed: boolean;
-    failures: string[];
-    warnings: string[];
-  } {
-    const failures: string[] = [];
-    const warnings: string[] = [];
-
-    // Minimum spread threshold
-    if (prediction.predicted_spread_pct < this.config.bounds.min_spread_pct_for_execution) {
-      failures.push(`Spread too small: ${(prediction.predicted_spread_pct * 100).toFixed(4)}% < ${(this.config.bounds.min_spread_pct_for_execution * 100).toFixed(4)}%`);
-    }
-
-    // LLM confidence threshold
-    if (prediction.confidence < this.config.bounds.llm_confidence_threshold) {
-      failures.push(`LLM confidence too low: ${prediction.confidence.toFixed(3)} < ${this.config.bounds.llm_confidence_threshold}`);
-    }
-
-    // Expected profit threshold
-    const estimatedProfit = prediction.arbitrage_plan.estimated_profit_usd || 0;
-    if (estimatedProfit < this.config.bounds.min_expected_net_profit_usd) {
-      failures.push(`Expected profit too low: $${estimatedProfit.toFixed(2)} < $${this.config.bounds.min_expected_net_profit_usd}`);
-    }
-
-    // Hold time bounds
-    if (prediction.expected_time_s > this.config.bounds.max_hold_time_sec) {
-      failures.push(`Hold time too long: ${prediction.expected_time_s}s > ${this.config.bounds.max_hold_time_sec}s`);
-    }
-
-    // Position size bounds
-    const positionSizePct = (prediction.arbitrage_plan.notional_usd / this.portfolioValue) * 100;
-    if (positionSizePct > this.config.bounds.max_position_size_pct * 100) {
-      failures.push(`Position size too large: ${positionSizePct.toFixed(2)}% > ${(this.config.bounds.max_position_size_pct * 100).toFixed(2)}%`);
-    }
-
-    // Risk flags check
-    const highRiskFlags = ['low_liquidity_on_sell_exchange', 'high_volatility', 'api_degradation'];
-    const hasHighRisk = prediction.risk_flags.some(flag => highRiskFlags.includes(flag));
+  private checkDecisionBounds(prediction: FusionPrediction): Record<string, boolean> {
+    const checks: Record<string, boolean> = {};
     
-    if (hasHighRisk) {
-      warnings.push(`High risk flags detected: ${prediction.risk_flags.join(', ')}`);
-    }
-
-    return {
-      passed: failures.length === 0,
-      failures,
-      warnings
-    };
+    // Minimum spread check
+    checks['min_spread'] = prediction.predicted_spread_pct >= this.bounds.min_spread_pct_for_execution;
+    
+    // LLM confidence check
+    checks['llm_confidence'] = prediction.confidence >= this.bounds.llm_confidence_threshold;
+    
+    // Expected profit check
+    const estimatedProfit = prediction.arbitrage_plan.estimated_profit_usd || 0;
+    checks['min_profit'] = estimatedProfit >= this.bounds.min_expected_net_profit_usd;
+    
+    // Hold time check
+    checks['max_hold_time'] = prediction.expected_time_s <= this.bounds.max_hold_time_sec;
+    
+    // Simultaneous trades check
+    checks['max_trades'] = this.activePositions.size < this.bounds.max_simultaneous_trades;
+    
+    // Exchange authorization check
+    const buyExchange = prediction.arbitrage_plan.buy_exchange;
+    const sellExchange = prediction.arbitrage_plan.sell_exchange;
+    checks['authorized_exchanges'] = this.authorizedExchanges.has(buyExchange) && 
+                                     this.authorizedExchanges.has(sellExchange);
+    
+    return checks;
   }
 
   /**
    * Calculate comprehensive risk assessment
    */
-  private calculateRiskAssessment(prediction: FusionPrediction, agents: Record<string, AgentOutput>): {
-    risk_score: number;
-    confidence_adjusted: number;
-    expected_sharpe: number;
-    max_drawdown_estimate: number;
-  } {
-    let riskFactors: number[] = [];
-
-    // Market volatility risk
-    const volatility = agents['price']?.features?.volatility_1m || 0.5;
-    riskFactors.push(volatility);
-
+  private calculateRiskAssessment(
+    prediction: FusionPrediction, 
+    agents: Record<string, AgentOutput>
+  ): RiskAssessment {
+    const riskFactors: string[] = [];
+    
     // Liquidity risk
     const liquidityIndex = agents['volume']?.features?.liquidity_index || 0.5;
-    riskFactors.push(1 - liquidityIndex);
-
-    // Execution risk
-    const executionQuality = agents['trade']?.features?.execution_quality || 0.5;
-    riskFactors.push(1 - executionQuality);
-
-    // Spread risk (tighter spreads are riskier to capture)
-    const spreadRisk = Math.max(0, 1 - (prediction.predicted_spread_pct / 0.01)); // Normalize to 1% spread
-    riskFactors.push(spreadRisk);
-
-    // Time horizon risk (longer holds are riskier)
-    const timeRisk = Math.min(1, prediction.expected_time_s / this.config.bounds.max_hold_time_sec);
-    riskFactors.push(timeRisk);
-
-    // Position size risk
-    const positionSizePct = (prediction.arbitrage_plan.notional_usd / this.portfolioValue);
-    const sizeRisk = Math.min(1, positionSizePct / this.config.bounds.max_position_size_pct);
-    riskFactors.push(sizeRisk);
-
-    // Calculate composite risk score
-    const riskScore = riskFactors.reduce((sum, r) => sum + r, 0) / riskFactors.length;
-
-    // Adjust confidence based on risk factors
-    const confidenceAdjusted = prediction.confidence * (1 - (riskScore * 0.3));
-
-    // Estimate Sharpe ratio (return/risk)
-    const expectedReturn = prediction.predicted_spread_pct;
-    const expectedSharpe = riskScore > 0 ? (expectedReturn / riskScore) * Math.sqrt(252) : 0;
-
-    // Estimate maximum drawdown
-    const maxDrawdownEstimate = Math.min(0.5, riskScore * positionSizePct * 2);
-
+    const liquidityRisk = 1 - liquidityIndex;
+    if (liquidityRisk > 0.6) riskFactors.push('low_liquidity');
+    
+    // Execution risk (slippage and latency)
+    const slippageEstimate = agents['trade']?.features?.slippage_estimate || 0.01;
+    const apiLatency = agents['price']?.features?.api_latency_ms || 100;
+    const executionRisk = (slippageEstimate / 0.02) * 0.7 + (apiLatency / 500) * 0.3;
+    if (executionRisk > 0.6) riskFactors.push('high_execution_risk');
+    
+    // Market risk (volatility and momentum)
+    const volatility = agents['price']?.features?.volatility_1m || 0.5;
+    const momentum = Math.abs(agents['price']?.features?.price_momentum || 0);
+    const marketRisk = (volatility * 0.6) + (momentum * 0.4);
+    if (marketRisk > 0.7) riskFactors.push('high_market_volatility');
+    
+    // Operational risk (agent health and data quality)
+    const avgConfidence = Object.values(agents).reduce((sum, agent) => 
+      sum + (agent?.confidence || 0), 0
+    ) / Object.keys(agents).length;
+    const operationalRisk = 1 - avgConfidence;
+    if (operationalRisk > 0.4) riskFactors.push('low_data_quality');
+    
+    // Concentration risk (position sizing)
+    const notionalUsd = prediction.arbitrage_plan.notional_usd;
+    const concentrationRisk = notionalUsd / this.portfolioState.nav_estimate_usd;
+    if (concentrationRisk > 0.1) riskFactors.push('large_position_size');
+    
+    // Overall risk score (weighted average)
+    const overallRisk = (
+      liquidityRisk * 0.25 +
+      executionRisk * 0.25 +
+      marketRisk * 0.25 +
+      operationalRisk * 0.15 +
+      concentrationRisk * 0.1
+    );
+    
+    // Add prediction-specific risks
+    if (prediction.risk_flags && prediction.risk_flags.length > 0) {
+      riskFactors.push(...prediction.risk_flags);
+    }
+    
     return {
-      risk_score: Math.max(0, Math.min(1, riskScore)),
-      confidence_adjusted: Math.max(0, Math.min(1, confidenceAdjusted)),
-      expected_sharpe: Math.max(0, expectedSharpe),
-      max_drawdown_estimate: Math.max(0, maxDrawdownEstimate)
+      overall_risk_score: Math.max(0, Math.min(1, overallRisk)),
+      liquidity_risk: liquidityRisk,
+      execution_risk: executionRisk,
+      market_risk: marketRisk,
+      operational_risk: operationalRisk,
+      concentration_risk: concentrationRisk,
+      risk_factors: riskFactors
     };
   }
 
   /**
-   * Enhance execution parameters for approved trades
+   * Make final approve/reject decision
    */
-  private enhanceExecutionParameters(executionPlan: ExecutionPlan): void {
-    const prediction = executionPlan.prediction;
-    const params = executionPlan.execution_params;
-
-    // Calculate stop loss and take profit levels
-    const estimatedPrice = 45000; // TODO: Get from price agent
-    const stopLossDistance = estimatedPrice * this.config.bounds.stop_loss_pct;
-    const takeProfitDistance = estimatedPrice * this.config.bounds.take_profit_pct;
-
-    if (prediction.direction === 'converge') {
-      params.stop_loss_price = estimatedPrice - stopLossDistance;
-      params.take_profit_price = estimatedPrice + takeProfitDistance;
-    } else {
-      params.stop_loss_price = estimatedPrice + stopLossDistance;
-      params.take_profit_price = estimatedPrice - takeProfitDistance;
-    }
-
-    // Adjust slippage tolerance based on risk
-    const baseSlippage = 20; // 20 basis points
-    const riskMultiplier = 1 + executionPlan.risk_assessment.risk_score;
-    params.max_slippage_bps = Math.ceil(baseSlippage * riskMultiplier);
-
-    // Adjust time limit based on volatility
-    const volatilityFactor = 1; // TODO: Get from agents
-    params.time_limit_sec = Math.floor(prediction.expected_time_s / volatilityFactor);
+  private makeFinalDecision(
+    constraintChecks: Record<string, boolean>,
+    agentHealthChecks: Record<string, boolean>,
+    boundChecks: Record<string, boolean>,
+    riskAssessment: RiskAssessment
+  ): boolean {
+    // All global constraints must pass
+    const constraintsPassed = Object.values(constraintChecks).every(check => check);
+    
+    // Critical agent checks must pass (allow some flexibility for optional agents)
+    const criticalAgentChecks = [
+      'price_volume', 'price_depth', 'price_latency',
+      'volume_liquidity', 'trade_slippage'
+    ];
+    const criticalAgentsPassed = criticalAgentChecks.every(check => 
+      agentHealthChecks[check] !== false
+    );
+    
+    // All decision bounds must pass
+    const boundsPassed = Object.values(boundChecks).every(check => check);
+    
+    // Overall risk must be acceptable (configurable threshold)
+    const riskAcceptable = riskAssessment.overall_risk_score <= 0.7; // 70% max risk
+    
+    return constraintsPassed && criticalAgentsPassed && boundsPassed && riskAcceptable;
   }
 
   /**
-   * Update system status after decision
+   * Generate execution plan for approved trade
    */
-  private updateSystemStatus(executionPlan: ExecutionPlan): void {
-    if (executionPlan.approved) {
-      this.systemStatus.active_trades_count++;
-      
-      const exposureIncrease = (executionPlan.execution_params.notional_usd / this.portfolioValue) * 100;
-      this.systemStatus.current_exposure_pct += exposureIncrease;
-    }
-
-    this.systemStatus.last_decision_timestamp = executionPlan.timestamp;
-
-    // Check circuit breaker conditions
-    if (this.currentDrawdown > this.config.constraints.circuit_breaker_drawdown_pct) {
-      this.systemStatus.circuit_breaker_active = true;
-      this.circuitBreakerTriggered = Date.now();
-      console.warn(`Circuit breaker activated: Drawdown ${(this.currentDrawdown * 100).toFixed(2)}% > ${(this.config.constraints.circuit_breaker_drawdown_pct * 100).toFixed(2)}%`);
-    }
-  }
-
-  /**
-   * Load configuration from YAML file
-   */
-  private loadConfiguration(configPath: string): void {
-    try {
-      const configFile = readFileSync(configPath, 'utf8');
-      const fullConfig = yaml.parse(configFile);
-
-      this.config = {
-        constraints: fullConfig.constraints,
-        agent_constraints: fullConfig.agents,
-        bounds: fullConfig.bounds
-      };
-
-      console.log('Decision Engine configuration loaded successfully');
-    } catch (error) {
-      console.error('Failed to load configuration, using defaults:', error.message);
-      this.setDefaultConfiguration();
-    }
-  }
-
-  /**
-   * Set default configuration if YAML loading fails
-   */
-  private setDefaultConfiguration(): void {
-    this.config = {
-      constraints: {
-        max_open_exposure_pct_of_NAV: 0.03,
-        api_health_pause_threshold: 2,
-        event_blackout_sec: 300,
-        data_freshness_max_sec: 5,
-        authorized_exchanges_only: true,
-        max_concurrent_agents: 10,
-        circuit_breaker_drawdown_pct: 0.05
+  private generateExecutionPlan(
+    prediction: FusionPrediction, 
+    riskAssessment: RiskAssessment
+  ): ExecutionPlan {
+    const tradeId = this.generateTradeId();
+    const notionalUsd = prediction.arbitrage_plan.notional_usd;
+    
+    // Risk-adjusted position sizing
+    const riskMultiplier = Math.max(0.1, 1 - riskAssessment.overall_risk_score);
+    const adjustedNotional = notionalUsd * riskMultiplier;
+    
+    // Dynamic risk limits based on prediction and market conditions
+    const stopLossPercentage = Math.max(0.005, riskAssessment.market_risk * 0.02); // 0.5% - 2%
+    const takeProfitPercentage = prediction.predicted_spread_pct * 0.8; // Take 80% of predicted spread
+    
+    return {
+      trade_id: tradeId,
+      arbitrage_plan: {
+        ...prediction.arbitrage_plan,
+        notional_usd: adjustedNotional,
+        estimated_profit_usd: adjustedNotional * prediction.predicted_spread_pct * 0.8
       },
-      agent_constraints: {
-        economic: { data_age_max_hours: 6, confidence_min: 0.5 },
-        sentiment: { mention_volume_min: 50, confidence_min: 0.4 },
-        price: { min_24h_volume_usd: 5000000, orderbook_depth_min_usd: 100000, latency_max_ms: 200 },
-        volume: { liquidity_index_min: 0.2 },
-        trade: { slippage_max_pct: 0.02 },
-        image: { visual_confidence_min: 0.6, image_age_max_sec: 60 }
+      risk_limits: {
+        max_position_size_usd: adjustedNotional,
+        stop_loss_pct: stopLossPercentage,
+        take_profit_pct: takeProfitPercentage,
+        max_hold_time_sec: prediction.expected_time_s
       },
-      bounds: {
-        min_spread_pct_for_execution: 0.005,
-        llm_confidence_threshold: 0.8,
-        min_expected_net_profit_usd: 10,
-        max_hold_time_sec: 3600,
-        max_simultaneous_trades: 5,
-        max_slippage_pct_estimate: 0.002,
-        z_threshold_k: 2.5,
-        max_position_size_pct: 0.02,
-        stop_loss_pct: 0.01,
-        take_profit_pct: 0.005
+      execution_params: {
+        order_type: riskAssessment.liquidity_risk > 0.5 ? 'limit' : 'market',
+        slippage_tolerance_pct: Math.min(0.002, riskAssessment.execution_risk * 0.005),
+        retry_attempts: 3,
+        timeout_sec: 30
+      },
+      monitoring: {
+        price_alerts: [
+          prediction.arbitrage_plan.notional_usd * (1 - stopLossPercentage),
+          prediction.arbitrage_plan.notional_usd * (1 + takeProfitPercentage)
+        ],
+        time_alerts: [
+          Math.floor(prediction.expected_time_s * 0.5),
+          Math.floor(prediction.expected_time_s * 0.8),
+          prediction.expected_time_s
+        ],
+        risk_alerts: riskAssessment.risk_factors
       }
     };
   }
 
   /**
-   * Initialize system status
+   * Generate rejection reasons
    */
-  private initializeSystemStatus(): void {
-    this.systemStatus = {
-      circuit_breaker_active: false,
-      active_trades_count: 0,
-      current_exposure_pct: 0,
-      unhealthy_apis: [],
-      event_blackout_active: false,
-      last_decision_timestamp: new Date().toISOString()
-    };
-  }
-
-  /**
-   * Generate unique decision ID
-   */
-  private generateDecisionId(): string {
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(2, 8);
-    return `DEC_${timestamp}_${random}`;
-  }
-
-  /**
-   * Log decision for audit trail
-   */
-  private logDecision(executionPlan: ExecutionPlan): void {
-    const logEntry = {
-      decision_id: executionPlan.decision_id,
-      timestamp: executionPlan.timestamp,
-      approved: executionPlan.approved,
-      prediction_confidence: executionPlan.prediction.confidence,
-      risk_score: executionPlan.risk_assessment.risk_score,
-      notional_usd: executionPlan.execution_params.notional_usd,
-      failed_constraints: executionPlan.constraint_results.failed_constraints,
-      warnings: executionPlan.constraint_results.warnings
-    };
-
-    // In production, log to persistent storage
-    console.log(`[AUDIT] Decision logged:`, JSON.stringify(logEntry));
-  }
-
-  /**
-   * Trim execution history to prevent memory bloat
-   */
-  private trimExecutionHistory(): void {
-    if (this.executionHistory.length > 500) {
-      this.executionHistory = this.executionHistory.slice(-250);
+  private generateRejectionReasons(
+    constraintChecks: Record<string, boolean>,
+    agentHealthChecks: Record<string, boolean>,
+    boundChecks: Record<string, boolean>,
+    riskAssessment: RiskAssessment
+  ): string[] {
+    const reasons: string[] = [];
+    
+    // Constraint violations
+    for (const [check, passed] of Object.entries(constraintChecks)) {
+      if (!passed) {
+        reasons.push(`Global constraint violation: ${check}`);
+      }
     }
+    
+    // Agent health violations
+    for (const [check, passed] of Object.entries(agentHealthChecks)) {
+      if (!passed) {
+        reasons.push(`Agent constraint violation: ${check}`);
+      }
+    }
+    
+    // Bound violations
+    for (const [check, passed] of Object.entries(boundChecks)) {
+      if (!passed) {
+        reasons.push(`Decision bound violation: ${check}`);
+      }
+    }
+    
+    // Risk violations
+    if (riskAssessment.overall_risk_score > 0.7) {
+      reasons.push(`Excessive risk: ${(riskAssessment.overall_risk_score * 100).toFixed(1)}%`);
+    }
+    
+    // Specific risk factors
+    for (const factor of riskAssessment.risk_factors) {
+      reasons.push(`Risk factor: ${factor}`);
+    }
+    
+    return reasons;
   }
 
   /**
-   * Get system status for monitoring
+   * Generate unique trade ID
    */
-  getSystemStatus(): SystemStatus {
-    return { ...this.systemStatus };
+  private generateTradeId(): string {
+    const timestamp = Date.now().toString(36);
+    const random = Math.random().toString(36).substring(2, 8);
+    return `ARB_${timestamp}_${random}`.toUpperCase();
   }
 
   /**
-   * Get recent execution history
+   * Update portfolio state after trade approval
    */
-  getExecutionHistory(limit: number = 50): ExecutionPlan[] {
-    return this.executionHistory.slice(-limit);
+  private updatePortfolioState(executionPlan: ExecutionPlan): void {
+    this.portfolioState.current_exposure_usd += executionPlan.arbitrage_plan.notional_usd;
+    this.portfolioState.open_positions = this.activePositions.size;
+  }
+
+  /**
+   * Check if current time is in event blackout period
+   */
+  private isInEventBlackout(): boolean {
+    const now = Date.now();
+    
+    return this.eventBlacklist.some(event => 
+      now >= event.start && now <= event.end
+    );
   }
 
   /**
    * Add event blackout period
    */
-  addEventBlackout(start: Date, end: Date, reason: string): void {
-    this.eventBlackouts.push({ start, end, reason });
-    this.updateEventBlackoutStatus();
-  }
-
-  /**
-   * Update event blackout status
-   */
-  private updateEventBlackoutStatus(): void {
-    const now = new Date();
-    this.systemStatus.event_blackout_active = this.eventBlackouts.some(
-      blackout => now >= blackout.start && now <= blackout.end
-    );
-  }
-
-  /**
-   * Update exchange health status
-   */
-  updateExchangeHealth(exchange: string, healthy: boolean): void {
-    this.exchangeHealth.set(exchange, {
-      healthy,
-      last_check: Date.now()
+  addEventBlackout(startTime: Date, endTime: Date, eventName: string): void {
+    this.eventBlacklist.push({
+      start: startTime.getTime(),
+      end: endTime.getTime(),
+      event: eventName
     });
-
-    // Update unhealthy APIs list
-    this.systemStatus.unhealthy_apis = Array.from(this.exchangeHealth.entries())
-      .filter(([, health]) => !health.healthy)
-      .map(([exchange]) => exchange);
+    
+    // Clean up old events
+    const now = Date.now();
+    this.eventBlacklist = this.eventBlacklist.filter(event => event.end > now);
   }
 
   /**
-   * Reset circuit breaker (manual override)
+   * Get active positions
    */
-  resetCircuitBreaker(): void {
-    this.systemStatus.circuit_breaker_active = false;
-    this.circuitBreakerTriggered = 0;
-    this.currentDrawdown = 0;
-    console.log('Circuit breaker manually reset');
+  getActivePositions(): ExecutionPlan[] {
+    return Array.from(this.activePositions.values());
   }
 
   /**
-   * Update portfolio metrics
+   * Close position (called by execution engine)
    */
-  updatePortfolioMetrics(newValue: number, drawdown: number): void {
-    this.portfolioValue = newValue;
-    this.currentDrawdown = drawdown;
+  closePosition(tradeId: string, pnl: number): void {
+    const position = this.activePositions.get(tradeId);
+    if (position) {
+      this.portfolioState.current_exposure_usd -= position.arbitrage_plan.notional_usd;
+      this.portfolioState.recent_pnl_usd += pnl;
+      this.portfolioState.open_positions = this.activePositions.size - 1;
+      
+      this.activePositions.delete(tradeId);
+    }
   }
 
   /**
@@ -713,44 +615,130 @@ export class DecisionEngine {
     total_decisions: number;
     approval_rate: number;
     avg_risk_score: number;
-    avg_notional_usd: number;
     common_rejection_reasons: string[];
+    portfolio_state: PortfolioState;
   } {
-    if (this.executionHistory.length === 0) {
+    if (this.decisionHistory.length === 0) {
       return {
         total_decisions: 0,
         approval_rate: 0,
         avg_risk_score: 0,
-        avg_notional_usd: 0,
-        common_rejection_reasons: []
+        common_rejection_reasons: [],
+        portfolio_state: this.portfolioState
       };
     }
-
-    const approved = this.executionHistory.filter(p => p.approved).length;
-    const approvalRate = approved / this.executionHistory.length;
-    const avgRiskScore = this.executionHistory.reduce((sum, p) => sum + p.risk_assessment.risk_score, 0) / this.executionHistory.length;
-    const avgNotional = this.executionHistory.reduce((sum, p) => sum + p.execution_params.notional_usd, 0) / this.executionHistory.length;
-
+    
+    const totalDecisions = this.decisionHistory.length;
+    const approvedDecisions = this.decisionHistory.filter(d => d.approved).length;
+    const approvalRate = approvedDecisions / totalDecisions;
+    
+    const avgRiskScore = this.decisionHistory.reduce((sum, d) => 
+      sum + d.risk_assessment.overall_risk_score, 0
+    ) / totalDecisions;
+    
     // Count rejection reasons
     const rejectionReasons: Record<string, number> = {};
-    this.executionHistory.filter(p => !p.approved).forEach(p => {
-      p.constraint_results.failed_constraints.forEach(reason => {
-        rejectionReasons[reason] = (rejectionReasons[reason] || 0) + 1;
-      });
-    });
-
+    for (const decision of this.decisionHistory) {
+      if (!decision.approved && decision.rejection_reasons) {
+        for (const reason of decision.rejection_reasons) {
+          rejectionReasons[reason] = (rejectionReasons[reason] || 0) + 1;
+        }
+      }
+    }
+    
+    // Get top 5 most common rejection reasons
     const commonRejections = Object.entries(rejectionReasons)
       .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([reason]) => reason);
-
+    
     return {
-      total_decisions: this.executionHistory.length,
+      total_decisions: totalDecisions,
       approval_rate: approvalRate,
       avg_risk_score: avgRiskScore,
-      avg_notional_usd: avgNotional,
-      common_rejection_reasons: commonRejections
+      common_rejection_reasons: commonRejections,
+      portfolio_state: this.portfolioState
     };
+  }
+
+  /**
+   * Load configuration from YAML file
+   */
+  private loadConfig(configPath: string): any {
+    try {
+      const configFile = readFileSync(configPath, 'utf8');
+      const config = yaml.parse(configFile);
+      
+      return {
+        constraints: config.constraints || {},
+        bounds: config.bounds || {},
+        agent_constraints: {
+          economic: config.agents?.economic || {},
+          sentiment: config.agents?.sentiment || {},
+          price: config.agents?.price || {},
+          volume: config.agents?.volume || {},
+          trade: config.agents?.trade || {},
+          image: config.agents?.image || {}
+        },
+        authorized_exchanges: ['binance', 'coinbase', 'kraken']
+      };
+    } catch (error) {
+      console.warn('Failed to load decision config, using defaults:', error.message);
+      
+      // Return safe defaults
+      return {
+        constraints: {
+          max_open_exposure_pct_of_NAV: 0.05,
+          api_health_pause_threshold: 2,
+          event_blackout_sec: 300,
+          data_freshness_max_sec: 10,
+          authorized_exchanges_only: true,
+          max_concurrent_agents: 10,
+          circuit_breaker_drawdown_pct: 0.1
+        },
+        bounds: {
+          min_spread_pct_for_execution: 0.001,
+          llm_confidence_threshold: 0.7,
+          min_expected_net_profit_usd: 10,
+          max_hold_time_sec: 3600,
+          max_simultaneous_trades: 3,
+          max_slippage_pct_estimate: 0.005,
+          z_threshold_k: 2.5
+        },
+        agent_constraints: {
+          economic: { data_age_max_hours: 12, confidence_min: 0.3 },
+          sentiment: { min_mention_volume: 10, confidence_min: 0.3 },
+          price: { min_24h_volume_usd: 1000000, orderbook_depth_usd_min: 50000, latency_ms_max: 1000 },
+          volume: { liquidity_index_min: 0.1 },
+          trade: { slippage_estimate_max_pct: 0.01 },
+          image: { visual_confidence_min: 0.5, image_age_max_sec: 120 }
+        },
+        authorized_exchanges: ['binance', 'coinbase', 'kraken']
+      };
+    }
+  }
+
+  /**
+   * Trim decision history to prevent memory bloat
+   */
+  private trimDecisionHistory(): void {
+    if (this.decisionHistory.length > 1000) {
+      this.decisionHistory = this.decisionHistory.slice(-500);
+    }
+  }
+
+  /**
+   * Update NAV estimate (should be called periodically)
+   */
+  updateNAV(newNAV: number): void {
+    this.portfolioState.nav_estimate_usd = newNAV;
+  }
+
+  /**
+   * Update drawdown tracking
+   */
+  updateDrawdown(peakNAV: number, currentNAV: number): void {
+    this.portfolioState.drawdown_from_peak_pct = Math.max(0, (peakNAV - currentNAV) / peakNAV);
   }
 }
 

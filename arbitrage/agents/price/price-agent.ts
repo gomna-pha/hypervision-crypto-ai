@@ -1,13 +1,15 @@
 /**
- * Price Agent - Real-Time Exchange Price and Orderbook Data
- * Collects canonical price and orderbook data across exchanges with low latency
- * Connects to Binance, Coinbase, Kraken WebSockets for real-time updates
+ * Price Agent - Real-Time Exchange Data Collection
+ * Connects to multiple exchange WebSocket feeds for real-time price and orderbook data
+ * Provides canonical pricing and spread analysis across exchanges
  */
 
 import { BaseAgent, AgentConfig, AgentOutput } from '../../core/base-agent.js';
 import WebSocket from 'ws';
+import axios from 'axios';
+import crypto from 'crypto';
 
-export interface ExchangePriceData {
+export interface PriceData {
   exchange: string;
   pair: string;
   best_bid: number;
@@ -16,61 +18,53 @@ export interface ExchangePriceData {
   last_trade_price: number;
   volume_1m: number;
   vwap_1m: number;
-  orderbook_depth_usd_at_0_5pct: number;
+  orderbook_depth_usd: number;
   open_interest?: number;
   funding_rate?: number;
   timestamp: number;
 }
 
+export interface SpreadAnalysis {
+  pair: string;
+  exchanges: string[];
+  best_bid_exchange: string;
+  best_ask_exchange: string;
+  current_spread_pct: number;
+  arbitrage_opportunity: boolean;
+  potential_profit_usd: number;
+  volume_weighted_spread: number;
+}
+
 export interface PriceFeatures {
-  spread_pct: number;              // (ask - bid) / mid * 100
-  price_momentum_1m: number;       // Price change over 1 minute [-1, 1]
-  volume_momentum_1m: number;      // Volume change over 1 minute [-1, 1]
-  liquidity_score: number;         // Orderbook depth normalized [0, 1]
-  volatility_1m: number;           // Price volatility over 1 minute [0, 1]
-  arbitrage_opportunity: number;    // Cross-exchange spread potential [-1, 1]
-}
-
-interface OrderBookLevel {
-  price: number;
-  size: number;
-}
-
-interface OrderBook {
-  bids: OrderBookLevel[];
-  asks: OrderBookLevel[];
-  timestamp: number;
+  btc_binance_mid: number;
+  btc_coinbase_mid: number;
+  eth_binance_mid: number;
+  eth_coinbase_mid: number;
+  current_spread_pct: number;
+  volume_weighted_price: number;
+  price_momentum: number;
+  volatility_1m: number;
+  liquidity_score: number;
 }
 
 export class PriceAgent extends BaseAgent {
   private exchanges: Map<string, WebSocket> = new Map();
-  private priceData: Map<string, ExchangePriceData> = new Map();
-  private orderBooks: Map<string, OrderBook> = new Map();
-  private priceHistory: Map<string, ExchangePriceData[]> = new Map();
-  private reconnectAttempts: Map<string, number> = new Map();
-  private maxReconnectAttempts = 5;
+  private priceData: Map<string, PriceData> = new Map();
+  private tradeHistory: Array<{ price: number; volume: number; timestamp: number }> = [];
+  private apiKeys: Map<string, { key: string; secret: string }> = new Map();
+  private reconnectTimeouts: Map<string, NodeJS.Timeout> = new Map();
+  
+  // Configuration
+  private readonly PAIRS = ['BTC-USDT', 'ETH-USDT', 'BTC-USD', 'ETH-USD'];
+  private readonly EXCHANGES = ['binance', 'coinbase', 'kraken'];
+  private readonly MIN_ORDERBOOK_DEPTH_USD = 100000;
+  private readonly MAX_LATENCY_MS = 200;
 
-  private readonly exchangeConfigs = {
-    binance: {
-      wsUrl: 'wss://stream.binance.com:9443/ws',
-      pairs: ['btcusdt', 'ethusdt'],
-      depthStream: '@depth20@100ms',
-      tradeStream: '@aggTrade'
-    },
-    coinbase: {
-      wsUrl: 'wss://ws-feed.exchange.coinbase.com',
-      pairs: ['BTC-USD', 'ETH-USD'],
-      channels: ['level2', 'matches']
-    },
-    kraken: {
-      wsUrl: 'wss://ws.kraken.com',
-      pairs: ['BTC/USD', 'ETH/USD'],
-      channels: ['book', 'trade']
-    }
-  };
-
-  constructor(config: AgentConfig) {
+  constructor(config: AgentConfig, apiKeys?: Map<string, { key: string; secret: string }>) {
     super(config);
+    if (apiKeys) {
+      this.apiKeys = apiKeys;
+    }
   }
 
   protected async collectData(): Promise<AgentOutput> {
@@ -79,23 +73,26 @@ export class PriceAgent extends BaseAgent {
     try {
       // Ensure WebSocket connections are active
       await this.ensureConnections();
-
-      // Get latest price data from all exchanges
-      const allPriceData = Array.from(this.priceData.values());
-
-      if (allPriceData.length === 0) {
-        throw new Error('No price data available from any exchange');
+      
+      // Get latest price data
+      const prices = this.getLatestPrices();
+      
+      if (prices.length === 0) {
+        throw new Error('No price data available');
       }
-
-      // Calculate cross-exchange features
-      const features = this.calculatePriceFeatures(allPriceData);
-
+      
+      // Calculate features
+      const features = this.calculateFeatures(prices);
+      
+      // Calculate spread analysis
+      const spreadAnalysis = this.analyzeArbitrageSpreads();
+      
       // Calculate key signal (arbitrage opportunity score)
-      const keySignal = features.arbitrage_opportunity;
-
-      // Calculate confidence based on data freshness and exchange coverage
-      const confidence = this.calculatePriceConfidence(allPriceData);
-
+      const keySignal = this.calculateKeySignal(features, spreadAnalysis);
+      
+      // Calculate confidence based on data quality
+      const confidence = this.calculateDataConfidence(prices);
+      
       return {
         agent_name: 'PriceAgent',
         timestamp,
@@ -103,22 +100,14 @@ export class PriceAgent extends BaseAgent {
         confidence,
         features: {
           ...features,
-          exchange_data: Object.fromEntries(
-            allPriceData.map(data => [
-              `${data.exchange}_${data.pair}`, 
-              {
-                mid_price: data.mid_price,
-                spread_pct: ((data.best_ask - data.best_bid) / data.mid_price * 100),
-                volume_1m: data.volume_1m,
-                last_update_age_ms: Date.now() - data.timestamp
-              }
-            ])
-          )
+          spread_analysis: spreadAnalysis,
+          active_exchanges: this.exchanges.size,
+          data_points: prices.length
         },
         metadata: {
-          active_exchanges: this.exchanges.size,
-          price_feeds: allPriceData.length,
-          oldest_data_age_ms: Math.max(...allPriceData.map(d => Date.now() - d.timestamp))
+          exchanges_connected: Array.from(this.exchanges.keys()),
+          pairs_tracked: this.PAIRS,
+          last_update_times: this.getLastUpdateTimes()
         }
       };
 
@@ -129,571 +118,807 @@ export class PriceAgent extends BaseAgent {
   }
 
   /**
-   * Ensure all WebSocket connections are active
+   * Ensure WebSocket connections to all exchanges
    */
   private async ensureConnections(): Promise<void> {
-    const promises: Promise<void>[] = [];
-
-    for (const exchangeName of Object.keys(this.exchangeConfigs)) {
-      if (!this.exchanges.has(exchangeName) || 
-          this.exchanges.get(exchangeName)?.readyState !== WebSocket.OPEN) {
-        promises.push(this.connectToExchange(exchangeName));
+    for (const exchange of this.EXCHANGES) {
+      if (!this.exchanges.has(exchange) || 
+          this.exchanges.get(exchange)?.readyState !== WebSocket.OPEN) {
+        await this.connectToExchange(exchange);
       }
-    }
-
-    if (promises.length > 0) {
-      await Promise.all(promises);
     }
   }
 
   /**
-   * Connect to a specific exchange WebSocket
+   * Connect to specific exchange WebSocket
    */
-  private async connectToExchange(exchangeName: string): Promise<void> {
-    const config = this.exchangeConfigs[exchangeName as keyof typeof this.exchangeConfigs];
-    if (!config) {
-      throw new Error(`Unknown exchange: ${exchangeName}`);
-    }
-
+  private async connectToExchange(exchange: string): Promise<void> {
     try {
       let ws: WebSocket;
-      let subscriptionMessage: any;
-
-      switch (exchangeName) {
-        case 'binance':
-          ws = new WebSocket(config.wsUrl);
-          subscriptionMessage = this.createBinanceSubscription(config);
-          break;
-        
-        case 'coinbase':
-          ws = new WebSocket(config.wsUrl);
-          subscriptionMessage = this.createCoinbaseSubscription(config);
-          break;
-        
-        case 'kraken':
-          ws = new WebSocket(config.wsUrl);
-          subscriptionMessage = this.createKrakenSubscription(config);
-          break;
-        
-        default:
-          throw new Error(`Unsupported exchange: ${exchangeName}`);
-      }
-
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error(`Connection timeout for ${exchangeName}`));
-        }, 10000);
-
-        ws.on('open', () => {
-          console.log(`Connected to ${exchangeName} WebSocket`);
-          ws.send(JSON.stringify(subscriptionMessage));
-          
-          this.exchanges.set(exchangeName, ws);
-          this.reconnectAttempts.set(exchangeName, 0);
-          
-          clearTimeout(timeout);
-          resolve();
-        });
-
-        ws.on('message', (data: Buffer) => {
-          try {
-            this.handleExchangeMessage(exchangeName, JSON.parse(data.toString()));
-          } catch (error) {
-            console.error(`Error processing ${exchangeName} message:`, error);
-          }
-        });
-
-        ws.on('error', (error: Error) => {
-          console.error(`${exchangeName} WebSocket error:`, error);
-          clearTimeout(timeout);
-          reject(error);
-        });
-
-        ws.on('close', () => {
-          console.log(`${exchangeName} WebSocket closed`);
-          this.exchanges.delete(exchangeName);
-          this.scheduleReconnect(exchangeName);
-        });
-      });
-
-    } catch (error) {
-      console.error(`Failed to connect to ${exchangeName}:`, error);
-      throw error;
-    }
-  }
-
-  /**
-   * Create Binance subscription message
-   */
-  private createBinanceSubscription(config: any): any {
-    const streams = config.pairs.flatMap((pair: string) => [
-      `${pair}${config.depthStream}`,
-      `${pair}${config.tradeStream}`
-    ]);
-
-    return {
-      method: 'SUBSCRIBE',
-      params: streams,
-      id: 1
-    };
-  }
-
-  /**
-   * Create Coinbase subscription message
-   */
-  private createCoinbaseSubscription(config: any): any {
-    return {
-      type: 'subscribe',
-      product_ids: config.pairs,
-      channels: config.channels
-    };
-  }
-
-  /**
-   * Create Kraken subscription message
-   */
-  private createKrakenSubscription(config: any): any {
-    return {
-      event: 'subscribe',
-      pair: config.pairs,
-      subscription: {
-        name: 'book',
-        depth: 25
-      }
-    };
-  }
-
-  /**
-   * Handle incoming WebSocket messages from exchanges
-   */
-  private handleExchangeMessage(exchange: string, message: any): void {
-    try {
+      
       switch (exchange) {
         case 'binance':
-          this.handleBinanceMessage(message);
+          ws = await this.connectBinance();
           break;
         case 'coinbase':
-          this.handleCoinbaseMessage(message);
+          ws = await this.connectCoinbase();
           break;
         case 'kraken':
-          this.handleKrakenMessage(message);
+          ws = await this.connectKraken();
           break;
+        default:
+          throw new Error(`Unknown exchange: ${exchange}`);
       }
+      
+      this.exchanges.set(exchange, ws);
+      console.log(`Connected to ${exchange} WebSocket`);
+      
     } catch (error) {
-      console.error(`Error handling ${exchange} message:`, error);
+      console.error(`Failed to connect to ${exchange}:`, error);
+      this.scheduleReconnect(exchange);
     }
   }
 
   /**
-   * Handle Binance WebSocket messages
+   * Connect to Binance WebSocket
    */
-  private handleBinanceMessage(message: any): void {
-    if (!message.stream) return;
+  private async connectBinance(): Promise<WebSocket> {
+    const url = 'wss://stream.binance.com:9443/ws/btcusdt@depth@100ms/ethusdt@depth@100ms/btcusdt@aggTrade/ethusdt@aggTrade';
+    
+    const ws = new WebSocket(url);
+    
+    ws.on('open', () => {
+      console.log('Binance WebSocket connected');
+    });
+    
+    ws.on('message', (data: Buffer) => {
+      try {
+        const message = JSON.parse(data.toString());
+        this.processBinanceMessage(message);
+      } catch (error) {
+        console.error('Binance message parsing error:', error);
+      }
+    });
+    
+    ws.on('error', (error) => {
+      console.error('Binance WebSocket error:', error);
+      this.scheduleReconnect('binance');
+    });
+    
+    ws.on('close', () => {
+      console.log('Binance WebSocket closed');
+      this.scheduleReconnect('binance');
+    });
+    
+    return ws;
+  }
 
-    const [pair, streamType] = message.stream.split('@');
-    const data = message.data;
-
-    if (streamType.includes('depth')) {
-      // Orderbook update
-      const orderBook: OrderBook = {
-        bids: data.bids.map((b: string[]) => ({ price: parseFloat(b[0]), size: parseFloat(b[1]) })),
-        asks: data.asks.map((a: string[]) => ({ price: parseFloat(a[0]), size: parseFloat(a[1]) })),
-        timestamp: Date.now()
+  /**
+   * Connect to Coinbase WebSocket
+   */
+  private async connectCoinbase(): Promise<WebSocket> {
+    const url = 'wss://ws-feed.exchange.coinbase.com';
+    
+    const ws = new WebSocket(url);
+    
+    ws.on('open', () => {
+      // Subscribe to level2 and matches channels
+      const subscribeMessage = {
+        type: 'subscribe',
+        product_ids: ['BTC-USD', 'ETH-USD', 'BTC-USDT', 'ETH-USDT'],
+        channels: ['level2', 'matches', 'ticker']
       };
-
-      this.orderBooks.set(`binance_${pair.toUpperCase()}`, orderBook);
-      this.updatePriceData('binance', pair.toUpperCase(), orderBook);
-    }
-
-    if (streamType.includes('aggTrade')) {
-      // Trade update - update VWAP and volume
-      this.updateTradeData('binance', pair.toUpperCase(), {
-        price: parseFloat(data.p),
-        quantity: parseFloat(data.q),
-        timestamp: data.T
-      });
-    }
+      
+      ws.send(JSON.stringify(subscribeMessage));
+      console.log('Coinbase WebSocket connected and subscribed');
+    });
+    
+    ws.on('message', (data: Buffer) => {
+      try {
+        const message = JSON.parse(data.toString());
+        this.processCoinbaseMessage(message);
+      } catch (error) {
+        console.error('Coinbase message parsing error:', error);
+      }
+    });
+    
+    ws.on('error', (error) => {
+      console.error('Coinbase WebSocket error:', error);
+      this.scheduleReconnect('coinbase');
+    });
+    
+    ws.on('close', () => {
+      console.log('Coinbase WebSocket closed');
+      this.scheduleReconnect('coinbase');
+    });
+    
+    return ws;
   }
 
   /**
-   * Handle Coinbase WebSocket messages
+   * Connect to Kraken WebSocket
    */
-  private handleCoinbaseMessage(message: any): void {
-    if (message.type === 'l2update') {
-      // Level 2 orderbook update
-      const pair = message.product_id;
-      const changes = message.changes;
-
-      // Update existing orderbook or create new one
-      const existingBook = this.orderBooks.get(`coinbase_${pair}`) || {
-        bids: [],
-        asks: [],
-        timestamp: Date.now()
+  private async connectKraken(): Promise<WebSocket> {
+    const url = 'wss://ws.kraken.com';
+    
+    const ws = new WebSocket(url);
+    
+    ws.on('open', () => {
+      // Subscribe to book and trade channels
+      const subscribeMessage = {
+        event: 'subscribe',
+        pair: ['XBT/USD', 'ETH/USD', 'XBT/USDT', 'ETH/USDT'],
+        subscription: { name: 'book', depth: 100 }
       };
-
-      // Apply changes
-      changes.forEach((change: string[]) => {
-        const [side, price, size] = change;
-        const priceNum = parseFloat(price);
-        const sizeNum = parseFloat(size);
-
-        const book = side === 'buy' ? existingBook.bids : existingBook.asks;
-        
-        if (sizeNum === 0) {
-          // Remove level
-          const index = book.findIndex(level => level.price === priceNum);
-          if (index !== -1) book.splice(index, 1);
-        } else {
-          // Update or add level
-          const index = book.findIndex(level => level.price === priceNum);
-          if (index !== -1) {
-            book[index].size = sizeNum;
-          } else {
-            book.push({ price: priceNum, size: sizeNum });
-            book.sort((a, b) => side === 'buy' ? b.price - a.price : a.price - b.price);
-          }
-        }
-      });
-
-      existingBook.timestamp = Date.now();
-      this.orderBooks.set(`coinbase_${pair}`, existingBook);
-      this.updatePriceData('coinbase', pair, existingBook);
-    }
-
-    if (message.type === 'match') {
-      // Trade update
-      this.updateTradeData('coinbase', message.product_id, {
-        price: parseFloat(message.price),
-        quantity: parseFloat(message.size),
-        timestamp: new Date(message.time).getTime()
-      });
-    }
+      
+      ws.send(JSON.stringify(subscribeMessage));
+      
+      const tradeMessage = {
+        event: 'subscribe',
+        pair: ['XBT/USD', 'ETH/USD'],
+        subscription: { name: 'trade' }
+      };
+      
+      ws.send(JSON.stringify(tradeMessage));
+      console.log('Kraken WebSocket connected and subscribed');
+    });
+    
+    ws.on('message', (data: Buffer) => {
+      try {
+        const message = JSON.parse(data.toString());
+        this.processKrakenMessage(message);
+      } catch (error) {
+        console.error('Kraken message parsing error:', error);
+      }
+    });
+    
+    ws.on('error', (error) => {
+      console.error('Kraken WebSocket error:', error);
+      this.scheduleReconnect('kraken');
+    });
+    
+    ws.on('close', () => {
+      console.log('Kraken WebSocket closed');
+      this.scheduleReconnect('kraken');
+    });
+    
+    return ws;
   }
 
   /**
-   * Handle Kraken WebSocket messages (simplified)
+   * Process Binance WebSocket messages
    */
-  private handleKrakenMessage(message: any): void {
-    // Simplified Kraken handling - implement full protocol as needed
-    if (Array.isArray(message) && message.length >= 2) {
-      const data = message[1];
-      if (data.as && data.bs) {
-        // Book snapshot/update
-        const pair = message[3] || 'BTC/USD';
-        
-        const orderBook: OrderBook = {
-          bids: data.bs?.map((b: string[]) => ({ price: parseFloat(b[0]), size: parseFloat(b[1]) })) || [],
-          asks: data.as?.map((a: string[]) => ({ price: parseFloat(a[0]), size: parseFloat(a[1]) })) || [],
-          timestamp: Date.now()
-        };
-
-        this.orderBooks.set(`kraken_${pair}`, orderBook);
-        this.updatePriceData('kraken', pair, orderBook);
+  private processBinanceMessage(message: any): void {
+    if (message.stream && message.data) {
+      const stream = message.stream;
+      const data = message.data;
+      
+      if (stream.includes('@depth')) {
+        // Orderbook update
+        this.processBinanceOrderbook(stream, data);
+      } else if (stream.includes('@aggTrade')) {
+        // Trade update
+        this.processBinanceTrade(stream, data);
       }
     }
   }
 
   /**
-   * Update price data from orderbook
+   * Process Binance orderbook data
    */
-  private updatePriceData(exchange: string, pair: string, orderBook: OrderBook): void {
-    if (orderBook.bids.length === 0 || orderBook.asks.length === 0) return;
+  private processBinanceOrderbook(stream: string, data: any): void {
+    const symbol = stream.split('@')[0].toUpperCase();
+    const pair = this.normalizePair(symbol);
+    
+    const bestBid = data.b && data.b.length > 0 ? parseFloat(data.b[0][0]) : 0;
+    const bestAsk = data.a && data.a.length > 0 ? parseFloat(data.a[0][0]) : 0;
+    
+    if (bestBid > 0 && bestAsk > 0) {
+      const key = `binance_${pair}`;
+      const existing = this.priceData.get(key) || {} as PriceData;
+      
+      this.priceData.set(key, {
+        ...existing,
+        exchange: 'binance',
+        pair,
+        best_bid: bestBid,
+        best_ask: bestAsk,
+        mid_price: (bestBid + bestAsk) / 2,
+        orderbook_depth_usd: this.calculateOrderbookDepth(data),
+        timestamp: Date.now()
+      });
+    }
+  }
 
-    const bestBid = orderBook.bids[0].price;
-    const bestAsk = orderBook.asks[0].price;
-    const midPrice = (bestBid + bestAsk) / 2;
-
-    // Calculate orderbook depth at 0.5%
-    const depthPrice = midPrice * 0.005; // 0.5%
-    const bidDepth = this.calculateDepth(orderBook.bids, bestBid - depthPrice, 'bid');
-    const askDepth = this.calculateDepth(orderBook.asks, bestAsk + depthPrice, 'ask');
-    const totalDepthUsd = (bidDepth + askDepth) * midPrice;
-
-    const key = `${exchange}_${pair}`;
-    const existingData = this.priceData.get(key);
-
-    const priceData: ExchangePriceData = {
-      exchange,
+  /**
+   * Process Binance trade data
+   */
+  private processBinanceTrade(stream: string, data: any): void {
+    const symbol = stream.split('@')[0].toUpperCase();
+    const pair = this.normalizePair(symbol);
+    const price = parseFloat(data.p);
+    const quantity = parseFloat(data.q);
+    
+    // Update trade history
+    this.tradeHistory.push({
+      price,
+      volume: quantity,
+      timestamp: data.T
+    });
+    
+    // Keep only last 1000 trades
+    if (this.tradeHistory.length > 1000) {
+      this.tradeHistory.shift();
+    }
+    
+    // Update price data
+    const key = `binance_${pair}`;
+    const existing = this.priceData.get(key) || {} as PriceData;
+    
+    this.priceData.set(key, {
+      ...existing,
+      exchange: 'binance',
       pair,
-      best_bid: bestBid,
-      best_ask: bestAsk,
-      mid_price: midPrice,
-      last_trade_price: existingData?.last_trade_price || midPrice,
-      volume_1m: existingData?.volume_1m || 0,
-      vwap_1m: existingData?.vwap_1m || midPrice,
-      orderbook_depth_usd_at_0_5pct: totalDepthUsd,
-      timestamp: orderBook.timestamp
-    };
-
-    this.priceData.set(key, priceData);
-
-    // Update price history
-    if (!this.priceHistory.has(key)) {
-      this.priceHistory.set(key, []);
-    }
-    
-    const history = this.priceHistory.get(key)!;
-    history.push(priceData);
-
-    // Keep only last 60 data points (for 1-minute calculations)
-    if (history.length > 60) {
-      history.shift();
-    }
-  }
-
-  /**
-   * Update trade data (VWAP and volume)
-   */
-  private updateTradeData(exchange: string, pair: string, trade: any): void {
-    const key = `${exchange}_${pair}`;
-    const existingData = this.priceData.get(key);
-    
-    if (!existingData) return;
-
-    // Update last trade price
-    existingData.last_trade_price = trade.price;
-
-    // Update 1-minute volume and VWAP (simplified)
-    const now = Date.now();
-    const oneMinuteAgo = now - 60 * 1000;
-
-    // In production, maintain proper trade history for accurate VWAP
-    // For now, use simple approximation
-    existingData.volume_1m = (existingData.volume_1m * 0.99) + trade.quantity;
-    existingData.vwap_1m = (existingData.vwap_1m * 0.95) + (trade.price * 0.05);
-
-    this.priceData.set(key, existingData);
-  }
-
-  /**
-   * Calculate orderbook depth up to a price level
-   */
-  private calculateDepth(levels: OrderBookLevel[], priceLimit: number, side: 'bid' | 'ask'): number {
-    let totalSize = 0;
-    
-    for (const level of levels) {
-      if (side === 'bid' && level.price >= priceLimit) {
-        totalSize += level.size;
-      } else if (side === 'ask' && level.price <= priceLimit) {
-        totalSize += level.size;
-      } else {
-        break;
-      }
-    }
-    
-    return totalSize;
-  }
-
-  /**
-   * Calculate price-related features
-   */
-  private calculatePriceFeatures(allPriceData: ExchangePriceData[]): PriceFeatures {
-    // Group by pair for cross-exchange analysis
-    const pairGroups = new Map<string, ExchangePriceData[]>();
-    
-    allPriceData.forEach(data => {
-      const normalizedPair = this.normalizePair(data.pair);
-      if (!pairGroups.has(normalizedPair)) {
-        pairGroups.set(normalizedPair, []);
-      }
-      pairGroups.get(normalizedPair)!.push(data);
+      last_trade_price: price,
+      vwap_1m: this.calculateVWAP(1),
+      volume_1m: this.calculateVolume(1),
+      timestamp: Date.now()
     });
+  }
 
-    // Calculate features for the primary pair (BTC-USD/USDT)
-    const btcData = pairGroups.get('BTC-USD') || pairGroups.get('BTC-USDT') || [];
-    
-    if (btcData.length === 0) {
-      return this.getDefaultFeatures();
+  /**
+   * Process Coinbase WebSocket messages
+   */
+  private processCoinbaseMessage(message: any): void {
+    if (message.type === 'l2update') {
+      this.processCoinbaseL2Update(message);
+    } else if (message.type === 'match') {
+      this.processCoinbaseMatch(message);
+    } else if (message.type === 'ticker') {
+      this.processCoinbaseTicker(message);
     }
-
-    // Average spread across exchanges
-    const avgSpread = btcData.reduce((sum, data) => 
-      sum + ((data.best_ask - data.best_bid) / data.mid_price * 100), 0) / btcData.length;
-
-    // Price momentum (1-minute change)
-    const priceMomentum = this.calculatePriceMomentum(btcData[0]);
-
-    // Volume momentum (1-minute change)
-    const volumeMomentum = this.calculateVolumeMomentum(btcData[0]);
-
-    // Liquidity score (average depth)
-    const avgLiquidity = btcData.reduce((sum, data) => 
-      sum + data.orderbook_depth_usd_at_0_5pct, 0) / btcData.length;
-    const liquidityScore = this.normalize(avgLiquidity, 0, 1000000, false); // Normalize to $1M
-
-    // Volatility (price standard deviation)
-    const volatility = this.calculateVolatility(btcData[0]);
-
-    // Arbitrage opportunity (cross-exchange spread)
-    const arbitrageOpportunity = this.calculateArbitrageOpportunity(btcData);
-
-    return {
-      spread_pct: avgSpread,
-      price_momentum_1m: priceMomentum,
-      volume_momentum_1m: volumeMomentum,
-      liquidity_score: liquidityScore,
-      volatility_1m: volatility,
-      arbitrage_opportunity: arbitrageOpportunity
-    };
   }
 
   /**
-   * Calculate price momentum over 1 minute
+   * Process Coinbase L2 orderbook updates
    */
-  private calculatePriceMomentum(data: ExchangePriceData): number {
-    const key = `${data.exchange}_${data.pair}`;
-    const history = this.priceHistory.get(key);
+  private processCoinbaseL2Update(message: any): void {
+    const pair = this.normalizePair(message.product_id);
     
-    if (!history || history.length < 2) return 0;
-
-    const current = history[history.length - 1];
-    const oneMinuteAgo = history.find(h => current.timestamp - h.timestamp >= 60000);
+    // Process changes to find best bid/ask
+    let bestBid = 0;
+    let bestAsk = Infinity;
     
-    if (!oneMinuteAgo) return 0;
-
-    const priceChange = (current.mid_price - oneMinuteAgo.mid_price) / oneMinuteAgo.mid_price;
-    return this.normalize(priceChange, -0.02, 0.02, true); // ±2% range
-  }
-
-  /**
-   * Calculate volume momentum over 1 minute
-   */
-  private calculateVolumeMomentum(data: ExchangePriceData): number {
-    const key = `${data.exchange}_${data.pair}`;
-    const history = this.priceHistory.get(key);
-    
-    if (!history || history.length < 2) return 0;
-
-    const current = history[history.length - 1];
-    const previous = history[history.length - 2];
-    
-    if (previous.volume_1m === 0) return 0;
-
-    const volumeChange = (current.volume_1m - previous.volume_1m) / previous.volume_1m;
-    return this.normalize(volumeChange, -0.5, 0.5, true); // ±50% range
-  }
-
-  /**
-   * Calculate price volatility over 1 minute
-   */
-  private calculateVolatility(data: ExchangePriceData): number {
-    const key = `${data.exchange}_${data.pair}`;
-    const history = this.priceHistory.get(key);
-    
-    if (!history || history.length < 5) return 0;
-
-    const recentPrices = history.slice(-10).map(h => h.mid_price);
-    const mean = recentPrices.reduce((a, b) => a + b, 0) / recentPrices.length;
-    const variance = recentPrices.reduce((acc, price) => acc + Math.pow(price - mean, 2), 0) / recentPrices.length;
-    const stdDev = Math.sqrt(variance);
-    
-    const volatilityPct = (stdDev / mean) * 100;
-    return this.normalize(volatilityPct, 0, 2, false); // 0-2% volatility range
-  }
-
-  /**
-   * Calculate cross-exchange arbitrage opportunity
-   */
-  private calculateArbitrageOpportunity(btcData: ExchangePriceData[]): number {
-    if (btcData.length < 2) return 0;
-
-    // Find the exchange with highest bid and lowest ask
-    let highestBid = 0;
-    let lowestAsk = Infinity;
-    let highestBidExchange = '';
-    let lowestAskExchange = '';
-
-    btcData.forEach(data => {
-      if (data.best_bid > highestBid) {
-        highestBid = data.best_bid;
-        highestBidExchange = data.exchange;
+    for (const change of message.changes) {
+      const [side, price, size] = change;
+      const priceNum = parseFloat(price);
+      const sizeNum = parseFloat(size);
+      
+      if (side === 'buy' && sizeNum > 0) {
+        bestBid = Math.max(bestBid, priceNum);
+      } else if (side === 'sell' && sizeNum > 0) {
+        bestAsk = Math.min(bestAsk, priceNum);
       }
-      if (data.best_ask < lowestAsk) {
-        lowestAsk = data.best_ask;
-        lowestAskExchange = data.exchange;
-      }
+    }
+    
+    if (bestBid > 0 && bestAsk < Infinity) {
+      const key = `coinbase_${pair}`;
+      const existing = this.priceData.get(key) || {} as PriceData;
+      
+      this.priceData.set(key, {
+        ...existing,
+        exchange: 'coinbase',
+        pair,
+        best_bid: bestBid,
+        best_ask: bestAsk,
+        mid_price: (bestBid + bestAsk) / 2,
+        timestamp: Date.now()
+      });
+    }
+  }
+
+  /**
+   * Process Coinbase match (trade) data
+   */
+  private processCoinbaseMatch(message: any): void {
+    const pair = this.normalizePair(message.product_id);
+    const price = parseFloat(message.price);
+    const size = parseFloat(message.size);
+    
+    this.tradeHistory.push({
+      price,
+      volume: size,
+      timestamp: new Date(message.time).getTime()
     });
-
-    // Calculate potential arbitrage spread
-    if (highestBidExchange !== lowestAskExchange && lowestAsk > 0) {
-      const arbitrageSpread = (highestBid - lowestAsk) / lowestAsk;
-      return this.normalize(arbitrageSpread, -0.01, 0.02, true); // -1% to +2% range
+    
+    if (this.tradeHistory.length > 1000) {
+      this.tradeHistory.shift();
     }
-
-    return 0;
   }
 
   /**
-   * Calculate confidence based on data quality
+   * Process Coinbase ticker data
    */
-  private calculatePriceConfidence(allPriceData: ExchangePriceData[]): number {
-    if (allPriceData.length === 0) return 0;
+  private processCoinbaseTicker(message: any): void {
+    const pair = this.normalizePair(message.product_id);
+    const key = `coinbase_${pair}`;
+    const existing = this.priceData.get(key) || {} as PriceData;
+    
+    this.priceData.set(key, {
+      ...existing,
+      exchange: 'coinbase',
+      pair,
+      last_trade_price: parseFloat(message.price),
+      volume_1m: parseFloat(message.volume_24h) / (24 * 60), // Approximate 1m volume
+      timestamp: Date.now()
+    });
+  }
 
+  /**
+   * Process Kraken WebSocket messages
+   */
+  private processKrakenMessage(message: any): void {
+    if (Array.isArray(message) && message.length > 0) {
+      const channelName = message[message.length - 1];
+      
+      if (typeof channelName === 'string' && channelName.includes('book')) {
+        this.processKrakenOrderbook(message);
+      } else if (typeof channelName === 'string' && channelName.includes('trade')) {
+        this.processKrakenTrade(message);
+      }
+    }
+  }
+
+  /**
+   * Process Kraken orderbook data
+   */
+  private processKrakenOrderbook(message: any): void {
+    if (message.length >= 2) {
+      const data = message[1];
+      const pairName = message[message.length - 1].split('-')[0];
+      const pair = this.normalizeKrakenPair(pairName);
+      
+      if (data.b && data.a) {
+        const bestBid = data.b.length > 0 ? parseFloat(data.b[0][0]) : 0;
+        const bestAsk = data.a.length > 0 ? parseFloat(data.a[0][0]) : 0;
+        
+        if (bestBid > 0 && bestAsk > 0) {
+          const key = `kraken_${pair}`;
+          const existing = this.priceData.get(key) || {} as PriceData;
+          
+          this.priceData.set(key, {
+            ...existing,
+            exchange: 'kraken',
+            pair,
+            best_bid: bestBid,
+            best_ask: bestAsk,
+            mid_price: (bestBid + bestAsk) / 2,
+            timestamp: Date.now()
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Process Kraken trade data
+   */
+  private processKrakenTrade(message: any): void {
+    if (message.length >= 2 && message[1]) {
+      const trades = message[1];
+      const pairName = message[message.length - 1].split('-')[0];
+      
+      for (const trade of trades) {
+        const price = parseFloat(trade[0]);
+        const volume = parseFloat(trade[1]);
+        const timestamp = parseFloat(trade[2]) * 1000; // Convert to milliseconds
+        
+        this.tradeHistory.push({ price, volume, timestamp });
+      }
+      
+      if (this.tradeHistory.length > 1000) {
+        this.tradeHistory.splice(0, this.tradeHistory.length - 1000);
+      }
+    }
+  }
+
+  /**
+   * Calculate orderbook depth in USD
+   */
+  private calculateOrderbookDepth(orderbook: any): number {
+    let totalDepth = 0;
+    
+    // Calculate bid side depth
+    if (orderbook.b) {
+      for (const [price, quantity] of orderbook.b.slice(0, 10)) {
+        totalDepth += parseFloat(price) * parseFloat(quantity);
+      }
+    }
+    
+    // Calculate ask side depth
+    if (orderbook.a) {
+      for (const [price, quantity] of orderbook.a.slice(0, 10)) {
+        totalDepth += parseFloat(price) * parseFloat(quantity);
+      }
+    }
+    
+    return totalDepth;
+  }
+
+  /**
+   * Calculate Volume Weighted Average Price (VWAP)
+   */
+  private calculateVWAP(windowMinutes: number): number {
+    const windowMs = windowMinutes * 60 * 1000;
     const now = Date.now();
-    const maxAge = 5000; // 5 seconds
+    const cutoff = now - windowMs;
+    
+    const recentTrades = this.tradeHistory.filter(t => t.timestamp >= cutoff);
+    
+    if (recentTrades.length === 0) return 0;
+    
+    let totalValue = 0;
+    let totalVolume = 0;
+    
+    for (const trade of recentTrades) {
+      totalValue += trade.price * trade.volume;
+      totalVolume += trade.volume;
+    }
+    
+    return totalVolume > 0 ? totalValue / totalVolume : 0;
+  }
 
-    // Freshness factor
-    const avgAge = allPriceData.reduce((sum, data) => sum + (now - data.timestamp), 0) / allPriceData.length;
-    const freshnessFactor = Math.max(0, 1 - (avgAge / maxAge));
-
-    // Exchange coverage factor
-    const uniqueExchanges = new Set(allPriceData.map(d => d.exchange)).size;
-    const coverageFactor = Math.min(1, uniqueExchanges / 3); // Target 3 exchanges
-
-    // Liquidity factor
-    const avgLiquidity = allPriceData.reduce((sum, data) => sum + data.orderbook_depth_usd_at_0_5pct, 0) / allPriceData.length;
-    const liquidityFactor = Math.min(1, avgLiquidity / 100000); // $100k minimum
-
-    return Math.max(0.1, freshnessFactor * coverageFactor * liquidityFactor);
+  /**
+   * Calculate volume in time window
+   */
+  private calculateVolume(windowMinutes: number): number {
+    const windowMs = windowMinutes * 60 * 1000;
+    const now = Date.now();
+    const cutoff = now - windowMs;
+    
+    const recentTrades = this.tradeHistory.filter(t => t.timestamp >= cutoff);
+    
+    return recentTrades.reduce((total, trade) => total + trade.volume, 0);
   }
 
   /**
    * Normalize pair names across exchanges
    */
   private normalizePair(pair: string): string {
-    return pair.replace(/[-\/]/g, '-').toUpperCase();
+    const normalized = pair.toUpperCase()
+      .replace('USDT', '-USDT')
+      .replace('USD', '-USD')
+      .replace('BTC', 'BTC')
+      .replace('ETH', 'ETH');
+    
+    // Ensure proper format
+    if (!normalized.includes('-')) {
+      if (normalized.includes('BTC')) {
+        return normalized.replace('BTC', 'BTC-');
+      } else if (normalized.includes('ETH')) {
+        return normalized.replace('ETH', 'ETH-');
+      }
+    }
+    
+    return normalized;
   }
 
   /**
-   * Get default features when no data is available
+   * Normalize Kraken pair names
    */
-  private getDefaultFeatures(): PriceFeatures {
+  private normalizeKrakenPair(pair: string): string {
+    const mapping: Record<string, string> = {
+      'XBT/USD': 'BTC-USD',
+      'XBT/USDT': 'BTC-USDT',
+      'ETH/USD': 'ETH-USD',
+      'ETH/USDT': 'ETH-USDT'
+    };
+    
+    return mapping[pair] || pair;
+  }
+
+  /**
+   * Get latest price data
+   */
+  private getLatestPrices(): PriceData[] {
+    const now = Date.now();
+    const maxAge = 5000; // 5 seconds
+    
+    return Array.from(this.priceData.values())
+      .filter(price => (now - price.timestamp) < maxAge);
+  }
+
+  /**
+   * Analyze arbitrage spreads across exchanges
+   */
+  private analyzeArbitrageSpreads(): SpreadAnalysis[] {
+    const spreadAnalyses: SpreadAnalysis[] = [];
+    
+    for (const pair of this.PAIRS) {
+      const pairPrices = Array.from(this.priceData.values())
+        .filter(p => p.pair === pair);
+      
+      if (pairPrices.length >= 2) {
+        // Find best bid and ask across exchanges
+        let bestBid = 0;
+        let bestBidExchange = '';
+        let bestAsk = Infinity;
+        let bestAskExchange = '';
+        
+        for (const price of pairPrices) {
+          if (price.best_bid > bestBid) {
+            bestBid = price.best_bid;
+            bestBidExchange = price.exchange;
+          }
+          
+          if (price.best_ask < bestAsk) {
+            bestAsk = price.best_ask;
+            bestAskExchange = price.exchange;
+          }
+        }
+        
+        if (bestBid > 0 && bestAsk < Infinity && bestBidExchange !== bestAskExchange) {
+          const spreadPct = ((bestBid - bestAsk) / bestAsk) * 100;
+          const arbitrageOpportunity = spreadPct > 0.05; // 0.05% minimum
+          
+          spreadAnalyses.push({
+            pair,
+            exchanges: pairPrices.map(p => p.exchange),
+            best_bid_exchange: bestBidExchange,
+            best_ask_exchange: bestAskExchange,
+            current_spread_pct: Math.abs(spreadPct),
+            arbitrage_opportunity: arbitrageOpportunity,
+            potential_profit_usd: arbitrageOpportunity ? (bestBid - bestAsk) * 100 : 0, // Assume 100 units
+            volume_weighted_spread: this.calculateVolumeWeightedSpread(pairPrices)
+          });
+        }
+      }
+    }
+    
+    return spreadAnalyses;
+  }
+
+  /**
+   * Calculate volume-weighted spread
+   */
+  private calculateVolumeWeightedSpread(prices: PriceData[]): number {
+    let totalWeightedSpread = 0;
+    let totalVolume = 0;
+    
+    for (const price of prices) {
+      if (price.best_bid > 0 && price.best_ask > 0) {
+        const spread = ((price.best_ask - price.best_bid) / price.best_bid) * 100;
+        const volume = price.volume_1m || 1;
+        
+        totalWeightedSpread += spread * volume;
+        totalVolume += volume;
+      }
+    }
+    
+    return totalVolume > 0 ? totalWeightedSpread / totalVolume : 0;
+  }
+
+  /**
+   * Calculate derived features
+   */
+  private calculateFeatures(prices: PriceData[]): PriceFeatures {
+    // Get specific exchange-pair prices
+    const btcBinance = prices.find(p => p.exchange === 'binance' && p.pair.includes('BTC'));
+    const btcCoinbase = prices.find(p => p.exchange === 'coinbase' && p.pair.includes('BTC'));
+    const ethBinance = prices.find(p => p.exchange === 'binance' && p.pair.includes('ETH'));
+    const ethCoinbase = prices.find(p => p.exchange === 'coinbase' && p.pair.includes('ETH'));
+    
+    // Calculate current spread
+    let currentSpreadPct = 0;
+    if (btcBinance && btcCoinbase) {
+      const spreadAbs = Math.abs(btcBinance.mid_price - btcCoinbase.mid_price);
+      currentSpreadPct = (spreadAbs / Math.min(btcBinance.mid_price, btcCoinbase.mid_price)) * 100;
+    }
+    
+    // Volume weighted price
+    const totalVolume = prices.reduce((sum, p) => sum + (p.volume_1m || 0), 0);
+    const volumeWeightedPrice = totalVolume > 0 
+      ? prices.reduce((sum, p) => sum + (p.mid_price * (p.volume_1m || 0)), 0) / totalVolume
+      : 0;
+    
+    // Price momentum (simplified)
+    const priceMomentum = this.calculatePriceMomentum();
+    
+    // Volatility (1 minute)
+    const volatility1m = this.calculateVolatility(1);
+    
+    // Liquidity score
+    const liquidityScore = this.calculateLiquidityScore(prices);
+    
     return {
-      spread_pct: 0.1,
-      price_momentum_1m: 0,
-      volume_momentum_1m: 0,
-      liquidity_score: 0.5,
-      volatility_1m: 0.5,
-      arbitrage_opportunity: 0
+      btc_binance_mid: btcBinance?.mid_price || 0,
+      btc_coinbase_mid: btcCoinbase?.mid_price || 0,
+      eth_binance_mid: ethBinance?.mid_price || 0,
+      eth_coinbase_mid: ethCoinbase?.mid_price || 0,
+      current_spread_pct: currentSpreadPct,
+      volume_weighted_price: volumeWeightedPrice,
+      price_momentum: priceMomentum,
+      volatility_1m: volatility1m,
+      liquidity_score: liquidityScore
     };
   }
 
   /**
-   * Schedule reconnection to an exchange
+   * Calculate price momentum
    */
-  private scheduleReconnect(exchangeName: string): void {
-    const attempts = this.reconnectAttempts.get(exchangeName) || 0;
+  private calculatePriceMomentum(): number {
+    if (this.tradeHistory.length < 10) return 0;
     
-    if (attempts >= this.maxReconnectAttempts) {
-      console.error(`Max reconnection attempts reached for ${exchangeName}`);
-      return;
-    }
-
-    const delay = Math.min(30000, 1000 * Math.pow(2, attempts)); // Exponential backoff, max 30s
+    const recent = this.tradeHistory.slice(-10);
+    const older = this.tradeHistory.slice(-20, -10);
     
-    setTimeout(async () => {
-      try {
-        console.log(`Reconnecting to ${exchangeName} (attempt ${attempts + 1})`);
-        this.reconnectAttempts.set(exchangeName, attempts + 1);
-        await this.connectToExchange(exchangeName);
-      } catch (error) {
-        console.error(`Reconnection failed for ${exchangeName}:`, error);
-      }
-    }, delay);
+    if (older.length === 0) return 0;
+    
+    const recentAvg = recent.reduce((sum, t) => sum + t.price, 0) / recent.length;
+    const olderAvg = older.reduce((sum, t) => sum + t.price, 0) / older.length;
+    
+    return ((recentAvg - olderAvg) / olderAvg) * 100;
   }
 
   /**
-   * Clean up WebSocket connections
+   * Calculate price volatility
+   */
+  private calculateVolatility(windowMinutes: number): number {
+    const windowMs = windowMinutes * 60 * 1000;
+    const now = Date.now();
+    const cutoff = now - windowMs;
+    
+    const recentTrades = this.tradeHistory.filter(t => t.timestamp >= cutoff);
+    
+    if (recentTrades.length < 2) return 0;
+    
+    const prices = recentTrades.map(t => t.price);
+    const mean = prices.reduce((sum, p) => sum + p, 0) / prices.length;
+    const variance = prices.reduce((sum, p) => sum + Math.pow(p - mean, 2), 0) / prices.length;
+    
+    return Math.sqrt(variance) / mean * 100; // Coefficient of variation
+  }
+
+  /**
+   * Calculate liquidity score
+   */
+  private calculateLiquidityScore(prices: PriceData[]): number {
+    if (prices.length === 0) return 0;
+    
+    const avgDepth = prices.reduce((sum, p) => sum + (p.orderbook_depth_usd || 0), 0) / prices.length;
+    
+    // Normalize to 0-1 scale based on minimum required depth
+    return Math.min(1, avgDepth / this.MIN_ORDERBOOK_DEPTH_USD);
+  }
+
+  /**
+   * Calculate key signal (arbitrage opportunity score)
+   */
+  private calculateKeySignal(features: PriceFeatures, spreads: SpreadAnalysis[]): number {
+    // Weight different factors
+    const weights = {
+      spread: 0.4,        // Current spread opportunities
+      liquidity: 0.3,     // Available liquidity
+      momentum: 0.2,      // Price momentum
+      volatility: 0.1     // Market volatility
+    };
+    
+    // Spread signal (higher spread = higher signal)
+    const maxSpread = Math.max(...spreads.map(s => s.current_spread_pct), 0);
+    const spreadSignal = Math.min(1, maxSpread / 0.5); // Normalize to 0.5% max
+    
+    // Liquidity signal
+    const liquiditySignal = features.liquidity_score;
+    
+    // Momentum signal (absolute value, we want movement)
+    const momentumSignal = Math.min(1, Math.abs(features.price_momentum) / 2);
+    
+    // Volatility signal (moderate volatility is good for arbitrage)
+    const volatilitySignal = features.volatility_1m > 0 
+      ? Math.min(1, 2 - Math.abs(features.volatility_1m - 1)) // Optimal around 1%
+      : 0;
+    
+    // Weighted composite
+    const signal = (
+      spreadSignal * weights.spread +
+      liquiditySignal * weights.liquidity +
+      momentumSignal * weights.momentum +
+      volatilitySignal * weights.volatility
+    );
+    
+    return Math.max(0, Math.min(1, signal));
+  }
+
+  /**
+   * Calculate confidence based on data quality
+   */
+  private calculateDataConfidence(prices: PriceData[]): number {
+    if (prices.length === 0) return 0;
+    
+    const now = Date.now();
+    let totalConfidence = 0;
+    
+    for (const price of prices) {
+      // Data freshness factor
+      const age = now - price.timestamp;
+      const freshnessFactor = Math.max(0, 1 - (age / 5000)); // 5 second max age
+      
+      // Data completeness factor
+      const requiredFields = ['best_bid', 'best_ask', 'mid_price'];
+      const completeness = requiredFields.filter(field => 
+        price[field as keyof PriceData] && price[field as keyof PriceData] > 0
+      ).length / requiredFields.length;
+      
+      // Exchange reliability factor (simplified)
+      const reliabilityFactors: Record<string, number> = {
+        binance: 0.95,
+        coinbase: 0.90,
+        kraken: 0.85
+      };
+      const reliabilityFactor = reliabilityFactors[price.exchange] || 0.7;
+      
+      totalConfidence += freshnessFactor * completeness * reliabilityFactor;
+    }
+    
+    // Average confidence across all price sources
+    const baseConfidence = totalConfidence / prices.length;
+    
+    // Bonus for having multiple exchanges
+    const diversityBonus = Math.min(0.2, (prices.length - 1) * 0.1);
+    
+    return Math.max(0.1, Math.min(1, baseConfidence + diversityBonus));
+  }
+
+  /**
+   * Schedule reconnection for failed exchange
+   */
+  private scheduleReconnect(exchange: string): void {
+    // Clear existing timeout
+    const existingTimeout = this.reconnectTimeouts.get(exchange);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+    }
+    
+    // Schedule reconnection with exponential backoff
+    const reconnectDelay = Math.min(30000, 1000 * Math.pow(2, this.errorCount)); // Max 30 seconds
+    
+    const timeout = setTimeout(async () => {
+      console.log(`Attempting to reconnect to ${exchange}...`);
+      await this.connectToExchange(exchange);
+    }, reconnectDelay);
+    
+    this.reconnectTimeouts.set(exchange, timeout);
+  }
+
+  /**
+   * Get last update times for each exchange
+   */
+  private getLastUpdateTimes(): Record<string, number> {
+    const updateTimes: Record<string, number> = {};
+    
+    for (const [key, price] of this.priceData) {
+      updateTimes[key] = price.timestamp;
+    }
+    
+    return updateTimes;
+  }
+
+  /**
+   * Get price summary for debugging
+   */
+  getPriceSummary(): string {
+    const prices = this.getLatestPrices();
+    if (prices.length === 0) return 'No price data available';
+    
+    const summaries = prices.map(p => 
+      `${p.exchange} ${p.pair}: $${p.mid_price.toFixed(2)} (${p.current_spread_pct?.toFixed(3)}%)`
+    );
+    
+    return summaries.join(', ');
+  }
+
+  /**
+   * Cleanup on agent stop
    */
   async stop(): Promise<void> {
     // Close all WebSocket connections
@@ -703,45 +928,33 @@ export class PriceAgent extends BaseAgent {
       }
     }
     
-    this.exchanges.clear();
-    this.priceData.clear();
-    this.orderBooks.clear();
-    this.priceHistory.clear();
-    
-    await super.stop();
-  }
-
-  /**
-   * Get price summary for debugging
-   */
-  getPriceSummary(): string {
-    const summaries: string[] = [];
-    
-    for (const [key, data] of this.priceData) {
-      const spread = ((data.best_ask - data.best_bid) / data.mid_price * 100).toFixed(3);
-      const age = ((Date.now() - data.timestamp) / 1000).toFixed(1);
-      summaries.push(`${key}: $${data.mid_price.toFixed(2)} (${spread}%, ${age}s old)`);
+    // Clear reconnect timers
+    for (const timeout of this.reconnectTimeouts.values()) {
+      clearTimeout(timeout);
     }
     
-    return summaries.length > 0 ? summaries.join(', ') : 'No price data available';
+    this.exchanges.clear();
+    this.reconnectTimeouts.clear();
+    
+    await super.stop();
   }
 }
 
 /**
  * Factory function to create PriceAgent with config
  */
-export function createPriceAgent(): PriceAgent {
+export function createPriceAgent(apiKeys?: Map<string, { key: string; secret: string }>): PriceAgent {
   const config: AgentConfig = {
     name: 'price',
     enabled: true,
-    polling_interval_ms: 1000, // 1 second for aggregation
-    confidence_min: 0.6,
+    polling_interval_ms: 100, // Very frequent for price data
+    confidence_min: 0.7,
     data_age_max_ms: 5000, // 5 seconds max age
     retry_attempts: 3,
     retry_backoff_ms: 1000
   };
 
-  return new PriceAgent(config);
+  return new PriceAgent(config, apiKeys);
 }
 
 // Export for testing
