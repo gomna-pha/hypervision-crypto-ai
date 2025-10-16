@@ -1,0 +1,27 @@
+# GitHub Pages Configuration
+title: Gomna AI Trading & Payment Platform
+description: Institutional Quantitative Trading with Comprehensive Payment Processing
+theme: null
+plugins: []
+
+# Exclude files from processing
+exclude:
+  - node_modules
+  - package.json
+  - package-lock.json
+  - supervisord.conf
+  - server.js
+  - api-integration.js
+  - ecosystem.config.js
+  - .git
+  - .github
+  - README.md
+  - MIT_PRESENTATION.md
+  - PLATFORM_VERIFICATION.md
+
+# Include specific files  
+include:
+  - index.html
+
+# Force rebuild
+github: [metadata]

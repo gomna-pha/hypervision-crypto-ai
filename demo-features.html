@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gomna AI - Feature Demonstration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen p-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold bg-gradient-to-r from-amber-600 to-amber-800 bg-clip-text text-transparent">
+                        Gomna AI Trading Platform
+                    </h1>
+                    <p class="text-gray-600 mt-2">Feature Demonstration & API Connection Test</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm text-gray-500">Version 2.0.0</p>
+                    <p class="text-xs text-green-600 font-semibold">✅ Production Ready</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Features Demo -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!-- API Connection Demo -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-green-100 rounded-lg">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                    </span>
+                    API Connection Fixed
+                </h2>
+                
+                <div class="space-y-4">
+                    <!-- Demo Exchange Selection -->
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">Exchange</label>
+                        <select id="demo-exchange" class="w-full mt-1 px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="demo">Demo Mode (No API Required)</option>
+                            <option value="binance">Binance</option>
+                            <option value="coinbase">Coinbase Pro</option>
+                        </select>
+                    </div>
+                    
+                    <!-- API Key Input with Toggle -->
+                    <div>
+                        <label class="text-sm font-semibold text-gray-700">API Key</label>
+                        <div class="relative">
+                            <input type="password" id="demo-api-key" 
+                                   placeholder="Paste your API Key here" 
+                                   class="w-full mt-1 px-3 py-2 pr-10 border border-gray-300 rounded-lg">
+                            <button onclick="togglePassword('demo-api-key', this)" 
+                                    class="absolute right-2 top-3 text-gray-500 hover:text-gray-700">
+                                <i data-lucide="eye" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Status Indicator -->
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span class="text-sm font-medium">Connection Status:</span>
+                        <span id="demo-status" class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">
+                            ✅ UI Functional
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Checklist -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <span class="p-2 bg-blue-100 rounded-lg">
+                        <i data-lucide="list-checks" class="w-5 h-5 text-blue-600"></i>
+                    </span>
+                    Completed Features
+                </h2>
+                
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-medium">Password Toggle Buttons</span>
+                            <p class="text-xs text-gray-500">Click eye icon to show/hide credentials</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-medium">Placeholder Text Visible</span>
+                            <p class="text-xs text-gray-500">Clear instructions in input fields</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-medium">Demo Mode Auto-Config</span>
+                            <p class="text-xs text-gray-500">Disables inputs when not needed</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-medium">Loading States</span>
+                            <p class="text-xs text-gray-500">Visual feedback during connection</p>
+                        </div>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-green-500 mt-0.5"></i>
+                        <div>
+                            <span class="font-medium">Notification System</span>
+                            <p class="text-xs text-gray-500">Success/error messages displayed</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Live Demo Section -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Interactive Demo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="showNotification('success')" 
+                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">
+                    Test Success Notification
+                </button>
+                <button onclick="showNotification('error')" 
+                        class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    Test Error Notification
+                </button>
+                <button onclick="showNotification('info')" 
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    Test Info Notification
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Quick Access</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <a href="index.html" class="p-4 bg-gradient-to-r from-amber-100 to-amber-200 rounded-lg hover:shadow-md transition-shadow">
+                    <i data-lucide="home" class="w-6 h-6 text-amber-700 mb-2"></i>
+                    <p class="font-semibold text-amber-900">Main Platform</p>
+                    <p class="text-xs text-amber-700">Full application</p>
+                </a>
+                <a href="test-api-ui.html" class="p-4 bg-gradient-to-r from-green-100 to-green-200 rounded-lg hover:shadow-md transition-shadow">
+                    <i data-lucide="check-square" class="w-6 h-6 text-green-700 mb-2"></i>
+                    <p class="font-semibold text-green-900">Test Results</p>
+                    <p class="text-xs text-green-700">Verification page</p>
+                </a>
+                <a href="#" onclick="alert('Repository is public. Make it private for production use.')" class="p-4 bg-gradient-to-r from-purple-100 to-purple-200 rounded-lg hover:shadow-md transition-shadow">
+                    <i data-lucide="github" class="w-6 h-6 text-purple-700 mb-2"></i>
+                    <p class="font-semibold text-purple-900">GitHub Repo</p>
+                    <p class="text-xs text-purple-700">Source code</p>
+                </a>
+                <a href="DEPLOYMENT_STATUS.md" class="p-4 bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg hover:shadow-md transition-shadow">
+                    <i data-lucide="file-text" class="w-6 h-6 text-blue-700 mb-2"></i>
+                    <p class="font-semibold text-blue-900">Documentation</p>
+                    <p class="text-xs text-blue-700">Status & guides</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Toggle password visibility
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                input.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+
+        // Show notification
+        function showNotification(type) {
+            const messages = {
+                success: 'API connected successfully!',
+                error: 'Connection failed. Please check credentials.',
+                info: 'Demo mode activated - no API required.'
+            };
+
+            const colors = {
+                success: 'bg-green-100 text-green-800 border-green-200',
+                error: 'bg-red-100 text-red-800 border-red-200',
+                info: 'bg-blue-100 text-blue-800 border-blue-200'
+            };
+
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg border ${colors[type]} z-50 max-w-md`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : 'info'}" class="w-5 h-5"></i>
+                    <span class="font-medium">${messages[type]}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transition = 'opacity 0.5s';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+
+        // Demo exchange change handler
+        document.getElementById('demo-exchange').addEventListener('change', function() {
+            const apiInput = document.getElementById('demo-api-key');
+            const isDemoMode = this.value === 'demo';
+            
+            apiInput.disabled = isDemoMode;
+            apiInput.placeholder = isDemoMode ? 'Not required for demo mode' : 'Paste your API Key here';
+            if (isDemoMode) apiInput.value = '';
+        });
+    </script>
+</body>
+</html>

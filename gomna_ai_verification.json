@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-09T19:10:02.693189",
+  "data_hashes": {
+    "BTC-USD": "100e77cf",
+    "ETH-USD": "834efb41",
+    "SPY": "7c8e48ad",
+    "GLD": "b14ecb01"
+  },
+  "total_data_points": 8246,
+  "training_accuracy": 0.912,
+  "validation_accuracy": 0.873,
+  "sharpe_ratio": 2.34,
+  "win_rate": 0.738,
+  "verified": true
+}

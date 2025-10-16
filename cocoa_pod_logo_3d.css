@@ -1,0 +1,524 @@
+/**
+ * GOMNA 3D COCOA POD LOGO
+ * Inspired by cocoa pod with seeds inside - organic growth concept
+ * Advanced CSS 3D rendering with realistic pod structure
+ */
+
+.gomna-logo-container {
+    perspective: 1200px;
+    display: inline-block;
+    margin: 15px;
+    filter: drop-shadow(0 10px 25px rgba(139, 69, 19, 0.3));
+    position: relative;
+}
+
+.gomna-logo-3d {
+    position: relative;
+    width: 60px;
+    height: 120px;
+    transform-style: preserve-3d;
+    animation: cocoa-pod-sway 6s ease-in-out infinite;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.gomna-logo-3d:hover {
+    transform: rotateY(25deg) rotateX(10deg) scale(1.15);
+    animation-play-state: paused;
+}
+
+/* Cocoa Pod Outer Shell (Exocarp) - Anatomically correct football shape */
+.cocoa-pod-shell {
+    position: absolute;
+    width: 60px;
+    height: 120px;
+    background: linear-gradient(180deg, 
+        #8B4513 0%,     /* Saddle brown - narrower top */
+        #A0522D 20%,    /* Sienna */
+        #CD853F 40%,    /* Peru - widest middle */
+        #D2691E 60%,    /* Chocolate */
+        #A0522D 80%,    /* Sienna */
+        #8B4513 100%    /* Saddle brown - wider bottom */
+    );
+    /* Football shape: narrower top (25px) to wider bottom (30px) */
+    border-radius: 25px 25px 30px 30px / 15px 15px 25px 25px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+    transform-origin: center center;
+    box-shadow: 
+        0 12px 24px rgba(139, 69, 19, 0.4),
+        inset 0 3px 6px rgba(255, 255, 255, 0.1),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.2),
+        inset 2px 0 4px rgba(0, 0, 0, 0.15),
+        inset -2px 0 4px rgba(255, 255, 255, 0.05);
+    border: 1px solid #654321;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+/* Longitudinal ridges - characteristic of real cocoa pods */
+.cocoa-pod-shell::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        /* Central ridge */
+        linear-gradient(0deg, transparent 48%, rgba(101, 67, 33, 0.8) 49%, rgba(139, 69, 19, 0.6) 50%, rgba(101, 67, 33, 0.8) 51%, transparent 52%),
+        /* Left ridge */
+        linear-gradient(0deg, transparent 23%, rgba(101, 67, 33, 0.6) 24%, rgba(139, 69, 19, 0.4) 25%, rgba(101, 67, 33, 0.6) 26%, transparent 27%),
+        /* Right ridge */
+        linear-gradient(0deg, transparent 73%, rgba(101, 67, 33, 0.6) 74%, rgba(139, 69, 19, 0.4) 75%, rgba(101, 67, 33, 0.6) 76%, transparent 77%),
+        /* Far left ridge */
+        linear-gradient(0deg, transparent 8%, rgba(101, 67, 33, 0.4) 9%, rgba(139, 69, 19, 0.3) 10%, rgba(101, 67, 33, 0.4) 11%, transparent 12%),
+        /* Far right ridge */
+        linear-gradient(0deg, transparent 88%, rgba(101, 67, 33, 0.4) 89%, rgba(139, 69, 19, 0.3) 90%, rgba(101, 67, 33, 0.4) 91%, transparent 92%);
+    border-radius: 25px 25px 30px 30px / 15px 15px 25px 25px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+    opacity: 0.8;
+}
+
+/* Surface texture between ridges */
+.cocoa-pod-shell::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 30% 20%, rgba(205, 133, 63, 0.3) 1px, transparent 2px),
+        radial-gradient(circle at 70% 30%, rgba(160, 82, 45, 0.4) 1px, transparent 2px),
+        radial-gradient(circle at 40% 70%, rgba(139, 69, 19, 0.3) 1px, transparent 2px),
+        radial-gradient(circle at 80% 60%, rgba(210, 105, 30, 0.2) 1px, transparent 2px);
+    background-size: 20px 20px, 25px 25px, 15px 15px, 30px 30px;
+    border-radius: 25px 25px 30px 30px / 15px 15px 25px 25px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+    opacity: 0.6;
+}
+
+/* Pod interior cut-away reveal - anatomically correct proportions */
+.pod-interior {
+    position: absolute;
+    top: 15px;
+    left: 8px;
+    width: 44px;
+    height: 90px;
+    background: linear-gradient(180deg,
+        #F5E6D3 0%,     /* Creamy interior */
+        #E6D7C5 25%,    /* Light tan */
+        #DDD0BC 50%,    /* Tan */
+        #D4C7B3 75%,    /* Medium tan */
+        #CBB8A5 100%    /* Darker tan */
+    );
+    /* Interior follows pod shape - narrower top, wider bottom */
+    border-radius: 18px 18px 22px 22px / 12px 12px 20px 20px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+    border: 1.5px solid #D2691E;
+    overflow: hidden;
+    z-index: 2;
+    box-shadow: 
+        inset 0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 -2px 4px rgba(255, 255, 255, 0.3);
+    transition: all 0.4s ease;
+}
+
+/* Central Placenta (spine) - runs vertically through pod */
+.pod-placenta {
+    position: absolute;
+    top: 3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 84px;
+    background: linear-gradient(180deg,
+        #8B7355 0%,
+        #A68B5B 20%,
+        #C4A373 40%,
+        #A68B5B 60%,
+        #8B7355 80%,
+        #6B5B45 100%
+    );
+    border-radius: 1.5px;
+    z-index: 3;
+    box-shadow: 
+        0 0 2px rgba(0, 0, 0, 0.4),
+        inset 0 1px 1px rgba(255, 255, 255, 0.2),
+        inset 0 -1px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Cocoa Seeds/Beans - arranged in rows around placenta - smaller for standard size */
+.cocoa-seed {
+    position: absolute;
+    width: 6px;
+    height: 9px;
+    background: linear-gradient(135deg,
+        #4A4A4A 0%,     /* Dark gray */
+        #6B4423 25%,    /* Dark brown */
+        #8B4513 50%,    /* Saddle brown */
+        #4A4A4A 100%    /* Dark gray */
+    );
+    border-radius: 3px 3px 4.5px 4.5px;
+    border: 0.5px solid #2F1B0C;
+    z-index: 4;
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.4),
+        inset 0 0.5px 1px rgba(255, 255, 255, 0.1);
+    animation: seed-shimmer 4s ease-in-out infinite;
+    transition: all 0.3s ease;
+}
+
+/* Seed positioning - arranged in natural rows around placenta - fitted to anatomical pod shape */
+.cocoa-seed:nth-child(1) { top: 8px; left: 12px; transform: rotate(-5deg); animation-delay: 0.2s; }
+.cocoa-seed:nth-child(2) { top: 8px; left: 24px; transform: rotate(3deg); animation-delay: 0.4s; }
+.cocoa-seed:nth-child(3) { top: 8px; left: 32px; transform: rotate(-8deg); animation-delay: 0.6s; }
+.cocoa-seed:nth-child(4) { top: 18px; left: 10px; transform: rotate(7deg); animation-delay: 0.8s; }
+.cocoa-seed:nth-child(5) { top: 18px; left: 20px; transform: rotate(-2deg); animation-delay: 1.0s; }
+.cocoa-seed:nth-child(6) { top: 18px; left: 28px; transform: rotate(4deg); animation-delay: 1.2s; }
+.cocoa-seed:nth-child(7) { top: 18px; left: 36px; transform: rotate(-6deg); animation-delay: 1.4s; }
+.cocoa-seed:nth-child(8) { top: 28px; left: 8px; transform: rotate(2deg); animation-delay: 1.6s; }
+.cocoa-seed:nth-child(9) { top: 28px; left: 18px; transform: rotate(-4deg); animation-delay: 1.8s; }
+.cocoa-seed:nth-child(10) { top: 28px; left: 26px; transform: rotate(6deg); animation-delay: 2.0s; }
+.cocoa-seed:nth-child(11) { top: 28px; left: 34px; transform: rotate(-3deg); animation-delay: 2.2s; }
+.cocoa-seed:nth-child(12) { top: 38px; left: 10px; transform: rotate(5deg); animation-delay: 2.4s; }
+.cocoa-seed:nth-child(13) { top: 38px; left: 22px; transform: rotate(-7deg); animation-delay: 2.6s; }
+.cocoa-seed:nth-child(14) { top: 38px; left: 32px; transform: rotate(1deg); animation-delay: 2.8s; }
+.cocoa-seed:nth-child(15) { top: 48px; left: 12px; transform: rotate(-5deg); animation-delay: 3.0s; }
+.cocoa-seed:nth-child(16) { top: 48px; left: 26px; transform: rotate(4deg); animation-delay: 3.2s; }
+.cocoa-seed:nth-child(17) { top: 58px; left: 18px; transform: rotate(-2deg); animation-delay: 3.4s; }
+
+/* Pulp/Mucilage around seeds - wet, sticky appearance - fitted to anatomical shape */
+.pod-pulp {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 25% 30%, rgba(255, 255, 255, 0.4) 1.5px, transparent 2.5px),
+        radial-gradient(circle at 60% 45%, rgba(255, 255, 255, 0.3) 1px, transparent 2px),
+        radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.2) 1.5px, transparent 2.5px),
+        radial-gradient(ellipse at center,
+            rgba(245, 230, 211, 0.7) 0%,
+            rgba(230, 215, 197, 0.5) 40%,
+            rgba(220, 200, 180, 0.3) 70%,
+            transparent 85%
+        );
+    background-size: 12px 12px, 16px 16px, 14px 14px, 100% 100%;
+    border-radius: 18px 18px 22px 22px / 12px 12px 20px 20px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+    z-index: 3;
+    animation: pulp-shimmer 5s ease-in-out infinite;
+}
+
+/* GOMNA Brand Text - Organic Typography */
+.logo-brand-text {
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: #8B4513;
+    text-shadow: 
+        1px 1px 0 #CD853F,
+        2px 2px 0 #A0522D,
+        3px 3px 6px rgba(0, 0, 0, 0.3),
+        0 0 12px rgba(139, 69, 19, 0.2);
+    letter-spacing: 2px;
+    z-index: 10;
+    animation: brand-glow 4s ease-in-out infinite alternate;
+}
+
+/* Natural swaying animation like pod on tree */
+@keyframes cocoa-pod-sway {
+    0%, 100% { 
+        transform: translateY(0px) rotateZ(0deg) rotateY(0deg); 
+    }
+    25% { 
+        transform: translateY(-3px) rotateZ(2deg) rotateY(3deg); 
+    }
+    50% { 
+        transform: translateY(-1px) rotateZ(0deg) rotateY(0deg); 
+    }
+    75% { 
+        transform: translateY(-4px) rotateZ(-2deg) rotateY(-3deg); 
+    }
+}
+
+/* Seed shimmer animation */
+@keyframes seed-shimmer {
+    0% { 
+        box-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.4),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+    50% { 
+        box-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.4),
+            inset 0 1px 1px rgba(255, 255, 255, 0.3),
+            0 0 4px rgba(139, 69, 19, 0.2);
+    }
+    100% { 
+        box-shadow: 
+            0 1px 2px rgba(0, 0, 0, 0.4),
+            inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+}
+
+@keyframes pulp-shimmer {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 0.9; }
+}
+
+@keyframes brand-glow {
+    0% {
+        text-shadow: 
+            1px 1px 0 #CD853F,
+            2px 2px 0 #A0522D,
+            3px 3px 6px rgba(0, 0, 0, 0.3),
+            0 0 12px rgba(139, 69, 19, 0.2);
+    }
+    100% {
+        text-shadow: 
+            1px 1px 0 #CD853F,
+            2px 2px 0 #A0522D,
+            3px 3px 6px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(139, 69, 19, 0.4),
+            0 0 30px rgba(205, 133, 63, 0.2);
+    }
+}
+
+/* Cross-section reveal on hover - anatomically correct */
+.gomna-logo-3d:hover .cocoa-pod-shell {
+    transform: translateX(-12px);
+    border-radius: 25px 8px 8px 30px / 15px 8px 8px 25px;
+    clip-path: ellipse(40% 60% at 40% 50%);
+}
+
+.gomna-logo-3d:hover .pod-interior {
+    opacity: 1;
+    transform: translateX(6px);
+}
+
+.gomna-logo-3d:hover .cocoa-seed {
+    transform: scale(1.1) !important;
+    filter: brightness(1.2);
+}
+
+/* Large version for header - maintaining anatomical proportions */
+.gomna-logo-large {
+    width: 90px;
+    height: 180px;
+    margin: 25px;
+}
+
+.gomna-logo-large .cocoa-pod-shell {
+    width: 90px;
+    height: 180px;
+    border-radius: 38px 38px 45px 45px / 23px 23px 38px 38px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+}
+
+.gomna-logo-large .pod-interior {
+    top: 22px;
+    left: 12px;
+    width: 66px;
+    height: 135px;
+    border-radius: 27px 27px 33px 33px / 18px 18px 30px 30px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+}
+
+.gomna-logo-large .pod-placenta {
+    width: 5px;
+    height: 126px;
+    top: 5px;
+    border-radius: 2.5px;
+}
+
+.gomna-logo-large .cocoa-seed {
+    width: 9px;
+    height: 13.5px;
+    border-radius: 4.5px 4.5px 6.75px 6.75px;
+}
+
+.gomna-logo-large .logo-brand-text {
+    font-size: 18px;
+    bottom: -35px;
+    letter-spacing: 3px;
+}
+
+/* Small version for favicon/compact areas - anatomically correct */
+.gomna-logo-small {
+    width: 40px;
+    height: 80px;
+    margin: 8px;
+}
+
+.gomna-logo-small .cocoa-pod-shell {
+    width: 40px;
+    height: 80px;
+    border-radius: 17px 17px 20px 20px / 10px 10px 17px 17px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+}
+
+.gomna-logo-small .pod-interior {
+    top: 10px;
+    left: 5px;
+    width: 30px;
+    height: 60px;
+    border-radius: 12px 12px 15px 15px / 8px 8px 13px 13px;
+    clip-path: ellipse(50% 60% at 50% 50%);
+}
+
+.gomna-logo-small .cocoa-seed {
+    width: 4px;
+    height: 6px;
+    border-radius: 2px 2px 3px 3px;
+}
+
+.gomna-logo-small .pod-placenta {
+    width: 2px;
+    height: 56px;
+    top: 2px;
+}
+
+.gomna-logo-small .logo-brand-text {
+    font-size: 8px;
+    bottom: -15px;
+}
+
+/* Interactive effects */
+.gomna-logo-3d:active {
+    transform: rotateY(25deg) rotateX(10deg) scale(0.9);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gomna-logo-large {
+        width: 90px;
+        height: 140px;
+    }
+    
+    .gomna-logo-large .cocoa-pod-shell {
+        width: 90px;
+        height: 140px;
+    }
+    
+    .gomna-logo-large .logo-brand-text {
+        font-size: 14px;
+    }
+}
+
+/* Premium organic effects */
+.gomna-logo-premium {
+    filter: 
+        drop-shadow(0 15px 30px rgba(139, 69, 19, 0.4))
+        drop-shadow(0 5px 15px rgba(210, 105, 30, 0.2));
+}
+
+.gomna-logo-premium .cocoa-pod-shell {
+    background: linear-gradient(135deg, 
+        #A0522D 0%,
+        #CD853F 25%,
+        #DEB887 50%,
+        #D2691E 75%,
+        #8B4513 100%
+    );
+}
+
+.gomna-logo-premium .cocoa-seed {
+    background: linear-gradient(135deg,
+        #654321 0%,
+        #8B4513 25%,
+        #A0522D 50%,
+        #CD853F 65%,
+        #6B4423 100%
+    );
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.5),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        0 0 6px rgba(139, 69, 19, 0.3),
+        0 0 12px rgba(205, 133, 63, 0.1);
+}
+
+/* Trademark symbol */
+.logo-trademark {
+    position: absolute;
+    top: -5px;
+    right: -8px;
+    font-size: 10px;
+    color: #8B4513;
+    font-weight: bold;
+    z-index: 15;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+}
+
+/* Environmental lighting effects */
+.gomna-logo-container::before {
+    content: '';
+    position: absolute;
+    top: -20px;
+    left: -20px;
+    right: -20px;
+    bottom: -20px;
+    background: radial-gradient(ellipse at top left,
+        rgba(255, 223, 186, 0.2) 0%,
+        rgba(205, 133, 63, 0.1) 40%,
+        transparent 70%
+    );
+    border-radius: 50%;
+    z-index: -1;
+    animation: ambient-light 8s ease-in-out infinite;
+}
+
+@keyframes ambient-light {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+}
+
+/* Add depth with multiple shadow layers */
+.gomna-logo-container {
+    filter: 
+        drop-shadow(0 10px 25px rgba(139, 69, 19, 0.3))
+        drop-shadow(0 5px 15px rgba(160, 82, 45, 0.2))
+        drop-shadow(0 20px 40px rgba(101, 67, 33, 0.1));
+}
+
+/* Large seed positioning - fitted to anatomical pod shape */
+.gomna-logo-large .cocoa-seed:nth-child(1) { top: 15px; left: 18px; transform: rotate(-8deg); }
+.gomna-logo-large .cocoa-seed:nth-child(2) { top: 15px; left: 36px; transform: rotate(5deg); }
+.gomna-logo-large .cocoa-seed:nth-child(3) { top: 15px; left: 48px; transform: rotate(-12deg); }
+.gomna-logo-large .cocoa-seed:nth-child(4) { top: 30px; left: 15px; transform: rotate(10deg); }
+.gomna-logo-large .cocoa-seed:nth-child(5) { top: 30px; left: 30px; transform: rotate(-3deg); }
+.gomna-logo-large .cocoa-seed:nth-child(6) { top: 30px; left: 42px; transform: rotate(7deg); }
+.gomna-logo-large .cocoa-seed:nth-child(7) { top: 30px; left: 54px; transform: rotate(-9deg); }
+.gomna-logo-large .cocoa-seed:nth-child(8) { top: 45px; left: 12px; transform: rotate(3deg); }
+.gomna-logo-large .cocoa-seed:nth-child(9) { top: 45px; left: 27px; transform: rotate(-6deg); }
+.gomna-logo-large .cocoa-seed:nth-child(10) { top: 45px; left: 39px; transform: rotate(8deg); }
+.gomna-logo-large .cocoa-seed:nth-child(11) { top: 45px; left: 51px; transform: rotate(-4deg); }
+.gomna-logo-large .cocoa-seed:nth-child(12) { top: 60px; left: 15px; transform: rotate(9deg); }
+.gomna-logo-large .cocoa-seed:nth-child(13) { top: 60px; left: 33px; transform: rotate(2deg); }
+.gomna-logo-large .cocoa-seed:nth-child(14) { top: 60px; left: 48px; transform: rotate(-7deg); }
+.gomna-logo-large .cocoa-seed:nth-child(15) { top: 75px; left: 24px; transform: rotate(6deg); }
+.gomna-logo-large .cocoa-seed:nth-child(16) { top: 90px; left: 30px; transform: rotate(-3deg); }
+.gomna-logo-large .cocoa-seed:nth-child(17) { top: 105px; left: 36px; transform: rotate(4deg); }
+
+/* Small seed positioning - fitted to anatomical pod shape */
+.gomna-logo-small .cocoa-seed:nth-child(1) { top: 8px; left: 8px; transform: rotate(-5deg); }
+.gomna-logo-small .cocoa-seed:nth-child(2) { top: 8px; left: 16px; transform: rotate(3deg); }
+.gomna-logo-small .cocoa-seed:nth-child(3) { top: 8px; left: 22px; transform: rotate(-8deg); }
+.gomna-logo-small .cocoa-seed:nth-child(4) { top: 15px; left: 6px; transform: rotate(7deg); }
+.gomna-logo-small .cocoa-seed:nth-child(5) { top: 15px; left: 13px; transform: rotate(-2deg); }
+.gomna-logo-small .cocoa-seed:nth-child(6) { top: 15px; left: 19px; transform: rotate(4deg); }
+.gomna-logo-small .cocoa-seed:nth-child(7) { top: 15px; left: 25px; transform: rotate(-6deg); }
+.gomna-logo-small .cocoa-seed:nth-child(8) { top: 22px; left: 5px; transform: rotate(2deg); }
+.gomna-logo-small .cocoa-seed:nth-child(9) { top: 22px; left: 12px; transform: rotate(-4deg); }
+.gomna-logo-small .cocoa-seed:nth-child(10) { top: 22px; left: 18px; transform: rotate(6deg); }
+.gomna-logo-small .cocoa-seed:nth-child(11) { top: 22px; left: 24px; transform: rotate(-3deg); }
+.gomna-logo-small .cocoa-seed:nth-child(12) { top: 30px; left: 7px; transform: rotate(5deg); }
+.gomna-logo-small .cocoa-seed:nth-child(13) { top: 30px; left: 15px; transform: rotate(-7deg); }
+.gomna-logo-small .cocoa-seed:nth-child(14) { top: 38px; left: 10px; transform: rotate(1deg); }
+.gomna-logo-small .cocoa-seed:nth-child(15) { top: 45px; left: 13px; transform: rotate(-5deg); }

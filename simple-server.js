@@ -5,7 +5,8 @@
 
 import { Hono } from 'hono';
 import { serve } from '@hono/node-server';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync } from 'fs';
+import { join, extname } from 'path';
 
 const app = new Hono();
 
@@ -103,100 +104,34 @@ const arbitrageData = {
   }
 };
 
-// Main dashboard route
-app.get('/', (c) => {
+// Professional platform route (main)
+app.get('/pro', (c) => {
   try {
-    const htmlContent = readFileSync('./src/index.tsx', 'utf8');
-    
-    // Extract just the HTML content from the template literal
-    const htmlMatch = htmlContent.match(/return c\.html\(`([\s\S]*?)`\)/);
-    if (htmlMatch) {
-      let html = htmlMatch[1];
-      
-      // Replace template variables with actual values
-      const clusteringMetrics = {
-        assetCount: 15,
-        avgCorrelation: '0.734',
-        stability: 'High',
-        stabilityClass: 'text-profit',
-        lastUpdate: new Date().toLocaleTimeString(),
-        agentPlatformStatus: {
-          operational: true,
-          healthyAgents: 6,
-          totalAgents: 6,
-          healthPercentage: 100
-        }
-      };
-      
-      const marketData = {
-        BTC: { price: 67234.56, change24h: 2.34 },
-        ETH: { price: 3456.08, change24h: 1.87 },
-        SOL: { price: 123.45, change24h: 4.56 }
-      };
-      
-      // Simple template replacement
-      html = html.replace(/\$\{clusteringMetrics\.assetCount\}/g, clusteringMetrics.assetCount);
-      html = html.replace(/\$\{clusteringMetrics\.avgCorrelation\}/g, clusteringMetrics.avgCorrelation);
-      html = html.replace(/\$\{clusteringMetrics\.stability\}/g, clusteringMetrics.stability);
-      html = html.replace(/\$\{clusteringMetrics\.stabilityClass\}/g, clusteringMetrics.stabilityClass);
-      html = html.replace(/\$\{clusteringMetrics\.lastUpdate\}/g, clusteringMetrics.lastUpdate);
-      
-      // Market data replacements
-      html = html.replace(/\$\{marketData\.BTC\.price\}/g, marketData.BTC.price);
-      html = html.replace(/\$\{marketData\.ETH\.price\}/g, marketData.ETH.price);
-      html = html.replace(/\$\{marketData\.SOL\.price\}/g, marketData.SOL.price);
-      
-      return c.html(html);
-    }
+    const htmlContent = readFileSync('./gomna-professional.html', 'utf8');
+    return c.html(htmlContent);
   } catch (error) {
-    console.error('Error serving HTML:', error);
+    console.error('Error serving professional HTML:', error);
+    return c.html('<h1>Professional version not found</h1>', 404);
   }
-  
-  // Fallback HTML if reading fails
-  return c.html(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Agent-Based LLM Arbitrage Platform</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    </head>
-    <body class="bg-gray-900 text-white">
-        <div class="container mx-auto p-6">
-            <h1 class="text-4xl font-bold mb-6 text-center">🤖 Agent-Based LLM Arbitrage Platform</h1>
-            <div class="bg-gray-800 rounded-lg p-6">
-                <h2 class="text-2xl font-semibold mb-4">Platform Status: <span class="text-green-400">ONLINE</span></h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">Agents Active</h3>
-                        <p class="text-3xl font-bold text-green-400">6/6</p>
-                    </div>
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">System Health</h3>
-                        <p class="text-3xl font-bold text-green-400">100%</p>
-                    </div>
-                    <div class="bg-gray-700 p-4 rounded">
-                        <h3 class="text-lg font-semibold">Predictions</h3>
-                        <p class="text-3xl font-bold text-blue-400">Live</p>
-                    </div>
-                </div>
-                <div class="space-y-2">
-                    <p><strong>API Endpoints Available:</strong></p>
-                    <ul class="list-disc ml-6 space-y-1">
-                        <li><a href="/api/arbitrage-platform/agents/status" class="text-blue-400 hover:underline">Agent Status</a></li>
-                        <li><a href="/api/arbitrage-platform/fusion/predict" class="text-blue-400 hover:underline">Fusion Prediction</a></li>
-                        <li><a href="/api/arbitrage-platform/overview" class="text-blue-400 hover:underline">Platform Overview</a></li>
-                        <li><a href="/api/arbitrage-platform/pipeline/full" class="text-blue-400 hover:underline">Full Pipeline</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </body>
-    </html>
-  `);
 });
+
+// Working demo route
+app.get('/demo', (c) => {
+  try {
+    const htmlContent = readFileSync('./gomna-demo-working.html', 'utf8');
+    return c.html(htmlContent);
+  } catch (error) {
+    console.error('Error serving demo HTML:', error);
+    return c.html('<h1>Demo not found</h1>', 404);
+  }
+});
+
+// Redirect root to professional version
+app.get('/', (c) => {
+  return c.redirect('/pro');
+});
+
+
 
 // Agent-based arbitrage platform API endpoints
 app.get('/api/arbitrage-platform/agents/status', (c) => {
@@ -359,31 +294,180 @@ app.get('/api/arbitrage-platform/pipeline/full', (c) => {
 });
 
 // Legacy API compatibility
-app.get('/api/arbitrage-opportunities', (c) => {
-  return c.json({
-    opportunities: [
-      {
-        id: 'agent_llm_arbitrage_1',
-        strategy: 'Agent-Based LLM Arbitrage',
-        pair: 'BTC/USDT',
-        buyExchange: 'binance',
-        sellExchange: 'coinbase',
-        spread: '0.85%',
-        estimatedProfit: '$875',
-        confidence: 87,
-        riskLevel: 'Medium',
-        executionTime: '7m',
-        status: 'active',
-        llmRationale: 'Multi-modal analysis suggests converge opportunity',
-        agentCount: 6
+// Static file serving
+app.get('/static/*', (c) => {
+  const filepath = c.req.path.replace('/static/', '');
+  const fullPath = join('./dist/static', filepath);
+  
+  try {
+    if (existsSync(fullPath)) {
+      const content = readFileSync(fullPath, 'utf8');
+      const ext = extname(fullPath);
+      
+      // Set appropriate content type and return with proper headers
+      if (ext === '.js') {
+        return c.text(content, 200, {'Content-Type': 'application/javascript'});
+      } else if (ext === '.css') {
+        return c.text(content, 200, {'Content-Type': 'text/css'});
+      } else {
+        return c.text(content);
       }
-    ],
-    summary: {
-      totalOpportunities: 1,
-      avgProfitPercent: '0.85',
-      highestProfit: '0.85'
+    }
+  } catch (error) {
+    console.error('Error serving static file:', error);
+  }
+  
+  return c.text('File not found', 404);
+});
+
+app.get('/api/arbitrage-opportunities', (c) => {
+  return c.json([
+    {
+      id: 'agent_llm_arbitrage_1',
+      strategy: 'Agent-Based LLM Arbitrage',
+      pair: 'BTC/USDT',
+      buyExchange: 'binance',
+      sellExchange: 'coinbase',
+      spread: '0.85%',
+      estimatedProfit: '$875',
+      confidence: 87,
+      riskLevel: 'Medium',
+      executionTime: '7m',
+      status: 'active',
+      llmRationale: 'Multi-modal analysis suggests converge opportunity',
+      agentCount: 6
     },
+    {
+      id: 'agent_llm_arbitrage_2',
+      strategy: 'Cross-Exchange ETH Arbitrage',
+      pair: 'ETH/USDT',
+      buyExchange: 'kraken',
+      sellExchange: 'binance',
+      spread: '0.65%',
+      estimatedProfit: '$445',
+      confidence: 92,
+      riskLevel: 'Low',
+      executionTime: '4m',
+      status: 'active',
+      llmRationale: 'Strong liquidity and low volatility conditions detected',
+      agentCount: 6
+    }
+  ]);
+});
+
+// Market data endpoint
+app.get('/api/market-data', (c) => {
+  return c.json({
+    BTC: { price: 67234.56, change24h: 2.34, volume: 35000000 },
+    ETH: { price: 3456.08, change24h: 1.87, volume: 22000000 },
+    SOL: { price: 123.45, change24h: 4.56, volume: 8500000 },
+    DOGE: { price: 0.15, change24h: -1.23, volume: 1200000 }
+  });
+});
+
+// Social sentiment endpoint
+app.get('/api/social-sentiment', (c) => {
+  return c.json({
+    overall: 72,
+    bitcoin: 78,
+    ethereum: 65,
+    trends: ['bullish', 'accumulation', 'breakout'],
+    sources: {
+      twitter: { sentiment: 0.72, volume: 8500 },
+      reddit: { sentiment: 0.68, volume: 3200 },
+      news: { sentiment: 0.75, volume: 245 }
+    }
+  });
+});
+
+// Economic indicators endpoint
+app.get('/api/economic-indicators', (c) => {
+  return c.json({
+    inflation: { value: 3.2, trend: 'up' },
+    unemployment: { value: 3.8, trend: 'stable' },
+    gdp: { value: 2.1, trend: 'up' },
+    fed_rate: { value: 5.25, trend: 'stable' },
+    vix: { value: 18.5, trend: 'down' }
+  });
+});
+
+// Order book endpoint
+app.get('/api/order-book/:symbol', (c) => {
+  return c.json({
+    symbol: c.req.param('symbol'),
+    bids: [
+      [67230, 2.5], [67225, 1.8], [67220, 3.2], [67215, 0.9], [67210, 4.1]
+    ],
+    asks: [
+      [67235, 1.9], [67240, 2.1], [67245, 1.5], [67250, 2.8], [67255, 1.2]
+    ],
     timestamp: new Date().toISOString()
+  });
+});
+
+// Candlestick data endpoint
+app.get('/api/candlestick/:symbol/:timeframe', (c) => {
+  const data = [];
+  const now = Date.now();
+  for (let i = 100; i >= 0; i--) {
+    const timestamp = now - i * 60000; // 1 minute intervals
+    const open = 67000 + Math.random() * 500;
+    const high = open + Math.random() * 200;
+    const low = open - Math.random() * 200;
+    const close = low + Math.random() * (high - low);
+    const volume = Math.random() * 1000000;
+    
+    data.push({
+      timestamp,
+      open: parseFloat(open.toFixed(2)),
+      high: parseFloat(high.toFixed(2)),
+      low: parseFloat(low.toFixed(2)),
+      close: parseFloat(close.toFixed(2)),
+      volume: parseFloat(volume.toFixed(2))
+    });
+  }
+  
+  return c.json(data);
+});
+
+// Asset universe endpoint
+app.get('/api/asset-universe', (c) => {
+  return c.json([
+    'BTC', 'ETH', 'SOL', 'ADA', 'DOT', 'AVAX', 'MATIC', 'LINK', 'UNI', 'AAVE',
+    'SUSHI', 'CRV', 'YFI', 'SNX', 'COMP', 'MKR', 'BAL', 'REN', 'KNC', '1INCH'
+  ]);
+});
+
+// Arbitrage templates endpoint
+app.get('/api/arbitrage-templates', (c) => {
+  return c.json([
+    {
+      id: 'spatial_arbitrage',
+      name: 'Spatial Arbitrage',
+      description: 'Cross-exchange price differences',
+      riskLevel: 'Low',
+      expectedReturn: '0.5-2.0%'
+    },
+    {
+      id: 'statistical_arbitrage',
+      name: 'Statistical Arbitrage',
+      description: 'Mean reversion strategies',
+      riskLevel: 'Medium',
+      expectedReturn: '1.0-3.5%'
+    }
+  ]);
+});
+
+// Multi-timeframe analysis endpoint
+app.get('/api/multi-timeframe-analysis/:symbol', (c) => {
+  return c.json({
+    symbol: c.req.param('symbol'),
+    timeframes: {
+      '1m': { trend: 'bullish', strength: 0.7 },
+      '5m': { trend: 'bullish', strength: 0.8 },
+      '15m': { trend: 'neutral', strength: 0.5 },
+      '1h': { trend: 'bullish', strength: 0.9 }
+    }
   });
 });
 

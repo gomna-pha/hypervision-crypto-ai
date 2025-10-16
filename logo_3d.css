@@ -1,0 +1,224 @@
+/**
+ * GOMNA 3D LOGO COMPONENT
+ * Based on blue oval GM trademark design
+ * Advanced CSS 3D rendering with animations
+ */
+
+.gomna-logo-container {
+    perspective: 1000px;
+    display: inline-block;
+    margin: 10px;
+}
+
+.gomna-logo-3d {
+    position: relative;
+    width: 80px;
+    height: 120px;
+    transform-style: preserve-3d;
+    animation: logo-float 4s ease-in-out infinite;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.gomna-logo-3d:hover {
+    transform: rotateY(15deg) rotateX(5deg) scale(1.1);
+    animation-play-state: paused;
+}
+
+/* Main oval shape - 3D extruded */
+.logo-oval {
+    position: absolute;
+    width: 80px;
+    height: 120px;
+    background: linear-gradient(135deg, 
+        #2563eb 0%,     /* Deep blue */
+        #3b82f6 25%,    /* Medium blue */
+        #60a5fa 50%,    /* Light blue */
+        #2563eb 100%    /* Deep blue */
+    );
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform-origin: center center;
+    box-shadow: 
+        0 8px 16px rgba(37, 99, 235, 0.3),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 3D depth layers for extrusion effect */
+.logo-oval::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background: linear-gradient(135deg, 
+        #1d4ed8 0%, 
+        #2563eb 50%, 
+        #3b82f6 100%
+    );
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: -1;
+    filter: blur(0.5px);
+}
+
+.logo-oval::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    right: 4px;
+    bottom: 4px;
+    background: linear-gradient(135deg, 
+        #1e40af 0%, 
+        #1d4ed8 100%
+    );
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: -2;
+    filter: blur(1px);
+}
+
+/* GM Letters - 3D extruded text */
+.logo-letters {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Arial Black', 'Helvetica Neue', sans-serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 
+        2px 2px 0 #1e40af,
+        4px 4px 0 #1e3a8a,
+        6px 6px 8px rgba(0, 0, 0, 0.3),
+        0 0 10px rgba(255, 255, 255, 0.2);
+    letter-spacing: -2px;
+    z-index: 10;
+    animation: letters-glow 3s ease-in-out infinite alternate;
+}
+
+/* Floating animation */
+@keyframes logo-float {
+    0%, 100% { 
+        transform: translateY(0px) rotateY(0deg); 
+    }
+    25% { 
+        transform: translateY(-5px) rotateY(5deg); 
+    }
+    50% { 
+        transform: translateY(-3px) rotateY(0deg); 
+    }
+    75% { 
+        transform: translateY(-7px) rotateY(-5deg); 
+    }
+}
+
+/* Glow animation for letters */
+@keyframes letters-glow {
+    0% { 
+        text-shadow: 
+            2px 2px 0 #1e40af,
+            4px 4px 0 #1e3a8a,
+            6px 6px 8px rgba(0, 0, 0, 0.3),
+            0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    100% { 
+        text-shadow: 
+            2px 2px 0 #1e40af,
+            4px 4px 0 #1e3a8a,
+            6px 6px 8px rgba(0, 0, 0, 0.3),
+            0 0 20px rgba(255, 255, 255, 0.4),
+            0 0 30px rgba(96, 165, 250, 0.2);
+    }
+}
+
+/* Large version for header */
+.gomna-logo-large {
+    width: 120px;
+    height: 180px;
+    margin: 20px;
+}
+
+.gomna-logo-large .logo-oval {
+    width: 120px;
+    height: 180px;
+}
+
+.gomna-logo-large .logo-letters {
+    font-size: 42px;
+}
+
+/* Small version for favicon/compact areas */
+.gomna-logo-small {
+    width: 40px;
+    height: 60px;
+    margin: 5px;
+}
+
+.gomna-logo-small .logo-oval {
+    width: 40px;
+    height: 60px;
+}
+
+.gomna-logo-small .logo-letters {
+    font-size: 14px;
+    letter-spacing: -1px;
+}
+
+/* Interactive hover effects */
+.gomna-logo-3d:active {
+    transform: rotateY(15deg) rotateX(5deg) scale(0.95);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .gomna-logo-large {
+        width: 80px;
+        height: 120px;
+    }
+    
+    .gomna-logo-large .logo-oval {
+        width: 80px;
+        height: 120px;
+    }
+    
+    .gomna-logo-large .logo-letters {
+        font-size: 28px;
+    }
+}
+
+/* Special effects for premium feel */
+.gomna-logo-premium {
+    filter: drop-shadow(0 10px 20px rgba(37, 99, 235, 0.3));
+}
+
+.gomna-logo-premium .logo-oval {
+    background: linear-gradient(135deg, 
+        #2563eb 0%,
+        #3b82f6 25%,
+        #60a5fa 50%,
+        #93c5fd 75%,
+        #2563eb 100%
+    );
+    position: relative;
+}
+
+.gomna-logo-premium .logo-oval::before {
+    background: radial-gradient(ellipse at top, 
+        rgba(255, 255, 255, 0.3) 0%,
+        transparent 70%
+    );
+}
+
+/* Trademark symbol */
+.logo-trademark {
+    position: absolute;
+    top: 5px;
+    right: -5px;
+    font-size: 8px;
+    color: #1e40af;
+    font-weight: bold;
+    z-index: 15;
+}

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA - Enhanced Platform Test</title>
+    <link rel="stylesheet" href="cream_brown_theme.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="apply_gomna_theme.js"></script>
+    <script src="gomna_enhanced_platform.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        .main-content {
+            padding: 120px 40px 40px 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .demo-section {
+            background: linear-gradient(135deg, #FAF7F0 0%, #F5E6D3 100%);
+            border: 2px solid #8B6F47;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .feature-card {
+            background: #FAF7F0;
+            border: 1px solid #D4C4A8;
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(107, 68, 35, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Logo and branding will be automatically added by JavaScript -->
+    
+    <div class="main-content">
+        <div class="demo-section">
+            <h1 style="text-align: center; color: #3E2723; font-size: 42px; margin-bottom: 10px;">
+                GOMNA Enhanced Platform
+            </h1>
+            <p style="text-align: center; color: #6B4423; font-size: 18px; margin-bottom: 30px;">
+                Real-Time Portfolio & Model Transparency Demo
+            </p>
+            
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3 style="color: #3E2723; margin-bottom: 15px;">✅ Fixed Logo Positioning</h3>
+                    <ul style="color: #6B4423; list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px;">• Logo in top-left corner (60x60px)</li>
+                        <li style="margin-bottom: 8px;">• GOMNA branding separate from logo</li>
+                        <li style="margin-bottom: 8px;">• No overlap with main content</li>
+                        <li style="margin-bottom: 8px;">• Click logo to select different designs</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3 style="color: #3E2723; margin-bottom: 15px;">📊 Real-Time Portfolio</h3>
+                    <ul style="color: #6B4423; list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px;">• Live portfolio value updates</li>
+                        <li style="margin-bottom: 8px;">• Holdings breakdown with changes</li>
+                        <li style="margin-bottom: 8px;">• Performance chart visualization</li>
+                        <li style="margin-bottom: 8px;">• 2-second refresh rate</li>
+                    </ul>
+                </div>
+                
+                <div class="feature-card">
+                    <h3 style="color: #3E2723; margin-bottom: 15px;">🤖 Model Transparency</h3>
+                    <ul style="color: #6B4423; list-style: none; padding: 0;">
+                        <li style="margin-bottom: 8px;">• Real-time accuracy metrics</li>
+                        <li style="margin-bottom: 8px;">• Live trading signals</li>
+                        <li style="margin-bottom: 8px;">• Feature importance display</li>
+                        <li style="margin-bottom: 8px;">• AI confidence levels</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2 style="color: #3E2723; margin-bottom: 20px;">Platform Features</h2>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                <div>
+                    <h3 style="color: #6B4423; margin-bottom: 15px;">Portfolio Dashboard (Bottom Right)</h3>
+                    <p style="color: #8B6F47; line-height: 1.6;">
+                        Look at the bottom-right corner to see the real-time portfolio dashboard. 
+                        It shows live updates of your portfolio value, individual holdings, and performance metrics.
+                        The values update every 2 seconds to simulate real market conditions.
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 style="color: #6B4423; margin-bottom: 15px;">Model Transparency (Bottom Left)</h3>
+                    <p style="color: #8B6F47; line-height: 1.6;">
+                        Check the bottom-left corner for the model transparency panel. 
+                        It displays the AI model's current accuracy, trading signals with confidence levels,
+                        and the top features being used for predictions.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #F5E6D3; border-radius: 10px;">
+                <h3 style="color: #3E2723; margin-bottom: 15px;">Interactive Elements</h3>
+                <ul style="color: #6B4423; line-height: 1.8;">
+                    <li><strong>Logo:</strong> Click the cocoa pod logo in the top-left to open the logo selector</li>
+                    <li><strong>Minimize Panels:</strong> Click the minus button on each panel to minimize/maximize</li>
+                    <li><strong>Hover Effects:</strong> Hover over panels to see elevation effects</li>
+                    <li><strong>Live Updates:</strong> Watch the values change in real-time</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="demo-section" style="background: linear-gradient(135deg, #D4AF37 0%, #CD7F32 100%);">
+            <h2 style="color: white; margin-bottom: 20px;">Color Scheme</h2>
+            <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+                <div style="text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #FAF7F0; border-radius: 10px; margin: 0 auto 10px;"></div>
+                    <span style="color: white; font-size: 12px;">Cream 100<br>#FAF7F0</span>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #F5E6D3; border-radius: 10px; margin: 0 auto 10px;"></div>
+                    <span style="color: white; font-size: 12px;">Cream 200<br>#F5E6D3</span>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #8B6F47; border-radius: 10px; margin: 0 auto 10px;"></div>
+                    <span style="color: white; font-size: 12px;">Brown 400<br>#8B6F47</span>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #5D4037; border-radius: 10px; margin: 0 auto 10px;"></div>
+                    <span style="color: white; font-size: 12px;">Brown 600<br>#5D4037</span>
+                </div>
+                <div style="text-align: center;">
+                    <div style="width: 80px; height: 80px; background: #3E2723; border-radius: 10px; margin: 0 auto 10px;"></div>
+                    <span style="color: white; font-size: 12px;">Brown 800<br>#3E2723</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Additional demo functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('GOMNA Enhanced Platform Loaded');
+            console.log('Real-time updates active');
+            
+            // Show notification
+            setTimeout(() => {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 100px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #8B6F47, #5D4037);
+                    color: #FAF7F0;
+                    padding: 15px 20px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    z-index: 10000;
+                    animation: slideIn 0.5s ease;
+                `;
+                notification.innerHTML = `
+                    <strong>✨ Platform Enhanced!</strong><br>
+                    <span style="font-size: 12px;">Check the corners for real-time panels</span>
+                `;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 5000);
+            }, 1000);
+        });
+        
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

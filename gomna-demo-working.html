@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA Trading Dashboard - Working Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .nav-item.active {
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            color: white;
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #2563eb 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg border-b border-blue-700 p-4">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2">GOMNA Trading Dashboard</h1>
+                    <p class="text-blue-200 text-lg">AI-powered arbitrage monitoring with real-time agent analysis</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="bg-blue-800 rounded-lg px-4 py-2 border border-green-400">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                            <span class="text-sm font-semibold text-blue-200">AI AGENTS ACTIVE</span>
+                        </div>
+                        <div class="text-xs text-blue-300">6/6 Agents Online</div>
+                    </div>
+                    <button id="agent-panel-btn" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all">
+                        <i class="fas fa-cogs mr-2"></i>Agent Panel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700 p-4">
+        <div class="container mx-auto">
+            <ul class="flex flex-wrap gap-2">
+                <li><button class="nav-item active px-4 py-2 rounded-lg transition-all" data-section="dashboard">DASHBOARD</button></li>
+                <li><button class="nav-item px-4 py-2 rounded-lg transition-all" data-section="arbitrage">AGENT ARBITRAGE</button></li>
+                <li><button class="nav-item px-4 py-2 rounded-lg transition-all" data-section="portfolio">PORTFOLIO</button></li>
+                <li><button class="nav-item px-4 py-2 rounded-lg transition-all" data-section="ai-assistant">AI ASSISTANT</button></li>
+                <li><button class="nav-item px-4 py-2 rounded-lg transition-all" data-section="backtesting">BACKTESTING</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-6">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section active">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">Market Feeds</h3>
+                    <div class="text-2xl font-bold text-green-400">LIVE</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">AI Analysis</h3>
+                    <div class="text-2xl font-bold text-blue-400">ACTIVE</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">Opportunities</h3>
+                    <div class="text-2xl font-bold text-yellow-400">12</div>
+                </div>
+                <div class="bg-gray-800 rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-2">AOS Score</h3>
+                    <div class="text-2xl font-bold text-purple-400">0.847</div>
+                </div>
+            </div>
+
+            <!-- Live Arbitrage Opportunities -->
+            <div class="bg-gray-800 rounded-lg p-6 mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-white flex items-center">
+                        <i class="fas fa-robot mr-3 text-blue-400 text-lg"></i>
+                        AI-Powered Arbitrage Opportunities
+                    </h3>
+                    <button id="run-analysis" class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:shadow-lg transition-all">
+                        <i class="fas fa-brain mr-2"></i>Run AI Analysis
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-400">ACTIVE</div>
+                        <div class="text-sm text-gray-300">AI Status</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-400">245ms</div>
+                        <div class="text-sm text-gray-300">Processing Time</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-yellow-400">87%</div>
+                        <div class="text-sm text-gray-300">AI Confidence</div>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-semibold text-white">BTC-USDT</h4>
+                                <p class="text-sm text-gray-300">Binance → Coinbase</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-400">0.85%</div>
+                                <div class="text-sm text-gray-300">AOS: 0.720</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-semibold text-white">ETH-USDT</h4>
+                                <p class="text-sm text-gray-300">Coinbase → Binance</p>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-400">0.65%</div>
+                                <div class="text-sm text-gray-300">AOS: 0.650</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agent Arbitrage Section -->
+        <div id="arbitrage" class="section">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-robot mr-3 text-blue-400"></i>
+                    Agent-Based LLM Arbitrage Platform
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">System Status</h3>
+                        <div class="text-3xl font-bold text-green-400">ONLINE</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">Total P&L</h3>
+                        <div class="text-3xl font-bold text-green-400">$4,260</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">Win Rate</h3>
+                        <div class="text-3xl font-bold text-blue-400">87%</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Agent Status</h3>
+                        <div class="space-y-2">
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>📊 Economic Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>😊 Sentiment Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>💰 Price Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>📈 Volume Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>🔄 Trade Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                            <div class="bg-gray-700 rounded-lg p-4 flex justify-between items-center">
+                                <span>📸 Image Agent</span>
+                                <span class="text-green-400">🟢 ACTIVE</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <h3 class="text-lg font-semibold">Performance Metrics</h3>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span>AOS Score:</span>
+                                    <span class="text-yellow-400 font-mono">0.847</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Processing Time:</span>
+                                    <span class="text-green-400 font-mono">245ms</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Confidence:</span>
+                                    <span class="text-blue-400 font-mono">87.3%</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Active Trades:</span>
+                                    <span class="text-white font-mono">3</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button id="execute-pipeline" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-lg transition-all">
+                            <i class="fas fa-play mr-2"></i>Execute Full Pipeline
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Portfolio Section -->
+        <div id="portfolio" class="section">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-6">Portfolio Overview</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">Total Value</h3>
+                        <div class="text-3xl font-bold text-green-400">$125,430</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">24h P&L</h3>
+                        <div class="text-3xl font-bold text-green-400">+$4,260</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <h3 class="text-lg font-semibold mb-2">Allocation</h3>
+                        <div class="text-3xl font-bold text-blue-400">75%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Assistant Section -->
+        <div id="ai-assistant" class="section">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-brain mr-3 text-purple-400"></i>
+                    GOMNA AI Assistant
+                </h2>
+                <div class="space-y-4">
+                    <div class="bg-gray-700 rounded-lg p-4">
+                        <p class="text-blue-200 mb-4">Welcome to your advanced trading assistant! I can help you with real-time market analysis, arbitrage evaluation, risk assessment, and trading strategy recommendations.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all">Market Analysis</button>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all">Risk Assessment</button>
+                            <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all">Arbitrage Strategy</button>
+                            <button class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-all">Portfolio Optimization</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backtesting Section -->
+        <div id="backtesting" class="section">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-chart-line mr-3 text-green-400"></i>
+                    Professional Backtesting Engine
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-blue-400">150+</div>
+                        <div class="text-sm text-gray-300">Total Assets</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-green-400">35+</div>
+                        <div class="text-sm text-gray-300">Risk Metrics</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-yellow-400">7</div>
+                        <div class="text-sm text-gray-300">Asset Classes</div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-6 text-center">
+                        <div class="text-3xl font-bold text-purple-400">10K+</div>
+                        <div class="text-sm text-gray-300">Monte Carlo</div>
+                    </div>
+                </div>
+                <button class="bg-gradient-to-r from-green-500 to-blue-500 text-white px-6 py-3 rounded-lg font-bold hover:shadow-lg transition-all">
+                    <i class="fas fa-play mr-2"></i>Run Enhanced Backtest
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Agent Control Modal -->
+    <div id="agent-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-800 rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between p-6 border-b border-gray-700">
+                    <div>
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <i class="fas fa-robot mr-3 text-blue-400"></i>
+                            Agent Control Panel
+                        </h3>
+                        <p class="text-gray-300 mt-1">AI-Powered Arbitrage Agent Management System</p>
+                    </div>
+                    <button id="close-modal" class="text-gray-400 hover:text-white text-2xl">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gray-700 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-green-400">ACTIVE</div>
+                            <div class="text-sm text-gray-300">System Status</div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-blue-400">6/6</div>
+                            <div class="text-sm text-gray-300">Active Agents</div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-yellow-400">0.847</div>
+                            <div class="text-sm text-gray-300">AOS Score</div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4 text-center">
+                            <div class="text-3xl font-bold text-white">245ms</div>
+                            <div class="text-sm text-gray-300">Processing Time</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <h4 class="text-lg font-semibold text-white">Agent Status Dashboard</h4>
+                            <div class="space-y-3">
+                                <div class="bg-gray-700 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-blue-400 font-semibold flex items-center">
+                                            <i class="fas fa-chart-line mr-2"></i>Economic Agent
+                                        </span>
+                                        <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500 text-white">ACTIVE</span>
+                                    </div>
+                                    <div class="text-sm text-gray-300 space-y-1">
+                                        <div>Inflation Rate: 3.2% ↑</div>
+                                        <div>GDP Growth: 2.1% ↑</div>
+                                        <div>Unemployment: 3.8% →</div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-700 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-blue-400 font-semibold flex items-center">
+                                            <i class="fas fa-smile mr-2"></i>Sentiment Agent
+                                        </span>
+                                        <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500 text-white">ACTIVE</span>
+                                    </div>
+                                    <div class="text-sm text-gray-300 space-y-1">
+                                        <div>Overall Sentiment: 72% Bullish</div>
+                                        <div>BTC Sentiment: 78% Positive</div>
+                                        <div>ETH Sentiment: 65% Neutral</div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-700 rounded-lg p-4">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-blue-400 font-semibold flex items-center">
+                                            <i class="fas fa-dollar-sign mr-2"></i>Price Agent
+                                        </span>
+                                        <span class="px-2 py-1 rounded text-xs font-semibold bg-green-500 text-white">ACTIVE</span>
+                                    </div>
+                                    <div class="text-sm text-gray-300 space-y-1">
+                                        <div>Price Feeds: 47 Active</div>
+                                        <div>Avg Spread: 0.02%</div>
+                                        <div>Data Quality: 98.7%</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <h5 class="font-semibold mb-3 text-blue-400 flex items-center">
+                                    <i class="fas fa-brain mr-2"></i>LLM Fusion Brain
+                                </h5>
+                                <div class="space-y-3">
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div class="flex justify-between">
+                                            <span>Predictions:</span>
+                                            <span class="text-blue-400 font-mono">1,247</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Confidence:</span>
+                                            <span class="text-green-400 font-mono">87.3%</span>
+                                        </div>
+                                    </div>
+                                    <button class="w-full bg-gradient-to-r from-green-500 to-blue-500 text-white py-2 rounded font-semibold hover:shadow-lg transition-all">
+                                        <i class="fas fa-brain mr-2"></i>Generate New Prediction
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <h5 class="font-semibold mb-3 text-blue-400 flex items-center">
+                                    <i class="fas fa-rocket mr-2"></i>Full Pipeline Execution
+                                </h5>
+                                <div class="space-y-3">
+                                    <div class="text-sm text-gray-300">
+                                        Execute the complete Agent-Based LLM Arbitrage pipeline:
+                                        Agent Data Collection → LLM Prediction → Decision Making
+                                    </div>
+                                    <button id="execute-full-pipeline" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:shadow-lg transition-all">
+                                        <i class="fas fa-play mr-2"></i>Execute Full Pipeline
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-700 rounded-lg p-4">
+                                <h5 class="font-semibold mb-3 text-blue-400">Latest Results</h5>
+                                <div id="pipeline-results" class="max-h-48 overflow-y-auto">
+                                    <div class="text-center text-gray-400 py-8">
+                                        <i class="fas fa-chart-line text-3xl mb-3 text-blue-400 opacity-50"></i>
+                                        <p>Execute pipeline to see detailed analysis results</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class GOMNADashboard {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.setupNavigation();
+                this.setupModal();
+                this.setupButtons();
+            }
+
+            setupNavigation() {
+                const navItems = document.querySelectorAll('.nav-item');
+                const sections = document.querySelectorAll('.section');
+
+                navItems.forEach(item => {
+                    item.addEventListener('click', () => {
+                        const sectionName = item.dataset.section;
+                        
+                        // Update active nav item
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        item.classList.add('active');
+                        
+                        // Show corresponding section
+                        sections.forEach(section => section.classList.remove('active'));
+                        document.getElementById(sectionName).classList.add('active');
+                    });
+                });
+            }
+
+            setupModal() {
+                const modal = document.getElementById('agent-modal');
+                const openBtn = document.getElementById('agent-panel-btn');
+                const closeBtn = document.getElementById('close-modal');
+
+                openBtn.addEventListener('click', () => {
+                    modal.classList.remove('hidden');
+                });
+
+                closeBtn.addEventListener('click', () => {
+                    modal.classList.add('hidden');
+                });
+
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            }
+
+            setupButtons() {
+                // Run AI Analysis button
+                document.getElementById('run-analysis').addEventListener('click', () => {
+                    this.showToast('AI Analysis initiated successfully!', 'success');
+                });
+
+                // Execute Pipeline button
+                document.getElementById('execute-pipeline').addEventListener('click', () => {
+                    this.showToast('Agent pipeline execution started!', 'success');
+                });
+
+                // Execute Full Pipeline button
+                document.getElementById('execute-full-pipeline').addEventListener('click', () => {
+                    const resultsDiv = document.getElementById('pipeline-results');
+                    resultsDiv.innerHTML = `
+                        <div class="space-y-3">
+                            <div class="bg-gray-600 rounded p-3">
+                                <div class="text-sm font-semibold text-blue-400 mb-2">Pipeline Execution Result</div>
+                                <div class="text-xs text-gray-300 space-y-1">
+                                    <div>AOS Score: <span class="text-yellow-400 font-mono">0.847</span></div>
+                                    <div>Confidence: <span class="text-green-400 font-mono">87.3%</span></div>
+                                    <div>Processing Time: <span class="text-blue-400 font-mono">245ms</span></div>
+                                    <div>Decision: <span class="text-blue-400 font-mono">BUY</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    this.showToast('Full pipeline executed successfully!', 'success');
+                });
+            }
+
+            showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `fixed top-4 right-4 z-[60] px-6 py-3 rounded-lg text-white font-semibold transition-all duration-300 transform translate-x-full`;
+                
+                switch(type) {
+                    case 'success':
+                        toast.classList.add('bg-green-600');
+                        break;
+                    case 'error':
+                        toast.classList.add('bg-red-600');
+                        break;
+                    default:
+                        toast.classList.add('bg-blue-600');
+                }
+                
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                
+                // Animate in
+                setTimeout(() => {
+                    toast.classList.remove('translate-x-full');
+                }, 100);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full');
+                    setTimeout(() => {
+                        document.body.removeChild(toast);
+                    }, 300);
+                }, 3000);
+            }
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            new GOMNADashboard();
+        });
+    </script>
+</body>
+</html>
