@@ -9,10 +9,15 @@
     "deploy": "npm run build && wrangler pages deploy dist --project-name webapp",
     "cf-typegen": "wrangler types --env-interface CloudflareBindings",
     "clean-port": "fuser -k 3000/tcp 2>/dev/null || true",
-    "test": "curl http://localhost:3000"
+    "test": "curl http://localhost:3000",
+    "arbitrage:demo": "node --loader ts-node/esm ./arbitrage/demo.ts",
+    "arbitrage:server": "node server-runner.js",
+    "arbitrage:test": "node --loader ts-node/esm ./arbitrage/demo.ts --test"
   },
   "dependencies": {
+    "@hono/node-server": "^1.19.5",
     "axios": "^1.12.2",
+    "canvas": "^3.2.0",
     "ccxt": "^4.5.11",
     "cors": "^2.8.5",
     "crypto-js": "^4.2.0",
@@ -24,6 +29,7 @@
     "node-cron": "^4.2.1",
     "redis": "^5.8.3",
     "sqlite3": "^5.1.7",
+    "ts-node": "^10.9.2",
     "uuid": "^13.0.0",
     "ws": "^8.18.3",
     "yaml": "^2.8.1"
