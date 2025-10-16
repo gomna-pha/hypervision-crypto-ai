@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOMNA AI Trading - Pricing Tiers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: {
+                            50: '#fefbf3',
+                            100: '#fdf6e3',
+                            200: '#f5e6d3',
+                            300: '#e8dcc7',
+                            400: '#d4c4a8',
+                            500: '#c0ac89',
+                            600: '#a08968',
+                            700: '#8b7355',
+                            800: '#6d5d48',
+                            900: '#5a4d3b'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #fdf6e3 0%, #f5e6d3 40%, #e8dcc7 100%);
+        }
+        
+        .pricing-tier-card {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .pricing-tier-card:hover {
+            transform: translateY(-8px);
+        }
+        
+        .payment-method-card {
+            transition: all 0.3s ease;
+        }
+        
+        .payment-method-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .pricing-tier-card {
+            animation: slideInUp 0.6s ease-out forwards;
+        }
+        
+        .pricing-tier-card:nth-child(1) { animation-delay: 0.1s; }
+        .pricing-tier-card:nth-child(2) { animation-delay: 0.2s; }
+        .pricing-tier-card:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body class="min-h-screen gradient-bg">
+    <div class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Header -->
+        <div class="text-center mb-16">
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <div class="p-3 bg-gradient-to-br from-amber-600 to-amber-700 rounded-2xl shadow-lg">
+                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="24" cy="24" r="22" stroke="#fdf6e3" stroke-width="2" opacity="0.9"/>
+                        <path d="M24 8 L16 20 L24 18 L32 20 Z" fill="#fdf6e3" opacity="0.9"/>
+                        <path d="M12 24 Q24 16 36 24 Q30 32 24 28 Q18 32 12 24" fill="#fdf6e3" opacity="0.8"/>
+                        <circle cx="20" cy="24" r="2" fill="#fdf6e3"/>
+                        <circle cx="28" cy="24" r="2" fill="#fdf6e3"/>
+                        <path d="M20 32 Q24 36 28 32" stroke="#fdf6e3" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h1 class="text-5xl font-bold text-gray-900">GOMNA AI Trading</h1>
+            </div>
+            <p class="text-2xl text-gray-600 mb-4">Professional Algorithmic Trading Platform</p>
+            <p class="text-lg text-gray-500">Choose your trading tier and start earning with AI-powered arbitrage strategies</p>
+        </div>
+
+        <!-- Pricing Tiers -->
+        <div class="bg-gradient-to-br from-cream-50 to-cream-100 p-8 rounded-xl shadow-2xl mb-8">
+            <div class="text-center mb-10">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Choose Your Trading Tier</h2>
+                <p class="text-xl text-gray-600">Professional algorithmic trading access for every investment level</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                <!-- STARTER TIER -->
+                <div class="pricing-tier-card relative bg-white rounded-2xl shadow-xl border-2 border-blue-200 hover:border-blue-400 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+                    <div class="p-8">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-1">STARTER</h3>
+                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">TIER 1</p>
+                        </div>
+                        
+                        <div class="text-center mb-6">
+                            <div class="text-4xl font-bold text-gray-900 mb-2">$1,000</div>
+                            <div class="text-sm text-gray-600">Minimum deposit</div>
+                        </div>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Daily Limit</span>
+                                <span class="text-sm font-bold text-gray-900">$100K</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Leverage</span>
+                                <span class="text-sm font-bold text-gray-900">2:1</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">AI Features</span>
+                                <span class="text-sm font-bold text-gray-900">Basic AI signals</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-3">✨ Included Features</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Real-time market data
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Basic arbitrage alerts
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Email support
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Mobile app access
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Standard execution speed
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Choose STARTER
+                        </button>
+                        
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">
+                                No setup fees • Cancel anytime • 30-day money back guarantee
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFESSIONAL TIER -->
+                <div class="pricing-tier-card relative bg-white rounded-2xl shadow-xl border-2 border-amber-300 hover:border-amber-500 ring-4 ring-amber-100 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                            MOST POPULAR
+                        </span>
+                    </div>
+                    
+                    <div class="p-8">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-1">PROFESSIONAL</h3>
+                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">TIER 2</p>
+                        </div>
+                        
+                        <div class="text-center mb-6">
+                            <div class="text-4xl font-bold text-gray-900 mb-2">$10,000</div>
+                            <div class="text-sm text-gray-600">Minimum deposit</div>
+                        </div>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Daily Limit</span>
+                                <span class="text-sm font-bold text-gray-900">$1M</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Leverage</span>
+                                <span class="text-sm font-bold text-gray-900">10:1</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">AI Features</span>
+                                <span class="text-sm font-bold text-gray-900">Advanced AI suite</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-3">✨ Included Features</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Advanced ML algorithms
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    HFT arbitrage strategies
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Priority support 24/7
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Custom risk parameters
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Sub-50ms execution
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <button class="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Start Trading Now
+                        </button>
+                        
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">
+                                No setup fees • Cancel anytime • 30-day money back guarantee
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INSTITUTIONAL TIER -->
+                <div class="pricing-tier-card relative bg-white rounded-2xl shadow-xl border-2 border-purple-200 hover:border-purple-400 transition-all duration-300 hover:shadow-2xl hover:scale-105">
+                    <div class="p-8">
+                        <div class="text-center mb-6">
+                            <h3 class="text-2xl font-bold text-gray-900 mb-1">INSTITUTIONAL</h3>
+                            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide">TIER 3</p>
+                        </div>
+                        
+                        <div class="text-center mb-6">
+                            <div class="text-4xl font-bold text-gray-900 mb-2">$25,000</div>
+                            <div class="text-sm text-gray-600">Minimum deposit</div>
+                        </div>
+                        
+                        <div class="space-y-4 mb-8">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Daily Limit</span>
+                                <span class="text-sm font-bold text-gray-900">Unlimited</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">Leverage</span>
+                                <span class="text-sm font-bold text-gray-900">50:1</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <span class="text-sm font-medium text-gray-700">AI Features</span>
+                                <span class="text-sm font-bold text-gray-900">White-glove service</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-8">
+                            <h4 class="text-sm font-semibold text-gray-900 mb-3">✨ Included Features</h4>
+                            <ul class="space-y-2">
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Dedicated account manager
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Custom algorithm development
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Direct market access
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Institutional spreads
+                                </li>
+                                <li class="flex items-center text-sm text-gray-600">
+                                    <span class="text-green-600 mr-2">✓</span>
+                                    Co-location services
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+                            Choose INSTITUTIONAL
+                        </button>
+                        
+                        <div class="mt-4 text-center">
+                            <p class="text-xs text-gray-500">
+                                No setup fees • Cancel anytime • 30-day money back guarantee
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Regulatory Info -->
+            <div class="text-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg inline-block">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">🔐 Secure & Regulated Platform</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600">✓</span>
+                            <span>SEC Registered</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600">✓</span>
+                            <span>FINRA Member</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600">✓</span>
+                            <span>$250M Insurance</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600">✓</span>
+                            <span>SOC 2 Compliant</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Methods -->
+        <div class="bg-white p-8 rounded-xl shadow-2xl mb-8">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">💳 Accepted Payment Methods</h2>
+                <p class="text-lg text-gray-600">Multiple secure funding options for your convenience</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Traditional Banking -->
+                <div class="payment-category">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 text-center">Traditional Banking</h3>
+                    <div class="space-y-4">
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">💳</span>
+                                    <span class="font-semibold text-gray-900">Credit/Debit Cards</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> 2.9%</div>
+                                <div><span class="font-medium">Time:</span> Instant</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> $50K/day</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🏦</span>
+                                    <span class="font-semibold text-gray-900">Bank Wire Transfer</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> $25</div>
+                                <div><span class="font-medium">Time:</span> 1-3 business days</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> $10M/day</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cryptocurrency -->
+                <div class="payment-category">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 text-center">Cryptocurrency</h3>
+                    <div class="space-y-4">
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">₿</span>
+                                    <span class="font-semibold text-gray-900">Bitcoin (BTC)</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> Network fee only</div>
+                                <div><span class="font-medium">Time:</span> 30-60 minutes</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> No limit</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">💰</span>
+                                    <span class="font-semibold text-gray-900">USDC/USDT</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> Minimal</div>
+                                <div><span class="font-medium">Time:</span> 5-15 minutes</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> No limit</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alternative Methods -->
+                <div class="payment-category">
+                    <h3 class="text-xl font-bold text-gray-900 mb-6 text-center">Alternative Methods</h3>
+                    <div class="space-y-4">
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📱</span>
+                                    <span class="font-semibold text-gray-900">PayPal Business</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> 3.5%</div>
+                                <div><span class="font-medium">Time:</span> Instant</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> $100K/day</div>
+                            </div>
+                        </div>
+                        
+                        <div class="payment-method-card bg-gray-50 hover:bg-gray-100 p-4 rounded-xl border border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📲</span>
+                                    <span class="font-semibold text-gray-900">Apple/Google Pay</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                                <div><span class="font-medium">Fee:</span> 2.9%</div>
+                                <div><span class="font-medium">Time:</span> Instant</div>
+                                <div class="col-span-2"><span class="font-medium">Limits:</span> $25K/day</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Security Features -->
+            <div class="mt-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-xl border border-green-200">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">🛡️ Security & Compliance</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">🔒</div>
+                        <div class="text-sm font-semibold text-gray-700">256-bit SSL</div>
+                        <div class="text-xs text-gray-500">Bank-grade encryption</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">🏦</div>
+                        <div class="text-sm font-semibold text-gray-700">FDIC Insured</div>
+                        <div class="text-xs text-gray-500">Up to $250,000</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">🔐</div>
+                        <div class="text-sm font-semibold text-gray-700">2FA Required</div>
+                        <div class="text-xs text-gray-500">Multi-factor auth</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl mb-2">📋</div>
+                        <div class="text-sm font-semibold text-gray-700">KYC/AML</div>
+                        <div class="text-xs text-gray-500">Fully compliant</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="text-center bg-gradient-to-r from-amber-600 to-amber-700 p-12 rounded-xl shadow-2xl text-white">
+            <h2 class="text-4xl font-bold mb-4">Ready to Start Automated Trading?</h2>
+            <p class="text-xl mb-8 opacity-90">Join thousands of investors earning with AI-powered arbitrage strategies</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/" class="bg-white text-amber-700 px-8 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all shadow-lg">
+                    🚀 Access Full Trading Platform
+                </a>
+                <a href="/test_functionality.html" class="bg-amber-800 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-amber-900 transition-all shadow-lg">
+                    🔧 Test System Functions
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

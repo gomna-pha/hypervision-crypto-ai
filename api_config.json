@@ -1,0 +1,229 @@
+{
+  "exchanges": {
+    "binance": {
+      "name": "Binance",
+      "documentation": "https://binance-docs.github.io/apidocs/spot/en/",
+      "endpoints": {
+        "rest": {
+          "production": "https://api.binance.com",
+          "testnet": "https://testnet.binance.vision"
+        },
+        "websocket": {
+          "production": "wss://stream.binance.com:9443/ws",
+          "testnet": "wss://testnet.binance.vision/ws"
+        }
+      },
+      "features": {
+        "spot": true,
+        "futures": true,
+        "margin": true,
+        "staking": true
+      },
+      "rateLimit": {
+        "weight": 1200,
+        "orders": 100,
+        "interval": "1m"
+      },
+      "requiredCredentials": ["apiKey", "apiSecret"]
+    },
+    "coinbase": {
+      "name": "Coinbase Pro",
+      "documentation": "https://docs.cloud.coinbase.com/exchange/docs",
+      "endpoints": {
+        "rest": {
+          "production": "https://api.pro.coinbase.com",
+          "sandbox": "https://api-public.sandbox.pro.coinbase.com"
+        },
+        "websocket": {
+          "production": "wss://ws-feed.pro.coinbase.com",
+          "sandbox": "wss://ws-feed-public.sandbox.pro.coinbase.com"
+        }
+      },
+      "features": {
+        "spot": true,
+        "futures": false,
+        "margin": false,
+        "staking": true
+      },
+      "rateLimit": {
+        "public": 10,
+        "private": 15,
+        "interval": "1s"
+      },
+      "requiredCredentials": ["apiKey", "apiSecret", "passphrase"]
+    },
+    "kraken": {
+      "name": "Kraken",
+      "documentation": "https://docs.kraken.com/rest/",
+      "endpoints": {
+        "rest": {
+          "production": "https://api.kraken.com",
+          "public": "https://api.kraken.com/0/public",
+          "private": "https://api.kraken.com/0/private"
+        },
+        "websocket": {
+          "production": "wss://ws.kraken.com",
+          "auth": "wss://ws-auth.kraken.com"
+        }
+      },
+      "features": {
+        "spot": true,
+        "futures": true,
+        "margin": true,
+        "staking": true
+      },
+      "rateLimit": {
+        "tier1": 15,
+        "tier2": 20,
+        "tier3": 20,
+        "tier4": 20,
+        "interval": "1s"
+      },
+      "requiredCredentials": ["apiKey", "apiSecret"]
+    }
+  },
+  "openSourceAPIs": {
+    "coingecko": {
+      "name": "CoinGecko",
+      "documentation": "https://www.coingecko.com/en/api/documentation",
+      "endpoints": {
+        "base": "https://api.coingecko.com/api/v3",
+        "price": "/simple/price",
+        "marketChart": "/coins/{id}/market_chart",
+        "trending": "/search/trending",
+        "exchanges": "/exchanges"
+      },
+      "features": {
+        "marketData": true,
+        "historicalData": true,
+        "trending": true,
+        "nft": true
+      },
+      "rateLimit": {
+        "free": 50,
+        "pro": 500,
+        "interval": "1m"
+      },
+      "authentication": "optional"
+    },
+    "cryptocompare": {
+      "name": "CryptoCompare",
+      "documentation": "https://min-api.cryptocompare.com/documentation",
+      "endpoints": {
+        "base": "https://min-api.cryptocompare.com",
+        "price": "/data/price",
+        "histoday": "/data/v2/histoday",
+        "news": "/data/v2/news",
+        "social": "/data/social/coin/latest"
+      },
+      "features": {
+        "marketData": true,
+        "historicalData": true,
+        "news": true,
+        "socialData": true
+      },
+      "rateLimit": {
+        "free": 100000,
+        "commercial": 500000,
+        "interval": "month"
+      },
+      "authentication": "optional"
+    },
+    "alpaca": {
+      "name": "Alpaca Markets",
+      "documentation": "https://alpaca.markets/docs/api-references/trading-api/",
+      "endpoints": {
+        "paper": "https://paper-api.alpaca.markets",
+        "live": "https://api.alpaca.markets",
+        "data": "https://data.alpaca.markets"
+      },
+      "features": {
+        "paperTrading": true,
+        "liveTrading": true,
+        "crypto": true,
+        "stocks": true
+      },
+      "rateLimit": {
+        "requests": 200,
+        "interval": "1m"
+      },
+      "requiredCredentials": ["apiKey", "apiSecret"]
+    },
+    "twelvedata": {
+      "name": "Twelve Data",
+      "documentation": "https://twelvedata.com/docs",
+      "endpoints": {
+        "base": "https://api.twelvedata.com",
+        "timeSeries": "/time_series",
+        "quote": "/quote",
+        "technicalIndicators": "/technical_indicators"
+      },
+      "features": {
+        "stocks": true,
+        "forex": true,
+        "crypto": true,
+        "technicalIndicators": true
+      },
+      "rateLimit": {
+        "free": 800,
+        "basic": 6600,
+        "pro": 18000,
+        "interval": "1d"
+      },
+      "authentication": "apiKey"
+    }
+  },
+  "decentralizedOptions": {
+    "uniswap": {
+      "name": "Uniswap V3",
+      "documentation": "https://docs.uniswap.org/api/subgraph/overview",
+      "endpoints": {
+        "subgraph": "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3",
+        "contracts": {
+          "factory": "0x1F98431c8aD98523631AE4a59f267346ea31F984",
+          "router": "0xE592427A0AEce92De3Edee1F18E0157C05861564"
+        }
+      },
+      "features": {
+        "dex": true,
+        "liquidity": true,
+        "swaps": true,
+        "pools": true
+      }
+    },
+    "1inch": {
+      "name": "1inch DEX Aggregator",
+      "documentation": "https://docs.1inch.io/docs/aggregation-protocol/introduction",
+      "endpoints": {
+        "base": "https://api.1inch.io/v5.0",
+        "chains": [1, 56, 137, 43114, 250, 42161]
+      },
+      "features": {
+        "aggregation": true,
+        "bestPrice": true,
+        "multiChain": true
+      }
+    }
+  },
+  "supportedPairs": {
+    "crypto": [
+      "BTC/USD", "BTC/USDT", "BTC/EUR",
+      "ETH/USD", "ETH/USDT", "ETH/BTC",
+      "SOL/USD", "SOL/USDT",
+      "ADA/USD", "ADA/USDT",
+      "AVAX/USD", "AVAX/USDT",
+      "DOT/USD", "DOT/USDT",
+      "MATIC/USD", "MATIC/USDT",
+      "LINK/USD", "LINK/USDT",
+      "UNI/USD", "UNI/USDT",
+      "AAVE/USD", "AAVE/USDT"
+    ],
+    "forex": [
+      "EUR/USD", "GBP/USD", "USD/JPY",
+      "AUD/USD", "USD/CAD", "NZD/USD"
+    ],
+    "commodities": [
+      "XAU/USD", "XAG/USD", "WTI/USD", "BRENT/USD"
+    ]
+  }
+}
