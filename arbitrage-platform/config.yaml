@@ -1,0 +1,439 @@
+# Agent-Based LLM Arbitrage Platform Configuration
+# All parameters, constraints, and bounds are VISIBLE to investors for full transparency
+
+platform:
+  name: "Agent-Based LLM Arbitrage Platform"
+  version: "1.0.0"
+  environment: "production"
+  
+# =============================================================================
+# AGENT CONFIGURATIONS - Visible to Investors
+# =============================================================================
+
+agents:
+  sentiment_news:
+    description: "Real-time sentiment analysis from news sources and social media"
+    
+    # Visible Parameters
+    parameters:
+      polling_interval_sec: 60
+      sentiment_window_hours: 24
+      min_article_count: 5
+      credibility_threshold: 0.6
+      confidence_decay_factor: 0.95
+      fear_greed_weight: 0.3
+      news_weight: 0.7
+    
+    # Visible Constraints  
+    constraints:
+      max_api_calls_per_hour: 100
+      min_source_diversity: 3
+      max_data_age_minutes: 30
+      min_confidence_threshold: 0.4
+      blackout_sources: ["unreliable-news.com"]
+      required_keywords: ["bitcoin", "crypto", "arbitrage", "trading"]
+    
+    # Visible Bounds
+    bounds:
+      sentiment_range: { min: -1.0, max: 1.0 }
+      confidence_range: { min: 0.0, max: 1.0 }
+      min_articles_for_signal: 5
+      max_sentiment_volatility: 0.5
+      signal_smoothing_factor: 0.8
+
+  economic_indicators:
+    description: "Macroeconomic indicators from Federal Reserve and official sources"
+    
+    # Visible Parameters
+    parameters:
+      polling_interval_hours: 1
+      data_staleness_threshold_hours: 24
+      confidence_decay_half_life_hours: 12
+      inflation_target_pct: 2.0
+      neutral_fed_rate_pct: 2.5
+      full_employment_rate_pct: 4.0
+      vix_panic_threshold: 30
+      vix_complacency_threshold: 15
+    
+    # Visible Constraints
+    constraints:
+      max_api_calls_per_hour: 10
+      required_indicators: ["CPI", "FEDFUNDS", "UNRATE"]
+      max_data_age_hours: 48
+      min_confidence_for_signal: 0.3
+      fred_api_timeout_ms: 15000
+      backup_data_sources: ["BLS", "OECD"]
+      critical_event_blackout_hours: 2
+    
+    # Visible Bounds
+    bounds:
+      signal_range: { min: -1.0, max: 1.0 }
+      confidence_range: { min: 0.0, max: 1.0 }
+      cpi_range: { min: -2.0, max: 10.0 }
+      fed_rate_range: { min: 0.0, max: 20.0 }
+      unemployment_range: { min: 2.0, max: 15.0 }
+      vix_range: { min: 5.0, max: 100.0 }
+      signal_smoothing_alpha: 0.7
+
+  microstructure:
+    description: "Real-time orderbook, trade flow, and market microstructure analysis"
+    
+    # Visible Parameters  
+    parameters:
+      snapshot_interval_ms: 100
+      orderbook_depth_levels: 20
+      trade_window_seconds: 60
+      volume_window_minutes: 5
+      price_precision_decimals: 2
+      quantity_precision_decimals: 8
+      spread_ema_alpha: 0.1
+      imbalance_ema_alpha: 0.2
+    
+    # Visible Constraints
+    constraints:
+      min_liquidity_usd: 50000
+      max_spread_bps: 500  # 5%
+      min_trade_count_per_window: 10
+      max_websocket_latency_ms: 1000
+      required_exchanges: ["binance", "coinbase"]
+      monitored_pairs: ["BTC/USDT", "ETH/USDT", "BNB/USDT"]
+      max_reconnection_attempts: 5
+      data_freshness_threshold_ms: 5000
+    
+    # Visible Bounds
+    bounds:
+      signal_range: { min: -1.0, max: 1.0 }
+      confidence_range: { min: 0.0, max: 1.0 }
+      spread_bps_range: { min: 0.1, max: 1000.0 }
+      imbalance_range: { min: -1.0, max: 1.0 }
+      momentum_range: { min: -0.1, max: 0.1 }
+      volume_surge_max: 10.0
+      liquidity_score_range: { min: 0.0, max: 1.0 }
+
+# =============================================================================
+# FUSION BRAIN (LLM) CONFIGURATION - Visible to Investors
+# =============================================================================
+
+fusion_brain:
+  description: "Large Language Model fusion engine combining agent signals"
+  
+  # LLM Providers and Fallback Chain
+  llm_providers:
+    primary: "anthropic_claude"
+    fallback: ["openai_gpt4", "google_gemini"]
+  
+  # Visible Parameters
+  parameters:
+    agent_freshness_threshold_sec: 5
+    min_agent_count_for_prediction: 2
+    confidence_threshold_for_execution: 0.75
+    hyperbolic_embedding_dim: 128
+    hyperbolic_curvature: 1.0
+    context_window_minutes: 30
+    prediction_horizon_minutes: 15
+  
+  # Visible Constraints
+  constraints:
+    max_llm_response_time_ms: 10000
+    max_tokens_per_request: 4000
+    min_prediction_confidence: 0.6
+    max_concurrent_predictions: 5
+    required_agent_types: ["sentiment", "economic", "microstructure"]
+    blackout_during_events: true
+  
+  # Visible Bounds
+  bounds:
+    predicted_spread_pct_range: { min: 0.001, max: 0.05 }  # 0.1% to 5%
+    confidence_range: { min: 0.0, max: 1.0 }
+    time_horizon_range: { min: 60, max: 3600 }  # 1 min to 1 hour
+    max_position_size_pct: 0.1  # 10% of portfolio
+
+# =============================================================================
+# DECISION ENGINE CONFIGURATION - Visible to Investors
+# =============================================================================
+
+decision_engine:
+  description: "Deterministic constraint enforcement and risk management"
+  
+  # Global Constraints (Hard Limits)
+  global_constraints:
+    max_open_exposure_pct_of_nav: 0.03  # 3% max exposure
+    api_health_pause_threshold: 2       # Pause if 2+ exchanges down
+    event_blackout_sec: 300            # 5 min blackout around events
+    data_freshness_max_sec: 5          # Max data age for HFT decisions
+    authorized_exchanges_only: true
+    max_daily_trades: 50
+    max_drawdown_threshold_pct: 0.05   # 5% max drawdown
+  
+  # Agent-Specific Constraints
+  agent_constraints:
+    sentiment_news:
+      data_age_max_sec: 1800  # 30 minutes
+      confidence_min: 0.4
+      min_source_count: 2
+    
+    economic_indicators:
+      data_age_max_hours: 24
+      confidence_min: 0.3
+      required_indicators: 3
+    
+    microstructure:
+      latency_max_ms: 1000
+      min_liquidity_usd: 50000
+      max_spread_bps: 100
+  
+  # Decision Bounds (Tunable Thresholds)
+  decision_bounds:
+    min_spread_pct_for_execution: 0.005      # 0.5% minimum spread
+    llm_confidence_threshold: 0.80           # 80% LLM confidence
+    min_expected_net_profit_usd: 10          # $10 minimum profit
+    max_hold_time_sec: 3600                  # 1 hour max hold
+    max_simultaneous_trades: 5
+    max_slippage_pct_estimate: 0.002         # 0.2% max slippage
+    z_score_threshold: 2.5                   # Statistical significance
+    
+    # Arbitrage Opportunity Score (AOS) Weights
+    aos_weights:
+      price_spread: 0.4
+      sentiment_score: 0.25  
+      liquidity_index: 0.2
+      risk_score: -0.1       # Negative weight (risk reduces score)
+      image_signal: 0.05
+    
+    aos_threshold: 0.6  # Minimum AOS for execution
+
+# =============================================================================
+# EXECUTION ENGINE CONFIGURATION - Visible to Investors  
+# =============================================================================
+
+execution_engine:
+  description: "Safe order placement and position management"
+  
+  # Visible Parameters
+  parameters:
+    pre_trade_simulation: true
+    order_type_preference: "limit"  # limit, market, post_only
+    max_order_retries: 3
+    order_timeout_sec: 30
+    position_check_interval_sec: 10
+    reconciliation_timeout_sec: 60
+  
+  # Risk Management Constraints
+  constraints:
+    max_notional_per_trade_usd: 100000     # $100k max per trade
+    max_position_size_pct: 0.1             # 10% max position
+    max_leverage: 1.0                      # No leverage
+    allowed_order_types: ["limit", "market"]
+    mandatory_stop_loss: true
+    max_open_positions: 10
+  
+  # Exchange Configuration
+  exchanges:
+    binance:
+      enabled: true
+      api_timeout_ms: 5000
+      max_orders_per_sec: 10
+      commission_rate: 0.001  # 0.1%
+    
+    coinbase:
+      enabled: true  
+      api_timeout_ms: 8000
+      max_orders_per_sec: 5
+      commission_rate: 0.005  # 0.5%
+    
+    kraken:
+      enabled: false
+      api_timeout_ms: 10000
+      max_orders_per_sec: 2
+      commission_rate: 0.002  # 0.2%
+
+# =============================================================================
+# BACKTESTING CONFIGURATION - Visible to Investors
+# =============================================================================
+
+backtesting:
+  description: "Live validation and historical performance testing"
+  
+  # Visible Parameters
+  parameters:
+    historical_lookback_days: 90
+    walk_forward_window_days: 30
+    out_of_sample_pct: 0.3  # 30% out-of-sample
+    simulation_timeframe: "1h"
+    slippage_model: "linear"
+    commission_model: "tiered"
+  
+  # Validation Constraints
+  constraints:
+    min_trades_for_significance: 30
+    max_backtest_runtime_hours: 24
+    required_metrics: ["sharpe", "sortino", "max_dd", "win_rate"]
+    min_sharpe_ratio: 0.5
+    max_drawdown_pct: 0.15
+    min_win_rate_pct: 0.45
+  
+  # Performance Bounds
+  bounds:
+    expected_annual_return: { min: 0.05, max: 2.0 }  # 5% to 200%
+    sharpe_ratio: { min: 0.0, max: 5.0 }
+    max_drawdown: { min: 0.0, max: 0.5 }             # 0% to 50%
+    win_rate: { min: 0.0, max: 1.0 }
+
+# =============================================================================
+# HYPERBOLIC EMBEDDING CONFIGURATION - Visible to Investors
+# =============================================================================
+
+hyperbolic:
+  description: "Hyperbolic geometry for relationship modeling"
+  
+  # Mathematical Parameters
+  parameters:
+    model: "poincare_ball"
+    embedding_dim: 128
+    curvature: 1.0
+    learning_rate: 0.01
+    max_iterations: 1000
+    convergence_threshold: 1e-6
+  
+  # Computational Constraints
+  constraints:
+    max_embedding_time_ms: 5000
+    max_neighbor_search_k: 50
+    min_distance_threshold: 1e-8
+    max_norm_clipping: 0.99  # Poincaré ball constraint
+  
+  # Quality Bounds
+  bounds:
+    embedding_quality_score: { min: 0.7, max: 1.0 }
+    neighbor_confidence: { min: 0.5, max: 1.0 }
+    context_relevance: { min: 0.6, max: 1.0 }
+
+# =============================================================================
+# MONITORING & TRANSPARENCY - Visible to Investors
+# =============================================================================
+
+monitoring:
+  description: "Real-time system monitoring and investor transparency"
+  
+  # Metrics Collection
+  metrics:
+    collection_interval_sec: 30
+    retention_days: 365
+    export_formats: ["json", "csv", "prometheus"]
+    
+  # Transparency Requirements
+  transparency:
+    log_all_decisions: true
+    log_all_llm_prompts: true  
+    log_all_agent_outputs: true
+    log_all_trades: true
+    audit_trail_immutable: true
+    
+  # Performance Reporting
+  reporting:
+    real_time_dashboard: true
+    daily_reports: true
+    monthly_summaries: true
+    quarterly_reviews: true
+    
+  # Alerts and Notifications  
+  alerts:
+    max_drawdown_breach: true
+    agent_failure: true
+    exchange_connectivity_loss: true
+    unusual_market_conditions: true
+    performance_degradation: true
+
+# =============================================================================
+# INVESTOR DASHBOARD CONFIGURATION
+# =============================================================================
+
+dashboard:
+  description: "Live investor dashboard with full transparency"
+  
+  # Display Parameters
+  display:
+    update_interval_sec: 5
+    chart_lookback_hours: 24
+    max_concurrent_users: 100
+    
+  # Visible Components
+  components:
+    live_pnl: true
+    agent_signals: true
+    llm_predictions: true
+    decision_rationale: true
+    execution_details: true
+    backtest_validation: true
+    risk_metrics: true
+    system_health: true
+    
+  # Data Access
+  data_access:
+    historical_data_days: 90
+    real_time_feeds: true
+    downloadable_reports: true
+    api_access: true
+
+# =============================================================================
+# SECURITY & COMPLIANCE - Visible Framework
+# =============================================================================
+
+security:
+  description: "Security measures and compliance framework"
+  
+  # Data Protection
+  data_protection:
+    encryption_at_rest: true
+    encryption_in_transit: true
+    pii_anonymization: true
+    gdpr_compliant: true
+    
+  # Access Control
+  access_control:
+    multi_factor_auth: true
+    role_based_permissions: true
+    audit_logging: true
+    session_timeout_min: 30
+    
+  # Compliance
+  compliance:
+    regulatory_framework: ["SEC", "CFTC", "MiFID"]
+    audit_trail_retention_years: 7
+    trade_reporting: true
+    risk_disclosure: true
+
+# =============================================================================
+# API KEYS & EXTERNAL SERVICES
+# =============================================================================
+
+external_services:
+  description: "External API configurations (keys stored securely)"
+  
+  news_api:
+    provider: "newsapi.org"
+    rate_limit: 100
+    timeout_ms: 10000
+    
+  fred_api:
+    provider: "stlouisfed.org"
+    rate_limit: 10
+    timeout_ms: 15000
+    
+  exchange_apis:
+    binance:
+      rate_limit: 1200
+      timeout_ms: 5000
+    coinbase:
+      rate_limit: 10
+      timeout_ms: 8000
+      
+  llm_apis:
+    anthropic:
+      model: "claude-3-sonnet"
+      rate_limit: 100
+      timeout_ms: 30000
+    openai:
+      model: "gpt-4"
+      rate_limit: 100
+      timeout_ms: 30000
