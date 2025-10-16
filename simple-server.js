@@ -104,6 +104,17 @@ const arbitrageData = {
   }
 };
 
+// Working demo route
+app.get('/demo', (c) => {
+  try {
+    const htmlContent = readFileSync('./gomna-demo-working.html', 'utf8');
+    return c.html(htmlContent);
+  } catch (error) {
+    console.error('Error serving demo HTML:', error);
+    return c.html('<h1>Demo not found</h1>', 404);
+  }
+});
+
 // Main dashboard route
 app.get('/', (c) => {
   try {
