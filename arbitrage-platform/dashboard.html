@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM Arbitrage Platform - Live Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            overflow-x: hidden;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto 1fr 1fr;
+            gap: 10px;
+            padding: 10px;
+            height: 100vh;
+            min-height: 900px;
+        }
+        
+        .panel {
+            background: rgba(0, 20, 40, 0.8);
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 255, 136, 0.1);
+        }
+        
+        .panel h2 {
+            color: #00ff88;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #00ff88;
+            padding-bottom: 5px;
+        }
+        
+        /* Header spans all columns */
+        .header-panel {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-running { background: #00ff88; }
+        .status-stopped { background: #ff4444; }
+        .status-error { background: #ff8800; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* 3D Hyperbolic Visualization */
+        .hyperbolic-viz {
+            grid-row: 2 / 4;
+            position: relative;
+        }
+        
+        #hyperbolic-canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+        
+        .viz-controls {
+            position: absolute;
+            top: 45px;
+            left: 15px;
+            z-index: 100;
+        }
+        
+        .viz-controls button {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            color: #00ff88;
+            padding: 5px 10px;
+            margin: 2px;
+            cursor: pointer;
+            font-size: 10px;
+            border-radius: 3px;
+        }
+        
+        .viz-controls button:hover {
+            background: rgba(0, 255, 136, 0.4);
+        }
+        
+        /* Live Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .metric-item {
+            background: rgba(0, 50, 100, 0.3);
+            padding: 8px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .metric-label {
+            font-size: 10px;
+            color: #88ccff;
+            text-transform: uppercase;
+        }
+        
+        /* Component Status */
+        .component-status {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+            padding: 5px;
+            background: rgba(0, 30, 60, 0.5);
+            border-radius: 3px;
+        }
+        
+        /* Live Feed */
+        .live-feed {
+            height: 100%;
+            overflow-y: auto;
+        }
+        
+        .feed-item {
+            padding: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #00ff88;
+            background: rgba(0, 40, 80, 0.4);
+            font-size: 11px;
+        }
+        
+        .feed-item.error {
+            border-left-color: #ff4444;
+            background: rgba(80, 0, 0, 0.2);
+        }
+        
+        .feed-item.warning {
+            border-left-color: #ff8800;
+            background: rgba(80, 40, 0, 0.2);
+        }
+        
+        .feed-timestamp {
+            color: #88ccff;
+            font-size: 9px;
+        }
+        
+        /* Parameters Panel */
+        .params-section {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0, 30, 60, 0.3);
+            border-radius: 4px;
+        }
+        
+        .params-section h3 {
+            color: #88ccff;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .param-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            margin: 2px 0;
+        }
+        
+        .param-key {
+            color: #aaccff;
+        }
+        
+        .param-value {
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        /* Performance Charts */
+        .chart-container {
+            height: 200px;
+            position: relative;
+        }
+        
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 20, 40, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #00ff88;
+            border-radius: 3px;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1200px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .hyperbolic-viz {
+                grid-row: 2 / 3;
+            }
+        }
+        
+        @media (max-width: 800px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-panel {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .highlight {
+            animation: highlight 1s ease-out;
+        }
+        
+        @keyframes highlight {
+            0% { background: rgba(0, 255, 136, 0.3); }
+            100% { background: transparent; }
+        }
+        
+        /* Legend for hyperbolic visualization */
+        .hyperbolic-legend {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(0, 20, 40, 0.9);
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            z-index: 100;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 3px 0;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            margin-right: 8px;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header Panel -->
+        <div class="panel header-panel">
+            <div>
+                <h1 style="color: #00ff88; font-size: 24px;">🧠 LLM ARBITRAGE PLATFORM</h1>
+                <p style="color: #88ccff; font-size: 12px;">Agent-Based Hyperbolic LLM Fusion with Real-Time Backtesting</p>
+            </div>
+            <div>
+                <span class="status-indicator status-running" id="platform-status"></span>
+                <span id="platform-status-text">RUNNING</span>
+                <span style="margin-left: 20px; color: #88ccff; font-size: 12px;">Uptime: <span id="uptime">00:00:00</span></span>
+            </div>
+        </div>
+        
+        <!-- 3D Hyperbolic Visualization -->
+        <div class="panel hyperbolic-viz">
+            <h2>🌐 3D Hyperbolic Embedding Space</h2>
+            <div class="viz-controls">
+                <button onclick="resetCamera()">Reset View</button>
+                <button onclick="toggleRotation()">Auto-Rotate</button>
+                <button onclick="toggleNeighbors()">Show Neighbors</button>
+            </div>
+            <canvas id="hyperbolic-canvas"></canvas>
+            <div class="hyperbolic-legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #00ff88;"></div>
+                    <span>Current Prediction</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff8800;"></div>
+                    <span>Execute Decision</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #8888ff;"></div>
+                    <span>Monitor Decision</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff4444;"></div>
+                    <span>Reject Decision</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #444444;"></div>
+                    <span>Historical</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Metrics -->
+        <div class="panel">
+            <h2>📊 Real-Time Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-value" id="total-predictions">0</div>
+                    <div class="metric-label">Predictions</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="execution-rate">0%</div>
+                    <div class="metric-label">Execution Rate</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="avg-aos">0.0</div>
+                    <div class="metric-label">Avg AOS</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" id="active-workflows">0</div>
+                    <div class="metric-label">Active Workflows</div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 15px; color: #88ccff; font-size: 12px;">Component Status</h3>
+            <div class="component-status">
+                <span>FusionBrain</span>
+                <span class="status-indicator status-running" id="fusion-status"></span>
+            </div>
+            <div class="component-status">
+                <span>DecisionEngine</span>
+                <span class="status-indicator status-running" id="decision-status"></span>
+            </div>
+            <div class="component-status">
+                <span>MicroBacktester</span>
+                <span class="status-indicator status-running" id="backtest-status"></span>
+            </div>
+            
+            <!-- Performance Chart -->
+            <div style="margin-top: 15px;">
+                <h3 style="color: #88ccff; font-size: 12px;">Performance Timeline</h3>
+                <div class="chart-container">
+                    <canvas id="performance-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Live Event Feed -->
+        <div class="panel">
+            <h2>🔴 Live Event Feed</h2>
+            <div class="live-feed" id="live-feed">
+                <!-- Events will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Visible Parameters -->
+        <div class="panel">
+            <h2>⚙️ Visible Parameters</h2>
+            <div style="height: 100%; overflow-y: auto;" id="visible-parameters">
+                <!-- Parameters will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="panel">
+            <h2>📈 Recent Activity</h2>
+            <div style="height: 100%; overflow-y: auto;" id="recent-activity">
+                <!-- Recent activity will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dashboard state
+        let dashboardData = {};
+        let scene, camera, renderer, controls;
+        let hyperbolicPoints = [];
+        let autoRotate = false;
+        let showNeighbors = true;
+        let performanceChart;
+        let updateInterval;
+        
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initHyperbolicVisualization();
+            initPerformanceChart();
+            startDataPolling();
+            
+            console.log('🚀 LLM Arbitrage Platform Dashboard initialized');
+        });
+        
+        // Initialize 3D Hyperbolic Visualization
+        function initHyperbolicVisualization() {
+            const container = document.getElementById('hyperbolic-canvas');
+            const rect = container.parentElement.getBoundingClientRect();
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
+            
+            // Camera setup
+            camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
+            camera.position.set(2, 2, 3);
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: container, 
+                antialias: true,
+                alpha: true 
+            });
+            renderer.setSize(rect.width, rect.height);
+            renderer.setClearColor(0x0a0a1a, 0.8);
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            
+            // Create Poincaré disk boundary
+            const diskGeometry = new THREE.RingGeometry(0.98, 1.0, 64);
+            const diskMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0x00ff88, 
+                transparent: true, 
+                opacity: 0.3 
+            });
+            const disk = new THREE.Mesh(diskGeometry, diskMaterial);
+            scene.add(disk);
+            
+            // Add grid lines for hyperbolic geometry
+            createHyperbolicGrid();
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0x00ff88, 0.4);
+            directionalLight.position.set(1, 1, 1);
+            scene.add(directionalLight);
+            
+            // Start animation loop
+            animate();
+        }
+        
+        function createHyperbolicGrid() {
+            const gridGroup = new THREE.Group();
+            
+            // Create concentric circles
+            for (let r = 0.2; r < 1.0; r += 0.2) {
+                const geometry = new THREE.RingGeometry(r - 0.01, r + 0.01, 64);
+                const material = new THREE.MeshBasicMaterial({ 
+                    color: 0x004444, 
+                    transparent: true, 
+                    opacity: 0.3 
+                });
+                const ring = new THREE.Mesh(geometry, material);
+                gridGroup.add(ring);
+            }
+            
+            // Create radial lines
+            for (let i = 0; i < 12; i++) {
+                const angle = (i / 12) * Math.PI * 2;
+                const geometry = new THREE.BufferGeometry();
+                const vertices = new Float32Array([
+                    0, 0, 0,
+                    Math.cos(angle) * 0.95, Math.sin(angle) * 0.95, 0
+                ]);
+                geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                
+                const material = new THREE.LineBasicMaterial({ 
+                    color: 0x004444, 
+                    transparent: true, 
+                    opacity: 0.3 
+                });
+                const line = new THREE.Line(geometry, material);
+                gridGroup.add(line);
+            }
+            
+            scene.add(gridGroup);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (autoRotate) {
+                scene.rotation.z += 0.005;
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize Performance Chart
+        function initPerformanceChart() {
+            const ctx = document.getElementById('performance-chart').getContext('2d');
+            
+            performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'AOS Score',
+                        data: [],
+                        borderColor: '#00ff88',
+                        backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'P&L %',
+                        data: [],
+                        borderColor: '#ff8800',
+                        backgroundColor: 'rgba(255, 136, 0, 0.1)',
+                        tension: 0.4,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 255, 136, 0.2)'
+                            },
+                            ticks: {
+                                color: '#88ccff'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0, 255, 136, 0.2)'
+                            },
+                            ticks: {
+                                color: '#88ccff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#88ccff'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Data polling and updates
+        function startDataPolling() {
+            // Simulate real-time data updates
+            updateInterval = setInterval(() => {
+                fetchDashboardData();
+            }, 1000);
+            
+            // Initial fetch
+            fetchDashboardData();
+        }
+        
+        async function fetchDashboardData() {
+            try {
+                // In a real implementation, this would fetch from the platform API
+                // For now, simulate realistic data
+                dashboardData = generateSimulatedData();
+                
+                updateDashboard(dashboardData);
+                
+            } catch (error) {
+                console.error('Failed to fetch dashboard data:', error);
+            }
+        }
+        
+        function generateSimulatedData() {
+            const now = new Date();
+            
+            return {
+                platform_state: {
+                    status: 'running',
+                    components: {
+                        fusion_brain: 'active',
+                        decision_engine: 'active',
+                        micro_backtester: 'active'
+                    },
+                    metrics: {
+                        total_predictions: 127 + Math.floor(Math.random() * 3),
+                        total_decisions: 119 + Math.floor(Math.random() * 3),
+                        total_backtests: 98 + Math.floor(Math.random() * 3),
+                        execution_rate: 0.15 + Math.random() * 0.1,
+                        avg_aos_score: 67.5 + Math.random() * 10,
+                        avg_backtest_quality: 78.2 + Math.random() * 8
+                    },
+                    uptime_ms: Date.now() - (Date.now() - 3600000), // 1 hour uptime
+                    last_activity: now.toISOString()
+                },
+                latest_prediction: {
+                    id: 'pred_' + Date.now(),
+                    timestamp: now.toISOString(),
+                    predicted_spread_pct: 0.003 + Math.random() * 0.002,
+                    confidence: 0.75 + Math.random() * 0.2,
+                    direction: Math.random() > 0.5 ? 'converge' : 'diverge',
+                    hyperbolic_embedding: Array.from({length: 128}, () => (Math.random() - 0.5) * 0.8)
+                },
+                recent_decisions: generateRecentDecisions(),
+                recent_backtests: generateRecentBacktests(),
+                active_workflows: Math.floor(Math.random() * 4),
+                recent_events: generateRecentEvents()
+            };
+        }
+        
+        function generateRecentDecisions() {
+            const decisions = [];
+            for (let i = 0; i < 5; i++) {
+                const aosScore = 40 + Math.random() * 50;
+                decisions.push({
+                    decision_id: 'dec_' + (Date.now() - i * 30000),
+                    timestamp: new Date(Date.now() - i * 30000).toISOString(),
+                    execution_action: aosScore > 75 ? 'execute' : aosScore > 50 ? 'monitor' : 'reject',
+                    aos_score: { overall_score: aosScore },
+                    constraints_passed: aosScore > 40
+                });
+            }
+            return decisions;
+        }
+        
+        function generateRecentBacktests() {
+            const backtests = [];
+            for (let i = 0; i < 5; i++) {
+                backtests.push({
+                    backtest_id: 'bt_' + (Date.now() - i * 45000),
+                    timestamp: new Date(Date.now() - i * 45000).toISOString(),
+                    execution_simulation: {
+                        simulated_pnl_pct: (Math.random() - 0.4) * 0.02,
+                        would_have_executed: Math.random() > 0.3
+                    },
+                    learning_feedback: {
+                        prediction_quality_score: 60 + Math.random() * 30
+                    },
+                    prediction_accuracy: {
+                        direction_correct: Math.random() > 0.4
+                    }
+                });
+            }
+            return backtests;
+        }
+        
+        function generateRecentEvents() {
+            const eventTypes = ['prediction', 'decision', 'backtest_completed'];
+            const components = ['fusion_brain', 'decision_engine', 'micro_backtester'];
+            const events = [];
+            
+            for (let i = 0; i < 10; i++) {
+                const timestamp = new Date(Date.now() - i * 15000).toISOString();
+                events.push({
+                    event_id: 'evt_' + (Date.now() - i * 15000),
+                    timestamp: timestamp,
+                    event_type: eventTypes[Math.floor(Math.random() * eventTypes.length)],
+                    component: components[Math.floor(Math.random() * components.length)],
+                    severity: Math.random() > 0.9 ? 'error' : Math.random() > 0.7 ? 'warning' : 'info',
+                    data: { message: 'Simulated event data' }
+                });
+            }
+            
+            return events;
+        }
+        
+        // Update dashboard with new data
+        function updateDashboard(data) {
+            // Update status indicators
+            updateStatusIndicators(data.platform_state);
+            
+            // Update metrics
+            updateMetrics(data.platform_state.metrics, data.active_workflows);
+            
+            // Update hyperbolic visualization
+            updateHyperbolicVisualization(data.latest_prediction, data.recent_decisions);
+            
+            // Update performance chart
+            updatePerformanceChart(data.recent_backtests);
+            
+            // Update live feed
+            updateLiveFeed(data.recent_events);
+            
+            // Update parameters (simplified)
+            updateVisibleParameters();
+            
+            // Update recent activity
+            updateRecentActivity(data.recent_decisions, data.recent_backtests);
+        }
+        
+        function updateStatusIndicators(platformState) {
+            const statusElement = document.getElementById('platform-status');
+            const statusText = document.getElementById('platform-status-text');
+            
+            statusElement.className = `status-indicator status-${platformState.status}`;
+            statusText.textContent = platformState.status.toUpperCase();
+            
+            // Component statuses
+            document.getElementById('fusion-status').className = 
+                `status-indicator status-${platformState.components.fusion_brain}`;
+            document.getElementById('decision-status').className = 
+                `status-indicator status-${platformState.components.decision_engine}`;
+            document.getElementById('backtest-status').className = 
+                `status-indicator status-${platformState.components.micro_backtester}`;
+            
+            // Update uptime
+            const uptimeElement = document.getElementById('uptime');
+            const uptimeSeconds = Math.floor(platformState.uptime_ms / 1000);
+            const hours = Math.floor(uptimeSeconds / 3600);
+            const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+            const seconds = uptimeSeconds % 60;
+            
+            uptimeElement.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function updateMetrics(metrics, activeWorkflows) {
+            document.getElementById('total-predictions').textContent = metrics.total_predictions;
+            document.getElementById('execution-rate').textContent = (metrics.execution_rate * 100).toFixed(1) + '%';
+            document.getElementById('avg-aos').textContent = metrics.avg_aos_score.toFixed(1);
+            document.getElementById('active-workflows').textContent = activeWorkflows;
+        }
+        
+        function updateHyperbolicVisualization(latestPrediction, recentDecisions) {
+            // Clear existing points
+            hyperbolicPoints.forEach(point => scene.remove(point));
+            hyperbolicPoints = [];
+            
+            if (!latestPrediction || !latestPrediction.hyperbolic_embedding) return;
+            
+            // Add latest prediction point
+            const embedding = latestPrediction.hyperbolic_embedding;
+            const x = embedding[0] || 0;
+            const y = embedding[1] || 0;
+            const z = (embedding[2] || 0) * 0.5; // Scale Z for better visualization
+            
+            // Ensure point is within Poincaré disk
+            const norm = Math.sqrt(x*x + y*y);
+            const scale = norm > 0.95 ? 0.95 / norm : 1;
+            
+            const geometry = new THREE.SphereGeometry(0.05, 16, 16);
+            const material = new THREE.MeshBasicMaterial({ 
+                color: 0x00ff88,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const currentPoint = new THREE.Mesh(geometry, material);
+            currentPoint.position.set(x * scale, y * scale, z);
+            
+            scene.add(currentPoint);
+            hyperbolicPoints.push(currentPoint);
+            
+            // Add recent decision points with different colors
+            recentDecisions.slice(0, 20).forEach((decision, index) => {
+                // Generate points around current prediction for visualization
+                const angle = (index / recentDecisions.length) * Math.PI * 2;
+                const radius = 0.3 + (index * 0.02);
+                
+                const decisionX = x + Math.cos(angle) * radius;
+                const decisionY = y + Math.sin(angle) * radius;
+                const decisionNorm = Math.sqrt(decisionX*decisionX + decisionY*decisionY);
+                const decisionScale = decisionNorm > 0.95 ? 0.95 / decisionNorm : 1;
+                
+                let color;
+                switch (decision.execution_action) {
+                    case 'execute': color = 0xff8800; break;
+                    case 'monitor': color = 0x8888ff; break;
+                    case 'reject': color = 0xff4444; break;
+                    default: color = 0x666666;
+                }
+                
+                const decisionGeometry = new THREE.SphereGeometry(0.02, 8, 8);
+                const decisionMaterial = new THREE.MeshBasicMaterial({ 
+                    color: color,
+                    transparent: true,
+                    opacity: 0.6 - (index * 0.02)
+                });
+                
+                const decisionPoint = new THREE.Mesh(decisionGeometry, decisionMaterial);
+                decisionPoint.position.set(
+                    decisionX * decisionScale, 
+                    decisionY * decisionScale, 
+                    z + (Math.random() - 0.5) * 0.2
+                );
+                
+                scene.add(decisionPoint);
+                hyperbolicPoints.push(decisionPoint);
+            });
+        }
+        
+        function updatePerformanceChart(recentBacktests) {
+            const labels = recentBacktests.map((_, i) => `T-${recentBacktests.length - i}`);
+            const aosScores = recentBacktests.map(bt => bt.learning_feedback.prediction_quality_score);
+            const pnlData = recentBacktests.map(bt => bt.execution_simulation.simulated_pnl_pct * 100);
+            
+            performanceChart.data.labels = labels;
+            performanceChart.data.datasets[0].data = aosScores;
+            performanceChart.data.datasets[1].data = pnlData;
+            performanceChart.update('none');
+        }
+        
+        function updateLiveFeed(events) {
+            const feedElement = document.getElementById('live-feed');
+            
+            // Keep only recent events to prevent memory issues
+            const recentEvents = events.slice(0, 20);
+            
+            feedElement.innerHTML = recentEvents.map(event => {
+                const time = new Date(event.timestamp).toLocaleTimeString();
+                return `
+                    <div class="feed-item ${event.severity} fade-in">
+                        <div class="feed-timestamp">${time}</div>
+                        <strong>${event.component}</strong>: ${event.event_type}
+                        ${event.data.message || ''}
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateVisibleParameters() {
+            const paramsElement = document.getElementById('visible-parameters');
+            
+            paramsElement.innerHTML = `
+                <div class="params-section">
+                    <h3>Platform Parameters</h3>
+                    <div class="param-row">
+                        <span class="param-key">AOS Execution Threshold</span>
+                        <span class="param-value">75</span>
+                    </div>
+                    <div class="param-row">
+                        <span class="param-key">Max Concurrent Positions</span>
+                        <span class="param-value">3</span>
+                    </div>
+                    <div class="param-row">
+                        <span class="param-key">Fusion Interval</span>
+                        <span class="param-value">500ms</span>
+                    </div>
+                </div>
+                
+                <div class="params-section">
+                    <h3>Risk Constraints</h3>
+                    <div class="param-row">
+                        <span class="param-key">Min Spread Threshold</span>
+                        <span class="param-value">0.1%</span>
+                    </div>
+                    <div class="param-row">
+                        <span class="param-key">Min Confidence</span>
+                        <span class="param-value">60%</span>
+                    </div>
+                    <div class="param-row">
+                        <span class="param-key">Max Position Size</span>
+                        <span class="param-value">$50,000</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updateRecentActivity(decisions, backtests) {
+            const activityElement = document.getElementById('recent-activity');
+            
+            // Combine and sort by timestamp
+            const activities = [
+                ...decisions.map(d => ({ type: 'decision', data: d, time: new Date(d.timestamp) })),
+                ...backtests.map(b => ({ type: 'backtest', data: b, time: new Date(b.timestamp) }))
+            ].sort((a, b) => b.time - a.time).slice(0, 10);
+            
+            activityElement.innerHTML = activities.map(activity => {
+                const time = activity.time.toLocaleTimeString();
+                
+                if (activity.type === 'decision') {
+                    const d = activity.data;
+                    const actionColor = d.execution_action === 'execute' ? '#00ff88' : 
+                                      d.execution_action === 'monitor' ? '#8888ff' : '#ff4444';
+                    
+                    return `
+                        <div class="feed-item fade-in">
+                            <div class="feed-timestamp">${time}</div>
+                            <strong>Decision</strong>: <span style="color: ${actionColor}">${d.execution_action.toUpperCase()}</span>
+                            <br>AOS: ${d.aos_score.overall_score.toFixed(1)}
+                        </div>
+                    `;
+                } else {
+                    const b = activity.data;
+                    const pnlColor = b.execution_simulation.simulated_pnl_pct > 0 ? '#00ff88' : '#ff4444';
+                    
+                    return `
+                        <div class="feed-item fade-in">
+                            <div class="feed-timestamp">${time}</div>
+                            <strong>Backtest</strong>: Quality ${b.learning_feedback.prediction_quality_score.toFixed(0)}
+                            <br>P&L: <span style="color: ${pnlColor}">${(b.execution_simulation.simulated_pnl_pct * 100).toFixed(2)}%</span>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+        
+        // Visualization controls
+        function resetCamera() {
+            camera.position.set(2, 2, 3);
+            camera.lookAt(0, 0, 0);
+            controls.reset();
+        }
+        
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+        }
+        
+        function toggleNeighbors() {
+            showNeighbors = !showNeighbors;
+            // Implementation would toggle neighbor visibility
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (renderer && camera) {
+                const container = document.getElementById('hyperbolic-canvas').parentElement;
+                const rect = container.getBoundingClientRect();
+                
+                camera.aspect = rect.width / rect.height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(rect.width, rect.height);
+            }
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+        });
+    </script>
+</body>
+</html>

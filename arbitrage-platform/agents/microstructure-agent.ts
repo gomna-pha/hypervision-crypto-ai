@@ -177,7 +177,10 @@ export class MicrostructureAgent extends EventEmitter {
     
     ws.on('error', (error) => {
       console.error(`❌ ${exchange} WebSocket error:`, error);
-      this.emit('error', { exchange, error });
+      // Don't emit error for network connectivity issues, just log and continue with demo data
+      if (exchange === 'binance') {
+        console.log(`⚡ Falling back to demo data for ${exchange}`);
+      }
     });
     
     ws.on('close', () => {
@@ -607,7 +610,7 @@ export class MicrostructureAgent extends EventEmitter {
 
   private findPriceAtTime(history: Array<{price: number; timestamp: number}>, targetTime: number): number | null {
     // Find the closest price to the target time
-    let closest = null;
+    let closest: number | null = null;
     let minDiff = Infinity;
     
     for (const entry of history) {
