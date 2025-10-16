@@ -387,7 +387,7 @@ app.get('/api/arbitrage-opportunities', (c) => {
   });
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 3000;
 
 console.log('🚀 Starting Enhanced GOMNA Trading Dashboard with Agent-Based LLM Arbitrage Platform...');
 
