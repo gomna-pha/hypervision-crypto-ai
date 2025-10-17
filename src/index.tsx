@@ -5016,6 +5016,9 @@ app.get('/', (c) => {
                     </div>
                 </div>
                 <div class="text-sm text-text-secondary">
+                    <div id="platform-status" class="text-xs flex items-center space-x-3 mr-4">
+                        <!-- Platform status will be populated by JavaScript -->
+                    </div>
                     <span id="current-time"></span>
                 </div>
             </div>
@@ -5043,8 +5046,9 @@ app.get('/', (c) => {
                                     Market Feeds
                                 </h3>
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-2 h-2 bg-profit rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-text-secondary font-medium">LIVE</span>
+                                    <div class="w-2 h-2 bg-profit rounded-full animate-pulse status-indicator"></div>
+                                    <span class="text-xs text-text-secondary font-medium" data-live="true">LIVE</span>
+                                    <span class="text-xs text-text-secondary last-updated ml-2"></span>
                                 </div>
                             </div>
                             
@@ -5068,8 +5072,9 @@ app.get('/', (c) => {
                                     Market Sentiment
                                 </h3>
                                 <div class="flex items-center space-x-2">
-                                    <div class="w-2 h-2 bg-accent rounded-full animate-pulse"></div>
-                                    <span class="text-xs text-text-secondary font-medium">AUTO</span>
+                                    <div class="w-2 h-2 bg-accent rounded-full animate-pulse status-indicator"></div>
+                                    <span class="text-xs text-text-secondary font-medium" data-live="true">AUTO</span>
+                                    <span class="text-xs text-text-secondary last-updated ml-2"></span>
                                 </div>
                             </div>
                             
