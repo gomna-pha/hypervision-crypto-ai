@@ -1,33 +1,78 @@
-# prod
-dist/
-
-# dev
-.yarn/
-!.yarn/releases
-.vscode/*
-!.vscode/launch.json
-!.vscode/*.code-snippets
-.idea/workspace.xml
-.idea/usage.statistics.xml
-.idea/shelf
-
-# deps
+# Dependencies
 node_modules/
-.wrangler
 
-# env
+# Build output
+dist/
+build/
+*.js.map
+
+# Environment variables
 .env
+.env.local
 .env.production
-.dev.vars
+.env.development
 
-# logs
+# Logs
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 lerna-debug.log*
+.pnpm-debug.log*
 
-# misc
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Docker
+docker-compose.override.yml
+.docker/
+
+# Kafka
+kafka-data/
+zookeeper-data/
+
+# Redis
+dump.rdb
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 .DS_Store
+
+# Testing
+coverage/
+.nyc_output/
+
+# PM2
+.pm2/
+pids/
+
+# Secrets
+secrets/
+*.key
+*.pem
+*.crt
+
+# Backtest results
+backtest-results/
+
+# Cache
+.cache/
+tmp/
+temp/
+
+# OS files
+Thumbs.db
+desktop.ini
