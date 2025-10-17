@@ -1,9 +1,9 @@
 module.exports = {
   apps: [
     {
-      name: 'enhanced-dashboard',
+      name: 'professional-dashboard',
       script: 'npx',
-      args: 'tsx src/dashboard/enhanced-server.ts',
+      args: 'tsx src/dashboard/professional-dashboard.ts',
       cwd: '/home/user/webapp',
       instances: 1,
       exec_mode: 'fork',
