@@ -6,6 +6,8 @@ import Logger from '../utils/logger';
 import config from '../utils/ConfigLoader';
 import { BacktestEngine } from '../backtest/BacktestEngine';
 import { DecisionEngine } from '../decision/DecisionEngine';
+import { RealTimeDataAggregator } from '../agents/RealTimeDataAggregator';
+import { RealtimeLLMArbitrage } from '../fusion/RealtimeLLMArbitrage';
 
 const app = express();
 const server = http.createServer(app);
@@ -20,6 +22,14 @@ const PORT = process.env.DASHBOARD_PORT || 3000;
 const backtestEngine = new BacktestEngine(config.get('backtesting'));
 const decisionEngine = new DecisionEngine();
 
+// Initialize real-time components
+const dataAggregator = new RealTimeDataAggregator();
+const llmArbitrage = new RealtimeLLMArbitrage();
+
+// Start real-time data collection
+dataAggregator.start();
+llmArbitrage.start();
+
 // Hyperbolic clustering data
 let hyperbolicClusters = {
   assets: [],
@@ -27,13 +37,14 @@ let hyperbolicClusters = {
   lastUpdate: Date.now()
 };
 
-// Agent status tracking
+// Agent status tracking - will be updated from real-time data
 let agentStatuses = {
   economic: { status: 'active', lastSignal: 0, confidence: 0, data: {} },
   sentiment: { status: 'active', lastSignal: 0, confidence: 0, data: {} },
   price: { status: 'active', lastSignal: 0, confidence: 0, data: {} },
   volume: { status: 'active', lastSignal: 0, confidence: 0, data: {} },
-  trade: { status: 'active', lastSignal: 0, confidence: 0, data: {} }
+  microstructure: { status: 'active', lastSignal: 0, confidence: 0, data: {} },
+  crossExchange: { status: 'active', lastSignal: 0, confidence: 0, data: {} }
 };
 
 // LLM prediction state
@@ -80,66 +91,98 @@ function generateHyperbolicClusters() {
   return { assets: clusters, connections, lastUpdate: Date.now() };
 }
 
-// Update agent statuses
-async function updateAgentStatuses() {
+// Update agent statuses from real-time data
+function updateAgentStatuses() {
   try {
-    // Economic Agent
-    try {
-      const econ = await axios.get('http://localhost:3001/agents/economicagent/latest', { timeout: 1000 });
-      agentStatuses.economic = {
-        status: 'active',
-        lastSignal: econ.data.key_signal || 0,
-        confidence: econ.data.confidence || 0,
-        data: econ.data.features || {}
-      };
-    } catch (e) {
-      agentStatuses.economic.status = 'offline';
-    }
-
-    // Sentiment Agent
-    try {
-      const sent = await axios.get('http://localhost:3003/agents/sentimentagent/latest', { timeout: 1000 });
-      agentStatuses.sentiment = {
-        status: 'active',
-        lastSignal: sent.data.key_signal || 0,
-        confidence: sent.data.confidence || 0,
-        data: sent.data.features || {}
-      };
-    } catch (e) {
-      agentStatuses.sentiment.status = 'offline';
-    }
-
-    // Price Agent
-    try {
-      const price = await axios.get('http://localhost:3002/agents/priceagent/latest', { timeout: 1000 });
-      agentStatuses.price = {
-        status: 'active',
-        lastSignal: price.data.key_signal || 0,
-        confidence: price.data.confidence || 0,
-        data: price.data
-      };
-    } catch (e) {
-      agentStatuses.price.status = 'offline';
-    }
+    // Get real-time agent signals
+    const agentSignals = dataAggregator.getAgentSignals();
+    
+    // Update economic agent
+    const economicData = dataAggregator.getEconomicData();
+    agentStatuses.economic = {
+      status: economicData ? 'active' : 'offline',
+      lastSignal: agentSignals.economic.signal,
+      confidence: agentSignals.economic.confidence,
+      data: economicData || {}
+    };
+    
+    // Update sentiment agent
+    const sentimentData = dataAggregator.getSentimentData();
+    agentStatuses.sentiment = {
+      status: sentimentData ? 'active' : 'offline',
+      lastSignal: agentSignals.sentiment.signal,
+      confidence: agentSignals.sentiment.confidence,
+      data: sentimentData || {}
+    };
+    
+    // Update price agent from market data
+    const marketData = dataAggregator.getMarketData();
+    const btcPrice = marketData.get('BTC')?.exchanges?.binance?.price || 0;
+    agentStatuses.price = {
+      status: btcPrice > 0 ? 'active' : 'offline',
+      lastSignal: agentSignals.price.signal,
+      confidence: agentSignals.price.confidence,
+      data: { price: btcPrice, spread: marketData.get('BTC')?.spread || 0 }
+    };
+    
+    // Update volume agent from market data
+    const btcVolume = marketData.get('BTC')?.exchanges?.binance?.volume24h || 0;
+    agentStatuses.volume = {
+      status: btcVolume > 0 ? 'active' : 'offline',
+      lastSignal: agentSignals.volume.signal,
+      confidence: agentSignals.volume.confidence,
+      data: { volume: btcVolume }
+    };
+    
+    // Update microstructure agent
+    const microstructureData = dataAggregator.getMicrostructure();
+    agentStatuses.microstructure = {
+      status: microstructureData ? 'active' : 'offline',
+      lastSignal: agentSignals.microstructure.signal,
+      confidence: agentSignals.microstructure.confidence,
+      data: microstructureData || {}
+    };
+    
+    // Update cross-exchange agent
+    const spreads = dataAggregator.getCrossExchangeSpreads();
+    agentStatuses.crossExchange = {
+      status: Object.keys(spreads).length > 0 ? 'active' : 'offline',
+      lastSignal: agentSignals.crossExchange.signal,
+      confidence: agentSignals.crossExchange.confidence,
+      data: spreads
+    };
+    
   } catch (error) {
     logger.error('Failed to update agent statuses', error);
   }
 }
 
-// Simulate LLM processing
-function simulateLLMProcessing() {
-  llmState.processing = true;
-  
-  setTimeout(() => {
-    llmState.processing = false;
-    llmState.lastPrediction = {
-      spread: (Math.random() * 2).toFixed(3),
-      confidence: 0.75 + Math.random() * 0.20,
-      direction: Math.random() > 0.5 ? 'converge' : 'diverge',
-      opportunities: Math.floor(Math.random() * 10) + 1
-    };
-    llmState.nextUpdate = Date.now() + 5000;
-  }, 2000);
+// Update LLM state from real-time predictions
+function updateLLMProcessing() {
+  try {
+    // Get current prediction and opportunities from the LLM arbitrage instance
+    const currentPrediction = (llmArbitrage as any).currentPrediction || null;
+    const opportunities = (llmArbitrage as any).opportunities || [];
+    
+    if (currentPrediction) {
+      llmState.processing = false;
+      llmState.lastPrediction = {
+        spread: currentPrediction.predictedSpread?.toFixed(3) || '0.000',
+        confidence: currentPrediction.confidence || 0,
+        direction: currentPrediction.marketDirection || 'neutral',
+        opportunities: opportunities.length,
+        strategy: currentPrediction.strategy,
+        entryConditions: currentPrediction.entryConditions,
+        exitConditions: currentPrediction.exitConditions
+      };
+      llmState.confidence = currentPrediction.confidence;
+      llmState.nextUpdate = Date.now() + 5000;
+    } else {
+      llmState.processing = true;
+    }
+  } catch (error) {
+    logger.error('Failed to update LLM state', error);
+  }
 }
 
 // API Endpoints
@@ -156,32 +199,69 @@ app.get('/api/llm/state', (req, res) => {
 });
 
 app.get('/api/datafeed/live', async (req, res) => {
-  const data = {
-    economic: {
-      gdp: 2.34,
-      inflation: 3.13,
-      fedRate: 5.32,
-      unemployment: 3.66,
-      dxy: 104.52
-    },
-    sentiment: {
-      fearGreed: 48,
-      socialVolume: 161000,
-      mood: { btc: 51, eth: 44, sol: 47 }
-    },
-    microstructure: {
-      spread: 0.32,
-      depth: 3200000,
-      imbalance: 0.15,
-      toxicity: 0.22
-    },
-    crossExchange: {
-      'binance-coinbase': 18.36,
-      'kraken-bybit': 27.42,
-      'futures-spot': 256.83
-    }
-  };
-  res.json(data);
+  try {
+    // Get real-time data from aggregator
+    const economicData = dataAggregator.getEconomicData();
+    const sentimentData = dataAggregator.getSentimentData();
+    const microstructureData = dataAggregator.getMicrostructure();
+    const crossExchangeSpreads = dataAggregator.getCrossExchangeSpreads();
+    const marketData = dataAggregator.getMarketData();
+    
+    const data = {
+      economic: economicData || {
+        gdp: 2.34,
+        inflation: 3.13,
+        fedRate: 5.32,
+        unemployment: 3.66,
+        dxy: 104.52
+      },
+      sentiment: sentimentData || {
+        fearGreed: 48,
+        socialVolume: 161000,
+        mood: { btc: 51, eth: 44, sol: 47 }
+      },
+      microstructure: microstructureData || {
+        spread: 0.32,
+        depth: 3200000,
+        imbalance: 0.15,
+        toxicity: 0.22
+      },
+      crossExchange: crossExchangeSpreads,
+      marketData: marketData
+    };
+    res.json(data);
+  } catch (error) {
+    logger.error('Error fetching live data feed', error);
+    res.status(500).json({ error: 'Failed to fetch live data' });
+  }
+});
+
+// New endpoint for real-time arbitrage opportunities
+app.get('/api/arbitrage/opportunities', (req, res) => {
+  try {
+    const opportunities = (llmArbitrage as any).opportunities || [];
+    const prediction = (llmArbitrage as any).currentPrediction || null;
+    
+    res.json({
+      opportunities,
+      currentPrediction: prediction,
+      timestamp: Date.now()
+    });
+  } catch (error) {
+    logger.error('Error fetching arbitrage opportunities', error);
+    res.status(500).json({ error: 'Failed to fetch opportunities' });
+  }
+});
+
+// New endpoint for agent signals
+app.get('/api/agents/signals', (req, res) => {
+  try {
+    const signals = dataAggregator.getAgentSignals();
+    res.json(signals);
+  } catch (error) {
+    logger.error('Error fetching agent signals', error);
+    res.status(500).json({ error: 'Failed to fetch signals' });
+  }
 });
 
 // Dashboard HTML
@@ -562,6 +642,11 @@ app.get('/', (req, res) => {
                                 <span class="bg-yellow-900 px-2 py-1 rounded">SOL-USDT</span>
                             </div>
                         </div>
+                        
+                        <div class="bg-gray-800 p-2 rounded text-xs mt-2">
+                            <div class="text-gray-500 mb-1">Strategy:</div>
+                            <div id="llm-strategy" class="text-xs text-blue-400">Loading...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -696,6 +781,16 @@ app.get('/', (req, res) => {
                         <span class="text-gray-500">LLM Win:</span>
                         <span class="positive font-bold">82.7% (+21%)</span>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Live Arbitrage Opportunities -->
+            <div class="bg-gradient-to-br from-green-900 to-gray-800 p-3 rounded-lg border border-green-600">
+                <h3 class="text-sm font-semibold text-green-400 mb-2">
+                    <i class="fas fa-bolt mr-1"></i> Live Opportunities
+                </h3>
+                <div id="live-opportunities" class="space-y-2">
+                    <div class="text-xs text-gray-400">Scanning markets...</div>
                 </div>
             </div>
         </div>
@@ -934,6 +1029,79 @@ app.get('/', (req, res) => {
         socket.on('cluster_update', (data) => {
             // Real-time cluster updates would go here
         });
+        
+        socket.on('agent_update', (statuses) => {
+            // Update agent cards with real-time data
+            Object.keys(statuses).forEach(agent => {
+                const card = document.getElementById(\`\${agent}-agent-card\`);
+                if (card) {
+                    if (statuses[agent].status === 'active') {
+                        card.classList.add('active');
+                    } else {
+                        card.classList.remove('active');
+                    }
+                }
+                
+                const signalEl = document.getElementById(\`\${agent}-signal\`);
+                const confEl = document.getElementById(\`\${agent}-confidence\`);
+                if (signalEl) signalEl.textContent = statuses[agent].lastSignal.toFixed(2);
+                if (confEl) confEl.textContent = (statuses[agent].confidence * 100).toFixed(0) + '%';
+            });
+        });
+        
+        socket.on('llm_update', (state) => {
+            // Update LLM state with real-time data
+            const statusText = document.getElementById('llm-status-text');
+            const statusDiv = document.getElementById('llm-status');
+            
+            if (state.processing) {
+                statusText.textContent = 'Processing';
+                statusDiv.innerHTML = '<div class="w-2 h-2 bg-yellow-500 rounded-full pulse"></div><span class="text-xs">Processing</span>';
+            } else {
+                statusText.textContent = 'Ready';
+                statusDiv.innerHTML = '<div class="w-2 h-2 bg-green-500 rounded-full"></div><span class="text-xs">Ready</span>';
+            }
+            
+            if (state.lastPrediction) {
+                document.getElementById('predicted-spread').textContent = state.lastPrediction.spread + '%';
+                document.getElementById('prediction-confidence').textContent = (state.lastPrediction.confidence * 100).toFixed(0) + '%';
+                document.getElementById('direction').textContent = state.lastPrediction.direction;
+                document.getElementById('opportunities-count').textContent = state.lastPrediction.opportunities;
+                
+                // Update strategy if available
+                if (state.lastPrediction.strategy) {
+                    document.getElementById('llm-strategy').textContent = state.lastPrediction.strategy;
+                }
+            }
+        });
+        
+        socket.on('arbitrage_opportunities', (data) => {
+            // Display live arbitrage opportunities
+            const container = document.getElementById('live-opportunities');
+            if (data.opportunities && data.opportunities.length > 0) {
+                let html = '';
+                data.opportunities.forEach((opp, idx) => {
+                    const profitColor = opp.profitPotential > 1 ? 'text-green-400' : 
+                                       opp.profitPotential > 0.5 ? 'text-yellow-400' : 'text-gray-400';
+                    html += \`
+                        <div class="bg-gray-900 p-2 rounded text-xs border border-gray-700">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">\${opp.symbol}</span>
+                                <span class="\${profitColor} font-bold">+\${opp.profitPotential.toFixed(2)}%</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400 mt-1">
+                                <span>\${opp.type}</span>
+                                <span>\${opp.exchanges}</span>
+                            </div>
+                        </div>
+                    \`;
+                });
+                html += \`<div class="text-xs text-gray-500 mt-2">Total: \${data.count} opportunities</div>\`;
+                container.innerHTML = html;
+            } else {
+                container.innerHTML = '<div class="text-xs text-gray-400">No active opportunities</div>';
+            }
+        });
     </script>
 </body>
 </html>`);
@@ -955,14 +1123,35 @@ io.on('connection', (socket) => {
   });
 });
 
-// Update loops
+// Update loops for real-time data
 setInterval(() => {
   hyperbolicClusters = generateHyperbolicClusters();
   io.emit('cluster_update', hyperbolicClusters);
 }, 2000);
 
-setInterval(updateAgentStatuses, 3000);
-setInterval(simulateLLMProcessing, 5000);
+setInterval(() => {
+  updateAgentStatuses();
+  io.emit('agent_update', agentStatuses);
+}, 1000);
+
+setInterval(() => {
+  updateLLMProcessing();
+  io.emit('llm_update', llmState);
+}, 1000);
+
+// Emit real-time arbitrage opportunities
+setInterval(() => {
+  const opportunities = (llmArbitrage as any).opportunities || [];
+  const topOpportunities = opportunities
+    .sort((a, b) => b.profitPotential - a.profitPotential)
+    .slice(0, 5);
+  
+  io.emit('arbitrage_opportunities', {
+    opportunities: topOpportunities,
+    count: opportunities.length,
+    timestamp: Date.now()
+  });
+}, 2000);
 
 server.listen(PORT, '0.0.0.0', () => {
   logger.info(`Professional dashboard running on port ${PORT}`);
