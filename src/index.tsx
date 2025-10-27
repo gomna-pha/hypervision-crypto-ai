@@ -1738,148 +1738,148 @@ app.get('/', (c) => {
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
     </head>
-    <body class="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white min-h-screen">
+    <body class="bg-amber-50 text-gray-900 min-h-screen">
         <div class="container mx-auto px-4 py-8">
             <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-4xl font-bold mb-2">
-                    <i class="fas fa-chart-line mr-3"></i>
+                <h1 class="text-4xl font-bold mb-2 text-gray-900">
+                    <i class="fas fa-chart-line mr-3 text-blue-900"></i>
                     LLM-Driven Trading Intelligence Platform
                 </h1>
-                <p class="text-blue-300 text-lg">
+                <p class="text-gray-700 text-lg">
                     Multimodal Data Fusion • Machine Learning • Adaptive Strategies
                 </p>
             </div>
 
             <!-- Status Cards -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-gray-800 rounded-lg p-6 border border-blue-500">
+                <div class="bg-white rounded-lg p-6 border-2 border-blue-900 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-400 text-sm">Market Regime</p>
-                            <p id="regime-type" class="text-2xl font-bold mt-1">Loading...</p>
+                            <p class="text-gray-600 text-sm">Market Regime</p>
+                            <p id="regime-type" class="text-2xl font-bold mt-1 text-gray-900">Loading...</p>
                         </div>
-                        <i class="fas fa-globe text-4xl text-blue-500"></i>
+                        <i class="fas fa-globe text-4xl text-blue-900"></i>
                     </div>
                 </div>
 
-                <div class="bg-gray-800 rounded-lg p-6 border border-green-500">
+                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-400 text-sm">Active Strategies</p>
-                            <p id="strategy-count" class="text-2xl font-bold mt-1">5</p>
+                            <p class="text-gray-600 text-sm">Active Strategies</p>
+                            <p id="strategy-count" class="text-2xl font-bold mt-1 text-gray-900">5</p>
                         </div>
-                        <i class="fas fa-brain text-4xl text-green-500"></i>
+                        <i class="fas fa-brain text-4xl text-gray-700"></i>
                     </div>
                 </div>
 
-                <div class="bg-gray-800 rounded-lg p-6 border border-purple-500">
+                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-400 text-sm">Recent Signals</p>
-                            <p id="signal-count" class="text-2xl font-bold mt-1">0</p>
+                            <p class="text-gray-600 text-sm">Recent Signals</p>
+                            <p id="signal-count" class="text-2xl font-bold mt-1 text-gray-900">0</p>
                         </div>
-                        <i class="fas fa-signal text-4xl text-purple-500"></i>
+                        <i class="fas fa-signal text-4xl text-gray-700"></i>
                     </div>
                 </div>
 
-                <div class="bg-gray-800 rounded-lg p-6 border border-yellow-500">
+                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-400 text-sm">Backtests Run</p>
-                            <p id="backtest-count" class="text-2xl font-bold mt-1">0</p>
+                            <p class="text-gray-600 text-sm">Backtests Run</p>
+                            <p id="backtest-count" class="text-2xl font-bold mt-1 text-gray-900">0</p>
                         </div>
-                        <i class="fas fa-history text-4xl text-yellow-500"></i>
+                        <i class="fas fa-history text-4xl text-gray-700"></i>
                     </div>
                 </div>
             </div>
 
             <!-- LIVE DATA AGENTS SECTION -->
-            <div class="bg-gradient-to-r from-blue-900 to-purple-900 rounded-lg p-6 border-2 border-yellow-500 mb-8">
-                <h2 class="text-3xl font-bold mb-4 text-center">
-                    <i class="fas fa-database mr-2 text-yellow-400"></i>
+            <div class="bg-white rounded-lg p-6 border-2 border-blue-900 mb-8 shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-center text-gray-900">
+                    <i class="fas fa-database mr-2 text-blue-900"></i>
                     Live Agent Data Feeds
-                    <span class="ml-3 text-sm bg-green-500 px-3 py-1 rounded-full animate-pulse">LIVE</span>
+                    <span class="ml-3 text-sm bg-green-600 text-white px-3 py-1 rounded-full animate-pulse">LIVE</span>
                 </h2>
-                <p class="text-center text-gray-300 mb-6">Three independent agents providing real-time market intelligence</p>
+                <p class="text-center text-gray-600 mb-6">Three independent agents providing real-time market intelligence</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <!-- Economic Agent -->
-                    <div class="bg-gray-800 rounded-lg p-4 border-2 border-blue-500">
+                    <div class="bg-amber-50 rounded-lg p-4 border-2 border-blue-900 shadow">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xl font-bold text-blue-400">
+                            <h3 class="text-xl font-bold text-blue-900">
                                 <i class="fas fa-landmark mr-2"></i>
                                 Economic Agent
                             </h3>
-                            <span id="economic-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="economic-heartbeat" class="w-3 h-3 bg-green-600 rounded-full animate-pulse"></span>
                         </div>
                         <div id="economic-agent-data" class="text-sm space-y-2">
-                            <p class="text-gray-400">Loading...</p>
+                            <p class="text-gray-600">Loading...</p>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-gray-700">
+                        <div class="mt-3 pt-3 border-t border-gray-300">
                             <div class="flex justify-between items-center">
-                                <p class="text-xs text-gray-500">Fed Policy • Inflation • GDP</p>
-                                <p id="economic-timestamp" class="text-xs text-green-400 font-mono">--:--:--</p>
+                                <p class="text-xs text-gray-600">Fed Policy • Inflation • GDP</p>
+                                <p id="economic-timestamp" class="text-xs text-green-700 font-mono">--:--:--</p>
                             </div>
-                            <p id="economic-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
+                            <p id="economic-countdown" class="text-xs text-gray-500 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
 
                     <!-- Sentiment Agent -->
-                    <div class="bg-gray-800 rounded-lg p-4 border-2 border-purple-500">
+                    <div class="bg-amber-50 rounded-lg p-4 border border-gray-300 shadow">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xl font-bold text-purple-400">
+                            <h3 class="text-xl font-bold text-gray-900">
                                 <i class="fas fa-brain mr-2"></i>
                                 Sentiment Agent
                             </h3>
-                            <span id="sentiment-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="sentiment-heartbeat" class="w-3 h-3 bg-green-600 rounded-full animate-pulse"></span>
                         </div>
                         <div id="sentiment-agent-data" class="text-sm space-y-2">
-                            <p class="text-gray-400">Loading...</p>
+                            <p class="text-gray-600">Loading...</p>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-gray-700">
+                        <div class="mt-3 pt-3 border-t border-gray-300">
                             <div class="flex justify-between items-center">
-                                <p class="text-xs text-gray-500">Fear/Greed • VIX • Flows</p>
-                                <p id="sentiment-timestamp" class="text-xs text-purple-400 font-mono">--:--:--</p>
+                                <p class="text-xs text-gray-600">Fear/Greed • VIX • Flows</p>
+                                <p id="sentiment-timestamp" class="text-xs text-gray-700 font-mono">--:--:--</p>
                             </div>
-                            <p id="sentiment-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
+                            <p id="sentiment-countdown" class="text-xs text-gray-500 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
 
                     <!-- Cross-Exchange Agent -->
-                    <div class="bg-gray-800 rounded-lg p-4 border-2 border-green-500">
+                    <div class="bg-amber-50 rounded-lg p-4 border border-gray-300 shadow">
                         <div class="flex items-center justify-between mb-3">
-                            <h3 class="text-xl font-bold text-green-400">
+                            <h3 class="text-xl font-bold text-gray-900">
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Cross-Exchange Agent
                             </h3>
-                            <span id="cross-exchange-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="cross-exchange-heartbeat" class="w-3 h-3 bg-green-600 rounded-full animate-pulse"></span>
                         </div>
                         <div id="cross-exchange-agent-data" class="text-sm space-y-2">
-                            <p class="text-gray-400">Loading...</p>
+                            <p class="text-gray-600">Loading...</p>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-gray-700">
+                        <div class="mt-3 pt-3 border-t border-gray-300">
                             <div class="flex justify-between items-center">
-                                <p class="text-xs text-gray-500">Liquidity • Spreads • Arbitrage</p>
-                                <p id="cross-exchange-timestamp" class="text-xs text-green-400 font-mono">--:--:--</p>
+                                <p class="text-xs text-gray-600">Liquidity • Spreads • Arbitrage</p>
+                                <p id="cross-exchange-timestamp" class="text-xs text-gray-700 font-mono">--:--:--</p>
                             </div>
-                            <p id="cross-exchange-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
+                            <p id="cross-exchange-countdown" class="text-xs text-gray-500 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- DATA FLOW VISUALIZATION -->
-            <div class="bg-gray-800 rounded-lg p-6 mb-8 border border-gray-700">
-                <h3 class="text-2xl font-bold text-center mb-6">
-                    <i class="fas fa-project-diagram mr-2"></i>
+            <div class="bg-white rounded-lg p-6 mb-8 border border-gray-300 shadow-lg">
+                <h3 class="text-2xl font-bold text-center mb-6 text-gray-900">
+                    <i class="fas fa-project-diagram mr-2 text-blue-900"></i>
                     Fair Comparison Architecture
                 </h3>
                 
                 <div class="relative">
                     <!-- Agents Box (Top) -->
                     <div class="flex justify-center mb-8">
-                        <div class="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-4 inline-block">
+                        <div class="bg-blue-900 rounded-lg p-4 inline-block shadow">
                             <p class="text-center font-bold text-white">
                                 <i class="fas fa-database mr-2"></i>
                                 3 Live Agents: Economic • Sentiment • Cross-Exchange
@@ -1891,12 +1891,12 @@ app.get('/', (c) => {
                     <div class="flex justify-center mb-4">
                         <div class="flex items-center space-x-32">
                             <div class="flex flex-col items-center">
-                                <i class="fas fa-arrow-down text-3xl text-yellow-500 animate-bounce"></i>
-                                <p class="text-xs text-yellow-500 mt-2">Same Data</p>
+                                <i class="fas fa-arrow-down text-3xl text-blue-900 animate-bounce"></i>
+                                <p class="text-xs text-gray-700 mt-2">Same Data</p>
                             </div>
                             <div class="flex flex-col items-center">
-                                <i class="fas fa-arrow-down text-3xl text-yellow-500 animate-bounce"></i>
-                                <p class="text-xs text-yellow-500 mt-2">Same Data</p>
+                                <i class="fas fa-arrow-down text-3xl text-blue-900 animate-bounce"></i>
+                                <p class="text-xs text-gray-700 mt-2">Same Data</p>
                             </div>
                         </div>
                     </div>
@@ -1904,52 +1904,52 @@ app.get('/', (c) => {
                     <!-- Two Systems (Bottom) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- LLM System -->
-                        <div class="bg-gradient-to-br from-green-900 to-blue-900 rounded-lg p-6 border-2 border-green-500">
-                            <h4 class="text-xl font-bold text-green-400 mb-3 text-center">
+                        <div class="bg-green-50 rounded-lg p-6 border-2 border-green-600 shadow">
+                            <h4 class="text-xl font-bold text-green-800 mb-3 text-center">
                                 <i class="fas fa-robot mr-2"></i>
                                 LLM Agent (AI-Powered)
                             </h4>
-                            <div class="bg-gray-900 rounded p-3 mb-3">
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                            <div class="bg-white rounded p-3 mb-3 border border-gray-200">
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
                                     Google Gemini 2.0 Flash
                                 </p>
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
                                     2000+ char comprehensive prompt
                                 </p>
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-green-600 mr-2"></i>
                                     Professional market analysis
                                 </p>
                             </div>
-                            <button onclick="runLLMAnalysis()" class="w-full bg-green-600 hover:bg-green-700 px-4 py-3 rounded-lg font-bold">
+                            <button onclick="runLLMAnalysis()" class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-bold shadow">
                                 <i class="fas fa-play mr-2"></i>
                                 Run LLM Analysis
                             </button>
                         </div>
 
                         <!-- Backtesting System -->
-                        <div class="bg-gradient-to-br from-orange-900 to-red-900 rounded-lg p-6 border-2 border-orange-500">
-                            <h4 class="text-xl font-bold text-orange-400 mb-3 text-center">
+                        <div class="bg-orange-50 rounded-lg p-6 border border-gray-300 shadow">
+                            <h4 class="text-xl font-bold text-orange-800 mb-3 text-center">
                                 <i class="fas fa-chart-line mr-2"></i>
                                 Backtesting Agent (Algorithmic)
                             </h4>
-                            <div class="bg-gray-900 rounded p-3 mb-3">
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-orange-500 mr-2"></i>
+                            <div class="bg-white rounded p-3 mb-3 border border-gray-200">
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-orange-600 mr-2"></i>
                                     Composite scoring algorithm
                                 </p>
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-orange-500 mr-2"></i>
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-orange-600 mr-2"></i>
                                     Economic + Sentiment + Liquidity
                                 </p>
-                                <p class="text-sm text-gray-300">
-                                    <i class="fas fa-check-circle text-orange-500 mr-2"></i>
+                                <p class="text-sm text-gray-700">
+                                    <i class="fas fa-check-circle text-orange-600 mr-2"></i>
                                     Full trade attribution
                                 </p>
                             </div>
-                            <button onclick="runBacktestAnalysis()" class="w-full bg-orange-600 hover:bg-orange-700 px-4 py-3 rounded-lg font-bold">
+                            <button onclick="runBacktestAnalysis()" class="w-full bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-bold shadow">
                                 <i class="fas fa-play mr-2"></i>
                                 Run Backtesting
                             </button>
@@ -1961,68 +1961,68 @@ app.get('/', (c) => {
             <!-- RESULTS SECTION -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                 <!-- LLM Analysis Results -->
-                <div class="bg-gray-800 rounded-lg p-6 border border-green-500">
-                    <h2 class="text-2xl font-bold mb-4 text-green-400">
+                <div class="bg-white rounded-lg p-6 border-2 border-green-600 shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-green-800">
                         <i class="fas fa-robot mr-2"></i>
                         LLM Analysis Results
                     </h2>
-                    <div id="llm-results" class="bg-gray-900 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto">
-                        <p class="text-gray-400 italic">Click "Run LLM Analysis" to generate AI-powered market analysis...</p>
+                    <div id="llm-results" class="bg-green-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-green-200">
+                        <p class="text-gray-600 italic">Click "Run LLM Analysis" to generate AI-powered market analysis...</p>
                     </div>
-                    <div id="llm-metadata" class="mt-3 pt-3 border-t border-gray-700 text-sm text-gray-400">
+                    <div id="llm-metadata" class="mt-3 pt-3 border-t border-gray-300 text-sm text-gray-600">
                         <!-- Metadata will appear here -->
                     </div>
                 </div>
 
                 <!-- Backtesting Results -->
-                <div class="bg-gray-800 rounded-lg p-6 border border-orange-500">
-                    <h2 class="text-2xl font-bold mb-4 text-orange-400">
+                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
+                    <h2 class="text-2xl font-bold mb-4 text-orange-800">
                         <i class="fas fa-chart-line mr-2"></i>
                         Backtesting Results
                     </h2>
-                    <div id="backtest-results" class="bg-gray-900 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto">
-                        <p class="text-gray-400 italic">Click "Run Backtesting" to execute agent-based backtest...</p>
+                    <div id="backtest-results" class="bg-orange-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-orange-200">
+                        <p class="text-gray-600 italic">Click "Run Backtesting" to execute agent-based backtest...</p>
                     </div>
-                    <div id="backtest-metadata" class="mt-3 pt-3 border-t border-gray-700 text-sm text-gray-400">
+                    <div id="backtest-metadata" class="mt-3 pt-3 border-t border-gray-300 text-sm text-gray-600">
                         <!-- Metadata will appear here -->
                     </div>
                 </div>
             </div>
 
             <!-- VISUALIZATION SECTION -->
-            <div class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg p-6 border-2 border-indigo-500 mb-8">
-                <h2 class="text-3xl font-bold mb-6 text-center">
-                    <i class="fas fa-chart-area mr-2 text-indigo-400"></i>
+            <div class="bg-white rounded-lg p-6 border border-gray-300 mb-8 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-center text-gray-900">
+                    <i class="fas fa-chart-area mr-2 text-blue-900"></i>
                     Interactive Visualizations & Analysis
-                    <span class="ml-3 text-sm bg-purple-500 px-3 py-1 rounded-full">Live Charts</span>
+                    <span class="ml-3 text-sm bg-blue-900 text-white px-3 py-1 rounded-full">Live Charts</span>
                 </h2>
-                <p class="text-center text-gray-300 mb-6">Visual insights into agent signals, performance metrics, and arbitrage opportunities</p>
+                <p class="text-center text-gray-600 mb-6">Visual insights into agent signals, performance metrics, and arbitrage opportunities</p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <!-- Agent Signals Chart -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-indigo-500">
-                        <h3 class="text-lg font-bold mb-2 text-indigo-400">
+                    <div class="bg-blue-50 rounded-lg p-3 border-2 border-blue-900 shadow">
+                        <h3 class="text-lg font-bold mb-2 text-blue-900">
                             <i class="fas fa-signal mr-2"></i>
                             Agent Signals Breakdown
                         </h3>
                         <div style="height: 220px; position: relative;">
                             <canvas id="agentSignalsChart"></canvas>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 text-center">
+                        <p class="text-xs text-gray-600 mt-1 text-center">
                             Real-time scoring across Economic, Sentiment, and Liquidity dimensions
                         </p>
                     </div>
 
                     <!-- Performance Metrics Chart -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-purple-500">
-                        <h3 class="text-lg font-bold mb-2 text-purple-400">
+                    <div class="bg-amber-50 rounded-lg p-3 border border-gray-300 shadow">
+                        <h3 class="text-lg font-bold mb-2 text-gray-900">
                             <i class="fas fa-chart-bar mr-2"></i>
                             LLM vs Backtesting Comparison
                         </h3>
                         <div style="height: 220px; position: relative;">
                             <canvas id="comparisonChart"></canvas>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 text-center">
+                        <p class="text-xs text-gray-600 mt-1 text-center">
                             Side-by-side comparison of AI confidence vs algorithmic signals
                         </p>
                     </div>
@@ -2030,69 +2030,69 @@ app.get('/', (c) => {
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                     <!-- Arbitrage Opportunity Visualization -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-yellow-500">
-                        <h3 class="text-base font-bold mb-2 text-yellow-400">
+                    <div class="bg-amber-50 rounded-lg p-3 border border-gray-300 shadow">
+                        <h3 class="text-base font-bold mb-2 text-gray-900">
                             <i class="fas fa-exchange-alt mr-2"></i>
                             Arbitrage Opportunities
                         </h3>
                         <div style="height: 180px; position: relative;">
                             <canvas id="arbitrageChart"></canvas>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 text-center">
+                        <p class="text-xs text-gray-600 mt-1 text-center">
                             Cross-exchange price spreads
                         </p>
                     </div>
 
                     <!-- Risk Metrics Gauge -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-red-500">
-                        <h3 class="text-base font-bold mb-2 text-red-400">
+                    <div class="bg-amber-50 rounded-lg p-3 border border-gray-300 shadow">
+                        <h3 class="text-base font-bold mb-2 text-gray-900">
                             <i class="fas fa-exclamation-triangle mr-2"></i>
                             Risk Assessment
                         </h3>
                         <div style="height: 180px; position: relative;">
                             <canvas id="riskGaugeChart"></canvas>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 text-center">
+                        <p class="text-xs text-gray-600 mt-1 text-center">
                             Current risk level
                         </p>
                     </div>
 
                     <!-- Market Regime Indicator -->
-                    <div class="bg-gray-800 rounded-lg p-3 border border-green-500">
-                        <h3 class="text-base font-bold mb-2 text-green-400">
+                    <div class="bg-amber-50 rounded-lg p-3 border border-gray-300 shadow">
+                        <h3 class="text-base font-bold mb-2 text-gray-900">
                             <i class="fas fa-compass mr-2"></i>
                             Market Regime
                         </h3>
                         <div style="height: 180px; position: relative;">
                             <canvas id="marketRegimeChart"></canvas>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1 text-center">
+                        <p class="text-xs text-gray-600 mt-1 text-center">
                             Market conditions
                         </p>
                     </div>
                 </div>
 
                 <!-- Explanation Section -->
-                <div class="mt-6 bg-gray-900 rounded-lg p-4 border border-gray-700">
-                    <h4 class="font-bold text-lg mb-3 text-indigo-400">
+                <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <h4 class="font-bold text-lg mb-3 text-blue-900">
                         <i class="fas fa-info-circle mr-2"></i>
                         Understanding the Visualizations
                     </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                         <div>
-                            <p class="font-bold text-white mb-1">📊 Agent Signals Breakdown:</p>
+                            <p class="font-bold text-gray-900 mb-1">📊 Agent Signals Breakdown:</p>
                             <p>Shows how each of the 3 agents (Economic, Sentiment, Liquidity) scores the current market. Higher scores = stronger bullish signals. Composite score determines buy/sell decisions.</p>
                         </div>
                         <div>
-                            <p class="font-bold text-white mb-1">📈 LLM vs Backtesting:</p>
+                            <p class="font-bold text-gray-900 mb-1">📈 LLM vs Backtesting:</p>
                             <p>Compares AI confidence (LLM) against algorithmic signals (Backtesting). Helps identify when both systems agree or diverge on market outlook.</p>
                         </div>
                         <div>
-                            <p class="font-bold text-white mb-1">💱 Arbitrage Opportunities:</p>
+                            <p class="font-bold text-gray-900 mb-1">💱 Arbitrage Opportunities:</p>
                             <p>Visualizes price differences across exchanges and execution quality. Red bars indicate poor execution, green indicates good arbitrage potential.</p>
                         </div>
                         <div>
-                            <p class="font-bold text-white mb-1">⚠️ Risk Assessment:</p>
+                            <p class="font-bold text-gray-900 mb-1">⚠️ Risk Assessment:</p>
                             <p>Gauge showing current risk level based on volatility, drawdown, and position exposure. Red zone = high risk, green = acceptable risk.</p>
                         </div>
                     </div>
@@ -2100,7 +2100,7 @@ app.get('/', (c) => {
             </div>
 
             <!-- Footer -->
-            <div class="mt-8 text-center text-gray-500">
+            <div class="mt-8 text-center text-gray-600">
                 <p>LLM-Driven Trading Intelligence System • Built with Hono + Cloudflare D1 + Chart.js</p>
             </div>
         </div>
@@ -2180,24 +2180,24 @@ app.get('/', (c) => {
                     
                     document.getElementById('economic-agent-data').innerHTML = \`
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Fed Rate:</span>
-                            <span class="text-white font-bold">\${econ.fed_funds_rate.value}%</span>
+                            <span class="text-gray-600">Fed Rate:</span>
+                            <span class="text-gray-900 font-bold">\${econ.fed_funds_rate.value}%</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">CPI Inflation:</span>
-                            <span class="text-white font-bold">\${econ.cpi.value}%</span>
+                            <span class="text-gray-600">CPI Inflation:</span>
+                            <span class="text-gray-900 font-bold">\${econ.cpi.value}%</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">GDP Growth:</span>
-                            <span class="text-white font-bold">\${econ.gdp_growth.value}%</span>
+                            <span class="text-gray-600">GDP Growth:</span>
+                            <span class="text-gray-900 font-bold">\${econ.gdp_growth.value}%</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Unemployment:</span>
-                            <span class="text-white font-bold">\${econ.unemployment_rate.value}%</span>
+                            <span class="text-gray-600">Unemployment:</span>
+                            <span class="text-gray-900 font-bold">\${econ.unemployment_rate.value}%</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">PMI:</span>
-                            <span class="text-white font-bold">\${econ.manufacturing_pmi.value}</span>
+                            <span class="text-gray-600">PMI:</span>
+                            <span class="text-gray-900 font-bold">\${econ.manufacturing_pmi.value}</span>
                         </div>
                     \`;
 
@@ -2213,24 +2213,24 @@ app.get('/', (c) => {
                     
                     document.getElementById('sentiment-agent-data').innerHTML = \`
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Fear & Greed:</span>
-                            <span class="text-white font-bold">\${sent.fear_greed_index.value} (\${sent.fear_greed_index.classification})</span>
+                            <span class="text-gray-600">Fear & Greed:</span>
+                            <span class="text-gray-900 font-bold">\${sent.fear_greed_index.value} (\${sent.fear_greed_index.classification})</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Signal:</span>
-                            <span class="text-white font-bold">\${sent.fear_greed_index.signal}</span>
+                            <span class="text-gray-600">Signal:</span>
+                            <span class="text-gray-900 font-bold">\${sent.fear_greed_index.signal}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">VIX:</span>
-                            <span class="text-white font-bold">\${sent.volatility_index_vix.value.toFixed(2)} (\${sent.volatility_index_vix.signal})</span>
+                            <span class="text-gray-600">VIX:</span>
+                            <span class="text-gray-900 font-bold">\${sent.volatility_index_vix.value.toFixed(2)} (\${sent.volatility_index_vix.signal})</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Social Volume:</span>
-                            <span class="text-white font-bold">\${(sent.social_media_volume.mentions/1000).toFixed(0)}K</span>
+                            <span class="text-gray-600">Social Volume:</span>
+                            <span class="text-gray-900 font-bold">\${(sent.social_media_volume.mentions/1000).toFixed(0)}K</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Inst. Flow:</span>
-                            <span class="text-white font-bold">\${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (\${sent.institutional_flow_24h.direction})</span>
+                            <span class="text-gray-600">Inst. Flow:</span>
+                            <span class="text-gray-900 font-bold">\${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (\${sent.institutional_flow_24h.direction})</span>
                         </div>
                     \`;
 
@@ -2251,34 +2251,34 @@ app.get('/', (c) => {
                     
                     document.getElementById('cross-exchange-agent-data').innerHTML = \`
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Coinbase Price:</span>
-                            <span class="text-white font-bold">\${coinbasePrice ? '$' + coinbasePrice.toLocaleString() : 'N/A'}</span>
+                            <span class="text-gray-600">Coinbase Price:</span>
+                            <span class="text-gray-900 font-bold">\${coinbasePrice ? '$' + coinbasePrice.toLocaleString() : 'N/A'}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Kraken Price:</span>
-                            <span class="text-white font-bold">\${krakenPrice ? '$' + krakenPrice.toLocaleString() : 'N/A'}</span>
+                            <span class="text-gray-600">Kraken Price:</span>
+                            <span class="text-gray-900 font-bold">\${krakenPrice ? '$' + krakenPrice.toLocaleString() : 'N/A'}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">24h Volume:</span>
-                            <span class="text-white font-bold">\${cross.total_volume_24h.usd.toLocaleString()} BTC</span>
+                            <span class="text-gray-600">24h Volume:</span>
+                            <span class="text-gray-900 font-bold">\${cross.total_volume_24h.usd.toLocaleString()} BTC</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Avg Spread:</span>
-                            <span class="text-white font-bold">\${cross.liquidity_metrics.average_spread_percent}%</span>
+                            <span class="text-gray-600">Avg Spread:</span>
+                            <span class="text-gray-900 font-bold">\${cross.liquidity_metrics.average_spread_percent}%</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Liquidity:</span>
-                            <span class="text-white font-bold">\${cross.liquidity_metrics.liquidity_quality}</span>
+                            <span class="text-gray-600">Liquidity:</span>
+                            <span class="text-gray-900 font-bold">\${cross.liquidity_metrics.liquidity_quality}</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Arbitrage:</span>
-                            <span class="text-white font-bold">\${cross.arbitrage_opportunities.count} opps</span>
+                            <span class="text-gray-600">Arbitrage:</span>
+                            <span class="text-gray-900 font-bold">\${cross.arbitrage_opportunities.count} opps</span>
                         </div>
                     \`;
                 } catch (error) {
                     console.error('Error loading agent data:', error);
                     // Show error in UI
-                    const errorMsg = '<div class="text-red-400 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>Error loading data</div>';
+                    const errorMsg = '<div class="text-red-600 text-sm"><i class="fas fa-exclamation-circle mr-1"></i>Error loading data</div>';
                     if (document.getElementById('economic-agent-data')) {
                         document.getElementById('economic-agent-data').innerHTML = errorMsg;
                     }
@@ -2296,7 +2296,7 @@ app.get('/', (c) => {
                 const resultsDiv = document.getElementById('llm-results');
                 const metadataDiv = document.getElementById('llm-metadata');
                 
-                resultsDiv.innerHTML = '<p class="text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Fetching agent data and generating AI analysis...</p>';
+                resultsDiv.innerHTML = '<p class="text-gray-600"><i class="fas fa-spinner fa-spin mr-2"></i>Fetching agent data and generating AI analysis...</p>';
                 metadataDiv.innerHTML = '';
 
                 try {
@@ -2308,13 +2308,13 @@ app.get('/', (c) => {
                     const data = response.data;
                     
                     resultsDiv.innerHTML = \`
-                        <div class="prose prose-invert max-w-none">
+                        <div class="prose max-w-none">
                             <div class="mb-4">
-                                <span class="bg-green-600 px-3 py-1 rounded-full text-xs font-bold">
+                                <span class="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                                     \${data.model}
                                 </span>
                             </div>
-                            <div class="text-gray-300 whitespace-pre-wrap">\${data.analysis}</div>
+                            <div class="text-gray-800 whitespace-pre-wrap">\${data.analysis}</div>
                         </div>
                     \`;
 
@@ -2336,7 +2336,7 @@ app.get('/', (c) => {
                     }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
-                        <div class="text-red-400">
+                        <div class="text-red-600">
                             <i class="fas fa-exclamation-circle mr-2"></i>
                             Error: \${error.response?.data?.error || error.message}
                         </div>
@@ -2349,7 +2349,7 @@ app.get('/', (c) => {
                 const resultsDiv = document.getElementById('backtest-results');
                 const metadataDiv = document.getElementById('backtest-metadata');
                 
-                resultsDiv.innerHTML = '<p class="text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Running agent-based backtest...</p>';
+                resultsDiv.innerHTML = '<p class="text-gray-600"><i class="fas fa-spinner fa-spin mr-2"></i>Running agent-based backtest...</p>';
                 metadataDiv.innerHTML = '';
 
                 try {
@@ -2373,81 +2373,81 @@ app.get('/', (c) => {
                     const confidence = signals.confidence || 0;
                     const reasoning = signals.reasoning || 'Trading signals based on agent composite scoring';
                     
-                    const returnColor = bt.total_return >= 0 ? 'text-green-400' : 'text-red-400';
+                    const returnColor = bt.total_return >= 0 ? 'text-green-700' : 'text-red-700';
                     
                     resultsDiv.innerHTML = \`
                         <div class="space-y-4">
-                            <div class="bg-gray-800 p-4 rounded-lg">
-                                <h4 class="font-bold text-lg mb-3 text-orange-400">Agent Signals</h4>
+                            <div class="bg-white border border-orange-200 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-3 text-orange-800">Agent Signals</h4>
                                 <div class="grid grid-cols-2 gap-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Economic Score:</span>
-                                        <span class="text-white font-bold">\${economicScore}/6</span>
+                                        <span class="text-gray-600">Economic Score:</span>
+                                        <span class="text-gray-900 font-bold">\${economicScore}/6</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Sentiment Score:</span>
-                                        <span class="text-white font-bold">\${sentimentScore}/6</span>
+                                        <span class="text-gray-600">Sentiment Score:</span>
+                                        <span class="text-gray-900 font-bold">\${sentimentScore}/6</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Liquidity Score:</span>
-                                        <span class="text-white font-bold">\${liquidityScore}/6</span>
+                                        <span class="text-gray-600">Liquidity Score:</span>
+                                        <span class="text-gray-900 font-bold">\${liquidityScore}/6</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Total Score:</span>
-                                        <span class="text-yellow-400 font-bold">\${totalScore}/18</span>
+                                        <span class="text-gray-600">Total Score:</span>
+                                        <span class="text-orange-700 font-bold">\${totalScore}/18</span>
                                     </div>
                                 </div>
-                                <div class="mt-3 pt-3 border-t border-gray-700">
+                                <div class="mt-3 pt-3 border-t border-orange-200">
                                     <div class="flex justify-between mb-2">
-                                        <span class="text-gray-400">Signal:</span>
-                                        <span class="font-bold \${signals.shouldBuy ? 'text-green-400' : signals.shouldSell ? 'text-red-400' : 'text-yellow-400'}">
+                                        <span class="text-gray-600">Signal:</span>
+                                        <span class="font-bold \${signals.shouldBuy ? 'text-green-700' : signals.shouldSell ? 'text-red-700' : 'text-orange-700'}">
                                             \${signals.shouldBuy ? 'BUY' : signals.shouldSell ? 'SELL' : 'HOLD'}
                                         </span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Confidence:</span>
-                                        <span class="text-white font-bold">\${confidence}%</span>
+                                        <span class="text-gray-600">Confidence:</span>
+                                        <span class="text-gray-900 font-bold">\${confidence}%</span>
                                     </div>
                                     <div class="mt-2">
-                                        <p class="text-xs text-gray-400">\${reasoning}</p>
+                                        <p class="text-xs text-gray-600">\${reasoning}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-gray-800 p-4 rounded-lg">
-                                <h4 class="font-bold text-lg mb-3 text-orange-400">Performance</h4>
+                            <div class="bg-white border border-orange-200 p-4 rounded-lg">
+                                <h4 class="font-bold text-lg mb-3 text-orange-800">Performance</h4>
                                 <div class="grid grid-cols-2 gap-2 text-sm">
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Initial Capital:</span>
-                                        <span class="text-white font-bold">$\${bt.initial_capital.toLocaleString()}</span>
+                                        <span class="text-gray-600">Initial Capital:</span>
+                                        <span class="text-gray-900 font-bold">$\${bt.initial_capital.toLocaleString()}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Final Capital:</span>
-                                        <span class="text-white font-bold">$\${bt.final_capital.toFixed(2)}</span>
+                                        <span class="text-gray-600">Final Capital:</span>
+                                        <span class="text-gray-900 font-bold">$\${bt.final_capital.toFixed(2)}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Total Return:</span>
+                                        <span class="text-gray-600">Total Return:</span>
                                         <span class="\${returnColor} font-bold">\${bt.total_return.toFixed(2)}%</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Sharpe Ratio:</span>
-                                        <span class="text-white font-bold">\${bt.sharpe_ratio.toFixed(2)}</span>
+                                        <span class="text-gray-600">Sharpe Ratio:</span>
+                                        <span class="text-gray-900 font-bold">\${bt.sharpe_ratio.toFixed(2)}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Max Drawdown:</span>
-                                        <span class="text-red-400 font-bold">\${bt.max_drawdown.toFixed(2)}%</span>
+                                        <span class="text-gray-600">Max Drawdown:</span>
+                                        <span class="text-red-700 font-bold">\${bt.max_drawdown.toFixed(2)}%</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Win Rate:</span>
-                                        <span class="text-white font-bold">\${bt.win_rate.toFixed(0)}%</span>
+                                        <span class="text-gray-600">Win Rate:</span>
+                                        <span class="text-gray-900 font-bold">\${bt.win_rate.toFixed(0)}%</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Total Trades:</span>
-                                        <span class="text-white font-bold">\${bt.total_trades}</span>
+                                        <span class="text-gray-600">Total Trades:</span>
+                                        <span class="text-gray-900 font-bold">\${bt.total_trades}</span>
                                     </div>
                                     <div class="flex justify-between">
-                                        <span class="text-gray-400">Win/Loss:</span>
-                                        <span class="text-white font-bold">\${bt.winning_trades}W / \${bt.losing_trades}L</span>
+                                        <span class="text-gray-600">Win/Loss:</span>
+                                        <span class="text-gray-900 font-bold">\${bt.winning_trades}W / \${bt.losing_trades}L</span>
                                     </div>
                                 </div>
                             </div>
@@ -2475,7 +2475,7 @@ app.get('/', (c) => {
                     }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
-                        <div class="text-red-400">
+                        <div class="text-red-600">
                             <i class="fas fa-exclamation-circle mr-2"></i>
                             Error: \${error.response?.data?.error || error.message}
                         </div>
