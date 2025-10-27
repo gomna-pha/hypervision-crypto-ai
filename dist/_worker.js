@@ -251,7 +251,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                     <!-- Two Systems (Bottom) -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- LLM System -->
-                        <div class="bg-green-50 rounded-lg p-6 border-2 border-green-600 shadow">
+                        <div class="bg-amber-50 rounded-lg p-6 border-2 border-green-600 shadow">
                             <h4 class="text-xl font-bold text-green-800 mb-3 text-center">
                                 <i class="fas fa-robot mr-2"></i>
                                 LLM Agent (AI-Powered)
@@ -277,7 +277,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         </div>
 
                         <!-- Backtesting System -->
-                        <div class="bg-orange-50 rounded-lg p-6 border border-gray-300 shadow">
+                        <div class="bg-amber-50 rounded-lg p-6 border border-gray-300 shadow">
                             <h4 class="text-xl font-bold text-orange-800 mb-3 text-center">
                                 <i class="fas fa-chart-line mr-2"></i>
                                 Backtesting Agent (Algorithmic)
@@ -313,7 +313,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         <i class="fas fa-robot mr-2"></i>
                         LLM Analysis Results
                     </h2>
-                    <div id="llm-results" class="bg-green-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-green-200">
+                    <div id="llm-results" class="bg-amber-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-green-200">
                         <p class="text-gray-600 italic">Click "Run LLM Analysis" to generate AI-powered market analysis...</p>
                     </div>
                     <div id="llm-metadata" class="mt-3 pt-3 border-t border-gray-300 text-sm text-gray-600">
@@ -327,7 +327,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         <i class="fas fa-chart-line mr-2"></i>
                         Backtesting Results
                     </h2>
-                    <div id="backtest-results" class="bg-orange-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-orange-200">
+                    <div id="backtest-results" class="bg-amber-50 p-4 rounded-lg min-h-64 max-h-96 overflow-y-auto border border-orange-200">
                         <p class="text-gray-600 italic">Click "Run Backtesting" to execute agent-based backtest...</p>
                     </div>
                     <div id="backtest-metadata" class="mt-3 pt-3 border-t border-gray-300 text-sm text-gray-600">
@@ -347,7 +347,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                     <!-- Agent Signals Chart -->
-                    <div class="bg-blue-50 rounded-lg p-3 border-2 border-blue-900 shadow">
+                    <div class="bg-amber-50 rounded-lg p-3 border-2 border-blue-900 shadow">
                         <h3 class="text-lg font-bold mb-2 text-blue-900">
                             <i class="fas fa-signal mr-2"></i>
                             Agent Signals Breakdown
@@ -408,7 +408,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                 </div>
 
                 <!-- Explanation Section -->
-                <div class="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <div class="mt-6 bg-amber-50 rounded-lg p-4 border border-blue-200">
                     <h4 class="font-bold text-lg mb-3 text-blue-900">
                         <i class="fas fa-info-circle mr-2"></i>
                         Understanding the Visualizations
@@ -431,7 +431,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
             </div>
 
             <!-- ADVANCED QUANTITATIVE STRATEGIES DASHBOARD -->
-            <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg p-6 border-2 border-blue-900 mb-8 shadow-lg">
+            <div class="bg-amber-50 rounded-lg p-6 border-2 border-blue-900 mb-8 shadow-lg">
                 <h2 class="text-3xl font-bold mb-6 text-center text-gray-900">
                     <i class="fas fa-brain mr-2 text-blue-900"></i>
                     Advanced Quantitative Strategies
@@ -1246,7 +1246,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         const spatial = data.arbitrage_opportunities.spatial.count;
                         
                         resultDiv.innerHTML = \`
-                            <div class="bg-green-50 border border-green-200 rounded p-2 mt-2">
+                            <div class="bg-amber-50 border border-green-200 rounded p-2 mt-2">
                                 <p class="font-bold text-green-800">✓ Found \${total} Opportunities</p>
                                 <p class="text-green-700">Spatial: \${spatial} opportunities</p>
                                 <p class="text-xs text-gray-600 mt-1">Min profit threshold: 0.3% after fees</p>
@@ -1277,7 +1277,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         const cointegrated = data.cointegration.is_cointegrated;
                         
                         resultDiv.innerHTML = \`
-                            <div class="bg-purple-50 border border-purple-200 rounded p-2 mt-2">
+                            <div class="bg-amber-50 border border-purple-200 rounded p-2 mt-2">
                                 <p class="font-bold text-purple-800">✓ Signal: \${signal}</p>
                                 <p class="text-purple-700">Z-Score: \${zscore}</p>
                                 <p class="text-purple-700">Cointegrated: \${cointegrated ? 'Yes' : 'No'}</p>
@@ -1306,7 +1306,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         const dominant = data.factor_exposure.dominant_factor;
                         
                         resultDiv.innerHTML = \`
-                            <div class="bg-blue-50 border border-blue-200 rounded p-2 mt-2">
+                            <div class="bg-amber-50 border border-blue-200 rounded p-2 mt-2">
                                 <p class="font-bold text-blue-800">✓ Signal: \${signal}</p>
                                 <p class="text-blue-700">Alpha Score: \${score}/100</p>
                                 <p class="text-blue-700">Dominant Factor: \${dominant}</p>
@@ -1337,7 +1337,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         const agreement = (data.ensemble_prediction.model_agreement * 100).toFixed(0);
                         
                         resultDiv.innerHTML = \`
-                            <div class="bg-orange-50 border border-orange-200 rounded p-2 mt-2">
+                            <div class="bg-amber-50 border border-orange-200 rounded p-2 mt-2">
                                 <p class="font-bold text-orange-800">✓ Ensemble: \${signal}</p>
                                 <p class="text-orange-700">Confidence: \${confidence}%</p>
                                 <p class="text-orange-700">Model Agreement: \${agreement}%</p>
