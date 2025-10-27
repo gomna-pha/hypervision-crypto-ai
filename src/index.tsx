@@ -2580,7 +2580,44 @@ app.get('/', (c) => {
                 </p>
             </div>
 
-
+            <!-- LIVE ARBITRAGE OPPORTUNITIES SECTION -->
+            <div class="bg-white rounded-lg p-6 border-2 border-green-600 mb-8 shadow-lg">
+                <h2 class="text-3xl font-bold mb-4 text-center text-gray-900">
+                    <i class="fas fa-exchange-alt mr-2 text-green-600"></i>
+                    Live Arbitrage Opportunities
+                    <span class="ml-3 text-sm bg-green-600 text-white px-3 py-1 rounded-full animate-pulse">LIVE</span>
+                </h2>
+                <p class="text-center text-gray-600 mb-6">Real-time cross-exchange price differences and profit opportunities</p>
+                
+                <div id="live-arbitrage-container" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Arbitrage cards will be populated here -->
+                    <div class="col-span-3 text-center py-8">
+                        <i class="fas fa-spinner fa-spin text-4xl text-gray-400 mb-3"></i>
+                        <p class="text-gray-600">Loading arbitrage opportunities...</p>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-4 border-t border-gray-300">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-gray-900" id="arb-total-opps">0</p>
+                            <p class="text-gray-600">Total Opportunities</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-green-600" id="arb-max-spread">0.00%</p>
+                            <p class="text-gray-600">Max Spread</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-blue-600" id="arb-avg-spread">0.00%</p>
+                            <p class="text-gray-600">Avg Spread</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-2xl font-bold text-gray-900" id="arb-last-update">--:--:--</p>
+                            <p class="text-gray-600">Last Update</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- LIVE DATA AGENTS SECTION -->
             <div class="bg-white rounded-lg p-6 border-2 border-blue-900 mb-8 shadow-lg">
@@ -3065,6 +3102,178 @@ app.get('/', (c) => {
             function formatTime(timestamp) {
                 const date = new Date(timestamp);
                 return date.toLocaleTimeString('en-US', { hour12: false });
+            }
+
+            // Load Live Arbitrage Opportunities
+            async function loadLiveArbitrage() {
+                console.log('Loading live arbitrage opportunities...');
+                const container = document.getElementById('live-arbitrage-container');
+                
+                try {
+                    const response = await axios.get('/api/strategies/arbitrage/advanced?symbol=BTC');
+                    const data = response.data;
+                    
+                    if (data.success) {
+                        const arb = data.arbitrage_opportunities;
+                        
+                        // Update summary stats
+                        document.getElementById('arb-total-opps').textContent = arb.total_opportunities;
+                        document.getElementById('arb-max-spread').textContent = 
+                            arb.spatial.opportunities.length > 0 ? 
+                            Math.max(...arb.spatial.opportunities.map(o => o.spread_percent)).toFixed(2) + '%' : '0.00%';
+                        document.getElementById('arb-avg-spread').textContent = 
+                            arb.spatial.avg_spread_percent.toFixed(2) + '%';
+                        document.getElementById('arb-last-update').textContent = formatTime(Date.now());
+                        
+                        // Create arbitrage cards
+                        let html = '';
+                        
+                        // Spatial Arbitrage Opportunities
+                        if (arb.spatial.opportunities.length > 0) {
+                            arb.spatial.opportunities.slice(0, 6).forEach(opp => {
+                                const profitColor = opp.spread_percent > 0.3 ? 'text-green-600' : 'text-gray-600';
+                                const borderColor = opp.spread_percent > 0.3 ? 'border-green-600' : 'border-gray-300';
+                                const statusBadge = opp.spread_percent > 0.3 ? 
+                                    '<div class="mt-2 pt-2 border-t border-gray-300"><span class="text-xs font-bold text-green-600"><i class="fas fa-check-circle mr-1"></i> Profitable</span></div>' : 
+                                    '<div class="mt-2 pt-2 border-t border-gray-300"><span class="text-xs text-gray-600"><i class="fas fa-info-circle mr-1"></i> Below threshold</span></div>';
+                                
+                                html += '<div class="bg-amber-50 rounded-lg p-4 border-2 ' + borderColor + ' shadow hover:shadow-lg transition-shadow">' +
+                                    '<div class="flex items-center justify-between mb-2">' +
+                                        '<span class="text-sm font-bold text-gray-900">' + opp.buy_exchange + ' → ' + opp.sell_exchange + '</span>' +
+                                        '<span class="text-xs bg-blue-900 text-white px-2 py-1 rounded">Spatial</span>' +
+                                    '</div>' +
+                                    '<div class="space-y-1 text-sm">' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Buy Price:</span>' +
+                                            '<span class="text-gray-900 font-mono">$' + opp.buy_price.toLocaleString() + '</span>' +
+                                        '</div>' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Sell Price:</span>' +
+                                            '<span class="text-gray-900 font-mono">$' + opp.sell_price.toLocaleString() + '</span>' +
+                                        '</div>' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Spread:</span>' +
+                                            '<span class="' + profitColor + ' font-bold">' + opp.spread_percent.toFixed(2) + '%</span>' +
+                                        '</div>' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Profit (1 BTC):</span>' +
+                                            '<span class="' + profitColor + ' font-bold">$' + opp.profit_usd.toFixed(2) + '</span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    statusBadge +
+                                '</div>';
+                            });
+                        }
+                        
+                        // Triangular Arbitrage
+                        if (arb.triangular.opportunities.length > 0) {
+                            arb.triangular.opportunities.slice(0, 2).forEach(opp => {
+                                const profitColor = opp.profit_percent > 0 ? 'text-green-600' : 'text-gray-600';
+                                const borderColor = opp.profit_percent > 0 ? 'border-purple-600' : 'border-gray-300';
+                                const statusBadge = opp.profit_percent > 0 ? 
+                                    '<div class="mt-2 pt-2 border-t border-gray-300"><span class="text-xs font-bold text-green-600"><i class="fas fa-check-circle mr-1"></i> Profitable</span></div>' : 
+                                    '<div class="mt-2 pt-2 border-t border-gray-300"><span class="text-xs text-gray-600"><i class="fas fa-info-circle mr-1"></i> No profit</span></div>';
+                                
+                                html += '<div class="bg-amber-50 rounded-lg p-4 border-2 ' + borderColor + ' shadow hover:shadow-lg transition-shadow">' +
+                                    '<div class="flex items-center justify-between mb-2">' +
+                                        '<span class="text-sm font-bold text-gray-900">Triangular</span>' +
+                                        '<span class="text-xs bg-purple-600 text-white px-2 py-1 rounded">3-Leg</span>' +
+                                    '</div>' +
+                                    '<div class="space-y-1 text-sm">' +
+                                        '<div class="text-gray-600 mb-2">' +
+                                            '<i class="fas fa-route mr-1"></i>' +
+                                            opp.path.join(' → ') +
+                                        '</div>' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Exchange:</span>' +
+                                            '<span class="text-gray-900">' + opp.exchange + '</span>' +
+                                        '</div>' +
+                                        '<div class="flex justify-between">' +
+                                            '<span class="text-gray-600">Profit:</span>' +
+                                            '<span class="' + profitColor + ' font-bold">' + opp.profit_percent.toFixed(2) + '%</span>' +
+                                        '</div>' +
+                                    '</div>' +
+                                    statusBadge +
+                                '</div>';
+                            });
+                        }
+                        
+                        // Statistical Arbitrage
+                        if (arb.statistical.signals.length > 0) {
+                            const statArb = arb.statistical.signals[0];
+                            const signalColor = statArb.signal === 'BUY' ? 'text-green-600' : statArb.signal === 'SELL' ? 'text-red-600' : 'text-gray-600';
+                            
+                            html += '<div class="bg-amber-50 rounded-lg p-4 border-2 border-blue-600 shadow hover:shadow-lg transition-shadow">' +
+                                '<div class="flex items-center justify-between mb-2">' +
+                                    '<span class="text-sm font-bold text-gray-900">Statistical</span>' +
+                                    '<span class="text-xs bg-blue-600 text-white px-2 py-1 rounded">Mean Rev</span>' +
+                                '</div>' +
+                                '<div class="space-y-1 text-sm">' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Z-Score:</span>' +
+                                        '<span class="text-gray-900 font-bold">' + statArb.z_score.toFixed(2) + '</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Signal:</span>' +
+                                        '<span class="' + signalColor + ' font-bold">' + statArb.signal + '</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Mean Price:</span>' +
+                                        '<span class="text-gray-900 font-mono">$' + statArb.mean_price.toFixed(2) + '</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Deviation:</span>' +
+                                        '<span class="text-gray-900">' + statArb.std_dev.toFixed(2) + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+                        }
+                        
+                        // Funding Rate Arbitrage
+                        if (arb.funding_rate.opportunities.length > 0) {
+                            const fundingArb = arb.funding_rate.opportunities[0];
+                            const rateColor = Math.abs(fundingArb.funding_rate_percent) > 0.01 ? 'text-orange-600' : 'text-gray-600';
+                            
+                            html += '<div class="bg-amber-50 rounded-lg p-4 border-2 border-orange-600 shadow hover:shadow-lg transition-shadow">' +
+                                '<div class="flex items-center justify-between mb-2">' +
+                                    '<span class="text-sm font-bold text-gray-900">Funding Rate</span>' +
+                                    '<span class="text-xs bg-orange-600 text-white px-2 py-1 rounded">Futures</span>' +
+                                '</div>' +
+                                '<div class="space-y-1 text-sm">' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Exchange:</span>' +
+                                        '<span class="text-gray-900">' + fundingArb.exchange + '</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Pair:</span>' +
+                                        '<span class="text-gray-900">' + fundingArb.pair + '</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Funding Rate:</span>' +
+                                        '<span class="' + rateColor + ' font-bold">' + fundingArb.funding_rate_percent.toFixed(4) + '%</span>' +
+                                    '</div>' +
+                                    '<div class="flex justify-between">' +
+                                        '<span class="text-gray-600">Strategy:</span>' +
+                                        '<span class="text-gray-900">' + fundingArb.strategy + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>';
+                        }
+                        
+                        if (html === '') {
+                            html = '<div class="col-span-3 text-center py-8"><p class="text-gray-600">No arbitrage opportunities found at this time</p></div>';
+                        }
+                        
+                        container.innerHTML = html;
+                    }
+                } catch (error) {
+                    console.error('Error loading arbitrage:', error);
+                    container.innerHTML = '<div class="col-span-3 text-center py-8">' +
+                        '<i class="fas fa-exclamation-triangle text-4xl text-red-600 mb-3"></i>' +
+                        '<p class="text-red-600">Error loading arbitrage opportunities</p>' +
+                        '<p class="text-sm text-gray-600 mt-2">' + error.message + '</p>' +
+                    '</div>';
+                }
             }
 
             async function loadAgentData() {
@@ -3658,8 +3867,10 @@ app.get('/', (c) => {
                 console.log('DOM Content Loaded - starting data fetch');
                 updateDashboardStats();
                 loadAgentData();
+                loadLiveArbitrage(); // Load arbitrage opportunities
                 // Refresh every 10 seconds
                 setInterval(loadAgentData, 10000);
+                setInterval(loadLiveArbitrage, 10000); // Refresh arbitrage every 10 seconds
             });
             
             // Also call immediately (in case DOMContentLoaded already fired)
@@ -3667,6 +3878,7 @@ app.get('/', (c) => {
                 console.log('Fallback data load triggered');
                 updateDashboardStats();
                 loadAgentData();
+                loadLiveArbitrage(); // Load arbitrage opportunities
             }, 100);
 
             // ========================================================================
