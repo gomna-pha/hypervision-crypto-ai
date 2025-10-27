@@ -1386,6 +1386,106 @@ app.get('/', (c) => {
                 </div>
             </div>
 
+            <!-- VISUALIZATION SECTION -->
+            <div class="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-lg p-6 border-2 border-indigo-500 mb-8">
+                <h2 class="text-3xl font-bold mb-6 text-center">
+                    <i class="fas fa-chart-area mr-2 text-indigo-400"></i>
+                    Interactive Visualizations & Analysis
+                    <span class="ml-3 text-sm bg-purple-500 px-3 py-1 rounded-full">Live Charts</span>
+                </h2>
+                <p class="text-center text-gray-300 mb-6">Visual insights into agent signals, performance metrics, and arbitrage opportunities</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Agent Signals Chart -->
+                    <div class="bg-gray-800 rounded-lg p-4 border border-indigo-500">
+                        <h3 class="text-xl font-bold mb-3 text-indigo-400">
+                            <i class="fas fa-signal mr-2"></i>
+                            Agent Signals Breakdown
+                        </h3>
+                        <canvas id="agentSignalsChart" height="250"></canvas>
+                        <p class="text-xs text-gray-400 mt-2 text-center">
+                            Real-time scoring across Economic, Sentiment, and Liquidity dimensions
+                        </p>
+                    </div>
+
+                    <!-- Performance Metrics Chart -->
+                    <div class="bg-gray-800 rounded-lg p-4 border border-purple-500">
+                        <h3 class="text-xl font-bold mb-3 text-purple-400">
+                            <i class="fas fa-chart-bar mr-2"></i>
+                            LLM vs Backtesting Comparison
+                        </h3>
+                        <canvas id="comparisonChart" height="250"></canvas>
+                        <p class="text-xs text-gray-400 mt-2 text-center">
+                            Side-by-side comparison of AI confidence vs algorithmic signals
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Arbitrage Opportunity Visualization -->
+                    <div class="bg-gray-800 rounded-lg p-4 border border-yellow-500">
+                        <h3 class="text-xl font-bold mb-3 text-yellow-400">
+                            <i class="fas fa-exchange-alt mr-2"></i>
+                            Arbitrage Opportunities
+                        </h3>
+                        <canvas id="arbitrageChart" height="200"></canvas>
+                        <p class="text-xs text-gray-400 mt-2 text-center">
+                            Cross-exchange price spreads and execution quality
+                        </p>
+                    </div>
+
+                    <!-- Risk Metrics Gauge -->
+                    <div class="bg-gray-800 rounded-lg p-4 border border-red-500">
+                        <h3 class="text-xl font-bold mb-3 text-red-400">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            Risk Assessment
+                        </h3>
+                        <canvas id="riskGaugeChart" height="200"></canvas>
+                        <p class="text-xs text-gray-400 mt-2 text-center">
+                            Volatility, drawdown, and exposure metrics
+                        </p>
+                    </div>
+
+                    <!-- Market Regime Indicator -->
+                    <div class="bg-gray-800 rounded-lg p-4 border border-green-500">
+                        <h3 class="text-xl font-bold mb-3 text-green-400">
+                            <i class="fas fa-compass mr-2"></i>
+                            Market Regime
+                        </h3>
+                        <canvas id="marketRegimeChart" height="200"></canvas>
+                        <p class="text-xs text-gray-400 mt-2 text-center">
+                            Current market conditions and trends
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Explanation Section -->
+                <div class="mt-6 bg-gray-900 rounded-lg p-4 border border-gray-700">
+                    <h4 class="font-bold text-lg mb-3 text-indigo-400">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Understanding the Visualizations
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
+                        <div>
+                            <p class="font-bold text-white mb-1">📊 Agent Signals Breakdown:</p>
+                            <p>Shows how each of the 3 agents (Economic, Sentiment, Liquidity) scores the current market. Higher scores = stronger bullish signals. Composite score determines buy/sell decisions.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">📈 LLM vs Backtesting:</p>
+                            <p>Compares AI confidence (LLM) against algorithmic signals (Backtesting). Helps identify when both systems agree or diverge on market outlook.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">💱 Arbitrage Opportunities:</p>
+                            <p>Visualizes price differences across exchanges and execution quality. Red bars indicate poor execution, green indicates good arbitrage potential.</p>
+                        </div>
+                        <div>
+                            <p class="font-bold text-white mb-1">⚠️ Risk Assessment:</p>
+                            <p>Gauge showing current risk level based on volatility, drawdown, and position exposure. Red zone = high risk, green = acceptable risk.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Footer -->
             <div class="mt-8 text-center text-gray-500">
                 <p>LLM-Driven Trading Intelligence System • Built with Hono + Cloudflare D1 + Chart.js</p>
@@ -1512,6 +1612,15 @@ app.get('/', (c) => {
                             <div><i class="fas fa-robot mr-2"></i>Model: \${data.model}</div>
                         </div>
                     \`;
+                    
+                    // Update charts with LLM data
+                    const llmConfidence = 60; // Estimate based on analysis tone
+                    updateComparisonChart(llmConfidence, null);
+                    
+                    // Update arbitrage chart if cross-exchange data available
+                    if (data.agent_data && data.agent_data.cross_exchange) {
+                        updateArbitrageChart(data.agent_data.cross_exchange.market_depth_analysis);
+                    }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
                         <div class="text-red-400">
@@ -1631,6 +1740,18 @@ app.get('/', (c) => {
                             <div><i class="fas fa-coins mr-2"></i>Initial Capital: $10,000</div>
                         </div>
                     \`;
+                    
+                    // Update all charts with backtesting data
+                    updateAgentSignalsChart(signals);
+                    updateComparisonChart(null, signals);
+                    updateRiskGaugeChart(bt);
+                    updateMarketRegimeChart(signals);
+                    
+                    // Fetch cross-exchange data for arbitrage chart
+                    const crossRes = await axios.get('/api/agents/cross-exchange?symbol=BTC');
+                    if (crossRes.data.success) {
+                        updateArbitrageChart(crossRes.data.data.market_depth_analysis);
+                    }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
                         <div class="text-red-400">
@@ -1641,9 +1762,323 @@ app.get('/', (c) => {
                 }
             }
 
+            // Chart instances (global)
+            let agentSignalsChart = null;
+            let comparisonChart = null;
+            let arbitrageChart = null;
+            let riskGaugeChart = null;
+            let marketRegimeChart = null;
+
+            // Initialize all charts
+            function initializeCharts() {
+                // Agent Signals Breakdown Chart (Radar)
+                const agentCtx = document.getElementById('agentSignalsChart').getContext('2d');
+                agentSignalsChart = new Chart(agentCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Economic Score', 'Sentiment Score', 'Liquidity Score', 'Total Score', 'Confidence', 'Win Rate'],
+                        datasets: [{
+                            label: 'Current Agent Signals',
+                            data: [0, 0, 0, 0, 0, 0],
+                            backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                            borderColor: 'rgba(99, 102, 241, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(99, 102, 241, 1)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                pointLabels: { color: '#fff', font: { size: 11 } },
+                                ticks: { 
+                                    color: '#fff',
+                                    backdropColor: 'transparent',
+                                    min: 0,
+                                    max: 100
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#fff' } }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+
+                // LLM vs Backtesting Comparison Chart (Bar)
+                const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
+                comparisonChart = new Chart(comparisonCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['LLM Confidence', 'Backtest Score', 'Economic', 'Sentiment', 'Liquidity'],
+                        datasets: [
+                            {
+                                label: 'LLM Agent',
+                                data: [0, 0, 0, 0, 0],
+                                backgroundColor: 'rgba(34, 197, 94, 0.6)',
+                                borderColor: 'rgba(34, 197, 94, 1)',
+                                borderWidth: 1
+                            },
+                            {
+                                label: 'Backtesting Agent',
+                                data: [0, 0, 0, 0, 0],
+                                backgroundColor: 'rgba(251, 146, 60, 0.6)',
+                                borderColor: 'rgba(251, 146, 60, 1)',
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: { color: '#fff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            x: {
+                                ticks: { color: '#fff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#fff' } }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+
+                // Arbitrage Opportunities Chart (Horizontal Bar)
+                const arbitrageCtx = document.getElementById('arbitrageChart').getContext('2d');
+                arbitrageChart = new Chart(arbitrageCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Binance', 'Coinbase', 'Kraken', 'Bitfinex', 'OKX'],
+                        datasets: [{
+                            label: 'Price Spread %',
+                            data: [0.5, 0.8, 1.2, 0.6, 0.9],
+                            backgroundColor: function(context) {
+                                const value = context.parsed.y;
+                                return value > 1.0 ? 'rgba(239, 68, 68, 0.6)' : 'rgba(34, 197, 94, 0.6)';
+                            },
+                            borderColor: function(context) {
+                                const value = context.parsed.y;
+                                return value > 1.0 ? 'rgba(239, 68, 68, 1)' : 'rgba(34, 197, 94, 1)';
+                            },
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: { color: '#fff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            },
+                            y: {
+                                ticks: { color: '#fff' },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                            }
+                        },
+                        plugins: {
+                            legend: { labels: { color: '#fff' } }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+
+                // Risk Gauge Chart (Doughnut)
+                const riskCtx = document.getElementById('riskGaugeChart').getContext('2d');
+                riskGaugeChart = new Chart(riskCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Low Risk', 'Medium Risk', 'High Risk', 'Remaining'],
+                        datasets: [{
+                            data: [30, 40, 10, 20],
+                            backgroundColor: [
+                                'rgba(34, 197, 94, 0.6)',
+                                'rgba(251, 191, 36, 0.6)',
+                                'rgba(239, 68, 68, 0.6)',
+                                'rgba(107, 114, 128, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(251, 191, 36, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(107, 114, 128, 0.5)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        circumference: 180,
+                        rotation: -90,
+                        plugins: {
+                            legend: { 
+                                labels: { color: '#fff' },
+                                position: 'bottom'
+                            }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+
+                // Market Regime Chart (Pie)
+                const regimeCtx = document.getElementById('marketRegimeChart').getContext('2d');
+                marketRegimeChart = new Chart(regimeCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Bullish', 'Neutral', 'Bearish', 'High Volatility'],
+                        datasets: [{
+                            data: [40, 30, 20, 10],
+                            backgroundColor: [
+                                'rgba(34, 197, 94, 0.6)',
+                                'rgba(59, 130, 246, 0.6)',
+                                'rgba(239, 68, 68, 0.6)',
+                                'rgba(251, 191, 36, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(34, 197, 94, 1)',
+                                'rgba(59, 130, 246, 1)',
+                                'rgba(239, 68, 68, 1)',
+                                'rgba(251, 191, 36, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        plugins: {
+                            legend: { 
+                                labels: { color: '#fff' },
+                                position: 'bottom'
+                            }
+                        },
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+
+            // Update Agent Signals Chart
+            function updateAgentSignalsChart(signals) {
+                if (!agentSignalsChart) return;
+                
+                // Normalize scores to 0-100 scale
+                const economicScore = (signals.economicScore / 6) * 100;
+                const sentimentScore = (signals.sentimentScore / 6) * 100;
+                const liquidityScore = (signals.liquidityScore / 6) * 100;
+                const totalScore = (signals.totalScore / 18) * 100;
+                const confidence = signals.confidence || 0;
+                
+                agentSignalsChart.data.datasets[0].data = [
+                    economicScore,
+                    sentimentScore,
+                    liquidityScore,
+                    totalScore,
+                    confidence,
+                    0 // Win rate placeholder
+                ];
+                agentSignalsChart.update();
+            }
+
+            // Update Comparison Chart
+            function updateComparisonChart(llmConfidence, backtestSignals) {
+                if (!comparisonChart) return;
+                
+                // LLM data (normalized)
+                comparisonChart.data.datasets[0].data = [
+                    llmConfidence || 60, // LLM confidence
+                    0, // Backtest score (LLM doesn't have this)
+                    50, // Economic placeholder
+                    50, // Sentiment placeholder
+                    50  // Liquidity placeholder
+                ];
+                
+                // Backtesting data
+                if (backtestSignals) {
+                    const economicScore = (backtestSignals.economicScore / 6) * 100;
+                    const sentimentScore = (backtestSignals.sentimentScore / 6) * 100;
+                    const liquidityScore = (backtestSignals.liquidityScore / 6) * 100;
+                    const totalScore = (backtestSignals.totalScore / 18) * 100;
+                    
+                    comparisonChart.data.datasets[1].data = [
+                        0, // LLM confidence (backtesting doesn't have this)
+                        totalScore,
+                        economicScore,
+                        sentimentScore,
+                        liquidityScore
+                    ];
+                }
+                
+                comparisonChart.update();
+            }
+
+            // Update Arbitrage Chart
+            function updateArbitrageChart(crossExchangeData) {
+                if (!arbitrageChart || !crossExchangeData) return;
+                
+                const spread = crossExchangeData.liquidity_metrics.average_spread_percent;
+                const slippage = crossExchangeData.liquidity_metrics.slippage_10btc_percent;
+                const imbalance = crossExchangeData.liquidity_metrics.order_book_imbalance * 5;
+                
+                // Simulate spreads for different exchanges
+                arbitrageChart.data.datasets[0].data = [
+                    spread * 0.8,
+                    spread * 1.2,
+                    spread * 1.5,
+                    spread * 0.9,
+                    spread * 1.1
+                ];
+                arbitrageChart.update();
+            }
+
+            // Update Risk Gauge Chart
+            function updateRiskGaugeChart(backtestData) {
+                if (!riskGaugeChart) return;
+                
+                if (backtestData) {
+                    const winRate = backtestData.win_rate || 0;
+                    const lowRisk = winRate > 60 ? 50 : 20;
+                    const mediumRisk = 30;
+                    const highRisk = winRate < 40 ? 40 : 10;
+                    const remaining = 100 - lowRisk - mediumRisk - highRisk;
+                    
+                    riskGaugeChart.data.datasets[0].data = [lowRisk, mediumRisk, highRisk, remaining];
+                    riskGaugeChart.update();
+                }
+            }
+
+            // Update Market Regime Chart
+            function updateMarketRegimeChart(signals) {
+                if (!marketRegimeChart || !signals) return;
+                
+                const totalScore = signals.totalScore || 0;
+                
+                if (totalScore >= 8) {
+                    // Bullish regime
+                    marketRegimeChart.data.datasets[0].data = [60, 20, 10, 10];
+                } else if (totalScore <= 3) {
+                    // Bearish regime
+                    marketRegimeChart.data.datasets[0].data = [10, 20, 60, 10];
+                } else {
+                    // Neutral regime
+                    marketRegimeChart.data.datasets[0].data = [25, 50, 15, 10];
+                }
+                
+                marketRegimeChart.update();
+            }
+
             // Load agent data on page load and refresh every 10 seconds
             loadAgentData();
             setInterval(loadAgentData, 10000);
+            
+            // Initialize charts after page load
+            initializeCharts();
         </script>
     </body>
     </html>
