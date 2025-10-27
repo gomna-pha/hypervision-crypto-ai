@@ -18,17 +18,55 @@
 - **Local Development**: http://localhost:3000
 - **Public Sandbox**: https://3000-ismuap7ldwaljac6iqjv7-583b4d74.sandbox.novita.ai
 - **API Endpoints**:
-  - GET `/api/strategies` - List all trading strategies
-  - POST `/api/strategies/:id/signal` - Generate trading signal
-  - POST `/api/llm/analyze` - Get LLM market analysis
-  - POST `/api/backtest/run` - Run backtesting simulation
-  - GET `/api/dashboard/summary` - Get dashboard summary
-  - POST `/api/economic/indicators` - Add economic indicator
-  - POST `/api/market/regime` - Detect market regime
+  - **Live Agents (NEW)**:
+    - GET `/api/agents/economic` - Economic indicators (Fed, inflation, GDP, PMI)
+    - GET `/api/agents/sentiment` - Market sentiment (Fear/Greed, flows, VIX)
+    - GET `/api/agents/cross-exchange` - Liquidity analysis (depth, spread, execution)
+  - **Enhanced LLM (NEW)**:
+    - POST `/api/llm/analyze-enhanced` - AI analysis using all 3 live agents
+  - **Agent-Based Backtesting (NEW)**:
+    - POST `/api/backtest/run` - Backtesting with agent-based signals
+  - **Classic Endpoints**:
+    - GET `/api/strategies` - List all trading strategies
+    - POST `/api/strategies/:id/signal` - Generate trading signal
+    - POST `/api/llm/analyze` - Basic LLM market analysis
+    - GET `/api/dashboard/summary` - Get dashboard summary
+    - POST `/api/economic/indicators` - Add economic indicator
+    - POST `/api/market/regime` - Detect market regime
 
 ## ✅ Currently Completed Features
 
-### 1. Real-Time Market Data Layer ⚡ NEW!
+### 1. Live Agent Data Feeds (3 Agents) ⚡⚡ LATEST!
+- **Economic Agent**: Fed policy, inflation (CPI/PPI), GDP, unemployment, Treasury yields, PMI, retail sales
+- **Sentiment Agent**: Fear & Greed Index, aggregate sentiment, VIX, social media volume, institutional flows
+- **Cross-Exchange Agent**: Market depth, liquidity metrics, order book imbalance, execution quality
+- **Real-time Data**: All agents provide live market intelligence used by both LLM and backtesting
+- **Fair Comparison**: Both systems rely on identical data sources for objective analysis
+
+### 2. Enhanced LLM Analysis (Google Gemini + Live Agents) ⚡⚡ LATEST!
+- **AI-Powered Analysis**: Google Gemini 2.0 Flash generates professional market commentary
+- **Multi-Agent Integration**: Fetches data from all 3 live agents simultaneously
+- **Comprehensive Prompts**: 2000+ character prompts with full economic, sentiment, and liquidity context
+- **3-Paragraph Structure**: Macro environment impact, market sentiment, trading recommendation
+- **Confidence Scoring**: AI provides directional bias (bullish/bearish/neutral) with 1-10 confidence
+- **Template Fallback**: Automatic fallback to template-based analysis if API unavailable
+- **Database Storage**: All analyses stored with timestamp and model attribution
+- **API Endpoint**: `/api/llm/analyze-enhanced` (POST)
+
+### 3. Agent-Based Backtesting Engine ⚡⚡ LATEST!
+- **Live Agent Signals**: Trading decisions based on same 3 agents used by LLM
+- **Composite Scoring System**:
+  - **Economic Score**: Fed rates, inflation trends, GDP, PMI (weighted 0-6 points)
+  - **Sentiment Score**: Fear/Greed, institutional flows, VIX, social volume (weighted 0-6 points)
+  - **Liquidity Score**: Market depth, order book imbalance, spread analysis (weighted 0-6 points)
+  - **Total Score**: Combines all dimensions (buy signal ≥6, sell signal ≤-2)
+- **Performance Metrics**: Total return, Sharpe ratio, max drawdown, win rate, P&L tracking
+- **Trade History**: Full attribution showing which agent signals triggered each trade
+- **Synthetic Data**: Generates realistic price data when historical data unavailable
+- **Fair Comparison**: Uses identical agent data as LLM analysis for objective evaluation
+- **API Endpoint**: `/api/backtest/run` (POST)
+
+### 4. Real-Time Market Data Layer ⚡
 - **Live Market Data**: BTC and ETH prices updating every 2 seconds
 - **Real-time Indicators**: RSI, Momentum, Volatility calculated live
 - **Market Sentiment**: Fear & Greed Index, VIX, Market Cap Dominance
@@ -478,6 +516,29 @@ MIT
 
 ## Contact
 Built with ❤️ for trading intelligence and AI-powered decision making.
+
+## Recent Major Updates
+
+### 2025-10-27 - Fair Comparison Implementation ⚡⚡
+**Milestone**: Both LLM and backtesting now rely on same 3 live agent data feeds!
+
+**What Changed**:
+1. ✅ **3 Live Agent Endpoints** - Economic, Sentiment, Cross-Exchange agents providing real-time data
+2. ✅ **Enhanced LLM Endpoint** - Google Gemini AI generates analysis using all 3 agents
+3. ✅ **Agent-Based Backtesting** - Trading signals generated from same agent data as LLM
+4. ✅ **Fair Comparison** - Identical data sources ensure objective LLM vs backtesting evaluation
+
+**Key Achievement**: 
+The platform now provides a fair, apples-to-apples comparison between:
+- **LLM Agent**: AI-generated market analysis (Gemini 2.0 Flash)
+- **Backtesting Agent**: Algorithmic trading signals (composite scoring)
+
+Both agents consume identical live data feeds from:
+- Economic Agent (macro indicators)
+- Sentiment Agent (market psychology)  
+- Cross-Exchange Agent (liquidity & execution)
+
+This ensures any performance differences reflect the analysis method (AI vs algorithmic), not data quality.
 
 ## Last Updated
 2025-10-27
