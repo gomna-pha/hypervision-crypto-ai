@@ -1237,9 +1237,9 @@ function calculateAgentSignals(econ: any, sent: any, cross: any): any {
   else if (sent.fear_greed_index.value < 25) sentimentScore -= 2
   
   // Aggregate sentiment
-  if (sent.aggregate_sentiment.value > 70) sentimentScore += 2
-  else if (sent.aggregate_sentiment.value > 50) sentimentScore += 1
-  else if (sent.aggregate_sentiment.value < 30) sentimentScore -= 2
+  if (sent.fear_greed_index.value > 70) sentimentScore += 2
+  else if (sent.fear_greed_index.value > 50) sentimentScore += 1
+  else if (sent.fear_greed_index.value < 30) sentimentScore -= 2
   
   // Institutional flow (positive flow = bullish)
   if (sent.institutional_flow_24h.direction === 'inflow') sentimentScore += 2
@@ -1253,13 +1253,13 @@ function calculateAgentSignals(econ: any, sent: any, cross: any): any {
   let liquidityScore = 0
   
   // Market depth (high liquidity = easier to execute)
-  if (cross.market_depth_score.score > 8) liquidityScore += 2
-  else if (cross.market_depth_score.score > 6) liquidityScore += 1
+  if (cross.liquidity_metrics.liquidity_quality === 'excellent') liquidityScore += 2
+  else if (cross.liquidity_metrics.liquidity_quality === 'good') liquidityScore += 1
   else liquidityScore -= 1
   
   // Order book imbalance (>0.55 = buy pressure)
-  if (cross.liquidity_metrics.order_book_imbalance > 0.55) liquidityScore += 2
-  else if (cross.liquidity_metrics.order_book_imbalance < 0.45) liquidityScore -= 2
+  if (cross.arbitrage_opportunities.count > 2) liquidityScore += 2
+  else if (cross.arbitrage_opportunities.count > 0) liquidityScore += 1
   else liquidityScore += 1
   
   // Spread (tight spread = good execution)
@@ -1589,17 +1589,17 @@ function buildEnhancedPrompt(economicData: any, sentimentData: any, crossExchang
 
 **MARKET SENTIMENT INDICATORS**
 - Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification})
-- Aggregate Sentiment: ${sent.aggregate_sentiment.value}% (${sent.aggregate_sentiment.trend})
+- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification})
 - VIX (Volatility Index): ${sent.volatility_index_vix.value.toFixed(2)} (${sent.volatility_index_vix.interpretation} volatility)
 - Social Media Volume: ${sent.social_media_volume.mentions.toLocaleString()} mentions (${sent.social_media_volume.trend})
 - Institutional Flow (24h): $${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (${sent.institutional_flow_24h.direction})
 
 **CROSS-EXCHANGE LIQUIDITY & EXECUTION**
 - 24h Volume: $${cross.total_volume_24h.usd.toFixed(2)}B / ${cross.total_volume_24h.btc.toFixed(0)} BTC
-- Market Depth Score: ${cross.market_depth_score.score}/10 (${cross.market_depth_score.rating})
+- Liquidity Quality: ${cross.liquidity_metrics.liquidity_quality}
 - Average Spread: ${cross.liquidity_metrics.average_spread_percent}%
 - Slippage (10 BTC): ${cross.liquidity_metrics.slippage_10btc_percent}%
-- Order Book Imbalance: ${cross.liquidity_metrics.order_book_imbalance.toFixed(2)}
+- Arbitrage Opportunities: ${cross.arbitrage_opportunities.count}
 - Large Order Impact: ${cross.execution_quality.large_order_impact_percent.toFixed(1)}%
 - Recommended Exchanges: ${cross.execution_quality.recommended_exchanges.join(', ')}
 
@@ -1620,16 +1620,16 @@ function generateTemplateAnalysis(economicData: any, sentimentData: any, crossEx
   
   const fedTrend = econ.fed_funds_rate.trend === 'stable' ? 'maintaining a steady stance' : 'adjusting rates'
   const inflationTrend = econ.cpi.trend === 'decreasing' ? 'moderating inflation' : 'persistent inflation'
-  const sentimentBias = sent.aggregate_sentiment.value > 60 ? 'optimistic' : sent.aggregate_sentiment.value < 40 ? 'pessimistic' : 'neutral'
-  const liquidityStatus = cross.market_depth_score.score > 8 ? 'excellent' : cross.market_depth_score.score > 6 ? 'adequate' : 'concerning'
+  const sentimentBias = sent.fear_greed_index.value > 60 ? 'optimistic' : sent.fear_greed_index.value < 40 ? 'pessimistic' : 'neutral'
+  const liquidityStatus = cross.liquidity_metrics.liquidity_quality
   
   return `**Market Analysis for ${symbol}/USD**
 
 **Macroeconomic Environment**: The Federal Reserve is currently ${fedTrend} with rates at ${econ.fed_funds_rate.value}%, while ${inflationTrend} is evident with CPI at ${econ.cpi.value}%. GDP growth of ${econ.gdp_growth.value}% in ${econ.gdp_growth.quarter} suggests moderate economic expansion. The 10-year Treasury yield at ${econ.treasury_10y.value}% provides context for risk-free rates. Manufacturing PMI at ${econ.manufacturing_pmi.value} indicates ${econ.manufacturing_pmi.status}, which may pressure risk assets.
 
-**Market Sentiment & Psychology**: Current sentiment is ${sentimentBias} with the aggregate sentiment index at ${sent.aggregate_sentiment.value}% and Fear & Greed at ${sent.fear_greed_index.value}. The VIX at ${sent.volatility_index_vix.value.toFixed(2)} suggests ${sent.volatility_index_vix.interpretation} market volatility. Institutional flows show ${sent.institutional_flow_24h.direction} of $${Math.abs(sent.institutional_flow_24h.net_flow_million_usd).toFixed(1)}M over 24 hours, indicating ${sent.institutional_flow_24h.direction === 'outflow' ? 'profit-taking or risk-off positioning' : 'accumulation'}.
+**Market Sentiment & Psychology**: Current sentiment is ${sentimentBias} with Fear & Greed Index at ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification}). The VIX at ${sent.volatility_index_vix.value.toFixed(2)} suggests ${sent.volatility_index_vix.interpretation} market volatility. Institutional flows show ${sent.institutional_flow_24h.direction} of $${Math.abs(sent.institutional_flow_24h.net_flow_million_usd).toFixed(1)}M over 24 hours, indicating ${sent.institutional_flow_24h.direction === 'outflow' ? 'profit-taking or risk-off positioning' : 'accumulation'}.
 
-**Trading Outlook**: With ${liquidityStatus} market liquidity (depth score: ${cross.market_depth_score.score}/10) and 24h volume of $${cross.total_volume_24h.usd.toFixed(2)}B, execution conditions are favorable. The average spread of ${cross.liquidity_metrics.average_spread_percent}% and order book imbalance of ${cross.liquidity_metrics.order_book_imbalance.toFixed(2)} suggest ${cross.liquidity_metrics.order_book_imbalance > 0.55 ? 'buy-side pressure' : cross.liquidity_metrics.order_book_imbalance < 0.45 ? 'sell-side pressure' : 'balanced positioning'}. Based on the confluence of economic data, sentiment indicators, and liquidity conditions, the outlook is **${sent.aggregate_sentiment.value > 60 && cross.market_depth_score.score > 7 ? 'MODERATELY BULLISH' : sent.aggregate_sentiment.value < 40 ? 'BEARISH' : 'NEUTRAL'}** with a confidence level of ${Math.floor(6 + Math.random() * 2)}/10. Traders should monitor Fed policy developments and institutional flow reversals as key catalysts.
+**Trading Outlook**: With ${liquidityStatus} liquidity (${cross.liquidity_metrics.liquidity_quality}) and spread of ${cross.liquidity_metrics.average_spread_percent}%, execution conditions are ${cross.liquidity_metrics.liquidity_quality === 'excellent' ? 'highly favorable' : 'acceptable'}. Arbitrage opportunities: ${cross.arbitrage_opportunities.count}. Based on the confluence of economic data, sentiment indicators, and liquidity conditions, the outlook is **${sent.fear_greed_index.value > 60 && cross.liquidity_metrics.liquidity_quality === 'excellent' ? 'MODERATELY BULLISH' : sent.fear_greed_index.value < 40 ? 'BEARISH' : 'NEUTRAL'}** with a confidence level of ${Math.floor(6 + Math.random() * 2)}/10. Traders should monitor Fed policy developments and institutional flow reversals as key catalysts.
 
 *Analysis generated from live agent data feeds: Economic Agent, Sentiment Agent, Cross-Exchange Agent*`
 }
@@ -2161,15 +2161,15 @@ app.get('/', (c) => {
                     document.getElementById('sentiment-agent-data').innerHTML = \`
                         <div class="flex justify-between">
                             <span class="text-gray-400">Fear & Greed:</span>
-                            <span class="text-white font-bold">\${sent.fear_greed_index.value}</span>
+                            <span class="text-white font-bold">\${sent.fear_greed_index.value} (\${sent.fear_greed_index.classification})</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Sentiment:</span>
-                            <span class="text-white font-bold">\${sent.aggregate_sentiment.value}%</span>
+                            <span class="text-gray-400">Signal:</span>
+                            <span class="text-white font-bold">\${sent.fear_greed_index.signal}</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400">VIX:</span>
-                            <span class="text-white font-bold">\${sent.volatility_index_vix.value.toFixed(2)}</span>
+                            <span class="text-white font-bold">\${sent.volatility_index_vix.value.toFixed(2)} (\${sent.volatility_index_vix.signal})</span>
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400">Social Volume:</span>
@@ -2177,7 +2177,7 @@ app.get('/', (c) => {
                         </div>
                         <div class="flex justify-between">
                             <span class="text-gray-400">Inst. Flow:</span>
-                            <span class="text-white font-bold">\${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M</span>
+                            <span class="text-white font-bold">\${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (\${sent.institutional_flow_24h.direction})</span>
                         </div>
                     \`;
 
