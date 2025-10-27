@@ -1,0 +1,76 @@
+/* Trading Intelligence Platform - Cream & Navy Color Scheme */
+/* 95% Cream Background, 5% Navy Accents */
+
+:root {
+    --cream: #FFF8E7;
+    --cream-dark: #F5EDD6;
+    --navy: #1B3B6F;
+    --navy-light: #2A5298;
+    --navy-dark: #0F2347;
+    --success: #059669;
+    --warning: #DC2626;
+    --info: #3B82F6;
+}
+
+body {
+    background-color: var(--cream) !important;
+    color: var(--navy) !important;
+}
+
+/* Cards with cream background */
+.cream-card {
+    background-color: var(--cream-dark);
+    border: 2px solid var(--navy);
+    color: var(--navy);
+}
+
+/* Navy buttons */
+.btn-navy {
+    background-color: var(--navy);
+    color: var(--cream);
+    border: 2px solid var(--navy);
+}
+
+.btn-navy:hover {
+    background-color: var(--navy-light);
+}
+
+/* Navy borders */
+.navy-border {
+    border-color: var(--navy) !important;
+}
+
+/* LIVE indicators */
+.live-indicator {
+    background-color: var(--success);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Constraint indicators */
+.constraint-fill {
+    background-color: var(--navy);
+    border-radius: 4px;
+}
+
+/* Signal badges */
+.signal-buy {
+    color: var(--success);
+}
+
+.signal-sell {
+    color: var(--warning);
+}
+
+.signal-hold {
+    color: var(--navy);
+}
