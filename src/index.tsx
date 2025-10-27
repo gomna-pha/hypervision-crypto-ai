@@ -1811,13 +1811,17 @@ app.get('/', (c) => {
                                 <i class="fas fa-landmark mr-2"></i>
                                 Economic Agent
                             </h3>
-                            <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="economic-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                         </div>
                         <div id="economic-agent-data" class="text-sm space-y-2">
                             <p class="text-gray-400">Loading...</p>
                         </div>
                         <div class="mt-3 pt-3 border-t border-gray-700">
-                            <p class="text-xs text-gray-500">Fed Policy • Inflation • GDP • Employment</p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-xs text-gray-500">Fed Policy • Inflation • GDP</p>
+                                <p id="economic-timestamp" class="text-xs text-green-400 font-mono">--:--:--</p>
+                            </div>
+                            <p id="economic-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
 
@@ -1828,13 +1832,17 @@ app.get('/', (c) => {
                                 <i class="fas fa-brain mr-2"></i>
                                 Sentiment Agent
                             </h3>
-                            <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="sentiment-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                         </div>
                         <div id="sentiment-agent-data" class="text-sm space-y-2">
                             <p class="text-gray-400">Loading...</p>
                         </div>
                         <div class="mt-3 pt-3 border-t border-gray-700">
-                            <p class="text-xs text-gray-500">Fear/Greed • VIX • Institutional Flows</p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-xs text-gray-500">Fear/Greed • VIX • Flows</p>
+                                <p id="sentiment-timestamp" class="text-xs text-purple-400 font-mono">--:--:--</p>
+                            </div>
+                            <p id="sentiment-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
 
@@ -1845,13 +1853,17 @@ app.get('/', (c) => {
                                 <i class="fas fa-exchange-alt mr-2"></i>
                                 Cross-Exchange Agent
                             </h3>
-                            <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                            <span id="cross-exchange-heartbeat" class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
                         </div>
                         <div id="cross-exchange-agent-data" class="text-sm space-y-2">
                             <p class="text-gray-400">Loading...</p>
                         </div>
                         <div class="mt-3 pt-3 border-t border-gray-700">
-                            <p class="text-xs text-gray-500">Liquidity • Spreads • Order Book</p>
+                            <div class="flex justify-between items-center">
+                                <p class="text-xs text-gray-500">Liquidity • Spreads • Arbitrage</p>
+                                <p id="cross-exchange-timestamp" class="text-xs text-green-400 font-mono">--:--:--</p>
+                            </div>
+                            <p id="cross-exchange-countdown" class="text-xs text-gray-600 text-right mt-1">Next update: --s</p>
                         </div>
                     </div>
                 </div>
@@ -2095,36 +2107,77 @@ app.get('/', (c) => {
 
         <script>
             // Fetch and display agent data
-            // Update dashboard stats
+            // Update dashboard stats from DATABASE (NO HARDCODING)
             async function updateDashboardStats() {
                 try {
-                    // Update Market Regime
-                    document.getElementById('regime-type').textContent = 'Neutral';
-                    
-                    // Update Active Strategies
-                    const strategiesDiv = document.querySelector('[id*="active-strategies"]');
-                    if (strategiesDiv) strategiesDiv.textContent = '5';
-                    
-                    // Update Recent Signals
-                    const signalsDiv = document.querySelector('[id*="recent-signals"]');
-                    if (signalsDiv) signalsDiv.textContent = '12';
-                    
-                    // Update Backtests Run
-                    const backtestsDiv = document.querySelector('[id*="backtests"]');
-                    if (backtestsDiv) backtestsDiv.textContent = '3';
+                    const response = await axios.get('/api/dashboard/summary');
+                    if (response.data.success) {
+                        const dash = response.data.dashboard;
+                        
+                        // Update Market Regime from database
+                        const regimeType = dash.market_regime?.regime_type || 'unknown';
+                        document.getElementById('regime-type').textContent = 
+                            regimeType.charAt(0).toUpperCase() + regimeType.slice(1).replace('_', ' ');
+                        
+                        // Update Active Strategies from database
+                        const activeStrategies = dash.active_strategies || 0;
+                        const strategiesEl = document.querySelectorAll('.text-4xl')[1];
+                        if (strategiesEl) strategiesEl.textContent = activeStrategies;
+                        
+                        // Update Recent Signals from database
+                        const recentSignals = dash.recent_signals?.length || 0;
+                        const signalsEl = document.querySelectorAll('.text-4xl')[2];
+                        if (signalsEl) signalsEl.textContent = recentSignals;
+                        
+                        // Update Backtests Run from database  
+                        const backtestsCount = dash.recent_backtests?.length || 0;
+                        const backtestsEl = document.querySelectorAll('.text-4xl')[3];
+                        if (backtestsEl) backtestsEl.textContent = backtestsCount;
+                    }
                 } catch (error) {
                     console.error('Error updating dashboard stats:', error);
+                    // Keep existing values on error
                 }
+            }
+
+            // Countdown timer variables
+            let refreshCountdown = 10;
+            let countdownInterval = null;
+            
+            // Update countdown display
+            function updateCountdown() {
+                document.getElementById('economic-countdown').textContent = \`Next update: \${refreshCountdown}s\`;
+                document.getElementById('sentiment-countdown').textContent = \`Next update: \${refreshCountdown}s\`;
+                document.getElementById('cross-exchange-countdown').textContent = \`Next update: \${refreshCountdown}s\`;
+                refreshCountdown--;
+                
+                if (refreshCountdown < 0) {
+                    refreshCountdown = 10;
+                }
+            }
+            
+            // Format timestamp
+            function formatTime(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString('en-US', { hour12: false });
             }
 
             async function loadAgentData() {
                 console.log('Loading agent data...');
+                const fetchTime = Date.now();
+                refreshCountdown = 10; // Reset countdown
+                
                 try {
                     // Fetch Economic Agent
                     console.log('Fetching economic agent...');
                     const economicRes = await axios.get('/api/agents/economic?symbol=BTC');
                     const econ = economicRes.data.data.indicators;
+                    const econTimestamp = economicRes.data.data.iso_timestamp;
                     console.log('Economic agent loaded:', econ);
+                    
+                    // Update timestamp display
+                    document.getElementById('economic-timestamp').textContent = formatTime(fetchTime);
+                    
                     document.getElementById('economic-agent-data').innerHTML = \`
                         <div class="flex justify-between">
                             <span class="text-gray-400">Fed Rate:</span>
@@ -2152,7 +2205,12 @@ app.get('/', (c) => {
                     console.log('Fetching sentiment agent...');
                     const sentimentRes = await axios.get('/api/agents/sentiment?symbol=BTC');
                     const sent = sentimentRes.data.data.sentiment_metrics;
+                    const sentTimestamp = sentimentRes.data.data.iso_timestamp;
                     console.log('Sentiment agent loaded:', sent);
+                    
+                    // Update timestamp display
+                    document.getElementById('sentiment-timestamp').textContent = formatTime(fetchTime);
+                    
                     document.getElementById('sentiment-agent-data').innerHTML = \`
                         <div class="flex justify-between">
                             <span class="text-gray-400">Fear & Greed:</span>
@@ -2181,7 +2239,11 @@ app.get('/', (c) => {
                     const crossRes = await axios.get('/api/agents/cross-exchange?symbol=BTC');
                     const cross = crossRes.data.data.market_depth_analysis;
                     const liveExchanges = crossRes.data.data.live_exchanges;
+                    const crossTimestamp = crossRes.data.data.iso_timestamp;
                     console.log('Cross-exchange agent loaded:', cross);
+                    
+                    // Update timestamp display
+                    document.getElementById('cross-exchange-timestamp').textContent = formatTime(fetchTime);
                     
                     // Get live prices from exchanges
                     const coinbasePrice = liveExchanges.coinbase.available ? liveExchanges.coinbase.price : null;
@@ -2734,6 +2796,9 @@ app.get('/', (c) => {
 
             // Initialize charts first
             initializeCharts();
+            
+            // Start countdown timer (updates every second)
+            countdownInterval = setInterval(updateCountdown, 1000);
             
             // Load agent data immediately on page load
             document.addEventListener('DOMContentLoaded', function() {
