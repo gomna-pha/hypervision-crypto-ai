@@ -2580,48 +2580,7 @@ app.get('/', (c) => {
                 </p>
             </div>
 
-            <!-- Status Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-lg p-6 border-2 border-blue-900 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm">Market Regime</p>
-                            <p id="regime-type" class="text-2xl font-bold mt-1 text-gray-900">Loading...</p>
-                        </div>
-                        <i class="fas fa-globe text-4xl text-blue-900"></i>
-                    </div>
-                </div>
 
-                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm">Active Strategies</p>
-                            <p id="strategy-count" class="text-2xl font-bold mt-1 text-gray-900">5</p>
-                        </div>
-                        <i class="fas fa-brain text-4xl text-gray-700"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm">Recent Signals</p>
-                            <p id="signal-count" class="text-2xl font-bold mt-1 text-gray-900">0</p>
-                        </div>
-                        <i class="fas fa-signal text-4xl text-gray-700"></i>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-lg p-6 border border-gray-300 shadow-lg">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-gray-600 text-sm">Backtests Run</p>
-                            <p id="backtest-count" class="text-2xl font-bold mt-1 text-gray-900">0</p>
-                        </div>
-                        <i class="fas fa-history text-4xl text-gray-700"></i>
-                    </div>
-                </div>
-            </div>
 
             <!-- LIVE DATA AGENTS SECTION -->
             <div class="bg-white rounded-lg p-6 border-2 border-blue-900 mb-8 shadow-lg">
@@ -2886,19 +2845,7 @@ app.get('/', (c) => {
                         </p>
                     </div>
 
-                    <!-- Market Regime Indicator -->
-                    <div class="bg-amber-50 rounded-lg p-3 border border-gray-300 shadow">
-                        <h3 class="text-base font-bold mb-2 text-gray-900">
-                            <i class="fas fa-compass mr-2"></i>
-                            Market Regime
-                        </h3>
-                        <div style="height: 180px; position: relative;">
-                            <canvas id="marketRegimeChart"></canvas>
-                        </div>
-                        <p class="text-xs text-gray-600 mt-1 text-center">
-                            Market conditions
-                        </p>
-                    </div>
+
                 </div>
 
                 <!-- Explanation Section -->
@@ -2907,7 +2854,7 @@ app.get('/', (c) => {
                         <i class="fas fa-info-circle mr-2"></i>
                         Understanding the Visualizations
                     </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
                         <div>
                             <p class="font-bold text-gray-900 mb-1">📊 Agent Signals Breakdown:</p>
                             <p>Shows how each of the 3 agents (Economic, Sentiment, Liquidity) scores the current market. Higher scores = stronger bullish signals. Composite score determines buy/sell decisions.</p>
@@ -2919,10 +2866,6 @@ app.get('/', (c) => {
                         <div>
                             <p class="font-bold text-gray-900 mb-1">💱 Arbitrage Opportunities:</p>
                             <p>Visualizes price differences across exchanges and execution quality. Red bars indicate poor execution, green indicates good arbitrage potential.</p>
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-900 mb-1">⚠️ Risk Assessment:</p>
-                            <p>Gauge showing current risk level based on volatility, drawdown, and position exposure. Red zone = high risk, green = acceptable risk.</p>
                         </div>
                     </div>
                 </div>
@@ -3093,27 +3036,8 @@ app.get('/', (c) => {
                 try {
                     const response = await axios.get('/api/dashboard/summary');
                     if (response.data.success) {
-                        const dash = response.data.dashboard;
-                        
-                        // Update Market Regime from database
-                        const regimeType = dash.market_regime?.regime_type || 'unknown';
-                        document.getElementById('regime-type').textContent = 
-                            regimeType.charAt(0).toUpperCase() + regimeType.slice(1).replace('_', ' ');
-                        
-                        // Update Active Strategies from database
-                        const activeStrategies = dash.active_strategies || 0;
-                        const strategiesEl = document.querySelectorAll('.text-4xl')[1];
-                        if (strategiesEl) strategiesEl.textContent = activeStrategies;
-                        
-                        // Update Recent Signals from database
-                        const recentSignals = dash.recent_signals?.length || 0;
-                        const signalsEl = document.querySelectorAll('.text-4xl')[2];
-                        if (signalsEl) signalsEl.textContent = recentSignals;
-                        
-                        // Update Backtests Run from database  
-                        const backtestsCount = dash.recent_backtests?.length || 0;
-                        const backtestsEl = document.querySelectorAll('.text-4xl')[3];
-                        if (backtestsEl) backtestsEl.textContent = backtestsCount;
+                        // Dashboard data loaded successfully
+                        // Static metrics removed - using real-time agent data instead
                     }
                 } catch (error) {
                     console.error('Error updating dashboard stats:', error);
@@ -3447,7 +3371,6 @@ app.get('/', (c) => {
                     updateAgentSignalsChart(signals);
                     updateComparisonChart(null, signals);
                     updateRiskGaugeChart(bt);
-                    updateMarketRegimeChart(signals);
                     
                     // Fetch cross-exchange data for arbitrage chart
                     const crossRes = await axios.get('/api/agents/cross-exchange?symbol=BTC');
@@ -3469,7 +3392,6 @@ app.get('/', (c) => {
             let comparisonChart = null;
             let arbitrageChart = null;
             let riskGaugeChart = null;
-            let marketRegimeChart = null;
 
             // Initialize all charts
             function initializeCharts() {
@@ -3631,39 +3553,7 @@ app.get('/', (c) => {
                     }
                 });
 
-                // Market Regime Chart (Pie)
-                const regimeCtx = document.getElementById('marketRegimeChart').getContext('2d');
-                marketRegimeChart = new Chart(regimeCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Bullish', 'Neutral', 'Bearish', 'High Volatility'],
-                        datasets: [{
-                            data: [40, 30, 20, 10],
-                            backgroundColor: [
-                                'rgba(34, 197, 94, 0.6)',
-                                'rgba(59, 130, 246, 0.6)',
-                                'rgba(239, 68, 68, 0.6)',
-                                'rgba(251, 191, 36, 0.6)'
-                            ],
-                            borderColor: [
-                                'rgba(34, 197, 94, 1)',
-                                'rgba(59, 130, 246, 1)',
-                                'rgba(239, 68, 68, 1)',
-                                'rgba(251, 191, 36, 1)'
-                            ],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            legend: { 
-                                labels: { color: '#fff' },
-                                position: 'bottom'
-                            }
-                        },
-                        maintainAspectRatio: false
-                    }
-                });
+
             }
 
             // Update Agent Signals Chart
@@ -3755,25 +3645,7 @@ app.get('/', (c) => {
                 }
             }
 
-            // Update Market Regime Chart
-            function updateMarketRegimeChart(signals) {
-                if (!marketRegimeChart || !signals) return;
-                
-                const totalScore = signals.totalScore || 0;
-                
-                if (totalScore >= 8) {
-                    // Bullish regime
-                    marketRegimeChart.data.datasets[0].data = [60, 20, 10, 10];
-                } else if (totalScore <= 3) {
-                    // Bearish regime
-                    marketRegimeChart.data.datasets[0].data = [10, 20, 60, 10];
-                } else {
-                    // Neutral regime
-                    marketRegimeChart.data.datasets[0].data = [25, 50, 15, 10];
-                }
-                
-                marketRegimeChart.update();
-            }
+
 
             // Initialize charts first
             initializeCharts();
