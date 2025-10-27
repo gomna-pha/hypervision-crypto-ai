@@ -1,12 +1,703 @@
 import { Hono } from 'hono'
-import { renderer } from './renderer'
+import { cors } from 'hono/cors'
+import { serveStatic } from 'hono/cloudflare-workers'
 
-const app = new Hono()
+// Type definitions for Cloudflare bindings
+type Bindings = {
+  DB: D1Database
+}
 
-app.use(renderer)
+const app = new Hono<{ Bindings: Bindings }>()
+
+// Enable CORS for API routes
+app.use('/api/*', cors())
+
+// Serve static files
+app.use('/static/*', serveStatic({ root: './public' }))
+
+// ============================================================================
+// DATA INTEGRATION LAYER - External API Integration Routes
+// ============================================================================
+
+// Fetch market data from external APIs
+app.get('/api/market/data/:symbol', async (c) => {
+  const symbol = c.req.param('symbol')
+  const { env } = c
+  
+  try {
+    // Store fetched data in D1
+    const timestamp = Date.now()
+    await env.DB.prepare(`
+      INSERT INTO market_data (symbol, exchange, price, volume, timestamp, data_type)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(symbol, 'aggregated', 0, 0, timestamp, 'spot').run()
+    
+    // In production, this would fetch from Alpha Vantage, Polygon.io, etc.
+    return c.json({
+      success: true,
+      data: {
+        symbol,
+        price: Math.random() * 50000 + 30000, // Mock data
+        volume: Math.random() * 1000000,
+        timestamp,
+        source: 'mock'
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Fetch economic indicators
+app.get('/api/economic/indicators', async (c) => {
+  const { env } = c
+  
+  try {
+    // Fetch recent indicators from database
+    const results = await env.DB.prepare(`
+      SELECT * FROM economic_indicators 
+      ORDER BY timestamp DESC 
+      LIMIT 10
+    `).all()
+    
+    return c.json({
+      success: true,
+      data: results.results,
+      count: results.results?.length || 0
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Store economic indicator data
+app.post('/api/economic/indicators', async (c) => {
+  const { env } = c
+  const body = await c.req.json()
+  
+  try {
+    const { indicator_name, indicator_code, value, period, source } = body
+    const timestamp = Date.now()
+    
+    await env.DB.prepare(`
+      INSERT INTO economic_indicators 
+      (indicator_name, indicator_code, value, period, source, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(indicator_name, indicator_code, value, period, source, timestamp).run()
+    
+    return c.json({ success: true, message: 'Indicator stored successfully' })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// FEATURE & SIGNAL LAYER - Technical Indicators and Feature Engineering
+// ============================================================================
+
+// Calculate technical indicators
+app.post('/api/features/calculate', async (c) => {
+  const { env } = c
+  const { symbol, features } = await c.req.json()
+  
+  try {
+    // Fetch recent price data
+    const priceData = await env.DB.prepare(`
+      SELECT price, timestamp FROM market_data 
+      WHERE symbol = ? 
+      ORDER BY timestamp DESC 
+      LIMIT 50
+    `).bind(symbol).all()
+    
+    const prices = priceData.results?.map((r: any) => r.price) || []
+    const calculated: any = {}
+    
+    // Simple Moving Average
+    if (features.includes('sma')) {
+      const sma20 = prices.slice(0, 20).reduce((a, b) => a + b, 0) / 20
+      calculated.sma20 = sma20
+    }
+    
+    // RSI (Relative Strength Index)
+    if (features.includes('rsi')) {
+      calculated.rsi = calculateRSI(prices, 14)
+    }
+    
+    // Momentum
+    if (features.includes('momentum')) {
+      calculated.momentum = prices[0] - prices[20] || 0
+    }
+    
+    // Store in feature cache
+    const timestamp = Date.now()
+    for (const [feature_name, feature_value] of Object.entries(calculated)) {
+      await env.DB.prepare(`
+        INSERT INTO feature_cache (feature_name, symbol, feature_value, timestamp)
+        VALUES (?, ?, ?, ?)
+      `).bind(feature_name, symbol, feature_value as number, timestamp).run()
+    }
+    
+    return c.json({ success: true, features: calculated })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Helper function for RSI calculation
+function calculateRSI(prices: number[], period: number = 14): number {
+  if (prices.length < period + 1) return 50
+  
+  let gains = 0, losses = 0
+  for (let i = 0; i < period; i++) {
+    const change = prices[i] - prices[i + 1]
+    if (change > 0) gains += change
+    else losses -= change
+  }
+  
+  const avgGain = gains / period
+  const avgLoss = losses / period
+  const rs = avgLoss === 0 ? 100 : avgGain / avgLoss
+  return 100 - (100 / (1 + rs))
+}
+
+// ============================================================================
+// STRATEGY ENGINE - Trading Strategy Management
+// ============================================================================
+
+// Get all available strategies
+app.get('/api/strategies', async (c) => {
+  const { env } = c
+  
+  try {
+    const results = await env.DB.prepare(`
+      SELECT * FROM trading_strategies WHERE is_active = 1
+    `).all()
+    
+    return c.json({
+      success: true,
+      strategies: results.results,
+      count: results.results?.length || 0
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Generate strategy signals
+app.post('/api/strategies/:id/signal', async (c) => {
+  const { env } = c
+  const strategyId = parseInt(c.req.param('id'))
+  const { symbol, market_data } = await c.req.json()
+  
+  try {
+    // Fetch strategy details
+    const strategy = await env.DB.prepare(`
+      SELECT * FROM trading_strategies WHERE id = ?
+    `).bind(strategyId).first()
+    
+    if (!strategy) {
+      return c.json({ success: false, error: 'Strategy not found' }, 404)
+    }
+    
+    // Generate signal based on strategy type
+    let signal_type = 'hold'
+    let signal_strength = 0.5
+    let confidence = 0.7
+    
+    const params = JSON.parse(strategy.parameters as string)
+    
+    switch (strategy.strategy_type) {
+      case 'momentum':
+        // Simple momentum strategy
+        if (market_data.momentum > params.threshold) {
+          signal_type = 'buy'
+          signal_strength = 0.8
+        } else if (market_data.momentum < -params.threshold) {
+          signal_type = 'sell'
+          signal_strength = 0.8
+        }
+        break
+      
+      case 'mean_reversion':
+        // RSI-based mean reversion
+        if (market_data.rsi < params.oversold) {
+          signal_type = 'buy'
+          signal_strength = 0.9
+        } else if (market_data.rsi > params.overbought) {
+          signal_type = 'sell'
+          signal_strength = 0.9
+        }
+        break
+      
+      case 'sentiment':
+        // Sentiment-based strategy
+        if (market_data.sentiment > params.sentiment_threshold) {
+          signal_type = 'buy'
+          signal_strength = 0.75
+        } else if (market_data.sentiment < -params.sentiment_threshold) {
+          signal_type = 'sell'
+          signal_strength = 0.75
+        }
+        break
+    }
+    
+    // Store signal in database
+    const timestamp = Date.now()
+    await env.DB.prepare(`
+      INSERT INTO strategy_signals 
+      (strategy_id, symbol, signal_type, signal_strength, confidence, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(strategyId, symbol, signal_type, signal_strength, confidence, timestamp).run()
+    
+    return c.json({
+      success: true,
+      signal: {
+        strategy_name: strategy.strategy_name,
+        strategy_type: strategy.strategy_type,
+        signal_type,
+        signal_strength,
+        confidence,
+        timestamp
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// BACKTESTING AGENT - Historical Performance Analysis
+// ============================================================================
+
+// Run backtest for a strategy
+app.post('/api/backtest/run', async (c) => {
+  const { env } = c
+  const { strategy_id, symbol, start_date, end_date, initial_capital } = await c.req.json()
+  
+  try {
+    // Fetch historical data
+    const historicalData = await env.DB.prepare(`
+      SELECT * FROM market_data 
+      WHERE symbol = ? AND timestamp BETWEEN ? AND ?
+      ORDER BY timestamp ASC
+    `).bind(symbol, start_date, end_date).all()
+    
+    // Simple backtest simulation
+    let capital = initial_capital
+    let position = 0
+    let trades = 0
+    let wins = 0
+    const prices = historicalData.results || []
+    
+    // Simulate trading
+    for (let i = 0; i < prices.length - 1; i++) {
+      const price: any = prices[i]
+      // Simple buy/sell logic based on mock signal
+      if (Math.random() > 0.5 && position === 0) {
+        // Buy
+        position = capital / price.price
+        trades++
+      } else if (position > 0 && Math.random() > 0.6) {
+        // Sell
+        const sellValue = position * price.price
+        if (sellValue > capital) wins++
+        capital = sellValue
+        position = 0
+      }
+    }
+    
+    // Close any open position
+    if (position > 0 && prices.length > 0) {
+      const lastPrice: any = prices[prices.length - 1]
+      capital = position * lastPrice.price
+    }
+    
+    const total_return = ((capital - initial_capital) / initial_capital) * 100
+    const win_rate = trades > 0 ? (wins / trades) * 100 : 0
+    const sharpe_ratio = Math.random() * 2 // Mock Sharpe ratio
+    const max_drawdown = Math.random() * -20 // Mock drawdown
+    
+    // Store backtest results
+    await env.DB.prepare(`
+      INSERT INTO backtest_results 
+      (strategy_id, symbol, start_date, end_date, initial_capital, final_capital, 
+       total_return, sharpe_ratio, max_drawdown, win_rate, total_trades, avg_trade_return)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      strategy_id, symbol, start_date, end_date, initial_capital, capital,
+      total_return, sharpe_ratio, max_drawdown, win_rate, trades, total_return / trades
+    ).run()
+    
+    return c.json({
+      success: true,
+      backtest: {
+        initial_capital,
+        final_capital: capital,
+        total_return,
+        sharpe_ratio,
+        max_drawdown,
+        win_rate,
+        total_trades: trades
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Get backtest results
+app.get('/api/backtest/results/:strategy_id', async (c) => {
+  const { env } = c
+  const strategyId = parseInt(c.req.param('strategy_id'))
+  
+  try {
+    const results = await env.DB.prepare(`
+      SELECT * FROM backtest_results 
+      WHERE strategy_id = ? 
+      ORDER BY created_at DESC
+    `).bind(strategyId).all()
+    
+    return c.json({
+      success: true,
+      results: results.results,
+      count: results.results?.length || 0
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// LLM REASONING LAYER - AI-Powered Market Analysis
+// ============================================================================
+
+// Generate LLM market analysis
+app.post('/api/llm/analyze', async (c) => {
+  const { env } = c
+  const { analysis_type, symbol, context } = await c.req.json()
+  
+  try {
+    // In production, this would call OpenAI, Anthropic, or other LLM APIs
+    // For now, we'll return a mock analysis
+    
+    const prompt = `Analyze ${symbol} market conditions: ${JSON.stringify(context)}`
+    
+    let response = ''
+    let confidence = 0.8
+    
+    switch (analysis_type) {
+      case 'market_commentary':
+        response = `Based on current market data for ${symbol}, we observe ${context.trend || 'mixed'} trend signals. 
+        Technical indicators suggest ${context.rsi < 30 ? 'oversold' : context.rsi > 70 ? 'overbought' : 'neutral'} conditions. 
+        Recommend ${context.rsi < 30 ? 'accumulation' : context.rsi > 70 ? 'profit-taking' : 'monitoring'} strategy.`
+        break
+      
+      case 'strategy_recommendation':
+        response = `For ${symbol}, given current market regime of ${context.regime || 'moderate volatility'}, 
+        recommend ${context.volatility > 0.5 ? 'mean reversion' : 'momentum'} strategy with 
+        risk allocation of ${context.risk_level || 'moderate'}%.`
+        confidence = 0.75
+        break
+      
+      case 'risk_assessment':
+        response = `Risk assessment for ${symbol}: Current volatility is ${context.volatility || 'unknown'}. 
+        Maximum recommended position size: ${5 / (context.volatility || 1)}%. 
+        Stop loss recommended at ${context.price * 0.95}. 
+        Risk/Reward ratio: ${Math.random() * 3 + 1}:1`
+        confidence = 0.85
+        break
+      
+      default:
+        response = 'Unknown analysis type'
+    }
+    
+    // Store LLM analysis
+    const timestamp = Date.now()
+    await env.DB.prepare(`
+      INSERT INTO llm_analysis 
+      (analysis_type, symbol, prompt, response, confidence, context_data, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      analysis_type, symbol, prompt, response, confidence, 
+      JSON.stringify(context), timestamp
+    ).run()
+    
+    return c.json({
+      success: true,
+      analysis: {
+        type: analysis_type,
+        symbol,
+        response,
+        confidence,
+        timestamp
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// Get LLM analysis history
+app.get('/api/llm/history/:type', async (c) => {
+  const { env } = c
+  const analysisType = c.req.param('type')
+  const limit = parseInt(c.req.query('limit') || '10')
+  
+  try {
+    const results = await env.DB.prepare(`
+      SELECT * FROM llm_analysis 
+      WHERE analysis_type = ? 
+      ORDER BY timestamp DESC 
+      LIMIT ?
+    `).bind(analysisType, limit).all()
+    
+    return c.json({
+      success: true,
+      history: results.results,
+      count: results.results?.length || 0
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// MARKET REGIME DETECTION
+// ============================================================================
+
+app.post('/api/market/regime', async (c) => {
+  const { env } = c
+  const { indicators } = await c.req.json()
+  
+  try {
+    // Detect market regime based on indicators
+    let regime_type = 'sideways'
+    let confidence = 0.7
+    
+    const { volatility, trend, volume } = indicators
+    
+    if (trend > 0.05 && volatility < 0.3) {
+      regime_type = 'bull'
+      confidence = 0.85
+    } else if (trend < -0.05 && volatility > 0.4) {
+      regime_type = 'bear'
+      confidence = 0.8
+    } else if (volatility > 0.5) {
+      regime_type = 'high_volatility'
+      confidence = 0.9
+    } else if (volatility < 0.15) {
+      regime_type = 'low_volatility'
+      confidence = 0.85
+    }
+    
+    const timestamp = Date.now()
+    await env.DB.prepare(`
+      INSERT INTO market_regime (regime_type, confidence, indicators, timestamp)
+      VALUES (?, ?, ?, ?)
+    `).bind(regime_type, confidence, JSON.stringify(indicators), timestamp).run()
+    
+    return c.json({
+      success: true,
+      regime: {
+        type: regime_type,
+        confidence,
+        indicators,
+        timestamp
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// DASHBOARD & VISUALIZATION DATA
+// ============================================================================
+
+// Get dashboard summary
+app.get('/api/dashboard/summary', async (c) => {
+  const { env } = c
+  
+  try {
+    // Get latest market regime
+    const regime = await env.DB.prepare(`
+      SELECT * FROM market_regime ORDER BY timestamp DESC LIMIT 1
+    `).first()
+    
+    // Get active strategies count
+    const strategies = await env.DB.prepare(`
+      SELECT COUNT(*) as count FROM trading_strategies WHERE is_active = 1
+    `).first()
+    
+    // Get recent signals
+    const signals = await env.DB.prepare(`
+      SELECT * FROM strategy_signals ORDER BY timestamp DESC LIMIT 5
+    `).all()
+    
+    // Get latest backtest results
+    const backtests = await env.DB.prepare(`
+      SELECT * FROM backtest_results ORDER BY created_at DESC LIMIT 3
+    `).all()
+    
+    return c.json({
+      success: true,
+      dashboard: {
+        market_regime: regime,
+        active_strategies: strategies?.count || 0,
+        recent_signals: signals.results,
+        recent_backtests: backtests.results
+      }
+    })
+  } catch (error) {
+    return c.json({ success: false, error: String(error) }, 500)
+  }
+})
+
+// ============================================================================
+// MAIN DASHBOARD HTML
+// ============================================================================
 
 app.get('/', (c) => {
-  return c.render(<h1>Hello!</h1>)
+  return c.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Trading Intelligence Platform</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    </head>
+    <body class="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    LLM-Driven Trading Intelligence Platform
+                </h1>
+                <p class="text-blue-300 text-lg">
+                    Multimodal Data Fusion • Machine Learning • Adaptive Strategies
+                </p>
+            </div>
+
+            <!-- Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gray-800 rounded-lg p-6 border border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Market Regime</p>
+                            <p id="regime-type" class="text-2xl font-bold mt-1">Loading...</p>
+                        </div>
+                        <i class="fas fa-globe text-4xl text-blue-500"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Active Strategies</p>
+                            <p id="strategy-count" class="text-2xl font-bold mt-1">5</p>
+                        </div>
+                        <i class="fas fa-brain text-4xl text-green-500"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Recent Signals</p>
+                            <p id="signal-count" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <i class="fas fa-signal text-4xl text-purple-500"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Backtests Run</p>
+                            <p id="backtest-count" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <i class="fas fa-history text-4xl text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Trading Strategies -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-robot mr-2"></i>
+                        Trading Strategies
+                    </h2>
+                    <div id="strategies-list" class="space-y-3">
+                        <p class="text-gray-400">Loading strategies...</p>
+                    </div>
+                </div>
+
+                <!-- Recent Signals -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-bullhorn mr-2"></i>
+                        Recent Signals
+                    </h2>
+                    <div id="signals-list" class="space-y-3">
+                        <p class="text-gray-400">No signals yet...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LLM Analysis Section -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    LLM Market Analysis
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <button onclick="requestAnalysis('market_commentary')" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg">
+                        Market Commentary
+                    </button>
+                    <button onclick="requestAnalysis('strategy_recommendation')" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg">
+                        Strategy Recommendation
+                    </button>
+                    <button onclick="requestAnalysis('risk_assessment')" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg">
+                        Risk Assessment
+                    </button>
+                </div>
+                <div id="llm-response" class="bg-gray-900 p-4 rounded-lg min-h-32">
+                    <p class="text-gray-400 italic">Click a button above to get LLM analysis...</p>
+                </div>
+            </div>
+
+            <!-- Backtest Results -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Backtest Results
+                </h2>
+                <div id="backtest-results" class="space-y-3">
+                    <p class="text-gray-400">No backtests run yet...</p>
+                </div>
+                <button onclick="runBacktest()" class="mt-4 bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
+                    <i class="fas fa-play mr-2"></i>
+                    Run New Backtest
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-8 text-center text-gray-500">
+                <p>LLM-Driven Trading Intelligence System • Built with Hono + Cloudflare D1 + Chart.js</p>
+            </div>
+        </div>
+
+        <script src="/static/app.js"></script>
+    </body>
+    </html>
+  `)
 })
 
 export default app
