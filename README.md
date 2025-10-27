@@ -61,15 +61,21 @@ Five production-ready trading strategies with complete parameter visibility:
 | **Sentiment-Driven** | Sentiment | Trade based on social sentiment | Threshold: 0.6, Volume: 1000 |
 | **Multi-Factor** | Factor | Combined momentum, value, quality | Weights: [0.4, 0.3, 0.3] |
 
-### 5. Backtesting Agent
-- Historical data replay simulation
-- Performance metrics calculation:
-  - Total Return
-  - Sharpe Ratio
+### 5. Automated Backtesting Agent ⚡ NEW!
+- **One-Click Batch Testing**: Run all 5 strategies simultaneously
+- **Configurable Parameters**: Asset selection, time period (7-180 days), initial capital
+- **Real-time Progress**: Visual progress bar showing backtest completion
+- **Automatic Ranking**: Strategies sorted by total return performance
+- **Detailed Metrics**:
+  - Total Return %
+  - Final Capital
+  - Sharpe Ratio (risk-adjusted return)
   - Maximum Drawdown
-  - Win Rate
-  - Trade Statistics
-- Compare multiple strategies side-by-side
+  - Win Rate %
+  - Total Trades
+- **Comparison View**: Side-by-side strategy performance with medals (🥇🥈🥉)
+- **Summary Statistics**: Best/worst strategy, average return across all strategies
+- **Historical Data Generation**: Automatic mock data creation for testing periods
 
 ### 6. LLM Reasoning Layer
 Three types of AI-powered analysis:
@@ -186,6 +192,14 @@ LLM Analysis → Dashboard Visualization
 - **Visual Feedback**: Pulsing "LIVE" indicators and animated updates
 - **No Page Reload**: Seamless experience with background data polling
 
+### Automated Backtesting ⚡ NEW!
+- **One-Click Execution**: Run all strategies with single button press
+- **Progress Tracking**: Real-time progress bar (0-100%) with visual feedback
+- **Instant Results**: Complete all 5 strategies in 3-5 seconds
+- **Automatic Ranking**: Strategies sorted by performance with medals
+- **Comprehensive Metrics**: 6 key metrics per strategy displayed
+- **Comparison View**: Best vs worst strategy clearly highlighted
+
 ### Parameter & Constraint Display
 Each strategy card shows:
 - **Parameter Sliders**: Visual bars showing current value within min/max range
@@ -216,15 +230,26 @@ Each strategy card shows:
    - Signal strength (0-100%)
    - Confidence level (0-100%)
 
-### Running Backtests
-1. Click "Run New Backtest" button
-2. System simulates 30-day trading period
-3. Results show:
-   - Initial vs Final capital
-   - Total return percentage
-   - Sharpe ratio (risk-adjusted return)
-   - Maximum drawdown
-   - Win rate and trade count
+### Running Automated Backtests ⚡ NEW!
+1. Scroll to "Automated Backtesting" section
+2. **Configure Settings**:
+   - Select Asset: BTC-USD or ETH-USD
+   - Choose Time Period: 7, 30, 90, or 180 days
+   - Set Initial Capital: Default $10,000 (adjustable)
+3. Click **"Run All Strategies"** button
+4. **Watch Progress**:
+   - Real-time progress bar shows completion (0-100%)
+   - Each strategy tested sequentially
+   - Takes ~3-5 seconds total
+5. **View Results**:
+   - Summary card shows best/worst/average performance
+   - Strategies ranked with medals (🥇🥈🥉)
+   - Detailed metrics for each strategy
+   - Color-coded returns (green = profit, red = loss)
+6. **Compare Performance**:
+   - See which strategy performed best in chosen time period
+   - Analyze risk metrics (Sharpe ratio, drawdown)
+   - Review trade statistics (win rate, total trades)
 
 ### Getting LLM Analysis
 1. Click one of three analysis buttons:
