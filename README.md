@@ -3,13 +3,16 @@
 ## Project Overview
 - **Name**: Trading Intelligence Platform
 - **Goal**: Implementable LLM-driven trading system with multimodal data fusion, strategy engine, and automated backtesting
+- **Design**: Premium cream/navy color scheme (95% cream, 5% navy blue accents)
 - **Features**: 
-  - Real-time market data integration
-  - 5 trading strategies (Momentum, Mean Reversion, Arbitrage, Sentiment, Multi-Factor)
-  - LLM-powered market analysis and recommendations
-  - Automated backtesting engine
-  - Interactive dashboard with live visualizations
-  - Cloudflare D1 database for data persistence
+  - **Real-time market data** updating every 2 seconds
+  - **Full parameter transparency** with visual constraint displays
+  - **5 trading strategies** (Momentum, Mean Reversion, Arbitrage, Sentiment, Multi-Factor)
+  - **LLM-powered market analysis** and recommendations
+  - **Automated backtesting** engine
+  - **Interactive dashboard** with live visualizations
+  - **Risk management constraints** prominently displayed
+  - **Cloudflare D1 database** for data persistence
 
 ## URLs
 - **Local Development**: http://localhost:3000
@@ -25,14 +28,30 @@
 
 ## ✅ Currently Completed Features
 
-### 1. Data Integration Layer
+### 1. Real-Time Market Data Layer ⚡ NEW!
+- **Live Market Data**: BTC and ETH prices updating every 2 seconds
+- **Real-time Indicators**: RSI, Momentum, Volatility calculated live
+- **Market Sentiment**: Fear & Greed Index, VIX, Market Cap Dominance
+- **Economic Dashboard**: Fed Rate, Inflation, Unemployment, GDP Growth
+- **Visual Indicators**: Live pulse animations and color-coded changes
+- **Auto-refresh**: Continuous data updates without page reload
+
+### 2. Parameter & Constraint Transparency 🔍 NEW!
+- **Full Parameter Display**: Every strategy shows all configurable parameters
+- **Visual Constraint Bars**: Min/max ranges with current values displayed
+- **Risk Management Rules**: Position sizing, drawdown limits, stop-loss requirements
+- **Execution Constraints**: Slippage limits, liquidity requirements, timeout windows
+- **Market Regime Constraints**: Dynamic adjustments based on volatility and correlation
+- **Validation Status**: Real-time constraint violation detection
+
+### 3. Data Integration Layer
 - **Market Data Management**: Store and retrieve price, volume, and market data
 - **Economic Indicators**: Track GDP, inflation, Fed rates, and other macro indicators
 - **Sentiment Signals**: Aggregate social media and news sentiment data
 - **Feature Engineering**: Calculate technical indicators (SMA, RSI, Momentum)
 
-### 2. Strategy Engine
-Five production-ready trading strategies:
+### 4. Strategy Engine with Full Transparency
+Five production-ready trading strategies with complete parameter visibility:
 
 | Strategy | Type | Description | Parameters |
 |----------|------|-------------|------------|
@@ -42,7 +61,7 @@ Five production-ready trading strategies:
 | **Sentiment-Driven** | Sentiment | Trade based on social sentiment | Threshold: 0.6, Volume: 1000 |
 | **Multi-Factor** | Factor | Combined momentum, value, quality | Weights: [0.4, 0.3, 0.3] |
 
-### 3. Backtesting Agent
+### 5. Backtesting Agent
 - Historical data replay simulation
 - Performance metrics calculation:
   - Total Return
@@ -52,22 +71,24 @@ Five production-ready trading strategies:
   - Trade Statistics
 - Compare multiple strategies side-by-side
 
-### 4. LLM Reasoning Layer
+### 6. LLM Reasoning Layer
 Three types of AI-powered analysis:
 
 1. **Market Commentary**: Analyze current market conditions and trends
 2. **Strategy Recommendation**: Suggest optimal strategies for current regime
 3. **Risk Assessment**: Calculate position sizing and risk/reward ratios
 
-### 5. Interactive Dashboard
-- Real-time market regime display
-- Active strategies overview
-- Recent trading signals with strength indicators
-- Backtest results visualization
-- One-click signal generation
-- LLM analysis on demand
+### 7. Interactive Dashboard with Premium Design
+- **Cream/Navy Color Scheme**: Professional 95% cream background with 5% navy blue accents
+- **Real-time Updates**: Market data refreshes every 2 seconds automatically
+- **Live Indicators**: Pulsing animations showing active data streams
+- **Parameter Cards**: Each strategy displays full parameters with visual constraint bars
+- **Signal Feed**: Auto-updating recent signals with color-coded buy/sell/hold
+- **Risk Metrics**: Prominent display of position limits, drawdown thresholds, slippage limits
+- **LLM Analysis**: One-click AI-powered market commentary with confidence scores
+- **Responsive Design**: Clean, professional interface optimized for trading workflows
 
-### 6. Database Architecture
+### 8. Database Architecture
 **Cloudflare D1 (SQLite) Tables:**
 - `market_data` - Price and volume data
 - `economic_indicators` - Macro economic data
@@ -156,12 +177,36 @@ Strategy Engine → Signal Generation → Backtesting →
 LLM Analysis → Dashboard Visualization
 ```
 
+## Real-Time Features ⚡
+
+### Automatic Data Updates
+- **Market Prices**: Update every 2 seconds with live BTC/ETH prices
+- **Indicators**: Real-time RSI, Momentum, Volatility calculations
+- **Signal Feed**: Auto-refresh every 5 seconds showing latest signals
+- **Visual Feedback**: Pulsing "LIVE" indicators and animated updates
+- **No Page Reload**: Seamless experience with background data polling
+
+### Parameter & Constraint Display
+Each strategy card shows:
+- **Parameter Sliders**: Visual bars showing current value within min/max range
+- **Constraint Badges**: Navy blue badges highlighting key parameter values
+- **Risk Limits**: Max position size, drawdown limits, stop-loss requirements
+- **Execution Rules**: Slippage thresholds, liquidity minimums, timeout windows
+- **Market Regime Adjustments**: Dynamic constraints based on volatility
+
+### API Endpoints (Real-Time)
+- `GET /api/realtime/market` - Live market data (2s polling)
+- `GET /api/strategies/:id/parameters` - Strategy parameters with constraints
+- `GET /api/strategies/:id/constraints` - Full risk management rules
+- `GET /api/dashboard/summary` - Dashboard data (5s polling)
+
 ## User Guide
 
 ### Viewing the Dashboard
 1. Open the URL in your browser
-2. Dashboard automatically loads with current market regime
-3. View 5 active trading strategies
+2. Watch real-time market data update automatically every 2 seconds
+3. View 5 active trading strategies with full parameter transparency
+4. Monitor constraint bars showing current values vs. limits
 
 ### Generating Trading Signals
 1. Click "Generate Signal" on any strategy card
