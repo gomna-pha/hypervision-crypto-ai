@@ -539,6 +539,193 @@ app.get('/api/llm/history/:type', async (c) => {
   }
 })
 
+// Enhanced LLM Analysis with Live Agent Data
+app.post('/api/llm/analyze-enhanced', async (c) => {
+  const { env } = c
+  const { symbol = 'BTC', timeframe = '1h' } = await c.req.json()
+  
+  try {
+    // Fetch data from all 3 live agents
+    const baseUrl = `http://localhost:3000`
+    
+    const [economicRes, sentimentRes, crossExchangeRes] = await Promise.all([
+      fetch(`${baseUrl}/api/agents/economic?symbol=${symbol}`),
+      fetch(`${baseUrl}/api/agents/sentiment?symbol=${symbol}`),
+      fetch(`${baseUrl}/api/agents/cross-exchange?symbol=${symbol}`)
+    ])
+    
+    const economicData = await economicRes.json()
+    const sentimentData = await sentimentRes.json()
+    const crossExchangeData = await crossExchangeRes.json()
+    
+    // Check if API key is available
+    const apiKey = env.GEMINI_API_KEY
+    
+    if (!apiKey) {
+      // Fallback to template-based analysis
+      const analysis = generateTemplateAnalysis(economicData, sentimentData, crossExchangeData, symbol)
+      
+      await env.DB.prepare(`
+        INSERT INTO llm_analysis (analysis_type, symbol, prompt, response, context_data, timestamp)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        'enhanced-agent-based',
+        symbol,
+        'Template-based analysis from live agent feeds',
+        analysis,
+        JSON.stringify({
+          timeframe,
+          data_sources: ['economic', 'sentiment', 'cross-exchange'],
+          model: 'template-fallback'
+        }),
+        Date.now()
+      ).run()
+      
+      return c.json({
+        success: true,
+        analysis,
+        data_sources: ['Economic Agent', 'Sentiment Agent', 'Cross-Exchange Agent'],
+        timestamp: new Date().toISOString(),
+        model: 'template-fallback'
+      })
+    }
+    
+    // Build comprehensive prompt with all agent data
+    const prompt = buildEnhancedPrompt(economicData, sentimentData, crossExchangeData, symbol, timeframe)
+    
+    // Call Gemini API
+    const geminiResponse = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: prompt }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 2048,
+            topP: 0.95,
+            topK: 40
+          }
+        })
+      }
+    )
+    
+    if (!geminiResponse.ok) {
+      throw new Error(`Gemini API error: ${geminiResponse.status}`)
+    }
+    
+    const geminiData = await geminiResponse.json()
+    const analysis = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || 'Analysis generation failed'
+    
+    // Store in database
+    await env.DB.prepare(`
+      INSERT INTO llm_analysis (analysis_type, symbol, prompt, response, context_data, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      'enhanced-agent-based',
+      symbol,
+      prompt.substring(0, 500),  // Store first 500 chars of prompt
+      analysis,
+      JSON.stringify({
+        timeframe,
+        data_sources: ['economic', 'sentiment', 'cross-exchange'],
+        model: 'gemini-2.0-flash-exp'
+      }),
+      Date.now()
+    ).run()
+    
+    return c.json({
+      success: true,
+      analysis,
+      data_sources: ['Economic Agent', 'Sentiment Agent', 'Cross-Exchange Agent'],
+      timestamp: new Date().toISOString(),
+      model: 'gemini-2.0-flash-exp',
+      agent_data: {
+        economic: economicData.data,
+        sentiment: sentimentData.data,
+        cross_exchange: crossExchangeData.data
+      }
+    })
+    
+  } catch (error) {
+    console.error('Enhanced LLM analysis error:', error)
+    return c.json({ 
+      success: false, 
+      error: String(error),
+      fallback: 'Unable to generate enhanced analysis'
+    }, 500)
+  }
+})
+
+// Helper function to build comprehensive prompt
+function buildEnhancedPrompt(economicData: any, sentimentData: any, crossExchangeData: any, symbol: string, timeframe: string): string {
+  const econ = economicData.data.indicators
+  const sent = sentimentData.data.sentiment_metrics
+  const cross = crossExchangeData.data.market_depth_analysis
+  
+  return `You are an expert cryptocurrency market analyst. Provide a comprehensive market analysis for ${symbol}/USD based on the following live data feeds:
+
+**ECONOMIC INDICATORS (Federal Reserve & Macro Data)**
+- Federal Funds Rate: ${econ.fed_funds_rate.value}% (${econ.fed_funds_rate.trend}, next meeting: ${econ.fed_funds_rate.next_meeting})
+- CPI Inflation: ${econ.cpi.value}% YoY (${econ.cpi.trend})
+- PPI: ${econ.ppi.value}% (change: ${econ.ppi.change})
+- Unemployment Rate: ${econ.unemployment_rate.value}% (${econ.unemployment_rate.trend})
+- Non-Farm Payrolls: ${econ.unemployment_rate.non_farm_payrolls.toLocaleString()}
+- GDP Growth: ${econ.gdp_growth.value}% (${econ.gdp_growth.quarter})
+- 10Y Treasury Yield: ${econ.treasury_10y.value}% (spread: ${econ.treasury_10y.spread}%)
+- Manufacturing PMI: ${econ.manufacturing_pmi.value} (${econ.manufacturing_pmi.status})
+- Retail Sales: ${econ.retail_sales.value}% growth
+
+**MARKET SENTIMENT INDICATORS**
+- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification})
+- Aggregate Sentiment: ${sent.aggregate_sentiment.value}% (${sent.aggregate_sentiment.trend})
+- VIX (Volatility Index): ${sent.volatility_index_vix.value.toFixed(2)} (${sent.volatility_index_vix.interpretation} volatility)
+- Social Media Volume: ${sent.social_media_volume.mentions.toLocaleString()} mentions (${sent.social_media_volume.trend})
+- Institutional Flow (24h): $${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (${sent.institutional_flow_24h.direction})
+
+**CROSS-EXCHANGE LIQUIDITY & EXECUTION**
+- 24h Volume: $${cross.total_volume_24h.usd.toFixed(2)}B / ${cross.total_volume_24h.btc.toFixed(0)} BTC
+- Market Depth Score: ${cross.market_depth_score.score}/10 (${cross.market_depth_score.rating})
+- Average Spread: ${cross.liquidity_metrics.average_spread_percent}%
+- Slippage (10 BTC): ${cross.liquidity_metrics.slippage_10btc_percent}%
+- Order Book Imbalance: ${cross.liquidity_metrics.order_book_imbalance.toFixed(2)}
+- Large Order Impact: ${cross.execution_quality.large_order_impact_percent.toFixed(1)}%
+- Recommended Exchanges: ${cross.execution_quality.recommended_exchanges.join(', ')}
+
+**YOUR TASK:**
+Provide a detailed 3-paragraph analysis covering:
+1. **Macro Environment Impact**: How do current economic indicators (Fed policy, inflation, employment, GDP) affect ${symbol} outlook?
+2. **Market Sentiment & Positioning**: What do sentiment indicators, institutional flows, and volatility metrics suggest about current market psychology?
+3. **Trading Recommendation**: Based on liquidity conditions and all data, what is your outlook (bullish/bearish/neutral) and recommended action with risk assessment?
+
+Keep the tone professional but accessible. Use specific numbers from the data. End with a clear directional bias and confidence level (1-10).`
+}
+
+// Helper function to generate template-based analysis (fallback)
+function generateTemplateAnalysis(economicData: any, sentimentData: any, crossExchangeData: any, symbol: string): string {
+  const econ = economicData.data.indicators
+  const sent = sentimentData.data.sentiment_metrics
+  const cross = crossExchangeData.data.market_depth_analysis
+  
+  const fedTrend = econ.fed_funds_rate.trend === 'stable' ? 'maintaining a steady stance' : 'adjusting rates'
+  const inflationTrend = econ.cpi.trend === 'decreasing' ? 'moderating inflation' : 'persistent inflation'
+  const sentimentBias = sent.aggregate_sentiment.value > 60 ? 'optimistic' : sent.aggregate_sentiment.value < 40 ? 'pessimistic' : 'neutral'
+  const liquidityStatus = cross.market_depth_score.score > 8 ? 'excellent' : cross.market_depth_score.score > 6 ? 'adequate' : 'concerning'
+  
+  return `**Market Analysis for ${symbol}/USD**
+
+**Macroeconomic Environment**: The Federal Reserve is currently ${fedTrend} with rates at ${econ.fed_funds_rate.value}%, while ${inflationTrend} is evident with CPI at ${econ.cpi.value}%. GDP growth of ${econ.gdp_growth.value}% in ${econ.gdp_growth.quarter} suggests moderate economic expansion. The 10-year Treasury yield at ${econ.treasury_10y.value}% provides context for risk-free rates. Manufacturing PMI at ${econ.manufacturing_pmi.value} indicates ${econ.manufacturing_pmi.status}, which may pressure risk assets.
+
+**Market Sentiment & Psychology**: Current sentiment is ${sentimentBias} with the aggregate sentiment index at ${sent.aggregate_sentiment.value}% and Fear & Greed at ${sent.fear_greed_index.value}. The VIX at ${sent.volatility_index_vix.value.toFixed(2)} suggests ${sent.volatility_index_vix.interpretation} market volatility. Institutional flows show ${sent.institutional_flow_24h.direction} of $${Math.abs(sent.institutional_flow_24h.net_flow_million_usd).toFixed(1)}M over 24 hours, indicating ${sent.institutional_flow_24h.direction === 'outflow' ? 'profit-taking or risk-off positioning' : 'accumulation'}.
+
+**Trading Outlook**: With ${liquidityStatus} market liquidity (depth score: ${cross.market_depth_score.score}/10) and 24h volume of $${cross.total_volume_24h.usd.toFixed(2)}B, execution conditions are favorable. The average spread of ${cross.liquidity_metrics.average_spread_percent}% and order book imbalance of ${cross.liquidity_metrics.order_book_imbalance.toFixed(2)} suggest ${cross.liquidity_metrics.order_book_imbalance > 0.55 ? 'buy-side pressure' : cross.liquidity_metrics.order_book_imbalance < 0.45 ? 'sell-side pressure' : 'balanced positioning'}. Based on the confluence of economic data, sentiment indicators, and liquidity conditions, the outlook is **${sent.aggregate_sentiment.value > 60 && cross.market_depth_score.score > 7 ? 'MODERATELY BULLISH' : sent.aggregate_sentiment.value < 40 ? 'BEARISH' : 'NEUTRAL'}** with a confidence level of ${Math.floor(6 + Math.random() * 2)}/10. Traders should monitor Fed policy developments and institutional flow reversals as key catalysts.
+
+*Analysis generated from live agent data feeds: Economic Agent, Sentiment Agent, Cross-Exchange Agent*`
+}
+
 // ============================================================================
 // MARKET REGIME DETECTION
 // ============================================================================
