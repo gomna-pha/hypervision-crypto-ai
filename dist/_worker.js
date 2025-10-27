@@ -1,1588 +1,207 @@
-// Trading Intelligence Platform - Real-Time with Parameters & Constraints
-// Cream color scheme with navy blue accents
-
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    
-    // Route handler
-    if (url.pathname === '/') {
-      return new Response(getHTML(), {
-        headers: { 'Content-Type': 'text/html' }
-      });
-    }
-    
-    // Real-time market data endpoint
-    if (url.pathname === '/api/realtime/market') {
-      return handleRealtimeMarket(env);
-    }
-    
-    // Get strategy with parameters
-    if (url.pathname.startsWith('/api/strategies/') && url.pathname.endsWith('/parameters')) {
-      return handleStrategyParameters(request, env);
-    }
-    
-    if (url.pathname === '/api/dashboard/summary') {
-      return handleDashboardSummary(env);
-    }
-    
-    if (url.pathname === '/api/strategies') {
-      return handleStrategies(env);
-    }
-    
-    if (url.pathname.startsWith('/api/strategies/') && url.pathname.endsWith('/signal')) {
-      return handleGenerateSignal(request, env);
-    }
-    
-    if (url.pathname === '/api/llm/analyze') {
-      return handleLLMAnalysis(request, env);
-    }
-    
-    if (url.pathname === '/api/backtest/run') {
-      return handleBacktest(request, env);
-    }
-    
-    if (url.pathname === '/api/economic/indicators') {
-      if (request.method === 'POST') {
-        return handleAddIndicator(request, env);
-      }
-      return handleGetIndicators(env);
-    }
-    
-    if (url.pathname === '/api/market/regime') {
-      return handleMarketRegime(request, env);
-    }
-    
-    // Store market data for backtesting
-    if (url.pathname === '/api/market/data') {
-      if (request.method === 'POST') {
-        return handleStoreMarketData(request, env);
-      }
-    }
-    
-    // Get constraints for a strategy
-    if (url.pathname.startsWith('/api/strategies/') && url.pathname.endsWith('/constraints')) {
-      return handleStrategyConstraints(request, env);
-    }
-    
-    return new Response('Not Found', { status: 404 });
-  }
-};
-
-// Real-time market data handler
-async function handleRealtimeMarket(env) {
-  try {
-    const timestamp = Date.now();
-    const basePrice = 45000;
-    const volatility = 0.02;
-    
-    // Generate realistic mock data
-    const btcPrice = basePrice + (Math.random() - 0.5) * basePrice * volatility;
-    const ethPrice = 2500 + (Math.random() - 0.5) * 2500 * volatility;
-    
-    const marketData = {
-      timestamp,
-      assets: {
-        'BTC-USD': {
-          price: btcPrice,
-          change_24h: (Math.random() - 0.5) * 10,
-          volume_24h: Math.random() * 1000000000,
-          bid: btcPrice * 0.9999,
-          ask: btcPrice * 1.0001,
-          rsi: Math.random() * 100,
-          momentum: (Math.random() - 0.5) * 10,
-          volatility: Math.random() * 0.5
-        },
-        'ETH-USD': {
-          price: ethPrice,
-          change_24h: (Math.random() - 0.5) * 12,
-          volume_24h: Math.random() * 500000000,
-          bid: ethPrice * 0.9999,
-          ask: ethPrice * 1.0001,
-          rsi: Math.random() * 100,
-          momentum: (Math.random() - 0.5) * 8,
-          volatility: Math.random() * 0.6
-        }
-      },
-      indicators: {
-        vix: Math.random() * 40 + 10,
-        fear_greed: Math.floor(Math.random() * 100),
-        market_cap_dominance: {
-          btc: 45 + Math.random() * 10,
-          eth: 15 + Math.random() * 5
-        }
-      },
-      economic: {
-        fed_rate: 5.33,
-        inflation: 3.2,
-        unemployment: 3.8,
-        gdp_growth: 2.4
-      }
-    };
-    
-    return jsonResponse({
-      success: true,
-      data: marketData,
-      updated: new Date(timestamp).toISOString()
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-// Get strategy parameters with constraints
-async function handleStrategyParameters(request, env) {
-  try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const strategyId = parseInt(pathParts[3]);
-    
-    const strategy = await env.DB.prepare(
-      'SELECT * FROM trading_strategies WHERE id = ?'
-    ).bind(strategyId).first();
-    
-    if (!strategy) {
-      return jsonResponse({ success: false, error: 'Strategy not found' }, 404);
-    }
-    
-    const params = JSON.parse(strategy.parameters);
-    
-    // Define constraints based on strategy type
-    let constraints = {};
-    switch (strategy.strategy_type) {
-      case 'momentum':
-        constraints = {
-          window: { min: 5, max: 50, current: params.window, unit: 'periods' },
-          threshold: { min: 0.5, max: 5.0, current: params.threshold, unit: 'sigma' },
-          volume_factor: { min: 1.0, max: 3.0, current: params.volume_factor, unit: 'x' },
-          max_position_size: { min: 0.01, max: 0.3, current: 0.1, unit: 'portfolio %' },
-          stop_loss: { min: 0.01, max: 0.1, current: 0.05, unit: 'decimal' },
-          take_profit: { min: 0.02, max: 0.3, current: 0.15, unit: 'decimal' }
-        };
-        break;
-      
-      case 'mean_reversion':
-        constraints = {
-          rsi_period: { min: 7, max: 21, current: params.rsi_period, unit: 'periods' },
-          oversold: { min: 20, max: 35, current: params.oversold, unit: 'RSI' },
-          overbought: { min: 65, max: 80, current: params.overbought, unit: 'RSI' },
-          max_position_size: { min: 0.01, max: 0.25, current: 0.08, unit: 'portfolio %' },
-          hold_period: { min: 1, max: 48, current: 24, unit: 'hours' }
-        };
-        break;
-      
-      case 'arbitrage':
-        constraints = {
-          zscore_threshold: { min: 1.5, max: 3.0, current: params.zscore_threshold, unit: 'sigma' },
-          cointegration_pvalue: { min: 0.01, max: 0.1, current: params.cointegration_pvalue, unit: 'p-value' },
-          min_spread: { min: 0.001, max: 0.02, current: 0.005, unit: 'decimal' },
-          max_position_size: { min: 0.05, max: 0.5, current: 0.2, unit: 'portfolio %' },
-          execution_timeout: { min: 1, max: 30, current: 5, unit: 'seconds' }
-        };
-        break;
-      
-      case 'sentiment':
-        constraints = {
-          sentiment_threshold: { min: 0.3, max: 0.9, current: params.sentiment_threshold, unit: 'score' },
-          volume_threshold: { min: 100, max: 10000, current: params.volume_threshold, unit: 'mentions' },
-          confidence_min: { min: 0.5, max: 0.95, current: 0.7, unit: 'confidence' },
-          max_position_size: { min: 0.01, max: 0.2, current: 0.05, unit: 'portfolio %' },
-          lookback_window: { min: 1, max: 24, current: 6, unit: 'hours' }
-        };
-        break;
-      
-      case 'factor':
-        constraints = {
-          momentum_weight: { min: 0.0, max: 1.0, current: params.weights[0], unit: 'weight' },
-          value_weight: { min: 0.0, max: 1.0, current: params.weights[1], unit: 'weight' },
-          quality_weight: { min: 0.0, max: 1.0, current: params.weights[2], unit: 'weight' },
-          rebalance_frequency: { min: 1, max: 30, current: 7, unit: 'days' },
-          max_positions: { min: 5, max: 50, current: 20, unit: 'assets' }
-        };
-        break;
-    }
-    
-    return jsonResponse({
-      success: true,
-      strategy: {
-        id: strategy.id,
-        name: strategy.strategy_name,
-        type: strategy.strategy_type,
-        description: strategy.description
-      },
-      parameters: params,
-      constraints: constraints,
-      validation: validateConstraints(params, constraints)
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-// Get strategy constraints
-async function handleStrategyConstraints(request, env) {
-  try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const strategyId = parseInt(pathParts[3]);
-    
-    const strategy = await env.DB.prepare(
-      'SELECT * FROM trading_strategies WHERE id = ?'
-    ).bind(strategyId).first();
-    
-    if (!strategy) {
-      return jsonResponse({ success: false, error: 'Strategy not found' }, 404);
-    }
-    
-    // Return risk constraints
-    const riskConstraints = {
-      position_sizing: {
-        max_single_position: 0.15, // 15% of portfolio
-        max_sector_exposure: 0.40, // 40% in one sector
-        max_correlation: 0.7, // Maximum correlation between positions
-        description: 'Limits position sizes to prevent overconcentration'
-      },
-      risk_management: {
-        max_portfolio_var: 0.05, // 5% VaR
-        max_drawdown_limit: 0.20, // 20% max drawdown
-        stop_loss_required: true,
-        description: 'Overall portfolio risk limits'
-      },
-      execution: {
-        max_slippage: 0.002, // 0.2% max slippage
-        min_liquidity: 1000000, // $1M minimum liquidity
-        execution_window: 60, // 60 seconds max
-        description: 'Trade execution constraints'
-      },
-      market_regime: {
-        volatility_threshold: 0.50, // Reduce size above 50% vol
-        correlation_threshold: 0.85, // Reduce size above 85% correlation
-        liquidity_threshold: 0.30, // Increase size above 30% liquidity score
-        description: 'Dynamic constraints based on market conditions'
-      }
-    };
-    
-    return jsonResponse({
-      success: true,
-      strategy_id: strategyId,
-      strategy_name: strategy.strategy_name,
-      constraints: riskConstraints,
-      last_updated: Date.now()
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-function validateConstraints(params, constraints) {
-  const validation = {
-    isValid: true,
-    violations: []
-  };
-  
-  for (const [key, constraint] of Object.entries(constraints)) {
-    if (constraint.current < constraint.min) {
-      validation.isValid = false;
-      validation.violations.push({
-        parameter: key,
-        value: constraint.current,
-        min: constraint.min,
-        message: `${key} is below minimum threshold`
-      });
-    }
-    if (constraint.current > constraint.max) {
-      validation.isValid = false;
-      validation.violations.push({
-        parameter: key,
-        value: constraint.current,
-        max: constraint.max,
-        message: `${key} exceeds maximum threshold`
-      });
-    }
-  }
-  
-  return validation;
-}
-
-// Previous handlers (simplified versions)
-async function handleDashboardSummary(env) {
-  try {
-    const regime = await env.DB.prepare(
-      'SELECT * FROM market_regime ORDER BY timestamp DESC LIMIT 1'
-    ).first();
-    
-    const strategies = await env.DB.prepare(
-      'SELECT COUNT(*) as count FROM trading_strategies WHERE is_active = 1'
-    ).first();
-    
-    const signals = await env.DB.prepare(
-      'SELECT * FROM strategy_signals ORDER BY timestamp DESC LIMIT 10'
-    ).all();
-    
-    const backtests = await env.DB.prepare(
-      'SELECT * FROM backtest_results ORDER BY created_at DESC LIMIT 5'
-    ).all();
-    
-    return jsonResponse({
-      success: true,
-      dashboard: {
-        market_regime: regime,
-        active_strategies: strategies?.count || 5,
-        recent_signals: signals.results,
-        recent_backtests: backtests.results
-      }
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleStrategies(env) {
-  try {
-    const results = await env.DB.prepare(
-      'SELECT * FROM trading_strategies WHERE is_active = 1'
-    ).all();
-    
-    return jsonResponse({
-      success: true,
-      strategies: results.results,
-      count: results.results?.length || 0
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleGenerateSignal(request, env) {
-  try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split('/');
-    const strategyId = parseInt(pathParts[3]);
-    
-    const body = await request.json();
-    const { symbol, market_data } = body;
-    
-    const strategy = await env.DB.prepare(
-      'SELECT * FROM trading_strategies WHERE id = ?'
-    ).bind(strategyId).first();
-    
-    if (!strategy) {
-      return jsonResponse({ success: false, error: 'Strategy not found' }, 404);
-    }
-    
-    let signal_type = 'hold';
-    let signal_strength = 0.5;
-    let confidence = 0.7;
-    
-    const params = JSON.parse(strategy.parameters);
-    
-    switch (strategy.strategy_type) {
-      case 'momentum':
-        if (market_data.momentum > (params.threshold || 2.0)) {
-          signal_type = 'buy';
-          signal_strength = 0.8;
-        } else if (market_data.momentum < -(params.threshold || 2.0)) {
-          signal_type = 'sell';
-          signal_strength = 0.8;
-        }
-        break;
-      
-      case 'mean_reversion':
-        if (market_data.rsi < (params.oversold || 30)) {
-          signal_type = 'buy';
-          signal_strength = 0.9;
-        } else if (market_data.rsi > (params.overbought || 70)) {
-          signal_type = 'sell';
-          signal_strength = 0.9;
-        }
-        break;
-      
-      case 'sentiment':
-        if (market_data.sentiment > (params.sentiment_threshold || 0.6)) {
-          signal_type = 'buy';
-          signal_strength = 0.75;
-        } else if (market_data.sentiment < -(params.sentiment_threshold || 0.6)) {
-          signal_type = 'sell';
-          signal_strength = 0.75;
-        }
-        break;
-    }
-    
-    const timestamp = Date.now();
-    await env.DB.prepare(`
+var xt=Object.defineProperty;var Le=e=>{throw TypeError(e)};var wt=(e,t,s)=>t in e?xt(e,t,{enumerable:!0,configurable:!0,writable:!0,value:s}):e[t]=s;var p=(e,t,s)=>wt(e,typeof t!="symbol"?t+"":t,s),Ae=(e,t,s)=>t.has(e)||Le("Cannot "+s);var l=(e,t,s)=>(Ae(e,t,"read from private field"),s?s.call(e):t.get(e)),g=(e,t,s)=>t.has(e)?Le("Cannot add the same private member more than once"):t instanceof WeakSet?t.add(e):t.set(e,s),f=(e,t,s,r)=>(Ae(e,t,"write to private field"),r?r.call(e,s):t.set(e,s),s),y=(e,t,s)=>(Ae(e,t,"access private method"),s);var He=(e,t,s,r)=>({set _(n){f(e,t,n,s)},get _(){return l(e,t,r)}});var $e=(e,t,s)=>(r,n)=>{let a=-1;return i(0);async function i(c){if(c<=a)throw new Error("next() called multiple times");a=c;let o,u=!1,d;if(e[c]?(d=e[c][0][0],r.req.routeIndex=c):d=c===e.length&&n||void 0,d)try{o=await d(r,()=>i(c+1))}catch(h){if(h instanceof Error&&t)r.error=h,o=await t(h,r),u=!0;else throw h}else r.finalized===!1&&s&&(o=await s(r));return o&&(r.finalized===!1||u)&&(r.res=o),r}},_t=Symbol(),Et=async(e,t=Object.create(null))=>{const{all:s=!1,dot:r=!1}=t,a=(e instanceof nt?e.raw.headers:e.headers).get("Content-Type");return a!=null&&a.startsWith("multipart/form-data")||a!=null&&a.startsWith("application/x-www-form-urlencoded")?Rt(e,{all:s,dot:r}):{}};async function Rt(e,t){const s=await e.formData();return s?St(s,t):{}}function St(e,t){const s=Object.create(null);return e.forEach((r,n)=>{t.all||n.endsWith("[]")?jt(s,n,r):s[n]=r}),t.dot&&Object.entries(s).forEach(([r,n])=>{r.includes(".")&&(Ot(s,r,n),delete s[r])}),s}var jt=(e,t,s)=>{e[t]!==void 0?Array.isArray(e[t])?e[t].push(s):e[t]=[e[t],s]:t.endsWith("[]")?e[t]=[s]:e[t]=s},Ot=(e,t,s)=>{let r=e;const n=t.split(".");n.forEach((a,i)=>{i===n.length-1?r[a]=s:((!r[a]||typeof r[a]!="object"||Array.isArray(r[a])||r[a]instanceof File)&&(r[a]=Object.create(null)),r=r[a])})},Ze=e=>{const t=e.split("/");return t[0]===""&&t.shift(),t},Tt=e=>{const{groups:t,path:s}=Ct(e),r=Ze(s);return At(r,t)},Ct=e=>{const t=[];return e=e.replace(/\{[^}]+\}/g,(s,r)=>{const n=`@${r}`;return t.push([n,s]),n}),{groups:t,path:e}},At=(e,t)=>{for(let s=t.length-1;s>=0;s--){const[r]=t[s];for(let n=e.length-1;n>=0;n--)if(e[n].includes(r)){e[n]=e[n].replace(r,t[s][1]);break}}return e},we={},Dt=(e,t)=>{if(e==="*")return"*";const s=e.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);if(s){const r=`${e}#${t}`;return we[r]||(s[2]?we[r]=t&&t[0]!==":"&&t[0]!=="*"?[r,s[1],new RegExp(`^${s[2]}(?=/${t})`)]:[e,s[1],new RegExp(`^${s[2]}$`)]:we[r]=[e,s[1],!0]),we[r]}return null},Ne=(e,t)=>{try{return t(e)}catch{return e.replace(/(?:%[0-9A-Fa-f]{2})+/g,s=>{try{return t(s)}catch{return s}})}},Mt=e=>Ne(e,decodeURI),et=e=>{const t=e.url,s=t.indexOf("/",t.indexOf(":")+4);let r=s;for(;r<t.length;r++){const n=t.charCodeAt(r);if(n===37){const a=t.indexOf("?",r),i=t.slice(s,a===-1?void 0:a);return Mt(i.includes("%25")?i.replace(/%25/g,"%2525"):i)}else if(n===63)break}return t.slice(s,r)},kt=e=>{const t=et(e);return t.length>1&&t.at(-1)==="/"?t.slice(0,-1):t},re=(e,t,...s)=>(s.length&&(t=re(t,...s)),`${(e==null?void 0:e[0])==="/"?"":"/"}${e}${t==="/"?"":`${(e==null?void 0:e.at(-1))==="/"?"":"/"}${(t==null?void 0:t[0])==="/"?t.slice(1):t}`}`),tt=e=>{if(e.charCodeAt(e.length-1)!==63||!e.includes(":"))return null;const t=e.split("/"),s=[];let r="";return t.forEach(n=>{if(n!==""&&!/\:/.test(n))r+="/"+n;else if(/\:/.test(n))if(/\?/.test(n)){s.length===0&&r===""?s.push("/"):s.push(r);const a=n.replace("?","");r+="/"+a,s.push(r)}else r+="/"+n}),s.filter((n,a,i)=>i.indexOf(n)===a)},De=e=>/[%+]/.test(e)?(e.indexOf("+")!==-1&&(e=e.replace(/\+/g," ")),e.indexOf("%")!==-1?Ne(e,rt):e):e,st=(e,t,s)=>{let r;if(!s&&t&&!/[%+]/.test(t)){let i=e.indexOf(`?${t}`,8);for(i===-1&&(i=e.indexOf(`&${t}`,8));i!==-1;){const c=e.charCodeAt(i+t.length+1);if(c===61){const o=i+t.length+2,u=e.indexOf("&",o);return De(e.slice(o,u===-1?void 0:u))}else if(c==38||isNaN(c))return"";i=e.indexOf(`&${t}`,i+1)}if(r=/[%+]/.test(e),!r)return}const n={};r??(r=/[%+]/.test(e));let a=e.indexOf("?",8);for(;a!==-1;){const i=e.indexOf("&",a+1);let c=e.indexOf("=",a);c>i&&i!==-1&&(c=-1);let o=e.slice(a+1,c===-1?i===-1?void 0:i:c);if(r&&(o=De(o)),a=i,o==="")continue;let u;c===-1?u="":(u=e.slice(c+1,i===-1?void 0:i),r&&(u=De(u))),s?(n[o]&&Array.isArray(n[o])||(n[o]=[]),n[o].push(u)):n[o]??(n[o]=u)}return t?n[t]:n},It=st,Nt=(e,t)=>st(e,t,!0),rt=decodeURIComponent,Be=e=>Ne(e,rt),ie,C,B,at,it,ke,U,ze,nt=(ze=class{constructor(e,t="/",s=[[]]){g(this,B);p(this,"raw");g(this,ie);g(this,C);p(this,"routeIndex",0);p(this,"path");p(this,"bodyCache",{});g(this,U,e=>{const{bodyCache:t,raw:s}=this,r=t[e];if(r)return r;const n=Object.keys(t)[0];return n?t[n].then(a=>(n==="json"&&(a=JSON.stringify(a)),new Response(a)[e]())):t[e]=s[e]()});this.raw=e,this.path=t,f(this,C,s),f(this,ie,{})}param(e){return e?y(this,B,at).call(this,e):y(this,B,it).call(this)}query(e){return It(this.url,e)}queries(e){return Nt(this.url,e)}header(e){if(e)return this.raw.headers.get(e)??void 0;const t={};return this.raw.headers.forEach((s,r)=>{t[r]=s}),t}async parseBody(e){var t;return(t=this.bodyCache).parsedBody??(t.parsedBody=await Et(this,e))}json(){return l(this,U).call(this,"text").then(e=>JSON.parse(e))}text(){return l(this,U).call(this,"text")}arrayBuffer(){return l(this,U).call(this,"arrayBuffer")}blob(){return l(this,U).call(this,"blob")}formData(){return l(this,U).call(this,"formData")}addValidatedData(e,t){l(this,ie)[e]=t}valid(e){return l(this,ie)[e]}get url(){return this.raw.url}get method(){return this.raw.method}get[_t](){return l(this,C)}get matchedRoutes(){return l(this,C)[0].map(([[,e]])=>e)}get routePath(){return l(this,C)[0].map(([[,e]])=>e)[this.routeIndex].path}},ie=new WeakMap,C=new WeakMap,B=new WeakSet,at=function(e){const t=l(this,C)[0][this.routeIndex][1][e],s=y(this,B,ke).call(this,t);return s&&/\%/.test(s)?Be(s):s},it=function(){const e={},t=Object.keys(l(this,C)[0][this.routeIndex][1]);for(const s of t){const r=y(this,B,ke).call(this,l(this,C)[0][this.routeIndex][1][s]);r!==void 0&&(e[s]=/\%/.test(r)?Be(r):r)}return e},ke=function(e){return l(this,C)[1]?l(this,C)[1][e]:e},U=new WeakMap,ze),Pt={Stringify:1},ot=async(e,t,s,r,n)=>{typeof e=="object"&&!(e instanceof String)&&(e instanceof Promise||(e=e.toString()),e instanceof Promise&&(e=await e));const a=e.callbacks;return a!=null&&a.length?(n?n[0]+=e:n=[e],Promise.all(a.map(c=>c({phase:t,buffer:n,context:r}))).then(c=>Promise.all(c.filter(Boolean).map(o=>ot(o,t,!1,r,n))).then(()=>n[0]))):Promise.resolve(e)},Lt="text/plain; charset=UTF-8",Me=(e,t)=>({"Content-Type":e,...t}),me,ge,P,oe,L,T,ye,ce,le,X,ve,be,z,ne,We,Ht=(We=class{constructor(e,t){g(this,z);g(this,me);g(this,ge);p(this,"env",{});g(this,P);p(this,"finalized",!1);p(this,"error");g(this,oe);g(this,L);g(this,T);g(this,ye);g(this,ce);g(this,le);g(this,X);g(this,ve);g(this,be);p(this,"render",(...e)=>(l(this,ce)??f(this,ce,t=>this.html(t)),l(this,ce).call(this,...e)));p(this,"setLayout",e=>f(this,ye,e));p(this,"getLayout",()=>l(this,ye));p(this,"setRenderer",e=>{f(this,ce,e)});p(this,"header",(e,t,s)=>{this.finalized&&f(this,T,new Response(l(this,T).body,l(this,T)));const r=l(this,T)?l(this,T).headers:l(this,X)??f(this,X,new Headers);t===void 0?r.delete(e):s!=null&&s.append?r.append(e,t):r.set(e,t)});p(this,"status",e=>{f(this,oe,e)});p(this,"set",(e,t)=>{l(this,P)??f(this,P,new Map),l(this,P).set(e,t)});p(this,"get",e=>l(this,P)?l(this,P).get(e):void 0);p(this,"newResponse",(...e)=>y(this,z,ne).call(this,...e));p(this,"body",(e,t,s)=>y(this,z,ne).call(this,e,t,s));p(this,"text",(e,t,s)=>!l(this,X)&&!l(this,oe)&&!t&&!s&&!this.finalized?new Response(e):y(this,z,ne).call(this,e,t,Me(Lt,s)));p(this,"json",(e,t,s)=>y(this,z,ne).call(this,JSON.stringify(e),t,Me("application/json",s)));p(this,"html",(e,t,s)=>{const r=n=>y(this,z,ne).call(this,n,t,Me("text/html; charset=UTF-8",s));return typeof e=="object"?ot(e,Pt.Stringify,!1,{}).then(r):r(e)});p(this,"redirect",(e,t)=>{const s=String(e);return this.header("Location",/[^\x00-\xFF]/.test(s)?encodeURI(s):s),this.newResponse(null,t??302)});p(this,"notFound",()=>(l(this,le)??f(this,le,()=>new Response),l(this,le).call(this,this)));f(this,me,e),t&&(f(this,L,t.executionCtx),this.env=t.env,f(this,le,t.notFoundHandler),f(this,be,t.path),f(this,ve,t.matchResult))}get req(){return l(this,ge)??f(this,ge,new nt(l(this,me),l(this,be),l(this,ve))),l(this,ge)}get event(){if(l(this,L)&&"respondWith"in l(this,L))return l(this,L);throw Error("This context has no FetchEvent")}get executionCtx(){if(l(this,L))return l(this,L);throw Error("This context has no ExecutionContext")}get res(){return l(this,T)||f(this,T,new Response(null,{headers:l(this,X)??f(this,X,new Headers)}))}set res(e){if(l(this,T)&&e){e=new Response(e.body,e);for(const[t,s]of l(this,T).headers.entries())if(t!=="content-type")if(t==="set-cookie"){const r=l(this,T).headers.getSetCookie();e.headers.delete("set-cookie");for(const n of r)e.headers.append("set-cookie",n)}else e.headers.set(t,s)}f(this,T,e),this.finalized=!0}get var(){return l(this,P)?Object.fromEntries(l(this,P)):{}}},me=new WeakMap,ge=new WeakMap,P=new WeakMap,oe=new WeakMap,L=new WeakMap,T=new WeakMap,ye=new WeakMap,ce=new WeakMap,le=new WeakMap,X=new WeakMap,ve=new WeakMap,be=new WeakMap,z=new WeakSet,ne=function(e,t,s){const r=l(this,T)?new Headers(l(this,T).headers):l(this,X)??new Headers;if(typeof t=="object"&&"headers"in t){const a=t.headers instanceof Headers?t.headers:new Headers(t.headers);for(const[i,c]of a)i.toLowerCase()==="set-cookie"?r.append(i,c):r.set(i,c)}if(s)for(const[a,i]of Object.entries(s))if(typeof i=="string")r.set(a,i);else{r.delete(a);for(const c of i)r.append(a,c)}const n=typeof t=="number"?t:(t==null?void 0:t.status)??l(this,oe);return new Response(e,{status:n,headers:r})},We),_="ALL",$t="all",Bt=["get","post","put","delete","options","patch"],ct="Can not add a route since the matcher is already built.",lt=class extends Error{},Ft="__COMPOSED_HANDLER",qt=e=>e.text("404 Not Found",404),Fe=(e,t)=>{if("getResponse"in e){const s=e.getResponse();return t.newResponse(s.body,s)}return console.error(e),t.text("Internal Server Error",500)},A,E,dt,D,Y,_e,Ee,Ve,ut=(Ve=class{constructor(t={}){g(this,E);p(this,"get");p(this,"post");p(this,"put");p(this,"delete");p(this,"options");p(this,"patch");p(this,"all");p(this,"on");p(this,"use");p(this,"router");p(this,"getPath");p(this,"_basePath","/");g(this,A,"/");p(this,"routes",[]);g(this,D,qt);p(this,"errorHandler",Fe);p(this,"onError",t=>(this.errorHandler=t,this));p(this,"notFound",t=>(f(this,D,t),this));p(this,"fetch",(t,...s)=>y(this,E,Ee).call(this,t,s[1],s[0],t.method));p(this,"request",(t,s,r,n)=>t instanceof Request?this.fetch(s?new Request(t,s):t,r,n):(t=t.toString(),this.fetch(new Request(/^https?:\/\//.test(t)?t:`http://localhost${re("/",t)}`,s),r,n)));p(this,"fire",()=>{addEventListener("fetch",t=>{t.respondWith(y(this,E,Ee).call(this,t.request,t,void 0,t.request.method))})});[...Bt,$t].forEach(a=>{this[a]=(i,...c)=>(typeof i=="string"?f(this,A,i):y(this,E,Y).call(this,a,l(this,A),i),c.forEach(o=>{y(this,E,Y).call(this,a,l(this,A),o)}),this)}),this.on=(a,i,...c)=>{for(const o of[i].flat()){f(this,A,o);for(const u of[a].flat())c.map(d=>{y(this,E,Y).call(this,u.toUpperCase(),l(this,A),d)})}return this},this.use=(a,...i)=>(typeof a=="string"?f(this,A,a):(f(this,A,"*"),i.unshift(a)),i.forEach(c=>{y(this,E,Y).call(this,_,l(this,A),c)}),this);const{strict:r,...n}=t;Object.assign(this,n),this.getPath=r??!0?t.getPath??et:kt}route(t,s){const r=this.basePath(t);return s.routes.map(n=>{var i;let a;s.errorHandler===Fe?a=n.handler:(a=async(c,o)=>(await $e([],s.errorHandler)(c,()=>n.handler(c,o))).res,a[Ft]=n.handler),y(i=r,E,Y).call(i,n.method,n.path,a)}),this}basePath(t){const s=y(this,E,dt).call(this);return s._basePath=re(this._basePath,t),s}mount(t,s,r){let n,a;r&&(typeof r=="function"?a=r:(a=r.optionHandler,r.replaceRequest===!1?n=o=>o:n=r.replaceRequest));const i=a?o=>{const u=a(o);return Array.isArray(u)?u:[u]}:o=>{let u;try{u=o.executionCtx}catch{}return[o.env,u]};n||(n=(()=>{const o=re(this._basePath,t),u=o==="/"?0:o.length;return d=>{const h=new URL(d.url);return h.pathname=h.pathname.slice(u)||"/",new Request(h,d)}})());const c=async(o,u)=>{const d=await s(n(o.req.raw),...i(o));if(d)return d;await u()};return y(this,E,Y).call(this,_,re(t,"*"),c),this}},A=new WeakMap,E=new WeakSet,dt=function(){const t=new ut({router:this.router,getPath:this.getPath});return t.errorHandler=this.errorHandler,f(t,D,l(this,D)),t.routes=this.routes,t},D=new WeakMap,Y=function(t,s,r){t=t.toUpperCase(),s=re(this._basePath,s);const n={basePath:this._basePath,path:s,method:t,handler:r};this.router.add(t,s,[r,n]),this.routes.push(n)},_e=function(t,s){if(t instanceof Error)return this.errorHandler(t,s);throw t},Ee=function(t,s,r,n){if(n==="HEAD")return(async()=>new Response(null,await y(this,E,Ee).call(this,t,s,r,"GET")))();const a=this.getPath(t,{env:r}),i=this.router.match(n,a),c=new Ht(t,{path:a,matchResult:i,env:r,executionCtx:s,notFoundHandler:l(this,D)});if(i[0].length===1){let u;try{u=i[0][0][0][0](c,async()=>{c.res=await l(this,D).call(this,c)})}catch(d){return y(this,E,_e).call(this,d,c)}return u instanceof Promise?u.then(d=>d||(c.finalized?c.res:l(this,D).call(this,c))).catch(d=>y(this,E,_e).call(this,d,c)):u??l(this,D).call(this,c)}const o=$e(i[0],this.errorHandler,l(this,D));return(async()=>{try{const u=await o(c);if(!u.finalized)throw new Error("Context is not finalized. Did you forget to return a Response object or `await next()`?");return u.res}catch(u){return y(this,E,_e).call(this,u,c)}})()},Ve),ht=[];function Ut(e,t){const s=this.buildAllMatchers(),r=(n,a)=>{const i=s[n]||s[_],c=i[2][a];if(c)return c;const o=a.match(i[0]);if(!o)return[[],ht];const u=o.indexOf("",1);return[i[1][u],o]};return this.match=r,r(e,t)}var Se="[^/]+",fe=".*",pe="(?:|/.*)",ae=Symbol(),zt=new Set(".\\+*[^]$()");function Wt(e,t){return e.length===1?t.length===1?e<t?-1:1:-1:t.length===1||e===fe||e===pe?1:t===fe||t===pe?-1:e===Se?1:t===Se?-1:e.length===t.length?e<t?-1:1:t.length-e.length}var Q,Z,M,Ke,Ie=(Ke=class{constructor(){g(this,Q);g(this,Z);g(this,M,Object.create(null))}insert(t,s,r,n,a){if(t.length===0){if(l(this,Q)!==void 0)throw ae;if(a)return;f(this,Q,s);return}const[i,...c]=t,o=i==="*"?c.length===0?["","",fe]:["","",Se]:i==="/*"?["","",pe]:i.match(/^\:([^\{\}]+)(?:\{(.+)\})?$/);let u;if(o){const d=o[1];let h=o[2]||Se;if(d&&o[2]&&(h===".*"||(h=h.replace(/^\((?!\?:)(?=[^)]+\)$)/,"(?:"),/\((?!\?:)/.test(h))))throw ae;if(u=l(this,M)[h],!u){if(Object.keys(l(this,M)).some(m=>m!==fe&&m!==pe))throw ae;if(a)return;u=l(this,M)[h]=new Ie,d!==""&&f(u,Z,n.varIndex++)}!a&&d!==""&&r.push([d,l(u,Z)])}else if(u=l(this,M)[i],!u){if(Object.keys(l(this,M)).some(d=>d.length>1&&d!==fe&&d!==pe))throw ae;if(a)return;u=l(this,M)[i]=new Ie}u.insert(c,s,r,n,a)}buildRegExpStr(){const s=Object.keys(l(this,M)).sort(Wt).map(r=>{const n=l(this,M)[r];return(typeof l(n,Z)=="number"?`(${r})@${l(n,Z)}`:zt.has(r)?`\\${r}`:r)+n.buildRegExpStr()});return typeof l(this,Q)=="number"&&s.unshift(`#${l(this,Q)}`),s.length===0?"":s.length===1?s[0]:"(?:"+s.join("|")+")"}},Q=new WeakMap,Z=new WeakMap,M=new WeakMap,Ke),je,xe,Ge,Vt=(Ge=class{constructor(){g(this,je,{varIndex:0});g(this,xe,new Ie)}insert(e,t,s){const r=[],n=[];for(let i=0;;){let c=!1;if(e=e.replace(/\{[^}]+\}/g,o=>{const u=`@\\${i}`;return n[i]=[u,o],i++,c=!0,u}),!c)break}const a=e.match(/(?::[^\/]+)|(?:\/\*$)|./g)||[];for(let i=n.length-1;i>=0;i--){const[c]=n[i];for(let o=a.length-1;o>=0;o--)if(a[o].indexOf(c)!==-1){a[o]=a[o].replace(c,n[i][1]);break}}return l(this,xe).insert(a,t,r,l(this,je),s),r}buildRegExp(){let e=l(this,xe).buildRegExpStr();if(e==="")return[/^$/,[],[]];let t=0;const s=[],r=[];return e=e.replace(/#(\d+)|@(\d+)|\.\*\$/g,(n,a,i)=>a!==void 0?(s[++t]=Number(a),"$()"):(i!==void 0&&(r[Number(i)]=++t),"")),[new RegExp(`^${e}`),s,r]}},je=new WeakMap,xe=new WeakMap,Ge),Kt=[/^$/,[],Object.create(null)],Re=Object.create(null);function ft(e){return Re[e]??(Re[e]=new RegExp(e==="*"?"":`^${e.replace(/\/\*$|([.\\+*[^\]$()])/g,(t,s)=>s?`\\${s}`:"(?:|/.*)")}$`))}function Gt(){Re=Object.create(null)}function Yt(e){var u;const t=new Vt,s=[];if(e.length===0)return Kt;const r=e.map(d=>[!/\*|\/:/.test(d[0]),...d]).sort(([d,h],[m,b])=>d?1:m?-1:h.length-b.length),n=Object.create(null);for(let d=0,h=-1,m=r.length;d<m;d++){const[b,S,v]=r[d];b?n[S]=[v.map(([w])=>[w,Object.create(null)]),ht]:h++;let x;try{x=t.insert(S,h,b)}catch(w){throw w===ae?new lt(S):w}b||(s[h]=v.map(([w,I])=>{const F=Object.create(null);for(I-=1;I>=0;I--){const[k,Te]=x[I];F[k]=Te}return[w,F]}))}const[a,i,c]=t.buildRegExp();for(let d=0,h=s.length;d<h;d++)for(let m=0,b=s[d].length;m<b;m++){const S=(u=s[d][m])==null?void 0:u[1];if(!S)continue;const v=Object.keys(S);for(let x=0,w=v.length;x<w;x++)S[v[x]]=c[S[v[x]]]}const o=[];for(const d in i)o[d]=s[i[d]];return[a,o,n]}function se(e,t){if(e){for(const s of Object.keys(e).sort((r,n)=>n.length-r.length))if(ft(s).test(t))return[...e[s]]}}var W,V,Oe,pt,Ye,Jt=(Ye=class{constructor(){g(this,Oe);p(this,"name","RegExpRouter");g(this,W);g(this,V);p(this,"match",Ut);f(this,W,{[_]:Object.create(null)}),f(this,V,{[_]:Object.create(null)})}add(e,t,s){var c;const r=l(this,W),n=l(this,V);if(!r||!n)throw new Error(ct);r[e]||[r,n].forEach(o=>{o[e]=Object.create(null),Object.keys(o[_]).forEach(u=>{o[e][u]=[...o[_][u]]})}),t==="/*"&&(t="*");const a=(t.match(/\/:/g)||[]).length;if(/\*$/.test(t)){const o=ft(t);e===_?Object.keys(r).forEach(u=>{var d;(d=r[u])[t]||(d[t]=se(r[u],t)||se(r[_],t)||[])}):(c=r[e])[t]||(c[t]=se(r[e],t)||se(r[_],t)||[]),Object.keys(r).forEach(u=>{(e===_||e===u)&&Object.keys(r[u]).forEach(d=>{o.test(d)&&r[u][d].push([s,a])})}),Object.keys(n).forEach(u=>{(e===_||e===u)&&Object.keys(n[u]).forEach(d=>o.test(d)&&n[u][d].push([s,a]))});return}const i=tt(t)||[t];for(let o=0,u=i.length;o<u;o++){const d=i[o];Object.keys(n).forEach(h=>{var m;(e===_||e===h)&&((m=n[h])[d]||(m[d]=[...se(r[h],d)||se(r[_],d)||[]]),n[h][d].push([s,a-u+o+1]))})}}buildAllMatchers(){const e=Object.create(null);return Object.keys(l(this,V)).concat(Object.keys(l(this,W))).forEach(t=>{e[t]||(e[t]=y(this,Oe,pt).call(this,t))}),f(this,W,f(this,V,void 0)),Gt(),e}},W=new WeakMap,V=new WeakMap,Oe=new WeakSet,pt=function(e){const t=[];let s=e===_;return[l(this,W),l(this,V)].forEach(r=>{const n=r[e]?Object.keys(r[e]).map(a=>[a,r[e][a]]):[];n.length!==0?(s||(s=!0),t.push(...n)):e!==_&&t.push(...Object.keys(r[_]).map(a=>[a,r[_][a]]))}),s?Yt(t):null},Ye),K,H,Je,Xt=(Je=class{constructor(e){p(this,"name","SmartRouter");g(this,K,[]);g(this,H,[]);f(this,K,e.routers)}add(e,t,s){if(!l(this,H))throw new Error(ct);l(this,H).push([e,t,s])}match(e,t){if(!l(this,H))throw new Error("Fatal error");const s=l(this,K),r=l(this,H),n=s.length;let a=0,i;for(;a<n;a++){const c=s[a];try{for(let o=0,u=r.length;o<u;o++)c.add(...r[o]);i=c.match(e,t)}catch(o){if(o instanceof lt)continue;throw o}this.match=c.match.bind(c),f(this,K,[c]),f(this,H,void 0);break}if(a===n)throw new Error("Fatal error");return this.name=`SmartRouter + ${this.activeRouter.name}`,i}get activeRouter(){if(l(this,H)||l(this,K).length!==1)throw new Error("No active router has been determined yet.");return l(this,K)[0]}},K=new WeakMap,H=new WeakMap,Je),he=Object.create(null),G,O,ee,ue,j,$,J,Xe,mt=(Xe=class{constructor(e,t,s){g(this,$);g(this,G);g(this,O);g(this,ee);g(this,ue,0);g(this,j,he);if(f(this,O,s||Object.create(null)),f(this,G,[]),e&&t){const r=Object.create(null);r[e]={handler:t,possibleKeys:[],score:0},f(this,G,[r])}f(this,ee,[])}insert(e,t,s){f(this,ue,++He(this,ue)._);let r=this;const n=Tt(t),a=[];for(let i=0,c=n.length;i<c;i++){const o=n[i],u=n[i+1],d=Dt(o,u),h=Array.isArray(d)?d[0]:o;if(h in l(r,O)){r=l(r,O)[h],d&&a.push(d[1]);continue}l(r,O)[h]=new mt,d&&(l(r,ee).push(d),a.push(d[1])),r=l(r,O)[h]}return l(r,G).push({[e]:{handler:s,possibleKeys:a.filter((i,c,o)=>o.indexOf(i)===c),score:l(this,ue)}}),r}search(e,t){var c;const s=[];f(this,j,he);let n=[this];const a=Ze(t),i=[];for(let o=0,u=a.length;o<u;o++){const d=a[o],h=o===u-1,m=[];for(let b=0,S=n.length;b<S;b++){const v=n[b],x=l(v,O)[d];x&&(f(x,j,l(v,j)),h?(l(x,O)["*"]&&s.push(...y(this,$,J).call(this,l(x,O)["*"],e,l(v,j))),s.push(...y(this,$,J).call(this,x,e,l(v,j)))):m.push(x));for(let w=0,I=l(v,ee).length;w<I;w++){const F=l(v,ee)[w],k=l(v,j)===he?{}:{...l(v,j)};if(F==="*"){const q=l(v,O)["*"];q&&(s.push(...y(this,$,J).call(this,q,e,l(v,j))),f(q,j,k),m.push(q));continue}const[Te,Pe,de]=F;if(!d&&!(de instanceof RegExp))continue;const N=l(v,O)[Te],bt=a.slice(o).join("/");if(de instanceof RegExp){const q=de.exec(bt);if(q){if(k[Pe]=q[0],s.push(...y(this,$,J).call(this,N,e,l(v,j),k)),Object.keys(l(N,O)).length){f(N,j,k);const Ce=((c=q[0].match(/\//))==null?void 0:c.length)??0;(i[Ce]||(i[Ce]=[])).push(N)}continue}}(de===!0||de.test(d))&&(k[Pe]=d,h?(s.push(...y(this,$,J).call(this,N,e,k,l(v,j))),l(N,O)["*"]&&s.push(...y(this,$,J).call(this,l(N,O)["*"],e,k,l(v,j)))):(f(N,j,k),m.push(N)))}}n=m.concat(i.shift()??[])}return s.length>1&&s.sort((o,u)=>o.score-u.score),[s.map(({handler:o,params:u})=>[o,u])]}},G=new WeakMap,O=new WeakMap,ee=new WeakMap,ue=new WeakMap,j=new WeakMap,$=new WeakSet,J=function(e,t,s,r){const n=[];for(let a=0,i=l(e,G).length;a<i;a++){const c=l(e,G)[a],o=c[t]||c[_],u={};if(o!==void 0&&(o.params=Object.create(null),n.push(o),s!==he||r&&r!==he))for(let d=0,h=o.possibleKeys.length;d<h;d++){const m=o.possibleKeys[d],b=u[o.score];o.params[m]=r!=null&&r[m]&&!b?r[m]:s[m]??(r==null?void 0:r[m]),u[o.score]=!0}}return n},Xe),te,Qe,Qt=(Qe=class{constructor(){p(this,"name","TrieRouter");g(this,te);f(this,te,new mt)}add(e,t,s){const r=tt(t);if(r){for(let n=0,a=r.length;n<a;n++)l(this,te).insert(e,r[n],s);return}l(this,te).insert(e,t,s)}match(e,t){return l(this,te).search(e,t)}},te=new WeakMap,Qe),gt=class extends ut{constructor(e={}){super(e),this.router=e.router??new Xt({routers:[new Jt,new Qt]})}},Zt=e=>{const s={...{origin:"*",allowMethods:["GET","HEAD","PUT","POST","DELETE","PATCH"],allowHeaders:[],exposeHeaders:[]},...e},r=(a=>typeof a=="string"?a==="*"?()=>a:i=>a===i?i:null:typeof a=="function"?a:i=>a.includes(i)?i:null)(s.origin),n=(a=>typeof a=="function"?a:Array.isArray(a)?()=>a:()=>[])(s.allowMethods);return async function(i,c){var d;function o(h,m){i.res.headers.set(h,m)}const u=await r(i.req.header("origin")||"",i);if(u&&o("Access-Control-Allow-Origin",u),s.credentials&&o("Access-Control-Allow-Credentials","true"),(d=s.exposeHeaders)!=null&&d.length&&o("Access-Control-Expose-Headers",s.exposeHeaders.join(",")),i.req.method==="OPTIONS"){s.origin!=="*"&&o("Vary","Origin"),s.maxAge!=null&&o("Access-Control-Max-Age",s.maxAge.toString());const h=await n(i.req.header("origin")||"",i);h.length&&o("Access-Control-Allow-Methods",h.join(","));let m=s.allowHeaders;if(!(m!=null&&m.length)){const b=i.req.header("Access-Control-Request-Headers");b&&(m=b.split(/\s*,\s*/))}return m!=null&&m.length&&(o("Access-Control-Allow-Headers",m.join(",")),i.res.headers.append("Vary","Access-Control-Request-Headers")),i.res.headers.delete("Content-Length"),i.res.headers.delete("Content-Type"),new Response(null,{headers:i.res.headers,status:204,statusText:"No Content"})}await c(),s.origin!=="*"&&i.header("Vary","Origin",{append:!0})}},es=/^\s*(?:text\/(?!event-stream(?:[;\s]|$))[^;\s]+|application\/(?:javascript|json|xml|xml-dtd|ecmascript|dart|postscript|rtf|tar|toml|vnd\.dart|vnd\.ms-fontobject|vnd\.ms-opentype|wasm|x-httpd-php|x-javascript|x-ns-proxy-autoconfig|x-sh|x-tar|x-virtualbox-hdd|x-virtualbox-ova|x-virtualbox-ovf|x-virtualbox-vbox|x-virtualbox-vdi|x-virtualbox-vhd|x-virtualbox-vmdk|x-www-form-urlencoded)|font\/(?:otf|ttf)|image\/(?:bmp|vnd\.adobe\.photoshop|vnd\.microsoft\.icon|vnd\.ms-dds|x-icon|x-ms-bmp)|message\/rfc822|model\/gltf-binary|x-shader\/x-fragment|x-shader\/x-vertex|[^;\s]+?\+(?:json|text|xml|yaml))(?:[;\s]|$)/i,qe=(e,t=ss)=>{const s=/\.([a-zA-Z0-9]+?)$/,r=e.match(s);if(!r)return;let n=t[r[1]];return n&&n.startsWith("text")&&(n+="; charset=utf-8"),n},ts={aac:"audio/aac",avi:"video/x-msvideo",avif:"image/avif",av1:"video/av1",bin:"application/octet-stream",bmp:"image/bmp",css:"text/css",csv:"text/csv",eot:"application/vnd.ms-fontobject",epub:"application/epub+zip",gif:"image/gif",gz:"application/gzip",htm:"text/html",html:"text/html",ico:"image/x-icon",ics:"text/calendar",jpeg:"image/jpeg",jpg:"image/jpeg",js:"text/javascript",json:"application/json",jsonld:"application/ld+json",map:"application/json",mid:"audio/x-midi",midi:"audio/x-midi",mjs:"text/javascript",mp3:"audio/mpeg",mp4:"video/mp4",mpeg:"video/mpeg",oga:"audio/ogg",ogv:"video/ogg",ogx:"application/ogg",opus:"audio/opus",otf:"font/otf",pdf:"application/pdf",png:"image/png",rtf:"application/rtf",svg:"image/svg+xml",tif:"image/tiff",tiff:"image/tiff",ts:"video/mp2t",ttf:"font/ttf",txt:"text/plain",wasm:"application/wasm",webm:"video/webm",weba:"audio/webm",webmanifest:"application/manifest+json",webp:"image/webp",woff:"font/woff",woff2:"font/woff2",xhtml:"application/xhtml+xml",xml:"application/xml",zip:"application/zip","3gp":"video/3gpp","3g2":"video/3gpp2",gltf:"model/gltf+json",glb:"model/gltf-binary"},ss=ts,rs=(...e)=>{let t=e.filter(n=>n!=="").join("/");t=t.replace(new RegExp("(?<=\\/)\\/+","g"),"");const s=t.split("/"),r=[];for(const n of s)n===".."&&r.length>0&&r.at(-1)!==".."?r.pop():n!=="."&&r.push(n);return r.join("/")||"."},yt={br:".br",zstd:".zst",gzip:".gz"},ns=Object.keys(yt),as="index.html",is=e=>{const t=e.root??"./",s=e.path,r=e.join??rs;return async(n,a)=>{var d,h,m,b;if(n.finalized)return a();let i;if(e.path)i=e.path;else try{if(i=decodeURIComponent(n.req.path),/(?:^|[\/\\])\.\.(?:$|[\/\\])/.test(i))throw new Error}catch{return await((d=e.onNotFound)==null?void 0:d.call(e,n.req.path,n)),a()}let c=r(t,!s&&e.rewriteRequestPath?e.rewriteRequestPath(i):i);e.isDir&&await e.isDir(c)&&(c=r(c,as));const o=e.getContent;let u=await o(c,n);if(u instanceof Response)return n.newResponse(u.body,u);if(u){const S=e.mimes&&qe(c,e.mimes)||qe(c);if(n.header("Content-Type",S||"application/octet-stream"),e.precompressed&&(!S||es.test(S))){const v=new Set((h=n.req.header("Accept-Encoding"))==null?void 0:h.split(",").map(x=>x.trim()));for(const x of ns){if(!v.has(x))continue;const w=await o(c+yt[x],n);if(w){u=w,n.header("Content-Encoding",x),n.header("Vary","Accept-Encoding",{append:!0});break}}}return await((m=e.onFound)==null?void 0:m.call(e,c,n)),n.body(u)}await((b=e.onNotFound)==null?void 0:b.call(e,c,n)),await a()}},os=async(e,t)=>{let s;t&&t.manifest?typeof t.manifest=="string"?s=JSON.parse(t.manifest):s=t.manifest:typeof __STATIC_CONTENT_MANIFEST=="string"?s=JSON.parse(__STATIC_CONTENT_MANIFEST):s=__STATIC_CONTENT_MANIFEST;let r;t&&t.namespace?r=t.namespace:r=__STATIC_CONTENT;const n=s[e]||e;if(!n)return null;const a=await r.get(n,{type:"stream"});return a||null},cs=e=>async function(s,r){return is({...e,getContent:async a=>os(a,{manifest:e.manifest,namespace:e.namespace?e.namespace:s.env?s.env.__STATIC_CONTENT:void 0})})(s,r)},ls=e=>cs(e);const R=new gt;R.use("/api/*",Zt());R.use("/static/*",ls({root:"./public"}));R.get("/api/market/data/:symbol",async e=>{const t=e.req.param("symbol"),{env:s}=e;try{const r=Date.now();return await s.DB.prepare(`
+      INSERT INTO market_data (symbol, exchange, price, volume, timestamp, data_type)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(t,"aggregated",0,0,r,"spot").run(),e.json({success:!0,data:{symbol:t,price:Math.random()*5e4+3e4,volume:Math.random()*1e6,timestamp:r,source:"mock"}})}catch(r){return e.json({success:!1,error:String(r)},500)}});R.get("/api/economic/indicators",async e=>{var s;const{env:t}=e;try{const r=await t.DB.prepare(`
+      SELECT * FROM economic_indicators 
+      ORDER BY timestamp DESC 
+      LIMIT 10
+    `).all();return e.json({success:!0,data:r.results,count:((s=r.results)==null?void 0:s.length)||0})}catch(r){return e.json({success:!1,error:String(r)},500)}});R.post("/api/economic/indicators",async e=>{const{env:t}=e,s=await e.req.json();try{const{indicator_name:r,indicator_code:n,value:a,period:i,source:c}=s,o=Date.now();return await t.DB.prepare(`
+      INSERT INTO economic_indicators 
+      (indicator_name, indicator_code, value, period, source, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(r,n,a,i,c,o).run(),e.json({success:!0,message:"Indicator stored successfully"})}catch(r){return e.json({success:!1,error:String(r)},500)}});R.get("/api/agents/economic",async e=>{const t=e.req.query("symbol")||"BTC",s={timestamp:Date.now(),iso_timestamp:new Date().toISOString(),symbol:t,data_source:"Economic Agent",indicators:{fed_funds_rate:{value:5.33,change:-.25,trend:"stable",next_meeting:"2025-11-07"},cpi:{value:3.2,change:-.1,yoy_change:3.2,trend:"decreasing"},ppi:{value:2.8,change:-.3},unemployment_rate:{value:3.8,change:.1,trend:"stable",non_farm_payrolls:18e4},gdp_growth:{value:2.4,quarter:"Q3 2025",previous_quarter:2.1},treasury_10y:{value:4.25,change:-.15,spread:-.6},manufacturing_pmi:{value:48.5,status:"contraction"},retail_sales:{value:.3,change:.2}}};return e.json({success:!0,agent:"economic",data:s})});R.get("/api/agents/sentiment",async e=>{const t=e.req.query("symbol")||"BTC",s={timestamp:Date.now(),iso_timestamp:new Date().toISOString(),symbol:t,data_source:"Sentiment Agent",sentiment_metrics:{fear_greed_index:{value:61+Math.floor(Math.random()*20-10),classification:"neutral"},aggregate_sentiment:{value:74+Math.floor(Math.random()*20-10),trend:"neutral"},volatility_index_vix:{value:19.98+Math.random()*4-2,interpretation:"moderate"},social_media_volume:{mentions:1e5+Math.floor(Math.random()*2e4),trend:"average"},institutional_flow_24h:{net_flow_million_usd:-7+Math.random()*10-5,direction:"outflow"}}};return e.json({success:!0,agent:"sentiment",data:s})});R.get("/api/agents/cross-exchange",async e=>{const t=e.req.query("symbol")||"BTC",s={timestamp:Date.now(),iso_timestamp:new Date().toISOString(),symbol:t,data_source:"Cross-Exchange Agent",market_depth_analysis:{total_volume_24h:{usd:35.18+Math.random()*5,btc:780+Math.random()*50},market_depth_score:{score:9.2,rating:"excellent"},liquidity_metrics:{average_spread_percent:2.1,slippage_10btc_percent:1.5,order_book_imbalance:.52},execution_quality:{large_order_impact_percent:15+Math.random()*10-5,recommended_exchanges:["Binance","Coinbase"],optimal_execution_time_ms:5e3,slippage_buffer_percent:15}}};return e.json({success:!0,agent:"cross-exchange",data:s})});R.post("/api/features/calculate",async e=>{var n;const{env:t}=e,{symbol:s,features:r}=await e.req.json();try{const i=((n=(await t.DB.prepare(`
+      SELECT price, timestamp FROM market_data 
+      WHERE symbol = ? 
+      ORDER BY timestamp DESC 
+      LIMIT 50
+    `).bind(s).all()).results)==null?void 0:n.map(u=>u.price))||[],c={};if(r.includes("sma")){const u=i.slice(0,20).reduce((d,h)=>d+h,0)/20;c.sma20=u}r.includes("rsi")&&(c.rsi=us(i,14)),r.includes("momentum")&&(c.momentum=i[0]-i[20]||0);const o=Date.now();for(const[u,d]of Object.entries(c))await t.DB.prepare(`
+        INSERT INTO feature_cache (feature_name, symbol, feature_value, timestamp)
+        VALUES (?, ?, ?, ?)
+      `).bind(u,s,d,o).run();return e.json({success:!0,features:c})}catch(a){return e.json({success:!1,error:String(a)},500)}});function us(e,t=14){if(e.length<t+1)return 50;let s=0,r=0;for(let c=0;c<t;c++){const o=e[c]-e[c+1];o>0?s+=o:r-=o}const n=s/t,a=r/t;return 100-100/(1+(a===0?100:n/a))}R.get("/api/strategies",async e=>{var s;const{env:t}=e;try{const r=await t.DB.prepare(`
+      SELECT * FROM trading_strategies WHERE is_active = 1
+    `).all();return e.json({success:!0,strategies:r.results,count:((s=r.results)==null?void 0:s.length)||0})}catch(r){return e.json({success:!1,error:String(r)},500)}});R.post("/api/strategies/:id/signal",async e=>{const{env:t}=e,s=parseInt(e.req.param("id")),{symbol:r,market_data:n}=await e.req.json();try{const a=await t.DB.prepare(`
+      SELECT * FROM trading_strategies WHERE id = ?
+    `).bind(s).first();if(!a)return e.json({success:!1,error:"Strategy not found"},404);let i="hold",c=.5,o=.7;const u=JSON.parse(a.parameters);switch(a.strategy_type){case"momentum":n.momentum>u.threshold?(i="buy",c=.8):n.momentum<-u.threshold&&(i="sell",c=.8);break;case"mean_reversion":n.rsi<u.oversold?(i="buy",c=.9):n.rsi>u.overbought&&(i="sell",c=.9);break;case"sentiment":n.sentiment>u.sentiment_threshold?(i="buy",c=.75):n.sentiment<-u.sentiment_threshold&&(i="sell",c=.75);break}const d=Date.now();return await t.DB.prepare(`
       INSERT INTO strategy_signals 
       (strategy_id, symbol, signal_type, signal_strength, confidence, timestamp)
       VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(strategyId, symbol, signal_type, signal_strength, confidence, timestamp).run();
-    
-    return jsonResponse({
-      success: true,
-      signal: {
-        strategy_name: strategy.strategy_name,
-        strategy_type: strategy.strategy_type,
-        signal_type,
-        signal_strength,
-        confidence,
-        timestamp
-      }
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleLLMAnalysis(request, env) {
-  try {
-    const { analysis_type, symbol, context } = await request.json();
-    
-    const prompt = `Analyze ${symbol} market conditions: ${JSON.stringify(context)}`;
-    
-    let response = '';
-    let confidence = 0.8;
-    
-    switch (analysis_type) {
-      case 'market_commentary':
-        response = `Based on current market data for ${symbol}, we observe ${context.trend || 'mixed'} trend signals. 
-Technical indicators suggest ${context.rsi < 30 ? 'oversold' : context.rsi > 70 ? 'overbought' : 'neutral'} conditions. 
-Recommend ${context.rsi < 30 ? 'accumulation' : context.rsi > 70 ? 'profit-taking' : 'monitoring'} strategy.`;
-        break;
-      
-      case 'strategy_recommendation':
-        response = `For ${symbol}, given current market regime of ${context.regime || 'moderate volatility'}, 
-recommend ${context.volatility > 0.5 ? 'mean reversion' : 'momentum'} strategy with 
-risk allocation of ${context.risk_level || 5}%.`;
-        confidence = 0.75;
-        break;
-      
-      case 'risk_assessment':
-        response = `Risk assessment for ${symbol}: Current volatility is ${(context.volatility * 100).toFixed(1)}%. 
-Maximum recommended position size: ${(5 / (context.volatility || 1)).toFixed(1)}%. 
-Stop loss recommended at $${(context.price * 0.95).toFixed(2)}. 
-Risk/Reward ratio: ${(Math.random() * 2 + 1).toFixed(1)}:1`;
-        confidence = 0.85;
-        break;
-      
-      default:
-        response = 'Unknown analysis type';
-    }
-    
-    const timestamp = Date.now();
-    await env.DB.prepare(`
-      INSERT INTO llm_analysis 
-      (analysis_type, symbol, prompt, response, confidence, context_data, timestamp)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(analysis_type, symbol, prompt, response, confidence, JSON.stringify(context), timestamp).run();
-    
-    return jsonResponse({
-      success: true,
-      analysis: {
-        type: analysis_type,
-        symbol,
-        response,
-        confidence,
-        timestamp
-      }
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleBacktest(request, env) {
-  try {
-    const { strategy_id, symbol, start_date, end_date, initial_capital } = await request.json();
-    
-    const historicalData = await env.DB.prepare(`
+    `).bind(s,r,i,c,o,d).run(),e.json({success:!0,signal:{strategy_name:a.strategy_name,strategy_type:a.strategy_type,signal_type:i,signal_strength:c,confidence:o,timestamp:d}})}catch(a){return e.json({success:!1,error:String(a)},500)}});R.post("/api/backtest/run",async e=>{const{env:t}=e,{strategy_id:s,symbol:r,start_date:n,end_date:a,initial_capital:i}=await e.req.json();try{const c=await t.DB.prepare(`
       SELECT * FROM market_data 
       WHERE symbol = ? AND timestamp BETWEEN ? AND ?
       ORDER BY timestamp ASC
-    `).bind(symbol, start_date, end_date).all();
-    
-    let capital = initial_capital;
-    let position = 0;
-    let trades = 0;
-    let wins = 0;
-    const prices = historicalData.results || [];
-    
-    for (let i = 0; i < prices.length - 1; i++) {
-      const price = prices[i];
-      if (Math.random() > 0.5 && position === 0) {
-        position = capital / price.price;
-        trades++;
-      } else if (position > 0 && Math.random() > 0.6) {
-        const sellValue = position * price.price;
-        if (sellValue > capital) wins++;
-        capital = sellValue;
-        position = 0;
-      }
-    }
-    
-    if (position > 0 && prices.length > 0) {
-      const lastPrice = prices[prices.length - 1];
-      capital = position * lastPrice.price;
-    }
-    
-    const total_return = ((capital - initial_capital) / initial_capital) * 100;
-    const win_rate = trades > 0 ? (wins / trades) * 100 : 0;
-    const sharpe_ratio = Math.random() * 2;
-    const max_drawdown = Math.random() * -20;
-    
-    await env.DB.prepare(`
+    `).bind(r,n,a).all();let o=i,u=0,d=0,h=0;const m=c.results||[];for(let w=0;w<m.length-1;w++){const I=m[w];if(Math.random()>.5&&u===0)u=o/I.price,d++;else if(u>0&&Math.random()>.6){const F=u*I.price;F>o&&h++,o=F,u=0}}if(u>0&&m.length>0){const w=m[m.length-1];o=u*w.price}const b=(o-i)/i*100,S=d>0?h/d*100:0,v=Math.random()*2,x=Math.random()*-20;return await t.DB.prepare(`
       INSERT INTO backtest_results 
       (strategy_id, symbol, start_date, end_date, initial_capital, final_capital, 
        total_return, sharpe_ratio, max_drawdown, win_rate, total_trades, avg_trade_return)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      strategy_id, symbol, start_date, end_date, initial_capital, capital,
-      total_return, sharpe_ratio, max_drawdown, win_rate, trades, total_return / (trades || 1)
-    ).run();
-    
-    return jsonResponse({
-      success: true,
-      backtest: {
-        initial_capital,
-        final_capital: capital,
-        total_return,
-        sharpe_ratio,
-        max_drawdown,
-        win_rate,
-        total_trades: trades
-      }
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleAddIndicator(request, env) {
-  try {
-    const { indicator_name, indicator_code, value, period, source } = await request.json();
-    const timestamp = Date.now();
-    
-    await env.DB.prepare(`
-      INSERT INTO economic_indicators 
-      (indicator_name, indicator_code, value, period, source, timestamp)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(indicator_name, indicator_code, value, period, source, timestamp).run();
-    
-    return jsonResponse({ success: true, message: 'Indicator stored successfully' });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleGetIndicators(env) {
-  try {
-    const results = await env.DB.prepare(`
-      SELECT * FROM economic_indicators 
+    `).bind(s,r,n,a,i,o,b,v,x,S,d,b/d).run(),e.json({success:!0,backtest:{initial_capital:i,final_capital:o,total_return:b,sharpe_ratio:v,max_drawdown:x,win_rate:S,total_trades:d}})}catch(c){return e.json({success:!1,error:String(c)},500)}});R.get("/api/backtest/results/:strategy_id",async e=>{var r;const{env:t}=e,s=parseInt(e.req.param("strategy_id"));try{const n=await t.DB.prepare(`
+      SELECT * FROM backtest_results 
+      WHERE strategy_id = ? 
+      ORDER BY created_at DESC
+    `).bind(s).all();return e.json({success:!0,results:n.results,count:((r=n.results)==null?void 0:r.length)||0})}catch(n){return e.json({success:!1,error:String(n)},500)}});R.post("/api/llm/analyze",async e=>{const{env:t}=e,{analysis_type:s,symbol:r,context:n}=await e.req.json();try{const a=`Analyze ${r} market conditions: ${JSON.stringify(n)}`;let i="",c=.8;switch(s){case"market_commentary":i=`Based on current market data for ${r}, we observe ${n.trend||"mixed"} trend signals. 
+        Technical indicators suggest ${n.rsi<30?"oversold":n.rsi>70?"overbought":"neutral"} conditions. 
+        Recommend ${n.rsi<30?"accumulation":n.rsi>70?"profit-taking":"monitoring"} strategy.`;break;case"strategy_recommendation":i=`For ${r}, given current market regime of ${n.regime||"moderate volatility"}, 
+        recommend ${n.volatility>.5?"mean reversion":"momentum"} strategy with 
+        risk allocation of ${n.risk_level||"moderate"}%.`,c=.75;break;case"risk_assessment":i=`Risk assessment for ${r}: Current volatility is ${n.volatility||"unknown"}. 
+        Maximum recommended position size: ${5/(n.volatility||1)}%. 
+        Stop loss recommended at ${n.price*.95}. 
+        Risk/Reward ratio: ${Math.random()*3+1}:1`,c=.85;break;default:i="Unknown analysis type"}const o=Date.now();return await t.DB.prepare(`
+      INSERT INTO llm_analysis 
+      (analysis_type, symbol, prompt, response, confidence, context_data, timestamp)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(s,r,a,i,c,JSON.stringify(n),o).run(),e.json({success:!0,analysis:{type:s,symbol:r,response:i,confidence:c,timestamp:o}})}catch(a){return e.json({success:!1,error:String(a)},500)}});R.get("/api/llm/history/:type",async e=>{var n;const{env:t}=e,s=e.req.param("type"),r=parseInt(e.req.query("limit")||"10");try{const a=await t.DB.prepare(`
+      SELECT * FROM llm_analysis 
+      WHERE analysis_type = ? 
       ORDER BY timestamp DESC 
-      LIMIT 10
-    `).all();
-    
-    return jsonResponse({
-      success: true,
-      data: results.results,
-      count: results.results?.length || 0
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
-
-async function handleMarketRegime(request, env) {
-  try {
-    const { indicators } = await request.json();
-    
-    let regime_type = 'sideways';
-    let confidence = 0.7;
-    
-    const { volatility, trend, volume } = indicators;
-    
-    if (trend > 0.05 && volatility < 0.3) {
-      regime_type = 'bull';
-      confidence = 0.85;
-    } else if (trend < -0.05 && volatility > 0.4) {
-      regime_type = 'bear';
-      confidence = 0.8;
-    } else if (volatility > 0.5) {
-      regime_type = 'high_volatility';
-      confidence = 0.9;
-    } else if (volatility < 0.15) {
-      regime_type = 'low_volatility';
-      confidence = 0.85;
-    }
-    
-    const timestamp = Date.now();
-    await env.DB.prepare(`
+      LIMIT ?
+    `).bind(s,r).all();return e.json({success:!0,history:a.results,count:((n=a.results)==null?void 0:n.length)||0})}catch(a){return e.json({success:!1,error:String(a)},500)}});R.post("/api/market/regime",async e=>{const{env:t}=e,{indicators:s}=await e.req.json();try{let r="sideways",n=.7;const{volatility:a,trend:i,volume:c}=s;i>.05&&a<.3?(r="bull",n=.85):i<-.05&&a>.4?(r="bear",n=.8):a>.5?(r="high_volatility",n=.9):a<.15&&(r="low_volatility",n=.85);const o=Date.now();return await t.DB.prepare(`
       INSERT INTO market_regime (regime_type, confidence, indicators, timestamp)
       VALUES (?, ?, ?, ?)
-    `).bind(regime_type, confidence, JSON.stringify(indicators), timestamp).run();
-    
-    return jsonResponse({
-      success: true,
-      regime: {
-        type: regime_type,
-        confidence,
-        indicators,
-        timestamp
-      }
-    });
-  } catch (error) {
-    return jsonResponse({ success: false, error: error.message }, 500);
-  }
-}
+    `).bind(r,n,JSON.stringify(s),o).run(),e.json({success:!0,regime:{type:r,confidence:n,indicators:s,timestamp:o}})}catch(r){return e.json({success:!1,error:String(r)},500)}});R.get("/api/dashboard/summary",async e=>{const{env:t}=e;try{const s=await t.DB.prepare(`
+      SELECT * FROM market_regime ORDER BY timestamp DESC LIMIT 1
+    `).first(),r=await t.DB.prepare(`
+      SELECT COUNT(*) as count FROM trading_strategies WHERE is_active = 1
+    `).first(),n=await t.DB.prepare(`
+      SELECT * FROM strategy_signals ORDER BY timestamp DESC LIMIT 5
+    `).all(),a=await t.DB.prepare(`
+      SELECT * FROM backtest_results ORDER BY created_at DESC LIMIT 3
+    `).all();return e.json({success:!0,dashboard:{market_regime:s,active_strategies:(r==null?void 0:r.count)||0,recent_signals:n.results,recent_backtests:a.results}})}catch(s){return e.json({success:!1,error:String(s)},500)}});R.get("/",e=>e.html(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Trading Intelligence Platform</title>
+        <script src="https://cdn.tailwindcss.com"><\/script>
+        <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"><\/script>
+        <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"><\/script>
+    </head>
+    <body class="bg-gradient-to-br from-gray-900 via-blue-900 to-gray-900 text-white min-h-screen">
+        <div class="container mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="mb-8">
+                <h1 class="text-4xl font-bold mb-2">
+                    <i class="fas fa-chart-line mr-3"></i>
+                    LLM-Driven Trading Intelligence Platform
+                </h1>
+                <p class="text-blue-300 text-lg">
+                    Multimodal Data Fusion • Machine Learning • Adaptive Strategies
+                </p>
+            </div>
 
-async function handleStoreMarketData(request, env) {
-  try {
-    const { symbol, price, volume, timestamp } = await request.json();
-    
-    await env.DB.prepare(`
-      INSERT INTO market_data (symbol, exchange, price, volume, timestamp, data_type)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(symbol, 'mock', price, volume, timestamp, 'spot').run();
-    
-    return jsonResponse({ success: true, message: 'Market data stored' });
-  } catch (error) {
-    // Silently fail if data already exists
-    return jsonResponse({ success: true, message: 'Data processed' });
-  }
-}
-
-function jsonResponse(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    }
-  });
-}
-
-function getHTML() {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Intelligence Platform - Real-Time</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
-    <style>
-        :root {
-            --cream: #FAF6F0;
-            --cream-dark: #F5EFE7;
-            --navy: #1B2845;
-            --navy-light: #2C3E5F;
-            --accent: #3A5A7F;
-            --success: #2E7D32;
-            --danger: #C62828;
-            --warning: #F57C00;
-        }
-        
-        body {
-            background-color: var(--cream);
-            color: var(--navy);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .navy-accent {
-            background-color: var(--navy);
-            color: var(--cream);
-        }
-        
-        .navy-border {
-            border-color: var(--navy);
-        }
-        
-        .cream-card {
-            background-color: var(--cream-dark);
-            border: 2px solid var(--navy);
-        }
-        
-        .param-badge {
-            background-color: var(--navy);
-            color: var(--cream);
-            padding: 0.25rem 0.75rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-        }
-        
-        .constraint-bar {
-            background-color: var(--cream-dark);
-            border: 1px solid var(--navy);
-            border-radius: 0.5rem;
-            overflow: hidden;
-        }
-        
-        .constraint-fill {
-            background-color: var(--navy);
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-        
-        .real-time-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: .7;
-            }
-        }
-        
-        .live-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: var(--success);
-            border-radius: 50%;
-            animation: blink 1.5s ease-in-out infinite;
-        }
-        
-        @keyframes blink {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.3;
-            }
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--navy);
-        }
-        
-        .section-header {
-            background-color: var(--navy);
-            color: var(--cream);
-            padding: 1rem 1.5rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        
-        .btn-navy {
-            background-color: var(--navy);
-            color: var(--cream);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            border: 2px solid var(--navy);
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        .btn-navy:hover {
-            background-color: var(--cream);
-            color: var(--navy);
-        }
-        
-        .signal-buy {
-            color: var(--success);
-            font-weight: 700;
-        }
-        
-        .signal-sell {
-            color: var(--danger);
-            font-weight: 700;
-        }
-        
-        .signal-hold {
-            color: var(--warning);
-            font-weight: 700;
-        }
-    </style>
-</head>
-<body>
-    <div class="min-h-screen p-6">
-        <!-- Header -->
-        <div class="max-w-7xl mx-auto mb-8">
-            <div class="flex items-center justify-between navy-accent p-6 rounded-lg shadow-lg">
-                <div>
-                    <h1 class="text-4xl font-bold mb-2">
-                        <i class="fas fa-chart-line mr-3"></i>
-                        Trading Intelligence Platform
-                    </h1>
-                    <p class="text-lg opacity-90">
-                        Real-Time Market Analysis • Parameter Transparency • Constraint Validation
-                    </p>
-                </div>
-                <div class="text-right">
-                    <div class="flex items-center gap-2 text-sm mb-2">
-                        <span class="live-indicator"></span>
-                        <span class="font-semibold">LIVE</span>
-                    </div>
-                    <div id="last-update" class="text-sm opacity-75">
-                        Updated: --:--:--
+            <!-- Status Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-gray-800 rounded-lg p-6 border border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Market Regime</p>
+                            <p id="regime-type" class="text-2xl font-bold mt-1">Loading...</p>
+                        </div>
+                        <i class="fas fa-globe text-4xl text-blue-500"></i>
                     </div>
                 </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Active Strategies</p>
+                            <p id="strategy-count" class="text-2xl font-bold mt-1">5</p>
+                        </div>
+                        <i class="fas fa-brain text-4xl text-green-500"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-purple-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Recent Signals</p>
+                            <p id="signal-count" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <i class="fas fa-signal text-4xl text-purple-500"></i>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg p-6 border border-yellow-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm">Backtests Run</p>
+                            <p id="backtest-count" class="text-2xl font-bold mt-1">0</p>
+                        </div>
+                        <i class="fas fa-history text-4xl text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                <!-- Trading Strategies -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-robot mr-2"></i>
+                        Trading Strategies
+                    </h2>
+                    <div id="strategies-list" class="space-y-3">
+                        <p class="text-gray-400">Loading strategies...</p>
+                    </div>
+                </div>
+
+                <!-- Recent Signals -->
+                <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                    <h2 class="text-2xl font-bold mb-4">
+                        <i class="fas fa-bullhorn mr-2"></i>
+                        Recent Signals
+                    </h2>
+                    <div id="signals-list" class="space-y-3">
+                        <p class="text-gray-400">No signals yet...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LLM Analysis Section -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-8">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-lightbulb mr-2"></i>
+                    LLM Market Analysis
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <button onclick="requestAnalysis('market_commentary')" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg">
+                        Market Commentary
+                    </button>
+                    <button onclick="requestAnalysis('strategy_recommendation')" class="bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg">
+                        Strategy Recommendation
+                    </button>
+                    <button onclick="requestAnalysis('risk_assessment')" class="bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg">
+                        Risk Assessment
+                    </button>
+                </div>
+                <div id="llm-response" class="bg-gray-900 p-4 rounded-lg min-h-32">
+                    <p class="text-gray-400 italic">Click a button above to get LLM analysis...</p>
+                </div>
+            </div>
+
+            <!-- Backtest Results -->
+            <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                <h2 class="text-2xl font-bold mb-4">
+                    <i class="fas fa-chart-bar mr-2"></i>
+                    Backtest Results
+                </h2>
+                <div id="backtest-results" class="space-y-3">
+                    <p class="text-gray-400">No backtests run yet...</p>
+                </div>
+                <button onclick="runBacktest()" class="mt-4 bg-purple-600 hover:bg-purple-700 px-6 py-2 rounded-lg">
+                    <i class="fas fa-play mr-2"></i>
+                    Run New Backtest
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-8 text-center text-gray-500">
+                <p>LLM-Driven Trading Intelligence System • Built with Hono + Cloudflare D1 + Chart.js</p>
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto">
-            <!-- Real-Time Market Data -->
-            <div class="mb-8">
-                <div class="section-header">
-                    <h2 class="text-2xl font-bold">
-                        <i class="fas fa-signal mr-2"></i>
-                        Real-Time Market Data
-                    </h2>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- BTC Card -->
-                    <div class="cream-card p-6 rounded-lg shadow-lg">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold">BTC-USD</h3>
-                            <span class="real-time-pulse param-badge">LIVE</span>
-                        </div>
-                        <div class="stat-value mb-2" id="btc-price">$--,---</div>
-                        <div id="btc-change" class="text-lg font-semibold mb-4">---%</div>
-                        
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span>RSI:</span>
-                                <span id="btc-rsi" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Momentum:</span>
-                                <span id="btc-momentum" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Volatility:</span>
-                                <span id="btc-volatility" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Volume 24h:</span>
-                                <span id="btc-volume" class="font-semibold">--</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ETH Card -->
-                    <div class="cream-card p-6 rounded-lg shadow-lg">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold">ETH-USD</h3>
-                            <span class="real-time-pulse param-badge">LIVE</span>
-                        </div>
-                        <div class="stat-value mb-2" id="eth-price">$--,---</div>
-                        <div id="eth-change" class="text-lg font-semibold mb-4">---%</div>
-                        
-                        <div class="space-y-2 text-sm">
-                            <div class="flex justify-between">
-                                <span>RSI:</span>
-                                <span id="eth-rsi" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Momentum:</span>
-                                <span id="eth-momentum" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Volatility:</span>
-                                <span id="eth-volatility" class="font-semibold">--</span>
-                            </div>
-                            <div class="flex justify-between">
-                                <span>Volume 24h:</span>
-                                <span id="eth-volume" class="font-semibold">--</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Market Indicators -->
-                    <div class="cream-card p-6 rounded-lg shadow-lg">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold">Market Indicators</h3>
-                            <span class="real-time-pulse param-badge">LIVE</span>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between mb-1">
-                                    <span class="text-sm font-semibold">Fear & Greed</span>
-                                    <span id="fear-greed-value" class="font-bold">--</span>
-                                </div>
-                                <div class="constraint-bar h-6">
-                                    <div id="fear-greed-bar" class="constraint-fill"></div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <div class="flex justify-between mb-1">
-                                    <span class="text-sm font-semibold">VIX Index</span>
-                                    <span id="vix-value" class="font-bold">--</span>
-                                </div>
-                                <div class="constraint-bar h-6">
-                                    <div id="vix-bar" class="constraint-fill"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="pt-2 border-t-2 navy-border">
-                                <div class="text-sm space-y-1">
-                                    <div class="flex justify-between">
-                                        <span>Fed Rate:</span>
-                                        <span id="fed-rate" class="font-semibold">--</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Inflation:</span>
-                                        <span id="inflation" class="font-semibold">--</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>GDP Growth:</span>
-                                        <span id="gdp" class="font-semibold">--</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Strategies with Parameters -->
-            <div class="mb-8">
-                <div class="section-header">
-                    <h2 class="text-2xl font-bold">
-                        <i class="fas fa-cogs mr-2"></i>
-                        Trading Strategies - Parameters & Constraints
-                    </h2>
-                </div>
-                
-                <div id="strategies-container" class="space-y-6">
-                    <!-- Strategies will be loaded here -->
-                </div>
-            </div>
-
-            <!-- Recent Signals -->
-            <div class="mb-8">
-                <div class="section-header flex justify-between items-center">
-                    <h2 class="text-2xl font-bold">
-                        <i class="fas fa-bullseye mr-2"></i>
-                        Recent Trading Signals
-                    </h2>
-                    <span class="text-sm">Auto-updating every 5s</span>
-                </div>
-                
-                <div id="signals-container" class="space-y-3">
-                    <!-- Signals will be loaded here -->
-                </div>
-            </div>
-
-            <!-- LLM Analysis -->
-            <div class="mb-8">
-                <div class="section-header">
-                    <h2 class="text-2xl font-bold">
-                        <i class="fas fa-brain mr-2"></i>
-                        LLM Market Analysis
-                    </h2>
-                </div>
-                
-                <div class="cream-card p-6 rounded-lg shadow-lg">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <button onclick="requestAnalysis('market_commentary')" class="btn-navy">
-                            <i class="fas fa-comments mr-2"></i>Market Commentary
-                        </button>
-                        <button onclick="requestAnalysis('strategy_recommendation')" class="btn-navy">
-                            <i class="fas fa-lightbulb mr-2"></i>Strategy Recommendation
-                        </button>
-                        <button onclick="requestAnalysis('risk_assessment')" class="btn-navy">
-                            <i class="fas fa-shield-alt mr-2"></i>Risk Assessment
-                        </button>
-                    </div>
-                    
-                    <div id="llm-response" class="p-6 rounded-lg" style="background-color: white; border: 2px solid var(--navy);">
-                        <p class="text-gray-600 italic">Click a button above to get AI-powered analysis...</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Automated Backtesting -->
-            <div class="mb-8">
-                <div class="section-header flex justify-between items-center">
-                    <h2 class="text-2xl font-bold">
-                        <i class="fas fa-history mr-2"></i>
-                        Automated Backtesting
-                    </h2>
-                    <span class="text-sm">Run historical simulations on all strategies</span>
-                </div>
-                
-                <div class="cream-card p-6 rounded-lg shadow-lg mb-6">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div>
-                            <label class="block text-sm font-semibold mb-2">Asset</label>
-                            <select id="backtest-symbol" class="w-full p-2 rounded border-2 navy-border" style="background-color: white; color: var(--navy);">
-                                <option value="BTC-USD">BTC-USD</option>
-                                <option value="ETH-USD">ETH-USD</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-2">Time Period</label>
-                            <select id="backtest-period" class="w-full p-2 rounded border-2 navy-border" style="background-color: white; color: var(--navy);">
-                                <option value="7">7 Days</option>
-                                <option value="30" selected>30 Days</option>
-                                <option value="90">90 Days</option>
-                                <option value="180">180 Days</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold mb-2">Initial Capital</label>
-                            <input id="backtest-capital" type="number" value="10000" min="1000" step="1000" 
-                                   class="w-full p-2 rounded border-2 navy-border" style="background-color: white; color: var(--navy);">
-                        </div>
-                        <div class="flex items-end">
-                            <button onclick="runAllBacktests()" class="btn-navy w-full">
-                                <i class="fas fa-play-circle mr-2"></i>Run All Strategies
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="backtest-progress" class="hidden mb-4">
-                        <div class="flex justify-between mb-2">
-                            <span class="font-semibold">Running Backtests...</span>
-                            <span id="backtest-progress-text">0%</span>
-                        </div>
-                        <div class="constraint-bar h-6">
-                            <div id="backtest-progress-bar" class="constraint-fill" style="width: 0%; background-color: var(--success);"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div id="backtest-results-container" class="space-y-6">
-                    <div class="cream-card p-6 rounded-lg text-center">
-                        <p class="text-gray-600 italic">Click "Run All Strategies" to start automated backtesting...</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const API_BASE = '';
-        let marketDataInterval;
-        let signalsInterval;
-
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('Trading Intelligence Platform - Real-Time Mode');
-            await loadStrategies();
-            await updateMarketData();
-            await updateSignals();
-            
-            // Real-time updates
-            marketDataInterval = setInterval(updateMarketData, 2000); // Every 2 seconds
-            signalsInterval = setInterval(updateSignals, 5000); // Every 5 seconds
-        });
-
-        // Update real-time market data
-        async function updateMarketData() {
-            try {
-                const response = await axios.get(API_BASE + '/api/realtime/market');
-                if (response.data.success) {
-                    const { data } = response.data;
-                    
-                    // Update BTC
-                    const btc = data.assets['BTC-USD'];
-                    document.getElementById('btc-price').textContent = '$' + btc.price.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
-                    document.getElementById('btc-change').textContent = btc.change_24h.toFixed(2) + '%';
-                    document.getElementById('btc-change').className = btc.change_24h >= 0 ? 'text-lg font-semibold signal-buy' : 'text-lg font-semibold signal-sell';
-                    document.getElementById('btc-rsi').textContent = btc.rsi.toFixed(1);
-                    document.getElementById('btc-momentum').textContent = btc.momentum.toFixed(2);
-                    document.getElementById('btc-volatility').textContent = (btc.volatility * 100).toFixed(1) + '%';
-                    document.getElementById('btc-volume').textContent = '$' + (btc.volume_24h / 1e9).toFixed(2) + 'B';
-                    
-                    // Update ETH
-                    const eth = data.assets['ETH-USD'];
-                    document.getElementById('eth-price').textContent = '$' + eth.price.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",");
-                    document.getElementById('eth-change').textContent = eth.change_24h.toFixed(2) + '%';
-                    document.getElementById('eth-change').className = eth.change_24h >= 0 ? 'text-lg font-semibold signal-buy' : 'text-lg font-semibold signal-sell';
-                    document.getElementById('eth-rsi').textContent = eth.rsi.toFixed(1);
-                    document.getElementById('eth-momentum').textContent = eth.momentum.toFixed(2);
-                    document.getElementById('eth-volatility').textContent = (eth.volatility * 100).toFixed(1) + '%';
-                    document.getElementById('eth-volume').textContent = '$' + (eth.volume_24h / 1e6).toFixed(0) + 'M';
-                    
-                    // Update market indicators
-                    const indicators = data.indicators;
-                    document.getElementById('fear-greed-value').textContent = indicators.fear_greed;
-                    document.getElementById('fear-greed-bar').style.width = indicators.fear_greed + '%';
-                    document.getElementById('vix-value').textContent = indicators.vix.toFixed(1);
-                    document.getElementById('vix-bar').style.width = (indicators.vix / 50 * 100) + '%';
-                    
-                    // Update economic data
-                    document.getElementById('fed-rate').textContent = data.economic.fed_rate.toFixed(2) + '%';
-                    document.getElementById('inflation').textContent = data.economic.inflation.toFixed(1) + '%';
-                    document.getElementById('gdp').textContent = data.economic.gdp_growth.toFixed(1) + '%';
-                    
-                    // Update last update time
-                    const now = new Date();
-                    document.getElementById('last-update').textContent = 'Updated: ' + now.toLocaleTimeString();
-                }
-            } catch (error) {
-                console.error('Error updating market data:', error);
-            }
-        }
-
-        // Load strategies with parameters
-        async function loadStrategies() {
-            try {
-                const response = await axios.get(API_BASE + '/api/strategies');
-                if (response.data.success) {
-                    const strategies = response.data.strategies;
-                    const container = document.getElementById('strategies-container');
-                    
-                    for (const strategy of strategies) {
-                        const params = await loadStrategyParameters(strategy.id);
-                        const constraints = await loadStrategyConstraints(strategy.id);
-                        
-                        const strategyHtml = createStrategyCard(strategy, params, constraints);
-                        const div = document.createElement('div');
-                        div.innerHTML = strategyHtml;
-                        container.appendChild(div.firstChild);
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading strategies:', error);
-            }
-        }
-
-        // Load strategy parameters
-        async function loadStrategyParameters(strategyId) {
-            try {
-                const response = await axios.get(API_BASE + \`/api/strategies/\${strategyId}/parameters\`);
-                if (response.data.success) {
-                    return response.data;
-                }
-            } catch (error) {
-                console.error('Error loading parameters:', error);
-                return null;
-            }
-        }
-
-        // Load strategy constraints
-        async function loadStrategyConstraints(strategyId) {
-            try {
-                const response = await axios.get(API_BASE + \`/api/strategies/\${strategyId}/constraints\`);
-                if (response.data.success) {
-                    return response.data.constraints;
-                }
-            } catch (error) {
-                console.error('Error loading constraints:', error);
-                return null;
-            }
-        }
-
-        // Create strategy card HTML
-        function createStrategyCard(strategy, paramsData, constraintsData) {
-            const params = paramsData?.constraints || {};
-            const constraints = constraintsData || {};
-            
-            let paramsHtml = '';
-            for (const [key, value] of Object.entries(params)) {
-                const percentage = ((value.current - value.min) / (value.max - value.min)) * 100;
-                paramsHtml += \`
-                    <div class="mb-3">
-                        <div class="flex justify-between mb-1">
-                            <span class="text-sm font-semibold">\${key.replace('_', ' ').toUpperCase()}</span>
-                            <span class="param-badge">\${value.current} \${value.unit}</span>
-                        </div>
-                        <div class="constraint-bar h-4">
-                            <div class="constraint-fill" style="width: \${percentage}%"></div>
-                        </div>
-                        <div class="flex justify-between text-xs mt-1 opacity-75">
-                            <span>Min: \${value.min}</span>
-                            <span>Max: \${value.max}</span>
-                        </div>
-                    </div>
-                \`;
-            }
-            
-            return \`
-                <div class="cream-card p-6 rounded-lg shadow-lg">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <h3 class="text-2xl font-bold">\${strategy.strategy_name}</h3>
-                            <p class="text-sm opacity-75 mt-1">\${strategy.description}</p>
-                        </div>
-                        <span class="param-badge text-lg">\${strategy.strategy_type.toUpperCase()}</span>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <h4 class="font-bold mb-3 text-lg">Parameters & Constraints</h4>
-                            \${paramsHtml}
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-bold mb-3 text-lg">Risk Management</h4>
-                            <div class="space-y-2 text-sm">
-                                <div class="flex justify-between">
-                                    <span>Max Position:</span>
-                                    <span class="font-semibold">\${constraints.position_sizing?.max_single_position * 100 || 15}%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Max Drawdown:</span>
-                                    <span class="font-semibold">\${constraints.risk_management?.max_drawdown_limit * 100 || 20}%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Max Slippage:</span>
-                                    <span class="font-semibold">\${constraints.execution?.max_slippage * 100 || 0.2}%</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span>Stop Loss:</span>
-                                    <span class="font-semibold">\${constraints.risk_management?.stop_loss_required ? 'Required' : 'Optional'}</span>
-                                </div>
-                            </div>
-                            
-                            <button onclick="generateSignal(\${strategy.id}, '\${strategy.strategy_name}')" 
-                                    class="btn-navy w-full mt-4">
-                                <i class="fas fa-bolt mr-2"></i>Generate Signal
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            \`;
-        }
-
-        // Update signals display
-        async function updateSignals() {
-            try {
-                const response = await axios.get(API_BASE + '/api/dashboard/summary');
-                if (response.data.success) {
-                    const signals = response.data.dashboard.recent_signals || [];
-                    const container = document.getElementById('signals-container');
-                    
-                    if (signals.length === 0) {
-                        container.innerHTML = '<div class="cream-card p-6 rounded-lg text-center">No signals yet. Generate one using the buttons above!</div>';
-                        return;
-                    }
-                    
-                    container.innerHTML = signals.map(signal => {
-                        const signalClass = signal.signal_type === 'buy' ? 'signal-buy' : 
-                                           signal.signal_type === 'sell' ? 'signal-sell' : 'signal-hold';
-                        const icon = signal.signal_type === 'buy' ? 'fa-arrow-up' : 
-                                    signal.signal_type === 'sell' ? 'fa-arrow-down' : 'fa-minus';
-                        
-                        return \`
-                            <div class="cream-card p-4 rounded-lg shadow">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-4">
-                                        <div class="\${signalClass} text-2xl">
-                                            <i class="fas \${icon}"></i>
-                                        </div>
-                                        <div>
-                                            <div class="font-bold text-lg">\${signal.symbol || 'BTC-USD'}</div>
-                                            <div class="text-sm opacity-75">\${new Date(signal.timestamp).toLocaleString()}</div>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="font-bold \${signalClass} text-xl">\${signal.signal_type.toUpperCase()}</div>
-                                        <div class="text-sm">Strength: \${(signal.signal_strength * 100).toFixed(0)}%</div>
-                                        <div class="text-xs opacity-75">Confidence: \${(signal.confidence * 100).toFixed(0)}%</div>
-                                    </div>
-                                </div>
-                            </div>
-                        \`;
-                    }).join('');
-                }
-            } catch (error) {
-                console.error('Error updating signals:', error);
-            }
-        }
-
-        // Generate signal
-        async function generateSignal(strategyId, strategyName) {
-            try {
-                const response = await axios.get(API_BASE + '/api/realtime/market');
-                const marketData = response.data.data.assets['BTC-USD'];
-                
-                const signalResponse = await axios.post(API_BASE + \`/api/strategies/\${strategyId}/signal\`, {
-                    symbol: 'BTC-USD',
-                    market_data: marketData
-                });
-                
-                if (signalResponse.data.success) {
-                    const signal = signalResponse.data.signal;
-                    alert(\`✅ Signal Generated!\\n\\nStrategy: \${strategyName}\\nSymbol: BTC-USD\\nSignal: \${signal.signal_type.toUpperCase()}\\nStrength: \${(signal.signal_strength * 100).toFixed(0)}%\\nConfidence: \${(signal.confidence * 100).toFixed(0)}%\`);
-                    await updateSignals();
-                }
-            } catch (error) {
-                console.error('Error generating signal:', error);
-                alert('❌ Error generating signal');
-            }
-        }
-
-        // Request LLM analysis
-        async function requestAnalysis(analysisType) {
-            const responseDiv = document.getElementById('llm-response');
-            responseDiv.innerHTML = '<p class="text-blue-600"><i class="fas fa-spinner fa-spin mr-2"></i>Analyzing with LLM...</p>';
-            
-            try {
-                const marketResponse = await axios.get(API_BASE + '/api/realtime/market');
-                const btcData = marketResponse.data.data.assets['BTC-USD'];
-                
-                const mockContext = {
-                    symbol: 'BTC-USD',
-                    rsi: btcData.rsi,
-                    trend: btcData.change_24h > 0 ? 'bullish' : 'bearish',
-                    volatility: btcData.volatility,
-                    regime: btcData.volatility > 0.4 ? 'high_volatility' : 'moderate',
-                    risk_level: btcData.volatility * 10,
-                    price: btcData.price
-                };
-                
-                const response = await axios.post(API_BASE + '/api/llm/analyze', {
-                    analysis_type: analysisType,
-                    symbol: 'BTC-USD',
-                    context: mockContext
-                });
-                
-                if (response.data.success) {
-                    const analysis = response.data.analysis;
-                    responseDiv.style.backgroundColor = 'white';
-                    responseDiv.innerHTML = \`
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="param-badge text-lg">
-                                    \${analysis.type.replace('_', ' ').toUpperCase()}
-                                </span>
-                                <span class="font-semibold" style="color: var(--navy)">
-                                    Confidence: \${(analysis.confidence * 100).toFixed(0)}%
-                                </span>
-                            </div>
-                            <div class="constraint-bar h-4 mb-4">
-                                <div class="constraint-fill" style="width: \${analysis.confidence * 100}%; background-color: var(--success)"></div>
-                            </div>
-                        </div>
-                        <p class="leading-relaxed whitespace-pre-line" style="color: var(--navy)">\${analysis.response}</p>
-                        <p class="text-xs mt-4 opacity-75">
-                            <i class="far fa-clock mr-1"></i>
-                            \${new Date(analysis.timestamp).toLocaleString()}
-                        </p>
-                    \`;
-                }
-            } catch (error) {
-                console.error('Error requesting analysis:', error);
-                responseDiv.innerHTML = '<p class="text-red-600"><i class="fas fa-exclamation-triangle mr-2"></i>Error getting analysis</p>';
-            }
-        }
-
-        // Automated Backtesting Functions
-        async function runAllBacktests() {
-            const symbol = document.getElementById('backtest-symbol').value;
-            const period = parseInt(document.getElementById('backtest-period').value);
-            const capital = parseFloat(document.getElementById('backtest-capital').value);
-            
-            // Show progress bar
-            const progressDiv = document.getElementById('backtest-progress');
-            progressDiv.classList.remove('hidden');
-            
-            const progressBar = document.getElementById('backtest-progress-bar');
-            const progressText = document.getElementById('backtest-progress-text');
-            
-            try {
-                // Get all strategies
-                const strategiesResponse = await axios.get(API_BASE + '/api/strategies');
-                if (!strategiesResponse.data.success) {
-                    throw new Error('Failed to load strategies');
-                }
-                
-                const strategies = strategiesResponse.data.strategies;
-                const results = [];
-                
-                // Calculate date range
-                const endDate = Date.now();
-                const startDate = endDate - (period * 24 * 60 * 60 * 1000);
-                
-                // Generate mock historical data first
-                await generateMockHistoricalData(symbol, startDate, endDate);
-                
-                // Run backtests for each strategy
-                for (let i = 0; i < strategies.length; i++) {
-                    const strategy = strategies[i];
-                    
-                    // Update progress
-                    const progress = ((i + 1) / strategies.length) * 100;
-                    progressBar.style.width = progress + '%';
-                    progressText.textContent = Math.round(progress) + '%';
-                    
-                    try {
-                        const backtestResponse = await axios.post(API_BASE + '/api/backtest/run', {
-                            strategy_id: strategy.id,
-                            symbol: symbol,
-                            start_date: startDate,
-                            end_date: endDate,
-                            initial_capital: capital
-                        });
-                        
-                        if (backtestResponse.data.success) {
-                            results.push({
-                                strategy: strategy,
-                                result: backtestResponse.data.backtest
-                            });
-                        }
-                    } catch (error) {
-                        console.error(\`Error backtesting strategy \${strategy.strategy_name}:\`, error);
-                    }
-                    
-                    // Small delay to show progress
-                    await new Promise(resolve => setTimeout(resolve, 300));
-                }
-                
-                // Display results
-                displayBacktestResults(results, symbol, period, capital);
-                
-                // Hide progress bar
-                setTimeout(() => {
-                    progressDiv.classList.add('hidden');
-                    progressBar.style.width = '0%';
-                    progressText.textContent = '0%';
-                }, 1000);
-                
-            } catch (error) {
-                console.error('Error running backtests:', error);
-                alert('❌ Error running backtests. Please try again.');
-                progressDiv.classList.add('hidden');
-            }
-        }
-
-        async function generateMockHistoricalData(symbol, startDate, endDate) {
-            const days = Math.floor((endDate - startDate) / (24 * 60 * 60 * 1000));
-            let basePrice = symbol === 'BTC-USD' ? 45000 : 2500;
-            
-            for (let i = 0; i < days; i++) {
-                const timestamp = startDate + (i * 24 * 60 * 60 * 1000);
-                const volatility = 0.02;
-                const price = basePrice + (Math.random() - 0.5) * basePrice * volatility;
-                const volume = Math.random() * 1000000000;
-                
-                // Store in database via API (this will fail silently if already exists)
-                try {
-                    await axios.post(API_BASE + '/api/market/data', {
-                        symbol: symbol,
-                        price: price,
-                        volume: volume,
-                        timestamp: timestamp
-                    });
-                } catch (error) {
-                    // Ignore errors - data might already exist
-                }
-                
-                basePrice = price; // Drift the price
-            }
-        }
-
-        function displayBacktestResults(results, symbol, period, capital) {
-            const container = document.getElementById('backtest-results-container');
-            
-            if (results.length === 0) {
-                container.innerHTML = \`
-                    <div class="cream-card p-6 rounded-lg text-center">
-                        <p class="text-red-600">❌ No backtest results available</p>
-                    </div>
-                \`;
-                return;
-            }
-            
-            // Sort by total return
-            results.sort((a, b) => b.result.total_return - a.result.total_return);
-            
-            // Summary card
-            const best = results[0];
-            const worst = results[results.length - 1];
-            const avgReturn = results.reduce((sum, r) => sum + r.result.total_return, 0) / results.length;
-            
-            let html = \`
-                <div class="cream-card p-6 rounded-lg shadow-lg mb-6">
-                    <h3 class="text-xl font-bold mb-4" style="color: var(--navy);">
-                        <i class="fas fa-chart-bar mr-2"></i>
-                        Backtest Summary - \${symbol} (\${period} Days)
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                        <div>
-                            <p class="text-sm opacity-75 mb-1">Initial Capital</p>
-                            <p class="text-2xl font-bold" style="color: var(--navy);">$\${capital.toLocaleString()}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm opacity-75 mb-1">Best Strategy</p>
-                            <p class="text-lg font-bold signal-buy">\${best.strategy.strategy_name}</p>
-                            <p class="text-sm signal-buy">+\${best.result.total_return.toFixed(2)}%</p>
-                        </div>
-                        <div>
-                            <p class="text-sm opacity-75 mb-1">Worst Strategy</p>
-                            <p class="text-lg font-bold signal-sell">\${worst.strategy.strategy_name}</p>
-                            <p class="text-sm signal-sell">\${worst.result.total_return.toFixed(2)}%</p>
-                        </div>
-                        <div>
-                            <p class="text-sm opacity-75 mb-1">Average Return</p>
-                            <p class="text-2xl font-bold \${avgReturn >= 0 ? 'signal-buy' : 'signal-sell'}">
-                                \${avgReturn >= 0 ? '+' : ''}\${avgReturn.toFixed(2)}%
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            \`;
-            
-            // Individual strategy results
-            html += \`<div class="space-y-4">\`;
-            
-            results.forEach((item, index) => {
-                const strategy = item.strategy;
-                const result = item.result;
-                const returnClass = result.total_return >= 0 ? 'signal-buy' : 'signal-sell';
-                const rankBadge = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : \`#\${index + 1}\`;
-                
-                html += \`
-                    <div class="cream-card p-6 rounded-lg shadow">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">\${rankBadge}</span>
-                                <div>
-                                    <h4 class="text-xl font-bold" style="color: var(--navy);">\${strategy.strategy_name}</h4>
-                                    <p class="text-sm opacity-75">\${strategy.strategy_type.toUpperCase()}</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-3xl font-bold \${returnClass}">
-                                    \${result.total_return >= 0 ? '+' : ''}\${result.total_return.toFixed(2)}%
-                                </p>
-                                <p class="text-sm opacity-75">Total Return</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 pt-4 border-t-2 navy-border">
-                            <div>
-                                <p class="text-xs opacity-75 mb-1">Final Capital</p>
-                                <p class="font-bold" style="color: var(--navy);">$\${result.final_capital.toFixed(2).replace(/\\B(?=(\\d{3})+(?!\\d))/g, ",")}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs opacity-75 mb-1">Sharpe Ratio</p>
-                                <p class="font-bold" style="color: var(--navy);">\${result.sharpe_ratio.toFixed(2)}</p>
-                            </div>
-                            <div>
-                                <p class="text-xs opacity-75 mb-1">Max Drawdown</p>
-                                <p class="font-bold signal-sell">\${result.max_drawdown.toFixed(2)}%</p>
-                            </div>
-                            <div>
-                                <p class="text-xs opacity-75 mb-1">Win Rate</p>
-                                <p class="font-bold" style="color: var(--navy);">\${result.win_rate.toFixed(1)}%</p>
-                            </div>
-                            <div>
-                                <p class="text-xs opacity-75 mb-1">Total Trades</p>
-                                <p class="font-bold" style="color: var(--navy);">\${result.total_trades}</p>
-                            </div>
-                        </div>
-                    </div>
-                \`;
-            });
-            
-            html += \`</div>\`;
-            
-            container.innerHTML = html;
-        }
-    </script>
-</body>
-</html>`;
-}
+        <script src="/static/app.js"><\/script>
+    </body>
+    </html>
+  `));const Ue=new gt,ds=Object.assign({"/src/index.tsx":R});let vt=!1;for(const[,e]of Object.entries(ds))e&&(Ue.route("/",e),Ue.notFound(e.notFoundHandler),vt=!0);if(!vt)throw new Error("Can't import modules from ['/src/index.tsx','/app/server.ts']");export{Ue as default};
