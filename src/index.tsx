@@ -1577,30 +1577,25 @@ function buildEnhancedPrompt(economicData: any, sentimentData: any, crossExchang
   return `You are an expert cryptocurrency market analyst. Provide a comprehensive market analysis for ${symbol}/USD based on the following live data feeds:
 
 **ECONOMIC INDICATORS (Federal Reserve & Macro Data)**
-- Federal Funds Rate: ${econ.fed_funds_rate.value}% (${econ.fed_funds_rate.trend}, next meeting: ${econ.fed_funds_rate.next_meeting})
-- CPI Inflation: ${econ.cpi.value}% YoY (${econ.cpi.trend})
-- PPI: ${econ.ppi.value}% (change: ${econ.ppi.change})
-- Unemployment Rate: ${econ.unemployment_rate.value}% (${econ.unemployment_rate.trend})
-- Non-Farm Payrolls: ${econ.unemployment_rate.non_farm_payrolls.toLocaleString()}
-- GDP Growth: ${econ.gdp_growth.value}% (${econ.gdp_growth.quarter})
-- 10Y Treasury Yield: ${econ.treasury_10y.value}% (spread: ${econ.treasury_10y.spread}%)
-- Manufacturing PMI: ${econ.manufacturing_pmi.value} (${econ.manufacturing_pmi.status})
-- Retail Sales: ${econ.retail_sales.value}% growth
+- Federal Funds Rate: ${econ.fed_funds_rate.value}% (Signal: ${econ.fed_funds_rate.signal})
+- CPI Inflation: ${econ.cpi.value}% (Signal: ${econ.cpi.signal}, Target: ${econ.cpi.target}%)
+- Unemployment Rate: ${econ.unemployment_rate.value}% (Signal: ${econ.unemployment_rate.signal})
+- GDP Growth: ${econ.gdp_growth.value}% (Signal: ${econ.gdp_growth.signal}, Healthy threshold: ${econ.gdp_growth.healthy_threshold}%)
+- Manufacturing PMI: ${econ.manufacturing_pmi.value} (Status: ${econ.manufacturing_pmi.status})
+- IMF Global Data: ${econ.imf_global.available ? 'Available' : 'Not available'}
 
 **MARKET SENTIMENT INDICATORS**
-- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification})
-- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification})
-- VIX (Volatility Index): ${sent.volatility_index_vix.value.toFixed(2)} (${sent.volatility_index_vix.interpretation} volatility)
-- Social Media Volume: ${sent.social_media_volume.mentions.toLocaleString()} mentions (${sent.social_media_volume.trend})
-- Institutional Flow (24h): $${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (${sent.institutional_flow_24h.direction})
+- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification}, Signal: ${sent.fear_greed_index.signal})
+- VIX (Volatility Index): ${sent.volatility_index_vix.value.toFixed(2)} (${sent.volatility_index_vix.signal} volatility)
+- Social Media Volume: ${sent.social_media_volume.mentions.toLocaleString()} mentions (${sent.social_media_volume.signal})
+- Institutional Flow (24h): $${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (${sent.institutional_flow_24h.direction}, ${sent.institutional_flow_24h.magnitude})
 
-**CROSS-EXCHANGE LIQUIDITY & EXECUTION**
-- 24h Volume: $${cross.total_volume_24h.usd.toFixed(2)}B / ${cross.total_volume_24h.btc.toFixed(0)} BTC
+**CROSS-EXCHANGE LIQUIDITY & EXECUTION (LIVE DATA)**
+- 24h Volume: ${cross.total_volume_24h.usd.toLocaleString()} BTC (${cross.total_volume_24h.exchanges_reporting} exchanges)
 - Liquidity Quality: ${cross.liquidity_metrics.liquidity_quality}
 - Average Spread: ${cross.liquidity_metrics.average_spread_percent}%
-- Slippage (10 BTC): ${cross.liquidity_metrics.slippage_10btc_percent}%
-- Arbitrage Opportunities: ${cross.arbitrage_opportunities.count}
-- Large Order Impact: ${cross.execution_quality.large_order_impact_percent.toFixed(1)}%
+- Arbitrage Opportunities: ${cross.arbitrage_opportunities.count} (${cross.arbitrage_opportunities.analysis})
+- Slippage Estimate: ${cross.execution_quality.slippage_estimate}
 - Recommended Exchanges: ${cross.execution_quality.recommended_exchanges.join(', ')}
 
 **YOUR TASK:**
