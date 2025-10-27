@@ -676,12 +676,12 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         const arb = data.arbitrage_opportunities;
                         
                         // Update summary stats
-                        document.getElementById('arb-total-opps').textContent = arb.total_opportunities;
+                        document.getElementById('arb-total-opps').textContent = arb.total_opportunities || 0;
                         document.getElementById('arb-max-spread').textContent = 
-                            arb.spatial.opportunities.length > 0 ? 
-                            Math.max(...arb.spatial.opportunities.map(o => o.spread_percent)).toFixed(2) + '%' : '0.00%';
+                            arb.spatial.opportunities && arb.spatial.opportunities.length > 0 ? 
+                            Math.max(...arb.spatial.opportunities.map(o => o.spread_percent || 0)).toFixed(2) + '%' : '0.00%';
                         document.getElementById('arb-avg-spread').textContent = 
-                            arb.spatial.avg_spread_percent.toFixed(2) + '%';
+                            (arb.spatial.average_spread || 0).toFixed(2) + '%';
                         document.getElementById('arb-last-update').textContent = formatTime(Date.now());
                         
                         // Create arbitrage cards
@@ -758,8 +758,8 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         }
                         
                         // Statistical Arbitrage
-                        if (arb.statistical.signals.length > 0) {
-                            const statArb = arb.statistical.signals[0];
+                        if (arb.statistical.opportunities && arb.statistical.opportunities.length > 0) {
+                            const statArb = arb.statistical.opportunities[0];
                             const signalColor = statArb.signal === 'BUY' ? 'text-green-600' : statArb.signal === 'SELL' ? 'text-red-600' : 'text-gray-600';
                             
                             html += '<div class="bg-amber-50 rounded-lg p-4 border-2 border-blue-600 shadow hover:shadow-lg transition-shadow">' +
@@ -789,7 +789,7 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
                         }
                         
                         // Funding Rate Arbitrage
-                        if (arb.funding_rate.opportunities.length > 0) {
+                        if (arb.funding_rate.opportunities && arb.funding_rate.opportunities.length > 0) {
                             const fundingArb = arb.funding_rate.opportunities[0];
                             const rateColor = Math.abs(fundingArb.funding_rate_percent) > 0.01 ? 'text-orange-600' : 'text-gray-600';
                             
