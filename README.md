@@ -18,7 +18,7 @@
 
 ## URLs
 - **Local Development**: http://localhost:3000
-- **Public Sandbox**: https://3000-ismuap7ldwaljac6iqjv7-583b4d74.sandbox.novita.ai
+- **Public Sandbox**: https://3000-ihto4gjgifvzp5h3din6i-d0b9e1e2.sandbox.novita.ai
 - **API Endpoints**:
   - **Live Agents (NEW)**:
     - GET `/api/agents/economic` - Economic indicators (Fed, inflation, GDP, PMI)
