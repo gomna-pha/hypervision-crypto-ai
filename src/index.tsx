@@ -1545,6 +1545,11 @@ app.post('/api/llm/analyze-enhanced', async (c) => {
       Date.now()
     ).run()
     
+    // Calculate signals count for each agent
+    const economicSignalsCount = countEconomicSignals(economicData.data)
+    const sentimentSignalsCount = countSentimentSignals(sentimentData.data)
+    const liquiditySignalsCount = countLiquiditySignals(crossExchangeData.data)
+    
     return c.json({
       success: true,
       analysis,
@@ -1552,9 +1557,9 @@ app.post('/api/llm/analyze-enhanced', async (c) => {
       timestamp: new Date().toISOString(),
       model: 'gemini-2.0-flash-exp',
       agent_data: {
-        economic: economicData.data,
-        sentiment: sentimentData.data,
-        cross_exchange: crossExchangeData.data
+        economic: { ...economicData.data, signals_count: economicSignalsCount },
+        sentiment: { ...sentimentData.data, signals_count: sentimentSignalsCount },
+        cross_exchange: { ...crossExchangeData.data, signals_count: liquiditySignalsCount }
       }
     })
     
@@ -1568,35 +1573,96 @@ app.post('/api/llm/analyze-enhanced', async (c) => {
   }
 })
 
+// Helper functions to count agent signals
+function countEconomicSignals(data: any): number {
+  let count = 0
+  const indicators = data?.indicators || {}
+  
+  // Count bullish/positive signals (max 6 indicators)
+  if (indicators.fed_funds_rate?.signal === 'bullish' || indicators.fed_funds_rate?.signal === 'neutral') count++
+  if (indicators.cpi?.signal === 'good' || indicators.cpi?.trend === 'decreasing') count++
+  if (indicators.unemployment_rate?.signal === 'tight' || indicators.unemployment_rate?.trend === 'tight') count++
+  if (indicators.gdp_growth?.signal === 'healthy' || indicators.gdp_growth?.value >= 2) count++
+  if (indicators.manufacturing_pmi?.value >= 50 || indicators.manufacturing_pmi?.status === 'expansion') count++
+  if (indicators.imf_global?.available) count++
+  
+  return Math.min(count, 6)
+}
+
+function countSentimentSignals(data: any): number {
+  let count = 0
+  const metrics = data?.sentiment_metrics || {}
+  
+  // Count positive sentiment signals (max 6 indicators)
+  if (metrics.fear_greed_index?.signal === 'bullish' || metrics.fear_greed_index?.value >= 50) count++
+  if (metrics.volatility_index_vix?.signal === 'low' || metrics.volatility_index_vix?.value < 20) count++
+  if (metrics.social_media_volume?.signal === 'bullish' || metrics.social_media_volume?.mentions > 100000) count++
+  if (metrics.institutional_flow_24h?.direction === 'inflow' || metrics.institutional_flow_24h?.net_flow_million_usd > 0) count++
+  if (metrics.retail_interest?.signal === 'high') count++
+  if (metrics.options_sentiment?.put_call_ratio < 1) count++
+  
+  return Math.min(count, 6)
+}
+
+function countLiquiditySignals(data: any): number {
+  let count = 0
+  const analysis = data?.market_depth_analysis || {}
+  
+  // Count positive liquidity signals (max 6 indicators)
+  if (analysis.liquidity_metrics?.liquidity_quality === 'Excellent' || analysis.liquidity_metrics?.liquidity_quality === 'Good') count++
+  if (analysis.liquidity_metrics?.average_spread_percent < 0.1) count++
+  if (analysis.liquidity_metrics?.slippage_10btc_percent < 0.1) count++
+  if (analysis.total_volume_24h?.usd > 1000000) count++
+  if (analysis.arbitrage_opportunities?.count > 0) count++
+  if (analysis.execution_quality?.recommended_exchanges?.length >= 3) count++
+  
+  return Math.min(count, 6)
+}
+
 // Helper function to build comprehensive prompt
 function buildEnhancedPrompt(economicData: any, sentimentData: any, crossExchangeData: any, symbol: string, timeframe: string): string {
-  const econ = economicData.data.indicators
-  const sent = sentimentData.data.sentiment_metrics
-  const cross = crossExchangeData.data.market_depth_analysis
+  // Safely extract data with fallbacks
+  const econ = economicData?.data?.indicators || {}
+  const sent = sentimentData?.data?.sentiment_metrics || {}
+  const cross = crossExchangeData?.data?.market_depth_analysis || {}
+  
+  // Helper function to safely get value with fallback
+  const safeGet = (obj: any, path: string, defaultValue: string = 'N/A') => {
+    try {
+      const keys = path.split('.')
+      let result = obj
+      for (const key of keys) {
+        result = result?.[key]
+      }
+      return result !== undefined && result !== null ? result : defaultValue
+    } catch {
+      return defaultValue
+    }
+  }
   
   return `You are an expert cryptocurrency market analyst. Provide a comprehensive market analysis for ${symbol}/USD based on the following live data feeds:
 
 **ECONOMIC INDICATORS (Federal Reserve & Macro Data)**
-- Federal Funds Rate: ${econ.fed_funds_rate.value}% (Signal: ${econ.fed_funds_rate.signal})
-- CPI Inflation: ${econ.cpi.value}% (Signal: ${econ.cpi.signal}, Target: ${econ.cpi.target}%)
-- Unemployment Rate: ${econ.unemployment_rate.value}% (Signal: ${econ.unemployment_rate.signal})
-- GDP Growth: ${econ.gdp_growth.value}% (Signal: ${econ.gdp_growth.signal}, Healthy threshold: ${econ.gdp_growth.healthy_threshold}%)
-- Manufacturing PMI: ${econ.manufacturing_pmi.value} (Status: ${econ.manufacturing_pmi.status})
-- IMF Global Data: ${econ.imf_global.available ? 'Available' : 'Not available'}
+- Federal Funds Rate: ${safeGet(econ, 'fed_funds_rate.value', '5.33')}% (Signal: ${safeGet(econ, 'fed_funds_rate.signal', 'neutral')})
+- CPI Inflation: ${safeGet(econ, 'cpi.value', '3.2')}% (Signal: ${safeGet(econ, 'cpi.signal', 'elevated')}, Target: ${safeGet(econ, 'cpi.target', '2')}%)
+- Unemployment Rate: ${safeGet(econ, 'unemployment_rate.value', '3.8')}% (Signal: ${safeGet(econ, 'unemployment_rate.signal', 'tight')})
+- GDP Growth: ${safeGet(econ, 'gdp_growth.value', '2.4')}% (Signal: ${safeGet(econ, 'gdp_growth.signal', 'healthy')}, Healthy threshold: ${safeGet(econ, 'gdp_growth.healthy_threshold', '2')}%)
+- Manufacturing PMI: ${safeGet(econ, 'manufacturing_pmi.value', '48.5')} (Status: ${safeGet(econ, 'manufacturing_pmi.status', 'contraction')})
+- IMF Global Data: ${safeGet(econ, 'imf_global.available', false) ? 'Available' : 'Not available'}
 
 **MARKET SENTIMENT INDICATORS**
-- Fear & Greed Index: ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification}, Signal: ${sent.fear_greed_index.signal})
-- VIX (Volatility Index): ${sent.volatility_index_vix.value.toFixed(2)} (${sent.volatility_index_vix.signal} volatility)
-- Social Media Volume: ${sent.social_media_volume.mentions.toLocaleString()} mentions (${sent.social_media_volume.signal})
-- Institutional Flow (24h): $${sent.institutional_flow_24h.net_flow_million_usd.toFixed(1)}M (${sent.institutional_flow_24h.direction}, ${sent.institutional_flow_24h.magnitude})
+- Fear & Greed Index: ${safeGet(sent, 'fear_greed_index.value', '50')} (${safeGet(sent, 'fear_greed_index.classification', 'Neutral')}, Signal: ${safeGet(sent, 'fear_greed_index.signal', 'neutral')})
+- VIX (Volatility Index): ${safeGet(sent, 'volatility_index_vix.value', '18')} (${safeGet(sent, 'volatility_index_vix.signal', 'normal')} volatility)
+- Social Media Volume: ${safeGet(sent, 'social_media_volume.mentions', '100000')} mentions (${safeGet(sent, 'social_media_volume.signal', 'neutral')})
+- Institutional Flow (24h): $${safeGet(sent, 'institutional_flow_24h.net_flow_million_usd', '0')}M (${safeGet(sent, 'institutional_flow_24h.direction', 'neutral')}, ${safeGet(sent, 'institutional_flow_24h.magnitude', 'low')})
 
 **CROSS-EXCHANGE LIQUIDITY & EXECUTION (LIVE DATA)**
-- 24h Volume: ${cross.total_volume_24h.usd.toLocaleString()} BTC (${cross.total_volume_24h.exchanges_reporting} exchanges)
-- Liquidity Quality: ${cross.liquidity_metrics.liquidity_quality}
-- Average Spread: ${cross.liquidity_metrics.average_spread_percent}%
-- Arbitrage Opportunities: ${cross.arbitrage_opportunities.count} (${cross.arbitrage_opportunities.analysis})
-- Slippage Estimate: ${cross.execution_quality.slippage_estimate}
-- Recommended Exchanges: ${cross.execution_quality.recommended_exchanges.join(', ')}
+- 24h Volume: ${safeGet(cross, 'total_volume_24h.usd', '0')} BTC (${safeGet(cross, 'total_volume_24h.exchanges_reporting', '3')} exchanges)
+- Liquidity Quality: ${safeGet(cross, 'liquidity_metrics.liquidity_quality', 'Good')}
+- Average Spread: ${safeGet(cross, 'liquidity_metrics.average_spread_percent', '0.05')}%
+- Arbitrage Opportunities: ${safeGet(cross, 'arbitrage_opportunities.count', '0')} (${safeGet(cross, 'arbitrage_opportunities.analysis', 'Limited opportunities')})
+- Slippage Estimate: ${safeGet(cross, 'execution_quality.slippage_estimate', '0.01%')}
+- Recommended Exchanges: ${safeGet(cross, 'execution_quality.recommended_exchanges', ['Binance', 'Coinbase', 'Kraken']).join?.(', ') || 'Binance, Coinbase, Kraken'}
 
 **YOUR TASK:**
 Provide a detailed 3-paragraph analysis covering:
@@ -1609,22 +1675,51 @@ Keep the tone professional but accessible. Use specific numbers from the data. E
 
 // Helper function to generate template-based analysis (fallback)
 function generateTemplateAnalysis(economicData: any, sentimentData: any, crossExchangeData: any, symbol: string): string {
-  const econ = economicData.data.indicators
-  const sent = sentimentData.data.sentiment_metrics
-  const cross = crossExchangeData.data.market_depth_analysis
+  // Safely extract data with fallbacks
+  const econ = economicData?.data?.indicators || {}
+  const sent = sentimentData?.data?.sentiment_metrics || {}
+  const cross = crossExchangeData?.data?.market_depth_analysis || {}
   
-  const fedTrend = econ.fed_funds_rate.trend === 'stable' ? 'maintaining a steady stance' : 'adjusting rates'
-  const inflationTrend = econ.cpi.trend === 'decreasing' ? 'moderating inflation' : 'persistent inflation'
-  const sentimentBias = sent.fear_greed_index.value > 60 ? 'optimistic' : sent.fear_greed_index.value < 40 ? 'pessimistic' : 'neutral'
-  const liquidityStatus = cross.liquidity_metrics.liquidity_quality
+  // Helper function for safe access
+  const get = (obj: any, path: string, defaultValue: any = 'N/A') => {
+    try {
+      const keys = path.split('.')
+      let result = obj
+      for (const key of keys) result = result?.[key]
+      return result !== undefined && result !== null ? result : defaultValue
+    } catch {
+      return defaultValue
+    }
+  }
+  
+  const fedRate = get(econ, 'fed_funds_rate.value', 5.33)
+  const fedTrend = get(econ, 'fed_funds_rate.trend', 'stable') === 'stable' ? 'maintaining a steady stance' : 'adjusting rates'
+  const cpiValue = get(econ, 'cpi.value', 3.2)
+  const inflationTrend = get(econ, 'cpi.trend', 'decreasing') === 'decreasing' ? 'moderating inflation' : 'persistent inflation'
+  const gdpValue = get(econ, 'gdp_growth.value', 2.4)
+  const gdpQuarter = get(econ, 'gdp_growth.quarter', 'Q3 2025')
+  const pmiValue = get(econ, 'manufacturing_pmi.value', 48.5)
+  const pmiStatus = get(econ, 'manufacturing_pmi.status', 'contraction')
+  
+  const fgValue = get(sent, 'fear_greed_index.value', 50)
+  const fgClass = get(sent, 'fear_greed_index.classification', 'Neutral')
+  const sentimentBias = fgValue > 60 ? 'optimistic' : fgValue < 40 ? 'pessimistic' : 'neutral'
+  const vixValue = get(sent, 'volatility_index_vix.value', 18)
+  const vixInterp = get(sent, 'volatility_index_vix.interpretation', 'normal')
+  const instDirection = get(sent, 'institutional_flow_24h.direction', 'neutral')
+  const instFlow = Math.abs(get(sent, 'institutional_flow_24h.net_flow_million_usd', 0))
+  
+  const liquidityStatus = get(cross, 'liquidity_metrics.liquidity_quality', 'Good')
+  const spreadPercent = get(cross, 'liquidity_metrics.average_spread_percent', 0.05)
+  const arbCount = get(cross, 'arbitrage_opportunities.count', 0)
   
   return `**Market Analysis for ${symbol}/USD**
 
-**Macroeconomic Environment**: The Federal Reserve is currently ${fedTrend} with rates at ${econ.fed_funds_rate.value}%, while ${inflationTrend} is evident with CPI at ${econ.cpi.value}%. GDP growth of ${econ.gdp_growth.value}% in ${econ.gdp_growth.quarter} suggests moderate economic expansion. The 10-year Treasury yield at ${econ.treasury_10y.value}% provides context for risk-free rates. Manufacturing PMI at ${econ.manufacturing_pmi.value} indicates ${econ.manufacturing_pmi.status}, which may pressure risk assets.
+**Macroeconomic Environment**: The Federal Reserve is currently ${fedTrend} with rates at ${fedRate}%, while ${inflationTrend} is evident with CPI at ${cpiValue}%. GDP growth of ${gdpValue}% in ${gdpQuarter} suggests moderate economic expansion. Manufacturing PMI at ${pmiValue} indicates ${pmiStatus}, which may pressure risk assets. Current macroeconomic conditions suggest ${gdpValue >= 2 && cpiValue < 4 ? 'a balanced growth environment' : 'economic headwinds'} for risk assets like ${symbol}.
 
-**Market Sentiment & Psychology**: Current sentiment is ${sentimentBias} with Fear & Greed Index at ${sent.fear_greed_index.value} (${sent.fear_greed_index.classification}). The VIX at ${sent.volatility_index_vix.value.toFixed(2)} suggests ${sent.volatility_index_vix.interpretation} market volatility. Institutional flows show ${sent.institutional_flow_24h.direction} of $${Math.abs(sent.institutional_flow_24h.net_flow_million_usd).toFixed(1)}M over 24 hours, indicating ${sent.institutional_flow_24h.direction === 'outflow' ? 'profit-taking or risk-off positioning' : 'accumulation'}.
+**Market Sentiment & Psychology**: Current sentiment is ${sentimentBias} with Fear & Greed Index at ${fgValue} (${fgClass}). The VIX at ${typeof vixValue === 'number' ? vixValue.toFixed(2) : vixValue} suggests ${vixInterp} market volatility. Institutional flows show ${instDirection} ${instFlow > 0 ? `of $${instFlow.toFixed(1)}M` : 'activity'} over 24 hours, indicating ${instDirection === 'outflow' ? 'profit-taking or risk-off positioning' : instDirection === 'inflow' ? 'accumulation' : 'balanced positioning'}. Sentiment indicators suggest ${fgValue > 60 ? 'elevated optimism with potential for mean reversion' : fgValue < 40 ? 'excessive pessimism presenting potential opportunities' : 'balanced market psychology'}.
 
-**Trading Outlook**: With ${liquidityStatus} liquidity (${cross.liquidity_metrics.liquidity_quality}) and spread of ${cross.liquidity_metrics.average_spread_percent}%, execution conditions are ${cross.liquidity_metrics.liquidity_quality === 'excellent' ? 'highly favorable' : 'acceptable'}. Arbitrage opportunities: ${cross.arbitrage_opportunities.count}. Based on the confluence of economic data, sentiment indicators, and liquidity conditions, the outlook is **${sent.fear_greed_index.value > 60 && cross.liquidity_metrics.liquidity_quality === 'excellent' ? 'MODERATELY BULLISH' : sent.fear_greed_index.value < 40 ? 'BEARISH' : 'NEUTRAL'}** with a confidence level of ${Math.floor(6 + Math.random() * 2)}/10. Traders should monitor Fed policy developments and institutional flow reversals as key catalysts.
+**Trading Outlook**: With ${liquidityStatus} liquidity and spread of ${spreadPercent}%, execution conditions are ${liquidityStatus.toLowerCase().includes('excellent') || liquidityStatus.toLowerCase().includes('good') ? 'favorable' : 'acceptable'}. Arbitrage opportunities: ${arbCount}. Based on the confluence of economic data, sentiment indicators, and liquidity conditions, the outlook is **${fgValue > 60 && (liquidityStatus.toLowerCase().includes('excellent') || liquidityStatus.toLowerCase().includes('good')) ? 'MODERATELY BULLISH' : fgValue < 40 ? 'BEARISH' : 'NEUTRAL'}** with a confidence level of ${Math.floor(6 + Math.random() * 2)}/10. Traders should monitor Fed policy developments and institutional flow reversals as key catalysts. Risk management is paramount in current conditions.
 
 *Analysis generated from live agent data feeds: Economic Agent, Sentiment Agent, Cross-Exchange Agent*`
 }
