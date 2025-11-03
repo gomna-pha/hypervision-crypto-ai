@@ -1,0 +1,19 @@
+# API Keys for Trading Intelligence Platform
+# Copy this file to .dev.vars and add your actual API keys
+
+# REQUIRED for LLM Analysis (Gemini AI)
+# Get your key at: https://aistudio.google.com/apikey
+# Free tier available - see QUICK_FIX_GUIDE.md
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# OPTIONAL - Enhances Economic Agent with live US economic data
+# Get your key at: https://fredaccount.stlouisfed.org/apikeys (100% FREE)
+FRED_API_KEY=your_fred_api_key_here
+
+# OPTIONAL - Enhances Sentiment Agent with Google Trends data
+# Get your key at: https://serpapi.com/ (Free tier: 100 searches/month)
+SERPAPI_KEY=your_serpapi_key_here
+
+# OPTIONAL - Enhances Cross-Exchange Agent with aggregated crypto data
+# Get your key at: https://www.coingecko.com/en/api (Free tier: 10 calls/min)
+COINGECKO_API_KEY=your_coingecko_api_key_here
