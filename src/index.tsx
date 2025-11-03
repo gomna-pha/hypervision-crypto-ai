@@ -2918,6 +2918,232 @@ app.get('/', (c) => {
                 </div>
             </div>
 
+            <!-- AGREEMENT ANALYSIS DASHBOARD -->
+            <div class="bg-white rounded-lg p-6 border-2 border-indigo-600 mb-8 shadow-lg">
+                <h2 class="text-3xl font-bold mb-6 text-center text-indigo-900">
+                    <i class="fas fa-balance-scale mr-2"></i>
+                    Multi-Dimensional Model Comparison
+                    <span class="ml-3 text-sm bg-indigo-900 text-white px-3 py-1 rounded-full">Agreement Analysis</span>
+                </h2>
+                <p class="text-center text-gray-600 mb-6">Comprehensive comparison using industry best practices and academic standards</p>
+
+                <!-- Overall Agreement Score -->
+                <div id="overall-agreement" class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg p-6 mb-6 border-2 border-indigo-300 shadow-md">
+                    <div class="text-center">
+                        <h3 class="text-xl font-bold text-indigo-900 mb-2">
+                            <i class="fas fa-chart-pie mr-2"></i>
+                            Overall Agreement Score
+                        </h3>
+                        <div class="flex items-center justify-center gap-4 mb-3">
+                            <div class="text-5xl font-bold text-indigo-600" id="agreement-score">--</div>
+                            <div class="text-2xl text-gray-500">/ 100</div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-4 mb-2">
+                            <div id="agreement-bar" class="bg-gradient-to-r from-green-500 to-indigo-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <p class="text-sm text-gray-600 italic" id="agreement-interpretation">Run both analyses to calculate agreement metrics</p>
+                    </div>
+                </div>
+
+                <!-- Normalized Metrics Comparison -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- LLM Agent Normalized Metrics -->
+                    <div class="bg-green-50 rounded-lg p-5 border-2 border-green-600 shadow">
+                        <h3 class="text-lg font-bold mb-4 text-green-800">
+                            <i class="fas fa-robot mr-2"></i>
+                            LLM Agent - Normalized Scores
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Economic Analysis</span>
+                                    <span class="text-sm font-bold text-green-700" id="llm-economic-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="llm-economic-bar" class="bg-green-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Sentiment Analysis</span>
+                                    <span class="text-sm font-bold text-green-700" id="llm-sentiment-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="llm-sentiment-bar" class="bg-green-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Liquidity Analysis</span>
+                                    <span class="text-sm font-bold text-green-700" id="llm-liquidity-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="llm-liquidity-bar" class="bg-green-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t-2 border-green-300">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-base font-bold text-gray-800">Overall Confidence</span>
+                                    <span class="text-xl font-bold text-green-800" id="llm-overall-score">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Backtesting Agent Normalized Metrics -->
+                    <div class="bg-orange-50 rounded-lg p-5 border-2 border-orange-600 shadow">
+                        <h3 class="text-lg font-bold mb-4 text-orange-800">
+                            <i class="fas fa-chart-line mr-2"></i>
+                            Backtesting Agent - Normalized Scores
+                        </h3>
+                        <div class="space-y-3">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Economic Analysis</span>
+                                    <span class="text-sm font-bold text-orange-700" id="bt-economic-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="bt-economic-bar" class="bg-orange-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Sentiment Analysis</span>
+                                    <span class="text-sm font-bold text-orange-700" id="bt-sentiment-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="bt-sentiment-bar" class="bg-orange-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-semibold text-gray-700">Liquidity Analysis</span>
+                                    <span class="text-sm font-bold text-orange-700" id="bt-liquidity-score">--%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-3">
+                                    <div id="bt-liquidity-bar" class="bg-orange-600 h-3 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="pt-3 border-t-2 border-orange-300">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-base font-bold text-gray-800">Overall Score</span>
+                                    <span class="text-xl font-bold text-orange-800" id="bt-overall-score">--%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Component-Level Delta Analysis -->
+                <div class="bg-amber-50 rounded-lg p-5 border border-gray-300 mb-6 shadow">
+                    <h3 class="text-lg font-bold mb-4 text-gray-800">
+                        <i class="fas fa-code-branch mr-2"></i>
+                        Component-Level Delta Analysis
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b-2 border-gray-300">
+                                    <th class="text-left py-2 px-3 font-semibold text-gray-700">Component</th>
+                                    <th class="text-center py-2 px-3 font-semibold text-green-700">LLM Score</th>
+                                    <th class="text-center py-2 px-3 font-semibold text-orange-700">Backtest Score</th>
+                                    <th class="text-center py-2 px-3 font-semibold text-indigo-700">Delta (Δ)</th>
+                                    <th class="text-center py-2 px-3 font-semibold text-gray-700">Concordance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delta-table-body">
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2 px-3 font-medium">Economic</td>
+                                    <td class="text-center py-2 px-3" id="delta-llm-economic">--</td>
+                                    <td class="text-center py-2 px-3" id="delta-bt-economic">--</td>
+                                    <td class="text-center py-2 px-3 font-bold" id="delta-economic">--</td>
+                                    <td class="text-center py-2 px-3" id="concordance-economic">--</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2 px-3 font-medium">Sentiment</td>
+                                    <td class="text-center py-2 px-3" id="delta-llm-sentiment">--</td>
+                                    <td class="text-center py-2 px-3" id="delta-bt-sentiment">--</td>
+                                    <td class="text-center py-2 px-3 font-bold" id="delta-sentiment">--</td>
+                                    <td class="text-center py-2 px-3" id="concordance-sentiment">--</td>
+                                </tr>
+                                <tr class="border-b border-gray-200">
+                                    <td class="py-2 px-3 font-medium">Liquidity</td>
+                                    <td class="text-center py-2 px-3" id="delta-llm-liquidity">--</td>
+                                    <td class="text-center py-2 px-3" id="delta-bt-liquidity">--</td>
+                                    <td class="text-center py-2 px-3 font-bold" id="delta-liquidity">--</td>
+                                    <td class="text-center py-2 px-3" id="concordance-liquidity">--</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs text-gray-600 bg-white p-3 rounded border border-gray-200">
+                        <div><strong>Signal Concordance:</strong> <span id="signal-concordance">--%</span></div>
+                        <div><strong>Krippendorff's Alpha (α):</strong> <span id="krippendorff-alpha">--</span></div>
+                        <div><strong>Mean Absolute Delta:</strong> <span id="mean-delta">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Risk-Adjusted Performance & Position Sizing -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Risk-Adjusted Metrics -->
+                    <div class="bg-blue-50 rounded-lg p-5 border border-blue-300 shadow">
+                        <h3 class="text-lg font-bold mb-4 text-blue-900">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            Risk-Adjusted Performance
+                        </h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between py-2 border-b border-blue-200">
+                                <span class="font-semibold text-gray-700">Sharpe Ratio</span>
+                                <span class="font-bold text-blue-700" id="risk-sharpe">--</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-blue-200">
+                                <span class="font-semibold text-gray-700">Sortino Ratio</span>
+                                <span class="font-bold text-blue-700" id="risk-sortino">--</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-blue-200">
+                                <span class="font-semibold text-gray-700">Calmar Ratio</span>
+                                <span class="font-bold text-blue-700" id="risk-calmar">--</span>
+                            </div>
+                            <div class="flex justify-between py-2 border-b border-blue-200">
+                                <span class="font-semibold text-gray-700">Maximum Drawdown</span>
+                                <span class="font-bold text-red-600" id="risk-maxdd">--</span>
+                            </div>
+                            <div class="flex justify-between py-2">
+                                <span class="font-semibold text-gray-700">Win Rate</span>
+                                <span class="font-bold text-blue-700" id="risk-winrate">--</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Position Sizing Recommendation -->
+                    <div class="bg-purple-50 rounded-lg p-5 border border-purple-300 shadow">
+                        <h3 class="text-lg font-bold mb-4 text-purple-900">
+                            <i class="fas fa-wallet mr-2"></i>
+                            Position Sizing (Kelly Criterion)
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="bg-white rounded p-3 border border-purple-200">
+                                <div class="text-xs text-gray-600 mb-1">Optimal Position Size</div>
+                                <div class="text-2xl font-bold text-purple-700" id="kelly-optimal">--%</div>
+                            </div>
+                            <div class="bg-white rounded p-3 border border-purple-200">
+                                <div class="text-xs text-gray-600 mb-1">Conservative (Half-Kelly)</div>
+                                <div class="text-2xl font-bold text-purple-700" id="kelly-half">--%</div>
+                            </div>
+                            <div class="bg-white rounded p-3 border border-purple-200">
+                                <div class="text-xs text-gray-600 mb-1">Risk Category</div>
+                                <div class="text-lg font-bold" id="kelly-risk-category">
+                                    <span class="px-3 py-1 rounded-full bg-gray-200 text-gray-700">Not Calculated</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-gray-600 italic bg-white p-2 rounded border border-gray-200">
+                            Based on backtesting win rate, avg win/loss, and risk metrics
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- VISUALIZATION SECTION -->
             <div class="bg-white rounded-lg p-6 border border-gray-300 mb-8 shadow-lg">
                 <h2 class="text-3xl font-bold mb-6 text-center text-gray-900">
@@ -3509,6 +3735,295 @@ app.get('/', (c) => {
                 }
             }
 
+            // ============================================================
+            // HELPER FUNCTIONS FOR AGREEMENT ANALYSIS & METRICS CALCULATION
+            // ============================================================
+
+            /**
+             * Normalize a score to 0-100% range
+             * @param {number} score - Raw score value
+             * @param {number} min - Minimum possible value
+             * @param {number} max - Maximum possible value
+             * @returns {number} Normalized score (0-100)
+             */
+            function normalizeScore(score, min, max) {
+                if (max === min) return 50; // Avoid division by zero
+                return Math.max(0, Math.min(100, ((score - min) / (max - min)) * 100));
+            }
+
+            /**
+             * Calculate Krippendorff's Alpha for interval data
+             * Measures inter-rater reliability between LLM and Backtesting scores
+             * @param {Array<number>} llmScores - Array of LLM component scores
+             * @param {Array<number>} btScores - Array of Backtesting component scores
+             * @returns {number} Alpha value (-1 to 1, where 1 = perfect agreement)
+             */
+            function calculateKrippendorffAlpha(llmScores, btScores) {
+                if (llmScores.length !== btScores.length || llmScores.length === 0) {
+                    return 0;
+                }
+
+                const n = llmScores.length;
+                
+                // Calculate observed disagreement
+                let observedDisagreement = 0;
+                for (let i = 0; i < n; i++) {
+                    observedDisagreement += Math.pow(llmScores[i] - btScores[i], 2);
+                }
+                observedDisagreement /= n;
+
+                // Calculate expected disagreement (variance of all values)
+                const allScores = [...llmScores, ...btScores];
+                const mean = allScores.reduce((a, b) => a + b, 0) / allScores.length;
+                let expectedDisagreement = 0;
+                for (const score of allScores) {
+                    expectedDisagreement += Math.pow(score - mean, 2);
+                }
+                expectedDisagreement /= allScores.length;
+
+                // Calculate Alpha
+                if (expectedDisagreement === 0) return 1; // Perfect agreement
+                const alpha = 1 - (observedDisagreement / expectedDisagreement);
+                
+                return Math.max(-1, Math.min(1, alpha));
+            }
+
+            /**
+             * Calculate Signal Concordance (percentage of components in agreement)
+             * Components agree if their delta is within threshold
+             * @param {Array<number>} deltas - Array of delta values
+             * @param {number} threshold - Agreement threshold (default 20%)
+             * @returns {number} Concordance percentage (0-100)
+             */
+            function calculateSignalConcordance(deltas, threshold = 20) {
+                if (deltas.length === 0) return 0;
+                
+                const inAgreement = deltas.filter(delta => Math.abs(delta) <= threshold).length;
+                return (inAgreement / deltas.length) * 100;
+            }
+
+            /**
+             * Calculate Sortino Ratio (risk-adjusted return using downside deviation)
+             * @param {number} totalReturn - Total return percentage
+             * @param {number} downsideDeviation - Standard deviation of negative returns
+             * @param {number} riskFreeRate - Risk-free rate (default 2%)
+             * @returns {number} Sortino ratio
+             */
+            function calculateSortinoRatio(totalReturn, downsideDeviation, riskFreeRate = 2) {
+                if (downsideDeviation === 0) return 0;
+                return (totalReturn - riskFreeRate) / downsideDeviation;
+            }
+
+            /**
+             * Calculate Calmar Ratio (return / max drawdown)
+             * @param {number} totalReturn - Total return percentage
+             * @param {number} maxDrawdown - Maximum drawdown percentage (positive value)
+             * @returns {number} Calmar ratio
+             */
+            function calculateCalmarRatio(totalReturn, maxDrawdown) {
+                if (maxDrawdown === 0) return 0;
+                return totalReturn / maxDrawdown;
+            }
+
+            /**
+             * Calculate Kelly Criterion for optimal position sizing
+             * @param {number} winRate - Win rate as decimal (0-1)
+             * @param {number} avgWin - Average win amount
+             * @param {number} avgLoss - Average loss amount (positive value)
+             * @returns {object} Kelly percentages and risk category
+             */
+            function calculateKellyCriterion(winRate, avgWin, avgLoss) {
+                if (avgLoss === 0 || avgWin === 0) {
+                    return { optimal: 0, half: 0, category: 'Insufficient Data', color: 'gray' };
+                }
+
+                const winLossRatio = avgWin / avgLoss;
+                const kellyPercent = ((winLossRatio * winRate) - (1 - winRate)) / winLossRatio;
+                
+                // Clamp to reasonable range (0-40%)
+                const optimalKelly = Math.max(0, Math.min(40, kellyPercent * 100));
+                const halfKelly = optimalKelly / 2;
+
+                // Determine risk category
+                let category, color;
+                if (optimalKelly < 5) {
+                    category = 'Low Risk';
+                    color = 'green';
+                } else if (optimalKelly < 15) {
+                    category = 'Moderate Risk';
+                    color = 'blue';
+                } else if (optimalKelly < 25) {
+                    category = 'High Risk';
+                    color = 'yellow';
+                } else {
+                    category = 'Very High Risk';
+                    color = 'red';
+                }
+
+                return { 
+                    optimal: optimalKelly.toFixed(2), 
+                    half: halfKelly.toFixed(2), 
+                    category, 
+                    color 
+                };
+            }
+
+            /**
+             * Update the Agreement Analysis Dashboard with calculated metrics
+             * @param {object} llmData - LLM analysis data with component scores
+             * @param {object} btData - Backtesting data with component scores
+             */
+            function updateAgreementDashboard(llmData, btData) {
+                // Extract normalized component scores
+                const llmScores = {
+                    economic: llmData.economicScore || 0,
+                    sentiment: llmData.sentimentScore || 0,
+                    liquidity: llmData.liquidityScore || 0,
+                    overall: llmData.overallConfidence || 0
+                };
+
+                const btScores = {
+                    economic: btData.economicScore || 0,
+                    sentiment: btData.sentimentScore || 0,
+                    liquidity: btData.liquidityScore || 0,
+                    overall: btData.overallScore || 0
+                };
+
+                // Update LLM normalized scores
+                document.getElementById('llm-economic-score').textContent = llmScores.economic.toFixed(1) + '%';
+                document.getElementById('llm-economic-bar').style.width = llmScores.economic + '%';
+                document.getElementById('llm-sentiment-score').textContent = llmScores.sentiment.toFixed(1) + '%';
+                document.getElementById('llm-sentiment-bar').style.width = llmScores.sentiment + '%';
+                document.getElementById('llm-liquidity-score').textContent = llmScores.liquidity.toFixed(1) + '%';
+                document.getElementById('llm-liquidity-bar').style.width = llmScores.liquidity + '%';
+                document.getElementById('llm-overall-score').textContent = llmScores.overall.toFixed(1) + '%';
+
+                // Update Backtesting normalized scores
+                document.getElementById('bt-economic-score').textContent = btScores.economic.toFixed(1) + '%';
+                document.getElementById('bt-economic-bar').style.width = btScores.economic + '%';
+                document.getElementById('bt-sentiment-score').textContent = btScores.sentiment.toFixed(1) + '%';
+                document.getElementById('bt-sentiment-bar').style.width = btScores.sentiment + '%';
+                document.getElementById('bt-liquidity-score').textContent = btScores.liquidity.toFixed(1) + '%';
+                document.getElementById('bt-liquidity-bar').style.width = btScores.liquidity + '%';
+                document.getElementById('bt-overall-score').textContent = btScores.overall.toFixed(1) + '%';
+
+                // Calculate deltas
+                const deltas = {
+                    economic: llmScores.economic - btScores.economic,
+                    sentiment: llmScores.sentiment - btScores.sentiment,
+                    liquidity: llmScores.liquidity - btScores.liquidity
+                };
+
+                // Update delta table
+                const formatDelta = (delta) => {
+                    const sign = delta >= 0 ? '+' : '';
+                    const color = Math.abs(delta) <= 10 ? 'text-green-600' : Math.abs(delta) <= 25 ? 'text-yellow-600' : 'text-red-600';
+                    return \`<span class="\${color}">\${sign}\${delta.toFixed(1)}%</span>\`;
+                };
+
+                const formatConcordance = (delta) => {
+                    const concordance = Math.abs(delta) <= 20;
+                    return concordance 
+                        ? '<span class="text-green-600 font-semibold">✓ Agree</span>' 
+                        : '<span class="text-red-600 font-semibold">✗ Diverge</span>';
+                };
+
+                document.getElementById('delta-llm-economic').textContent = llmScores.economic.toFixed(1) + '%';
+                document.getElementById('delta-bt-economic').textContent = btScores.economic.toFixed(1) + '%';
+                document.getElementById('delta-economic').innerHTML = formatDelta(deltas.economic);
+                document.getElementById('concordance-economic').innerHTML = formatConcordance(deltas.economic);
+
+                document.getElementById('delta-llm-sentiment').textContent = llmScores.sentiment.toFixed(1) + '%';
+                document.getElementById('delta-bt-sentiment').textContent = btScores.sentiment.toFixed(1) + '%';
+                document.getElementById('delta-sentiment').innerHTML = formatDelta(deltas.sentiment);
+                document.getElementById('concordance-sentiment').innerHTML = formatConcordance(deltas.sentiment);
+
+                document.getElementById('delta-llm-liquidity').textContent = llmScores.liquidity.toFixed(1) + '%';
+                document.getElementById('delta-bt-liquidity').textContent = btScores.liquidity.toFixed(1) + '%';
+                document.getElementById('delta-liquidity').innerHTML = formatDelta(deltas.liquidity);
+                document.getElementById('concordance-liquidity').innerHTML = formatConcordance(deltas.liquidity);
+
+                // Calculate agreement metrics
+                const llmScoreArray = [llmScores.economic, llmScores.sentiment, llmScores.liquidity];
+                const btScoreArray = [btScores.economic, btScores.sentiment, btScores.liquidity];
+                const deltaArray = [Math.abs(deltas.economic), Math.abs(deltas.sentiment), Math.abs(deltas.liquidity)];
+
+                const krippendorffAlpha = calculateKrippendorffAlpha(llmScoreArray, btScoreArray);
+                const signalConcordance = calculateSignalConcordance([deltas.economic, deltas.sentiment, deltas.liquidity]);
+                const meanDelta = deltaArray.reduce((a, b) => a + b, 0) / deltaArray.length;
+
+                // Overall agreement score (weighted combination)
+                const agreementScore = (
+                    (krippendorffAlpha + 1) * 25 +  // Alpha ranges -1 to 1, normalize to 0-50
+                    signalConcordance * 0.3 +         // 0-30 points
+                    (100 - meanDelta) * 0.2           // 0-20 points (inverse of mean delta)
+                );
+
+                // Update agreement metrics
+                document.getElementById('agreement-score').textContent = Math.round(agreementScore);
+                document.getElementById('agreement-bar').style.width = agreementScore + '%';
+                document.getElementById('krippendorff-alpha').textContent = krippendorffAlpha.toFixed(3);
+                document.getElementById('signal-concordance').textContent = signalConcordance.toFixed(1) + '%';
+                document.getElementById('mean-delta').textContent = meanDelta.toFixed(1) + '%';
+
+                // Agreement interpretation
+                let interpretation;
+                if (agreementScore >= 80) {
+                    interpretation = '🟢 Excellent Agreement - Both models strongly aligned';
+                } else if (agreementScore >= 60) {
+                    interpretation = '🟡 Good Agreement - Models generally aligned with minor differences';
+                } else if (agreementScore >= 40) {
+                    interpretation = '🟠 Moderate Agreement - Significant differences in some components';
+                } else {
+                    interpretation = '🔴 Low Agreement - Models diverge substantially';
+                }
+                document.getElementById('agreement-interpretation').textContent = interpretation;
+
+                // Update risk-adjusted metrics (from backtesting data)
+                if (btData.sharpeRatio !== undefined) {
+                    document.getElementById('risk-sharpe').textContent = btData.sharpeRatio.toFixed(2);
+                }
+                if (btData.sortinoRatio !== undefined) {
+                    document.getElementById('risk-sortino').textContent = btData.sortinoRatio.toFixed(2);
+                }
+                if (btData.calmarRatio !== undefined) {
+                    document.getElementById('risk-calmar').textContent = btData.calmarRatio.toFixed(2);
+                }
+                if (btData.maxDrawdown !== undefined) {
+                    document.getElementById('risk-maxdd').textContent = btData.maxDrawdown.toFixed(2) + '%';
+                }
+                if (btData.winRate !== undefined) {
+                    document.getElementById('risk-winrate').textContent = btData.winRate.toFixed(1) + '%';
+                }
+
+                // Update Kelly Criterion position sizing
+                if (btData.winRate && btData.avgWin && btData.avgLoss) {
+                    const kelly = calculateKellyCriterion(
+                        btData.winRate / 100, 
+                        btData.avgWin, 
+                        Math.abs(btData.avgLoss)
+                    );
+                    
+                    document.getElementById('kelly-optimal').textContent = kelly.optimal + '%';
+                    document.getElementById('kelly-half').textContent = kelly.half + '%';
+                    
+                    const colorMap = {
+                        green: 'bg-green-500 text-white',
+                        blue: 'bg-blue-500 text-white',
+                        yellow: 'bg-yellow-500 text-gray-900',
+                        red: 'bg-red-500 text-white',
+                        gray: 'bg-gray-200 text-gray-700'
+                    };
+                    
+                    document.getElementById('kelly-risk-category').innerHTML = 
+                        \`<span class="px-3 py-1 rounded-full \${colorMap[kelly.color]}">\${kelly.category}</span>\`;
+                }
+            }
+
+            // Global variables to store analysis data for comparison
+            let llmAnalysisData = null;
+            let backtestAnalysisData = null;
+
             // Run LLM Analysis
             async function runLLMAnalysis() {
                 const resultsDiv = document.getElementById('llm-results');
@@ -3525,12 +4040,103 @@ app.get('/', (c) => {
 
                     const data = response.data;
                     
+                    // Extract agent scores from the response
+                    // The LLM analysis includes agent_data with scores for each component
+                    let economicScore = 0, sentimentScore = 0, liquidityScore = 0;
+                    let totalSignals = 18; // Max possible score (3 agents × 6 signals each)
+                    
+                    if (data.agent_data) {
+                        // Economic agent signals (6 max: GDP, Inflation, Rates, Employment, etc.)
+                        if (data.agent_data.economic) {
+                            const econ = data.agent_data.economic;
+                            economicScore = (econ.signals_count || 0);
+                        }
+                        
+                        // Sentiment agent signals (6 max: Fear/Greed, VIX, Social, News, etc.)
+                        if (data.agent_data.sentiment) {
+                            const sent = data.agent_data.sentiment;
+                            sentimentScore = (sent.signals_count || 0);
+                        }
+                        
+                        // Cross-exchange/Liquidity agent signals (6 max: Spread, Volume, Depth, etc.)
+                        if (data.agent_data.cross_exchange) {
+                            const liq = data.agent_data.cross_exchange;
+                            liquidityScore = (liq.signals_count || 0);
+                        }
+                    }
+                    
+                    // Fallback: Parse from analysis text if agent_data not structured
+                    if (economicScore === 0 && sentimentScore === 0 && liquidityScore === 0) {
+                        // Estimate scores from analysis content (heuristic)
+                        const analysisText = data.analysis.toLowerCase();
+                        
+                        // Economic indicators
+                        if (analysisText.includes('strong economic') || analysisText.includes('gdp growth') || analysisText.includes('inflation')) {
+                            economicScore = 4;
+                        } else if (analysisText.includes('economic')) {
+                            economicScore = 3;
+                        }
+                        
+                        // Sentiment indicators
+                        if (analysisText.includes('bullish sentiment') || analysisText.includes('positive sentiment') || analysisText.includes('fear')) {
+                            sentimentScore = 4;
+                        } else if (analysisText.includes('sentiment')) {
+                            sentimentScore = 3;
+                        }
+                        
+                        // Liquidity indicators
+                        if (analysisText.includes('high liquidity') || analysisText.includes('volume') || analysisText.includes('spread')) {
+                            liquidityScore = 4;
+                        } else if (analysisText.includes('liquidity')) {
+                            liquidityScore = 3;
+                        }
+                    }
+                    
+                    // Normalize scores to 0-100% range
+                    const normalizedEconomic = normalizeScore(economicScore, 0, 6);
+                    const normalizedSentiment = normalizeScore(sentimentScore, 0, 6);
+                    const normalizedLiquidity = normalizeScore(liquidityScore, 0, 6);
+                    const normalizedOverall = (normalizedEconomic + normalizedSentiment + normalizedLiquidity) / 3;
+                    
+                    // Store LLM data for comparison
+                    llmAnalysisData = {
+                        economicScore: normalizedEconomic,
+                        sentimentScore: normalizedSentiment,
+                        liquidityScore: normalizedLiquidity,
+                        overallConfidence: normalizedOverall,
+                        rawScores: {
+                            economic: economicScore,
+                            sentiment: sentimentScore,
+                            liquidity: liquidityScore
+                        }
+                    };
+                    
                     resultsDiv.innerHTML = \`
                         <div class="prose max-w-none">
                             <div class="mb-4">
                                 <span class="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-bold">
                                     \${data.model}
                                 </span>
+                                <span class="ml-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-semibold">
+                                    Overall Confidence: \${normalizedOverall.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div class="mb-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                                <div class="text-xs font-semibold text-green-900 mb-2">Agent Scores (Normalized):</div>
+                                <div class="grid grid-cols-3 gap-2 text-xs">
+                                    <div class="text-center">
+                                        <div class="text-gray-600">Economic</div>
+                                        <div class="font-bold text-green-700">\${normalizedEconomic.toFixed(1)}%</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-gray-600">Sentiment</div>
+                                        <div class="font-bold text-green-700">\${normalizedSentiment.toFixed(1)}%</div>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-gray-600">Liquidity</div>
+                                        <div class="font-bold text-green-700">\${normalizedLiquidity.toFixed(1)}%</div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="text-gray-800 whitespace-pre-wrap">\${data.analysis}</div>
                         </div>
@@ -3545,12 +4151,16 @@ app.get('/', (c) => {
                     \`;
                     
                     // Update charts with LLM data
-                    const llmConfidence = 60; // Estimate based on analysis tone
-                    updateComparisonChart(llmConfidence, null);
+                    updateComparisonChart(normalizedOverall, null);
                     
                     // Update arbitrage chart if cross-exchange data available
                     if (data.agent_data && data.agent_data.cross_exchange) {
                         updateArbitrageChart(data.agent_data.cross_exchange.market_depth_analysis);
+                    }
+                    
+                    // Update agreement dashboard if both analyses are complete
+                    if (llmAnalysisData && backtestAnalysisData) {
+                        updateAgreementDashboard(llmAnalysisData, backtestAnalysisData);
                     }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
@@ -3591,13 +4201,57 @@ app.get('/', (c) => {
                     const confidence = signals.confidence || 0;
                     const reasoning = signals.reasoning || 'Trading signals based on agent composite scoring';
                     
+                    // Normalize backtesting scores to 0-100% range
+                    const normalizedEconomic = normalizeScore(economicScore, 0, 6);
+                    const normalizedSentiment = normalizeScore(sentimentScore, 0, 6);
+                    const normalizedLiquidity = normalizeScore(liquidityScore, 0, 6);
+                    const normalizedOverall = normalizeScore(totalScore, 0, 18);
+                    
+                    // Calculate additional risk-adjusted metrics
+                    // Sortino Ratio: Use downside deviation (estimate from losing trades)
+                    let sortinoRatio = 0;
+                    if (bt.losing_trades > 0 && bt.total_trades > 0) {
+                        const avgLoss = bt.avg_loss || 0;
+                        const downsideDeviation = Math.abs(avgLoss) * Math.sqrt(bt.losing_trades / bt.total_trades);
+                        sortinoRatio = calculateSortinoRatio(bt.total_return, downsideDeviation, 2);
+                    }
+                    
+                    // Calmar Ratio: Return / Max Drawdown
+                    const calmarRatio = calculateCalmarRatio(bt.total_return, Math.abs(bt.max_drawdown));
+                    
+                    // Calculate average win and loss for Kelly Criterion
+                    const avgWin = bt.avg_win || (bt.winning_trades > 0 ? (bt.final_capital - bt.initial_capital) / bt.winning_trades : 0);
+                    const avgLoss = Math.abs(bt.avg_loss || (bt.losing_trades > 0 ? (bt.final_capital - bt.initial_capital) / bt.losing_trades : 0));
+                    
+                    // Store backtesting data for comparison
+                    backtestAnalysisData = {
+                        economicScore: normalizedEconomic,
+                        sentimentScore: normalizedSentiment,
+                        liquidityScore: normalizedLiquidity,
+                        overallScore: normalizedOverall,
+                        sharpeRatio: bt.sharpe_ratio || 0,
+                        sortinoRatio: sortinoRatio,
+                        calmarRatio: calmarRatio,
+                        maxDrawdown: Math.abs(bt.max_drawdown || 0),
+                        winRate: bt.win_rate || 0,
+                        avgWin: avgWin,
+                        avgLoss: avgLoss,
+                        totalReturn: bt.total_return || 0,
+                        rawScores: {
+                            economic: economicScore,
+                            sentiment: sentimentScore,
+                            liquidity: liquidityScore,
+                            total: totalScore
+                        }
+                    };
+                    
                     const returnColor = bt.total_return >= 0 ? 'text-green-700' : 'text-red-700';
                     
                     resultsDiv.innerHTML = \`
                         <div class="space-y-4">
                             <div class="bg-white border border-orange-200 p-4 rounded-lg">
                                 <h4 class="font-bold text-lg mb-3 text-orange-800">Agent Signals</h4>
-                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                <div class="grid grid-cols-2 gap-2 text-sm mb-3">
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Economic Score:</span>
                                         <span class="text-gray-900 font-bold">\${economicScore}/6</span>
@@ -3613,6 +4267,30 @@ app.get('/', (c) => {
                                     <div class="flex justify-between">
                                         <span class="text-gray-600">Total Score:</span>
                                         <span class="text-orange-700 font-bold">\${totalScore}/18</span>
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-orange-200">
+                                    <div class="mb-2 bg-orange-50 px-2 py-1 rounded">
+                                        <span class="text-xs font-semibold text-orange-900">Normalized Scores (0-100%):</span>
+                                    </div>
+                                    <div class="grid grid-cols-3 gap-2 text-xs">
+                                        <div class="text-center">
+                                            <div class="text-gray-600">Economic</div>
+                                            <div class="font-bold text-orange-700">\${normalizedEconomic.toFixed(1)}%</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-gray-600">Sentiment</div>
+                                            <div class="font-bold text-orange-700">\${normalizedSentiment.toFixed(1)}%</div>
+                                        </div>
+                                        <div class="text-center">
+                                            <div class="text-gray-600">Liquidity</div>
+                                            <div class="font-bold text-orange-700">\${normalizedLiquidity.toFixed(1)}%</div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-2 text-center">
+                                        <span class="bg-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                            Overall: \${normalizedOverall.toFixed(1)}%
+                                        </span>
                                     </div>
                                 </div>
                                 <div class="mt-3 pt-3 border-t border-orange-200">
@@ -3690,6 +4368,11 @@ app.get('/', (c) => {
                     if (crossRes.data.success) {
                         updateArbitrageChart(crossRes.data.data.market_depth_analysis);
                     }
+                    
+                    // Update agreement dashboard if both analyses are complete
+                    if (llmAnalysisData && backtestAnalysisData) {
+                        updateAgreementDashboard(llmAnalysisData, backtestAnalysisData);
+                    }
                 } catch (error) {
                     resultsDiv.innerHTML = \`
                         <div class="text-red-600">
@@ -3747,26 +4430,26 @@ app.get('/', (c) => {
                     }
                 });
 
-                // LLM vs Backtesting Comparison Chart (Bar)
+                // LLM vs Backtesting Comparison Chart (Grouped Bar)
                 const comparisonCtx = document.getElementById('comparisonChart').getContext('2d');
                 comparisonChart = new Chart(comparisonCtx, {
                     type: 'bar',
                     data: {
-                        labels: ['LLM Confidence', 'Backtest Score', 'Economic', 'Sentiment', 'Liquidity'],
+                        labels: ['Overall Score', 'Economic', 'Sentiment', 'Liquidity'],
                         datasets: [
                             {
                                 label: 'LLM Agent',
-                                data: [0, 0, 0, 0, 0],
-                                backgroundColor: 'rgba(34, 197, 94, 0.6)',
-                                borderColor: 'rgba(34, 197, 94, 1)',
-                                borderWidth: 1
+                                data: [0, 0, 0, 0],
+                                backgroundColor: 'rgba(22, 163, 74, 0.7)',
+                                borderColor: 'rgba(22, 163, 74, 1)',
+                                borderWidth: 2
                             },
                             {
                                 label: 'Backtesting Agent',
-                                data: [0, 0, 0, 0, 0],
-                                backgroundColor: 'rgba(251, 146, 60, 0.6)',
-                                borderColor: 'rgba(251, 146, 60, 1)',
-                                borderWidth: 1
+                                data: [0, 0, 0, 0],
+                                backgroundColor: 'rgba(234, 88, 12, 0.7)',
+                                borderColor: 'rgba(234, 88, 12, 1)',
+                                borderWidth: 2
                             }
                         ]
                     },
@@ -3775,16 +4458,46 @@ app.get('/', (c) => {
                             y: {
                                 beginAtZero: true,
                                 max: 100,
-                                ticks: { color: '#fff' },
-                                grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                                ticks: { 
+                                    color: '#fff',
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                                title: {
+                                    display: true,
+                                    text: 'Normalized Score (0-100%)',
+                                    color: '#fff',
+                                    font: { size: 12 }
+                                }
                             },
                             x: {
-                                ticks: { color: '#fff' },
+                                ticks: { color: '#fff', font: { size: 11 } },
                                 grid: { color: 'rgba(255, 255, 255, 0.1)' }
                             }
                         },
                         plugins: {
-                            legend: { labels: { color: '#fff' } }
+                            legend: { 
+                                labels: { 
+                                    color: '#fff',
+                                    font: { size: 12, weight: 'bold' },
+                                    padding: 15
+                                },
+                                position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.y.toFixed(1) + '%';
+                                        return label;
+                                    }
+                                }
+                            }
                         },
                         maintainAspectRatio: false
                     }
@@ -3895,28 +4608,51 @@ app.get('/', (c) => {
             function updateComparisonChart(llmConfidence, backtestSignals) {
                 if (!comparisonChart) return;
                 
-                // LLM data (normalized)
-                comparisonChart.data.datasets[0].data = [
-                    llmConfidence || 60, // LLM confidence
-                    0, // Backtest score (LLM doesn't have this)
-                    50, // Economic placeholder
-                    50, // Sentiment placeholder
-                    50  // Liquidity placeholder
-                ];
+                // Use global analysis data if available, otherwise use parameters for backward compatibility
+                let llmData = llmAnalysisData;
+                let btData = backtestAnalysisData;
                 
-                // Backtesting data
-                if (backtestSignals) {
+                // Fallback to parameters if global data not set
+                if (!llmData && llmConfidence) {
+                    llmData = {
+                        overallConfidence: llmConfidence,
+                        economicScore: 50,
+                        sentimentScore: 50,
+                        liquidityScore: 50
+                    };
+                }
+                
+                if (!btData && backtestSignals) {
                     const economicScore = (backtestSignals.economicScore / 6) * 100;
                     const sentimentScore = (backtestSignals.sentimentScore / 6) * 100;
                     const liquidityScore = (backtestSignals.liquidityScore / 6) * 100;
                     const totalScore = (backtestSignals.totalScore / 18) * 100;
                     
+                    btData = {
+                        overallScore: totalScore,
+                        economicScore: economicScore,
+                        sentimentScore: sentimentScore,
+                        liquidityScore: liquidityScore
+                    };
+                }
+                
+                // Update LLM dataset (green bars)
+                if (llmData) {
+                    comparisonChart.data.datasets[0].data = [
+                        llmData.overallConfidence || 0,
+                        llmData.economicScore || 0,
+                        llmData.sentimentScore || 0,
+                        llmData.liquidityScore || 0
+                    ];
+                }
+                
+                // Update Backtesting dataset (orange bars)
+                if (btData) {
                     comparisonChart.data.datasets[1].data = [
-                        0, // LLM confidence (backtesting doesn't have this)
-                        totalScore,
-                        economicScore,
-                        sentimentScore,
-                        liquidityScore
+                        btData.overallScore || 0,
+                        btData.economicScore || 0,
+                        btData.sentimentScore || 0,
+                        btData.liquidityScore || 0
                     ];
                 }
                 
