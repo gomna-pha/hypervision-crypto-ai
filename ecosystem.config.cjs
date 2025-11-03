@@ -10,7 +10,8 @@ module.exports = {
       // Add your API keys to .dev.vars file, they'll be loaded automatically
       // Or uncomment and add them here directly for PM2
       args: `wrangler pages dev dist --d1=webapp-production --local --ip 0.0.0.0 --port 3000 \
---binding GEMINI_API_KEY=AIzaSyCG4nVE1101YRsNh0OSq94VoHQe-CDv4og`,
+--binding GEMINI_API_KEY=AIzaSyCG4nVE1101YRsNh0OSq94VoHQe-CDv4og \
+--binding FRED_API_KEY=a436d248d2c5b81f11f9410c067a1eb6`,
       
       // Uncomment below to add more API keys via PM2 (or use .dev.vars)
       // args: `wrangler pages dev dist --d1=webapp-production --local --ip 0.0.0.0 --port 3000 \
