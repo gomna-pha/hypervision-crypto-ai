@@ -109,12 +109,30 @@ pm2 restart trading-intelligence
 - ✅ **Live Arbitrage Opportunities:** Real-time cross-exchange analysis
 - ✅ **3 Live Agents:** Economic, Sentiment, Cross-Exchange (all operational)
 - ✅ **Live Market Data:** Binance, Coinbase, Kraken feeds (no API keys needed)
-- ✅ **Backtesting Engine:** Ready to run (needs API key to unlock)
+- ✅ **LLM Analysis:** WORKING! (Gemini API key already configured)
 - ✅ **Real-time Dashboard:** Auto-updating every 2 seconds
 
-### Requires API Key 🔑
-- 🔑 **LLM Analysis:** Needs Gemini API key (see Step 1-4 above)
-- 🔑 **Agent-Based Backtesting:** Needs Gemini API key (same as above)
+### ✅ Good News!
+**The Gemini API key is already configured!** 
+- LLM Analysis is working properly
+- You can click "Run LLM Analysis" on the dashboard
+- AI-powered market commentary is fully functional
+
+### ⚠️ Known Issue
+**Backtesting Dashboard Button:** The frontend backtesting button may have a minor parameter issue. Use the API directly for now:
+
+```bash
+# Test backtesting via API (works correctly)
+curl -X POST http://localhost:3000/api/backtest/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "strategy_id": 1,
+    "symbol": "BTC-USD",
+    "start_date": 1699920000000,
+    "end_date": 1730553600000,
+    "initial_capital": 10000
+  }'
+```
 
 ---
 
