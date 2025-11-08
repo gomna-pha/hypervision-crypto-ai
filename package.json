@@ -20,13 +20,16 @@
     "db:console:prod": "wrangler d1 execute webapp-production"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "hono": "^4.0.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "4.20250705.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
+    "@types/node": "^24.10.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0",
     "vite": "^5.0.0",
-    "wrangler": "^3.78.0",
-    "typescript": "^5.0.0"
+    "wrangler": "^3.78.0"
   }
 }
