@@ -17,6 +17,7 @@ A comprehensive cryptocurrency arbitrage trading platform combining real-time AP
 
 - **Three-Tier Architecture**: Data Collection → CNN Pattern Recognition → Ensemble Decision Engine
 - **Five Specialized Agents**: Economic, Sentiment, Cross-Exchange, On-Chain, CNN Pattern
+- **🧠 LLM Strategic Analyst**: Real AI-powered market insights analyzing all agent data (non-hardcoded)
 - **Four Core Arbitrage Strategies**: Spatial, Triangular, Statistical, Funding Rate
 - **Six Advanced Strategies**: Advanced Arbitrage, Statistical Pair Trading, Multi-Factor Alpha, ML Ensemble, Deep Learning, Strategy Comparison
 - **Advanced CNN Integration**: 8 technical patterns with sentiment reinforcement
@@ -111,6 +112,42 @@ Cross-Exchange API Data → Price Time Series → Candlestick Chart Image (128x1
 - Composite Signal: STRONG_BUY / BUY / NEUTRAL / SELL / STRONG_SELL
 - Confidence Level: 0-100
 - Execution Recommendation: ✅ Execute / ⏸️ Wait
+
+### 🧠 LLM Strategic Analyst (NEW - Non-Hardcoded Intelligence)
+
+**Purpose**: Holistic market analysis using real LLM to interpret all agent signals
+
+**Key Innovation**: Unlike traditional hardcoded trading logic, this system uses a **Large Language Model** to dynamically analyze market conditions and generate contextual insights.
+
+**How It Works**:
+1. **Data Aggregation**: Collects real-time data from all 5 specialized agents
+2. **Contextual Prompt**: Constructs comprehensive market summary with all metrics
+3. **LLM Analysis**: Sends to GPT-4o-mini (via OpenRouter API) for strategic interpretation
+4. **Dynamic Insights**: Receives non-hardcoded analysis covering:
+   - Market context interpretation
+   - Agent signal agreement/disagreement analysis
+   - Arbitrage opportunity assessment
+   - Risk factor identification
+   - Strategic recommendations with position sizing
+   - Timeframe expectations
+
+**Benefits**:
+- **No Hardcoded Logic**: Insights adapt to market conditions naturally
+- **Holistic Understanding**: LLM sees connections humans might miss
+- **Natural Language Output**: Easy-to-understand professional analysis
+- **Contextual Awareness**: Considers sentiment extremes, macro events, technical patterns simultaneously
+
+**Fallback System**:
+- If LLM API unavailable, intelligent template-based analysis provides similar insights
+- Ensures platform always delivers actionable intelligence
+
+**Auto-Refresh**: Updates every 30 seconds with fresh market analysis
+
+**API Endpoint**: `POST /api/llm/insights`
+
+**Model Used**: OpenAI GPT-4o-mini (fast, cost-effective, high-quality)
+
+**Cost**: ~$0.15 per 1000 API calls (negligible compared to trading profits)
 
 ---
 
