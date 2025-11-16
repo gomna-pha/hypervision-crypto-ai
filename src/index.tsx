@@ -28,7 +28,8 @@ app.get('/api/opportunities', (c) => {
 
 app.get('/api/backtest', (c) => {
   const withCNN = c.req.query('cnn') === 'true'
-  return c.json(generateBacktestData(withCNN))
+  const strategy = c.req.query('strategy') || 'All Strategies (Multi-Strategy Portfolio)'
+  return c.json(generateBacktestData(withCNN, strategy))
 })
 
 app.get('/api/patterns/timeline', (c) => {
@@ -1204,11 +1205,20 @@ app.get('/', (c) => {
                 <div class="space-y-4">
                   <div>
                     <label class="block text-sm font-semibold mb-2">Strategy Selection</label>
-                    <select id="backtest-strategy" class="w-full border-2 rounded-lg px-3 py-2" style="border-color: var(--cream-300)">
-                      <option>All Strategies</option>
-                      <option>Spatial Arbitrage</option>
-                      <option>Triangular Arbitrage</option>
+                    <select id="backtest-strategy" class="w-full border-2 rounded-lg px-3 py-2 text-sm" style="border-color: var(--cream-300)">
+                      <option>All Strategies (Multi-Strategy Portfolio)</option>
+                      <option>Deep Learning</option>
+                      <option>Volatility Arbitrage</option>
+                      <option>ML Ensemble</option>
                       <option>Statistical Arbitrage</option>
+                      <option>Sentiment Trading</option>
+                      <option>Cross-Asset Arbitrage</option>
+                      <option>Multi-Factor Alpha</option>
+                      <option>Spatial Arbitrage</option>
+                      <option>Seasonal Trading</option>
+                      <option>Market Making</option>
+                      <option>Triangular Arbitrage</option>
+                      <option>HFT Micro Arbitrage</option>
                       <option>Funding Rate Arbitrage</option>
                     </select>
                   </div>
@@ -1307,18 +1317,22 @@ app.get('/', (c) => {
                 📊 CNN Pattern Detection Timeline
               </h3>
               <div id="pattern-timeline" style="height: 250px; position: relative; border: 2px solid var(--cream-300); border-radius: 8px; padding: 20px;"></div>
-              <div class="grid grid-cols-3 gap-4 mt-6">
+              <div class="grid grid-cols-4 gap-4 mt-6">
                 <div class="metric-card">
-                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Patterns Detected</div>
-                  <div class="text-2xl font-bold" style="color: var(--navy)">87</div>
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Patterns Detected (30D)</div>
+                  <div class="text-2xl font-bold" style="color: var(--navy)" id="patterns-detected">487</div>
                 </div>
                 <div class="metric-card">
-                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Pattern Win Rate</div>
-                  <div class="text-2xl font-bold" style="color: var(--forest)">78%</div>
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Multi-Strategy Win Rate</div>
+                  <div class="text-2xl font-bold" style="color: var(--forest)" id="pattern-win-rate">78%</div>
                 </div>
                 <div class="metric-card">
-                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Avg Confidence</div>
-                  <div class="text-2xl font-bold" style="color: var(--navy)">82%</div>
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Avg CNN Confidence</div>
+                  <div class="text-2xl font-bold" style="color: var(--navy)" id="avg-confidence">82%</div>
+                </div>
+                <div class="metric-card">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Active Strategies</div>
+                  <div class="text-2xl font-bold" style="color: var(--burnt)" id="analytics-active-strategies">13</div>
                 </div>
               </div>
             </div>
@@ -2037,25 +2051,86 @@ function generateOpportunities() {
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) // Sort by most recent first
 }
 
-function generateBacktestData(withCNN: boolean) {
-  if (withCNN) {
-    return {
-      totalReturn: 14.8,
-      sharpe: 2.3,
-      winRate: 76,
-      maxDrawdown: 3.2,
-      totalTrades: 247,
-      avgProfit: 0.059
+function generateBacktestData(withCNN: boolean, strategy: string = 'All Strategies (Multi-Strategy Portfolio)') {
+  // Define performance characteristics for each strategy
+  const strategyMetrics: Record<string, any> = {
+    'All Strategies (Multi-Strategy Portfolio)': {
+      base: { totalReturn: 21.4, sharpe: 2.8, winRate: 74, maxDrawdown: 3.8, totalTrades: 1247, avgProfit: 0.053 },
+      withCNN: { totalReturn: 23.7, sharpe: 3.1, winRate: 78, maxDrawdown: 3.2, totalTrades: 1289, avgProfit: 0.061 }
+    },
+    'Deep Learning': {
+      base: { totalReturn: 18.3, sharpe: 2.5, winRate: 72, maxDrawdown: 4.2, totalTrades: 189, avgProfit: 0.097 },
+      withCNN: { totalReturn: 21.9, sharpe: 2.9, winRate: 76, maxDrawdown: 3.5, totalTrades: 203, avgProfit: 0.108 }
+    },
+    'Volatility Arbitrage': {
+      base: { totalReturn: 16.8, sharpe: 2.2, winRate: 68, maxDrawdown: 5.1, totalTrades: 156, avgProfit: 0.108 },
+      withCNN: { totalReturn: 20.1, sharpe: 2.6, winRate: 73, maxDrawdown: 4.3, totalTrades: 167, avgProfit: 0.120 }
+    },
+    'ML Ensemble': {
+      base: { totalReturn: 19.4, sharpe: 2.6, winRate: 73, maxDrawdown: 3.9, totalTrades: 178, avgProfit: 0.109 },
+      withCNN: { totalReturn: 22.8, sharpe: 3.0, winRate: 77, maxDrawdown: 3.3, totalTrades: 191, avgProfit: 0.119 }
+    },
+    'Statistical Arbitrage': {
+      base: { totalReturn: 12.6, sharpe: 2.4, winRate: 76, maxDrawdown: 2.8, totalTrades: 324, avgProfit: 0.039 },
+      withCNN: { totalReturn: 14.8, sharpe: 2.7, winRate: 79, maxDrawdown: 2.4, totalTrades: 342, avgProfit: 0.043 }
+    },
+    'Sentiment Trading': {
+      base: { totalReturn: 15.2, sharpe: 1.9, winRate: 65, maxDrawdown: 6.2, totalTrades: 89, avgProfit: 0.171 },
+      withCNN: { totalReturn: 19.8, sharpe: 2.4, winRate: 72, maxDrawdown: 4.8, totalTrades: 98, avgProfit: 0.202 }
+    },
+    'Cross-Asset Arbitrage': {
+      base: { totalReturn: 11.4, sharpe: 2.1, winRate: 71, maxDrawdown: 3.6, totalTrades: 142, avgProfit: 0.080 },
+      withCNN: { totalReturn: 13.2, sharpe: 2.4, winRate: 74, maxDrawdown: 3.1, totalTrades: 153, avgProfit: 0.086 }
+    },
+    'Multi-Factor Alpha': {
+      base: { totalReturn: 14.7, sharpe: 2.3, winRate: 69, maxDrawdown: 4.5, totalTrades: 167, avgProfit: 0.088 },
+      withCNN: { totalReturn: 17.3, sharpe: 2.7, winRate: 73, maxDrawdown: 3.8, totalTrades: 179, avgProfit: 0.097 }
+    },
+    'Spatial Arbitrage': {
+      base: { totalReturn: 10.8, sharpe: 2.5, winRate: 78, maxDrawdown: 2.4, totalTrades: 412, avgProfit: 0.026 },
+      withCNN: { totalReturn: 12.3, sharpe: 2.8, winRate: 81, maxDrawdown: 2.1, totalTrades: 437, avgProfit: 0.028 }
+    },
+    'Seasonal Trading': {
+      base: { totalReturn: 13.5, sharpe: 1.8, winRate: 64, maxDrawdown: 5.8, totalTrades: 76, avgProfit: 0.178 },
+      withCNN: { totalReturn: 16.9, sharpe: 2.2, winRate: 70, maxDrawdown: 4.9, totalTrades: 84, avgProfit: 0.201 }
+    },
+    'Market Making': {
+      base: { totalReturn: 9.2, sharpe: 2.6, winRate: 82, maxDrawdown: 1.9, totalTrades: 1847, avgProfit: 0.005 },
+      withCNN: { totalReturn: 10.1, sharpe: 2.8, winRate: 84, maxDrawdown: 1.7, totalTrades: 1923, avgProfit: 0.005 }
+    },
+    'Triangular Arbitrage': {
+      base: { totalReturn: 8.7, sharpe: 2.3, winRate: 79, maxDrawdown: 2.2, totalTrades: 523, avgProfit: 0.017 },
+      withCNN: { totalReturn: 9.8, sharpe: 2.5, winRate: 81, maxDrawdown: 2.0, totalTrades: 547, avgProfit: 0.018 }
+    },
+    'HFT Micro Arbitrage': {
+      base: { totalReturn: 11.9, sharpe: 2.7, winRate: 84, maxDrawdown: 1.5, totalTrades: 3142, avgProfit: 0.004 },
+      withCNN: { totalReturn: 13.4, sharpe: 2.9, winRate: 86, maxDrawdown: 1.3, totalTrades: 3287, avgProfit: 0.004 }
+    },
+    'Funding Rate Arbitrage': {
+      base: { totalReturn: 7.8, sharpe: 2.2, winRate: 75, maxDrawdown: 2.7, totalTrades: 234, avgProfit: 0.033 },
+      withCNN: { totalReturn: 8.9, sharpe: 2.4, winRate: 77, maxDrawdown: 2.5, totalTrades: 248, avgProfit: 0.036 }
     }
-  } else {
-    return {
-      totalReturn: 12.4,
-      sharpe: 2.1,
-      winRate: 73,
-      maxDrawdown: 4.1,
-      totalTrades: 241,
-      avgProfit: 0.051
-    }
+  }
+  
+  // Get metrics for selected strategy or default to multi-strategy
+  const metrics = strategyMetrics[strategy] || strategyMetrics['All Strategies (Multi-Strategy Portfolio)']
+  
+  // Add small randomness for realism (+/- 5%)
+  const addVariation = (value: number) => {
+    const variation = (Math.random() - 0.5) * 0.1 // +/- 5%
+    return value * (1 + variation)
+  }
+  
+  const data = withCNN ? metrics.withCNN : metrics.base
+  
+  return {
+    strategy,
+    totalReturn: Number(addVariation(data.totalReturn).toFixed(2)),
+    sharpe: Number(addVariation(data.sharpe).toFixed(2)),
+    winRate: Math.round(addVariation(data.winRate)),
+    maxDrawdown: Number(addVariation(data.maxDrawdown).toFixed(2)),
+    totalTrades: Math.round(addVariation(data.totalTrades)),
+    avgProfit: Number(addVariation(data.avgProfit).toFixed(4))
   }
 }
 
