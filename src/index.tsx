@@ -543,7 +543,102 @@ app.get('/', (c) => {
               <div id="composite-signal" class="card fade-in" style="border: 3px solid var(--navy)"></div>
             </div>
 
+            <!-- Autonomous Trading Agent Control Panel -->
+            <div class="card mb-8" style="border: 3px solid var(--forest)">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-xl font-bold" style="color: var(--navy)">
+                    <i class="fas fa-robot mr-2"></i>Autonomous Trading Agent
+                  </h3>
+                  <p class="text-sm mt-1" style="color: var(--warm-gray)">
+                    AI-powered autonomous execution with ML ensemble decision engine
+                  </p>
+                </div>
+                <div class="flex items-center gap-4">
+                  <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full" style="background: var(--warm-gray)"></div>
+                    <span id="autonomous-status" class="px-3 py-1 rounded text-xs font-bold text-white" style="background: var(--warm-gray)">IDLE</span>
+                  </div>
+                  <button id="autonomous-toggle" onclick="toggleAutonomousMode()" class="px-4 py-2 rounded font-semibold text-white" style="background: var(--forest)">
+                    Start Agent
+                  </button>
+                </div>
+              </div>
 
+              <!-- Agent Configuration -->
+              <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4 p-4 rounded" style="background: var(--cream-100)">
+                <div class="text-center">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Min Confidence</div>
+                  <div class="text-lg font-bold" style="color: var(--navy)">75%</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Max Position</div>
+                  <div class="text-lg font-bold" style="color: var(--navy)">$10,000</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Risk/Trade</div>
+                  <div class="text-lg font-bold" style="color: var(--burnt)">2.0%</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Daily Limit</div>
+                  <div class="text-lg font-bold" style="color: var(--navy)">50</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs mb-1" style="color: var(--warm-gray)">Cooldown</div>
+                  <div class="text-lg font-bold" style="color: var(--navy)">3s</div>
+                </div>
+              </div>
+
+              <!-- Agent Metrics -->
+              <div id="agent-metrics">
+                <div class="grid grid-cols-4 gap-3">
+                  <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+                    <div class="text-xs" style="color: var(--warm-gray)">Analyzed</div>
+                    <div class="text-lg font-bold" style="color: var(--navy)">0</div>
+                  </div>
+                  <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+                    <div class="text-xs" style="color: var(--warm-gray)">Executed</div>
+                    <div class="text-lg font-bold" style="color: var(--forest)">0</div>
+                  </div>
+                  <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+                    <div class="text-xs" style="color: var(--warm-gray)">Win Rate</div>
+                    <div class="text-lg font-bold" style="color: var(--warm-gray)">0.0%</div>
+                  </div>
+                  <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+                    <div class="text-xs" style="color: var(--warm-gray)">Daily</div>
+                    <div class="text-lg font-bold" style="color: var(--navy)">0/50</div>
+                  </div>
+                </div>
+                <div class="mt-3 p-2 rounded" style="background: var(--cream-100)">
+                  <div class="flex justify-between text-sm">
+                    <span style="color: var(--warm-gray)">Total Profit:</span>
+                    <span class="font-bold" style="color: var(--forest)">$0.00</span>
+                  </div>
+                  <div class="flex justify-between text-sm mt-1">
+                    <span style="color: var(--warm-gray)">Total Loss:</span>
+                    <span class="font-bold" style="color: var(--deep-red)">$0.00</span>
+                  </div>
+                  <div class="flex justify-between text-sm mt-2 pt-2 border-t" style="border-color: var(--cream-300)">
+                    <span style="color: var(--dark-brown)">Net P&L:</span>
+                    <span class="font-bold" style="color: var(--warm-gray)">$0.00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Agent Strategy Info -->
+              <div class="mt-4 p-3 rounded" style="background: var(--cream-200)">
+                <div class="text-xs font-semibold mb-2" style="color: var(--dark-brown)">
+                  <i class="fas fa-info-circle mr-1"></i>Enabled Strategies:
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-2 py-1 rounded text-xs font-medium" style="background: var(--navy); color: white;">Spatial</span>
+                  <span class="px-2 py-1 rounded text-xs font-medium" style="background: var(--forest); color: white;">Triangular</span>
+                  <span class="px-2 py-1 rounded text-xs font-medium" style="background: var(--burnt); color: white;">Statistical</span>
+                  <span class="px-2 py-1 rounded text-xs font-medium" style="background: #5B8C5A; color: white;">ML Ensemble</span>
+                  <span class="px-2 py-1 rounded text-xs font-medium" style="background: #D4A574; color: white;">Deep Learning</span>
+                </div>
+              </div>
+            </div>
 
             <!-- Active Opportunities -->
             <div class="card mb-8">

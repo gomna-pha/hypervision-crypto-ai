@@ -24,6 +24,29 @@ let portfolioBalance = 200000; // Starting balance: $200,000
 let executedTrades = new Set(); // Track which opportunities have been executed
 let activeStrategies = new Set(); // Track unique strategies with executed trades
 
+// Autonomous Trading Agent State
+let autonomousMode = false; // Toggle for autonomous execution
+let agentConfig = {
+  minConfidence: 75,           // Minimum ML confidence to execute (75%)
+  maxPositionSize: 10000,       // Maximum position per trade ($10k)
+  maxDailyTrades: 50,           // Maximum trades per day
+  riskPerTrade: 0.02,           // Risk 2% of portfolio per trade
+  stopLossPercent: 0.5,         // Stop loss at 0.5% drawdown per trade
+  cooldownMs: 3000,             // 3 seconds between trades
+  enabledStrategies: new Set(['Spatial', 'Triangular', 'Statistical', 'ML Ensemble', 'Deep Learning'])
+};
+let agentMetrics = {
+  tradesExecuted: 0,
+  tradesAnalyzed: 0,
+  profitTotal: 0,
+  lossTotal: 0,
+  winRate: 0,
+  lastExecutionTime: 0,
+  dailyTradeCount: 0,
+  lastResetDate: new Date().toDateString()
+};
+let agentInterval = null;
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   // Show disclaimer modal on first visit
@@ -2555,6 +2578,352 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// ============================================================================
+// AUTONOMOUS TRADING AGENT SYSTEM
+// Industry-standard AI agent with ML-driven execution decisions
+// ============================================================================
+
+// Toggle autonomous trading mode
+window.toggleAutonomousMode = function() {
+  autonomousMode = !autonomousMode;
+  
+  const toggleBtn = document.getElementById('autonomous-toggle');
+  const statusBadge = document.getElementById('autonomous-status');
+  
+  if (autonomousMode) {
+    // Start autonomous agent
+    toggleBtn.textContent = 'Stop Agent';
+    toggleBtn.className = 'px-4 py-2 rounded font-semibold text-white';
+    toggleBtn.style.background = COLORS.deepRed;
+    
+    statusBadge.textContent = 'ACTIVE';
+    statusBadge.style.background = COLORS.forest;
+    
+    startAutonomousAgent();
+    showExecutionNotification('success', '🤖 Autonomous Trading Agent ACTIVATED', 0);
+  } else {
+    // Stop autonomous agent
+    toggleBtn.textContent = 'Start Agent';
+    toggleBtn.className = 'px-4 py-2 rounded font-semibold text-white';
+    toggleBtn.style.background = COLORS.forest;
+    
+    statusBadge.textContent = 'IDLE';
+    statusBadge.style.background = COLORS.warmGray;
+    
+    stopAutonomousAgent();
+    showExecutionNotification('success', '🤖 Autonomous Trading Agent STOPPED', 0);
+  }
+  
+  updateAgentMetricsDisplay();
+}
+
+// Start autonomous agent loop
+function startAutonomousAgent() {
+  console.log('[AGENT] Starting autonomous trading agent...');
+  
+  // Reset daily trade count if new day
+  const today = new Date().toDateString();
+  if (agentMetrics.lastResetDate !== today) {
+    agentMetrics.dailyTradeCount = 0;
+    agentMetrics.lastResetDate = today;
+  }
+  
+  // Run agent loop every 5 seconds
+  agentInterval = setInterval(async () => {
+    if (autonomousMode) {
+      await runAgentCycle();
+    }
+  }, 5000);
+  
+  // Run first cycle immediately
+  setTimeout(() => runAgentCycle(), 1000);
+}
+
+// Stop autonomous agent
+function stopAutonomousAgent() {
+  console.log('[AGENT] Stopping autonomous trading agent...');
+  
+  if (agentInterval) {
+    clearInterval(agentInterval);
+    agentInterval = null;
+  }
+}
+
+// Main agent decision cycle
+async function runAgentCycle() {
+  try {
+    agentMetrics.tradesAnalyzed++;
+    
+    // Check daily trade limit
+    if (agentMetrics.dailyTradeCount >= agentConfig.maxDailyTrades) {
+      console.log('[AGENT] Daily trade limit reached. Waiting for next day...');
+      return;
+    }
+    
+    // Check cooldown period
+    const timeSinceLastTrade = Date.now() - agentMetrics.lastExecutionTime;
+    if (timeSinceLastTrade < agentConfig.cooldownMs) {
+      console.log('[AGENT] In cooldown period. Waiting...');
+      return;
+    }
+    
+    // Fetch current opportunities
+    const response = await fetch('/api/opportunities');
+    const opportunities = await response.json();
+    
+    // Fetch current market context
+    const agentsResponse = await fetch('/api/agents');
+    const agents = await agentsResponse.data;
+    
+    // Filter opportunities based on agent criteria
+    const viableOpportunities = opportunities.filter(opp => {
+      // Check if strategy is enabled
+      if (!agentConfig.enabledStrategies.has(opp.strategy)) {
+        return false;
+      }
+      
+      // Check if already executed
+      if (executedTrades.has(opp.id)) {
+        return false;
+      }
+      
+      // Check ML confidence threshold
+      if (opp.mlConfidence < agentConfig.minConfidence) {
+        return false;
+      }
+      
+      // Check CNN confidence if available
+      if (opp.cnnConfidence && opp.cnnConfidence < agentConfig.minConfidence) {
+        return false;
+      }
+      
+      // Check if constraints passed
+      if (!opp.constraintsPassed) {
+        return false;
+      }
+      
+      return true;
+    });
+    
+    if (viableOpportunities.length === 0) {
+      console.log('[AGENT] No viable opportunities found in this cycle.');
+      updateAgentMetricsDisplay();
+      return;
+    }
+    
+    // Score and rank opportunities using ensemble model
+    const scoredOpportunities = viableOpportunities.map(opp => {
+      const score = calculateOpportunityScore(opp, agents);
+      return { ...opp, agentScore: score };
+    });
+    
+    // Sort by score (highest first)
+    scoredOpportunities.sort((a, b) => b.agentScore - a.agentScore);
+    
+    // Select best opportunity
+    const bestOpp = scoredOpportunities[0];
+    
+    console.log(`[AGENT] Best opportunity selected: #${bestOpp.id} ${bestOpp.strategy}`);
+    console.log(`[AGENT] Score: ${bestOpp.agentScore.toFixed(2)}, ML: ${bestOpp.mlConfidence}%, CNN: ${bestOpp.cnnConfidence || 'N/A'}%`);
+    console.log(`[AGENT] Expected profit: ${bestOpp.netProfit}%`);
+    
+    // Execute the trade
+    await executeAutonomousTrade(bestOpp);
+    
+  } catch (error) {
+    console.error('[AGENT] Error in agent cycle:', error);
+  }
+}
+
+// Calculate opportunity score using ensemble model
+function calculateOpportunityScore(opp, agents) {
+  let score = 0;
+  
+  // ML confidence contribution (40%)
+  score += (opp.mlConfidence / 100) * 40;
+  
+  // CNN confidence contribution (30%)
+  if (opp.cnnConfidence) {
+    score += (opp.cnnConfidence / 100) * 30;
+  } else {
+    score += 15; // Baseline if CNN not available
+  }
+  
+  // Net profit contribution (15%)
+  score += Math.min(opp.netProfit * 5, 15);
+  
+  // Composite signal contribution (10%)
+  if (agents && agents.composite) {
+    score += (agents.composite.compositeScore / 100) * 10;
+  }
+  
+  // Strategy-specific bonuses (5%)
+  const strategyBonus = {
+    'Deep Learning': 5,
+    'ML Ensemble': 4,
+    'Statistical': 3,
+    'Spatial': 2,
+    'Triangular': 1
+  };
+  score += strategyBonus[opp.strategy] || 0;
+  
+  return score;
+}
+
+// Execute trade autonomously with risk management
+async function executeAutonomousTrade(opp) {
+  try {
+    console.log(`[AGENT] Executing autonomous trade for opportunity #${opp.id}`);
+    
+    // Calculate position size based on risk management
+    const positionSize = calculatePositionSize(opp);
+    
+    console.log(`[AGENT] Position size: $${positionSize}`);
+    
+    // Execute the trade (reuse existing execution logic)
+    const response = await fetch(`/api/execute/${opp.id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        autonomous: true,
+        positionSize: positionSize
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Execution failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    const profitNum = parseFloat(result.profit);
+    
+    // Update metrics
+    agentMetrics.tradesExecuted++;
+    agentMetrics.dailyTradeCount++;
+    agentMetrics.lastExecutionTime = Date.now();
+    
+    if (profitNum > 0) {
+      agentMetrics.profitTotal += profitNum;
+    } else {
+      agentMetrics.lossTotal += Math.abs(profitNum);
+    }
+    
+    agentMetrics.winRate = (agentMetrics.profitTotal / (agentMetrics.profitTotal + agentMetrics.lossTotal) * 100) || 0;
+    
+    // Update portfolio
+    updatePortfolioBalance(profitNum);
+    updateActiveStrategies(result.strategy);
+    executedTrades.add(opp.id);
+    
+    // Update execution state
+    executionStates[opp.id] = {
+      status: 'completed',
+      progress: 100,
+      profit: result.profit,
+      executionTime: result.executionTime,
+      strategy: result.strategy,
+      autonomous: true
+    };
+    
+    updateExecutionUI(opp.id);
+    
+    // Show notification
+    showExecutionNotification('success', 
+      `🤖 Auto-executed ${result.strategy}: $${result.profit} profit`, 
+      opp.id);
+    
+    console.log(`[AGENT] Trade executed successfully. Profit: $${result.profit}`);
+    
+    // Update metrics display
+    updateAgentMetricsDisplay();
+    
+  } catch (error) {
+    console.error('[AGENT] Error executing autonomous trade:', error);
+    showExecutionNotification('error', 
+      `🤖 Auto-execution failed: ${error.message}`, 
+      opp.id);
+  }
+}
+
+// Calculate position size based on risk management rules
+function calculatePositionSize(opp) {
+  // Risk-based position sizing (Kelly Criterion adapted)
+  const maxPosition = agentConfig.maxPositionSize;
+  const riskAmount = portfolioBalance * agentConfig.riskPerTrade;
+  
+  // Base position on expected profit and confidence
+  const confidence = (opp.mlConfidence + (opp.cnnConfidence || opp.mlConfidence)) / 200;
+  const expectedReturn = opp.netProfit / 100;
+  
+  // Kelly fraction: f = (p * b - q) / b
+  // Simplified: position = riskAmount * confidence * expectedReturn
+  let position = riskAmount * confidence * (expectedReturn * 10);
+  
+  // Cap at max position size
+  position = Math.min(position, maxPosition);
+  
+  // Minimum position $1000
+  position = Math.max(position, 1000);
+  
+  return Math.round(position);
+}
+
+// Update agent metrics display
+function updateAgentMetricsDisplay() {
+  const metricsEl = document.getElementById('agent-metrics');
+  if (!metricsEl) return;
+  
+  const winRateColor = agentMetrics.winRate > 60 ? COLORS.forest : 
+                       agentMetrics.winRate > 40 ? COLORS.burnt : COLORS.deepRed;
+  
+  metricsEl.innerHTML = `
+    <div class="grid grid-cols-4 gap-3">
+      <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+        <div class="text-xs" style="color: var(--warm-gray)">Analyzed</div>
+        <div class="text-lg font-bold" style="color: var(--navy)">${agentMetrics.tradesAnalyzed}</div>
+      </div>
+      <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+        <div class="text-xs" style="color: var(--warm-gray)">Executed</div>
+        <div class="text-lg font-bold" style="color: var(--forest)">${agentMetrics.tradesExecuted}</div>
+      </div>
+      <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+        <div class="text-xs" style="color: var(--warm-gray)">Win Rate</div>
+        <div class="text-lg font-bold" style="color: ${winRateColor}">${agentMetrics.winRate.toFixed(1)}%</div>
+      </div>
+      <div class="text-center p-2 rounded" style="background: var(--cream-100)">
+        <div class="text-xs" style="color: var(--warm-gray)">Daily</div>
+        <div class="text-lg font-bold" style="color: var(--navy)">${agentMetrics.dailyTradeCount}/${agentConfig.maxDailyTrades}</div>
+      </div>
+    </div>
+    <div class="mt-3 p-2 rounded" style="background: var(--cream-100)">
+      <div class="flex justify-between text-sm">
+        <span style="color: var(--warm-gray)">Total Profit:</span>
+        <span class="font-bold" style="color: var(--forest)">$${agentMetrics.profitTotal.toFixed(2)}</span>
+      </div>
+      <div class="flex justify-between text-sm mt-1">
+        <span style="color: var(--warm-gray)">Total Loss:</span>
+        <span class="font-bold" style="color: var(--deep-red)">$${agentMetrics.lossTotal.toFixed(2)}</span>
+      </div>
+      <div class="flex justify-between text-sm mt-2 pt-2 border-t" style="border-color: var(--cream-300)">
+        <span style="color: var(--dark-brown)">Net P&L:</span>
+        <span class="font-bold" style="color: ${agentMetrics.profitTotal > agentMetrics.lossTotal ? COLORS.forest : COLORS.deepRed}">
+          $${(agentMetrics.profitTotal - agentMetrics.lossTotal).toFixed(2)}
+        </span>
+      </div>
+    </div>
+  `;
+}
+
+// Expose functions globally
+window.startAutonomousAgent = startAutonomousAgent;
+window.stopAutonomousAgent = stopAutonomousAgent;
+window.updateAgentMetricsDisplay = updateAgentMetricsDisplay;
+
+// ============================================================================
+// END AUTONOMOUS TRADING AGENT SYSTEM
+// ============================================================================
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   if (updateInterval) {
@@ -2562,5 +2931,8 @@ window.addEventListener('beforeunload', () => {
   }
   if (llmUpdateInterval) {
     clearInterval(llmUpdateInterval);
+  }
+  if (agentInterval) {
+    clearInterval(agentInterval);
   }
 });
