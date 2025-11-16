@@ -830,33 +830,122 @@ function initializeStrategyCharts() {
     
     const data = generateStrategyPerformanceData();
     
+    // Define color palette for 13 strategies
+    const strategyColors = {
+      spatial: '#1B365D',       // Navy
+      triangular: '#2D5F3F',    // Forest
+      statistical: '#C07F39',   // Burnt
+      funding: '#8B3A3A',       // Deep Red
+      multiFactor: '#4A6FA5',   // Steel Blue
+      mlEnsemble: '#5B8C5A',    // Sage Green
+      deepLearning: '#D4A574',  // Gold
+      volatility: '#B85C50',    // Terracotta
+      crossAsset: '#6B8CAE',    // Slate Blue
+      hftMicro: '#7A5C52',      // Brown
+      marketMaking: '#8FA998',  // Moss
+      seasonal: '#C9A66B',      // Sand
+      sentiment: '#9B6B6B'      // Mauve
+    };
+    
     charts.strategyPerformance = new Chart(perfCtx, {
       type: 'line',
       data: {
         labels: data.labels,
         datasets: [
           {
-            label: 'Spatial Arbitrage',
-            data: data.spatial,
-            borderColor: COLORS.navy,
+            label: 'Deep Learning',
+            data: data.deepLearning,
+            borderColor: strategyColors.deepLearning,
             borderWidth: 3,
             tension: 0.4,
             pointRadius: 0,
             fill: false
           },
           {
-            label: 'Triangular Arbitrage',
-            data: data.triangular,
-            borderColor: COLORS.forest,
+            label: 'Volatility Arb',
+            data: data.volatility,
+            borderColor: strategyColors.volatility,
             borderWidth: 3,
             tension: 0.4,
             pointRadius: 0,
             fill: false
           },
           {
-            label: 'Statistical Arbitrage',
+            label: 'Statistical Arb',
             data: data.statistical,
-            borderColor: COLORS.burnt,
+            borderColor: strategyColors.statistical,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'ML Ensemble',
+            data: data.mlEnsemble,
+            borderColor: strategyColors.mlEnsemble,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Sentiment',
+            data: data.sentiment,
+            borderColor: strategyColors.sentiment,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Cross-Asset',
+            data: data.crossAsset,
+            borderColor: strategyColors.crossAsset,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Multi-Factor Alpha',
+            data: data.multiFactor,
+            borderColor: strategyColors.multiFactor,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Spatial Arb',
+            data: data.spatial,
+            borderColor: strategyColors.spatial,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Seasonal',
+            data: data.seasonal,
+            borderColor: strategyColors.seasonal,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Market Making',
+            data: data.marketMaking,
+            borderColor: strategyColors.marketMaking,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'Triangular Arb',
+            data: data.triangular,
+            borderColor: strategyColors.triangular,
             borderWidth: 3,
             tension: 0.4,
             pointRadius: 0,
@@ -865,7 +954,16 @@ function initializeStrategyCharts() {
           {
             label: 'Funding Rate',
             data: data.funding,
-            borderColor: COLORS.deepRed,
+            borderColor: strategyColors.funding,
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
+          },
+          {
+            label: 'HFT Micro',
+            data: data.hftMicro,
+            borderColor: strategyColors.hftMicro,
             borderWidth: 3,
             tension: 0.4,
             pointRadius: 0,
@@ -926,35 +1024,115 @@ function initializeStrategyCharts() {
       charts.riskReturn.destroy();
     }
     
+    // Define color palette for 13 strategies (reuse from above)
+    const strategyColors = {
+      spatial: '#1B365D',       // Navy
+      triangular: '#2D5F3F',    // Forest
+      statistical: '#C07F39',   // Burnt
+      funding: '#8B3A3A',       // Deep Red
+      multiFactor: '#4A6FA5',   // Steel Blue
+      mlEnsemble: '#5B8C5A',    // Sage Green
+      deepLearning: '#D4A574',  // Gold
+      volatility: '#B85C50',    // Terracotta
+      crossAsset: '#6B8CAE',    // Slate Blue
+      hftMicro: '#7A5C52',      // Brown
+      marketMaking: '#8FA998',  // Moss
+      seasonal: '#C9A66B',      // Sand
+      sentiment: '#9B6B6B'      // Mauve
+    };
+    
     charts.riskReturn = new Chart(rrCtx, {
       type: 'scatter',
       data: {
         datasets: [
           {
+            label: 'HFT Micro',
+            data: [{x: 1.5, y: 6.0}],
+            backgroundColor: strategyColors.hftMicro,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Funding Rate',
+            data: [{x: 1.8, y: 7.3}],
+            backgroundColor: strategyColors.funding,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
             label: 'Spatial',
             data: [{x: 2.1, y: 12.4}],
-            backgroundColor: COLORS.navy,
+            backgroundColor: strategyColors.spatial,
             pointRadius: 10,
             pointHoverRadius: 12
           },
           {
             label: 'Triangular',
             data: [{x: 3.2, y: 8.6}],
-            backgroundColor: COLORS.forest,
+            backgroundColor: strategyColors.triangular,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Market Making',
+            data: [{x: 2.5, y: 11.1}],
+            backgroundColor: strategyColors.marketMaking,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Seasonal',
+            data: [{x: 3.8, y: 12.0}],
+            backgroundColor: strategyColors.seasonal,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Multi-Factor',
+            data: [{x: 3.5, y: 12.9}],
+            backgroundColor: strategyColors.multiFactor,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Cross-Asset',
+            data: [{x: 4.2, y: 14.1}],
+            backgroundColor: strategyColors.crossAsset,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Sentiment',
+            data: [{x: 4.8, y: 15.0}],
+            backgroundColor: strategyColors.sentiment,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'ML Ensemble',
+            data: [{x: 5.2, y: 17.1}],
+            backgroundColor: strategyColors.mlEnsemble,
             pointRadius: 10,
             pointHoverRadius: 12
           },
           {
             label: 'Statistical',
             data: [{x: 4.5, y: 18.2}],
-            backgroundColor: COLORS.burnt,
+            backgroundColor: strategyColors.statistical,
             pointRadius: 10,
             pointHoverRadius: 12
           },
           {
-            label: 'Funding',
-            data: [{x: 1.8, y: 7.3}],
-            backgroundColor: COLORS.deepRed,
+            label: 'Volatility',
+            data: [{x: 6.8, y: 20.1}],
+            backgroundColor: strategyColors.volatility,
+            pointRadius: 10,
+            pointHoverRadius: 12
+          },
+          {
+            label: 'Deep Learning',
+            data: [{x: 6.2, y: 21.9}],
+            backgroundColor: strategyColors.deepLearning,
             pointRadius: 10,
             pointHoverRadius: 12
           }
@@ -1028,46 +1206,19 @@ function initializeStrategyCharts() {
       data: {
         labels: data.labels,
         datasets: [
-          {
-            label: 'Spatial',
-            data: data.spatial,
-            borderColor: COLORS.navy,
-            borderWidth: 4,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          },
-          {
-            label: 'Triangular',
-            data: data.triangular,
-            borderColor: COLORS.forest,
-            borderWidth: 4,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          },
-          {
-            label: 'Statistical',
-            data: data.statistical,
-            borderColor: COLORS.burnt,
-            borderWidth: 4,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          },
-          {
-            label: 'Funding',
-            data: data.funding,
-            borderColor: COLORS.deepRed,
-            borderWidth: 4,
-            fill: false,
-            tension: 0.1,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }
+          { label: 'Deep Learning', data: data.deepLearning, borderColor: '#D4A574', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Volatility', data: data.volatility, borderColor: '#B85C50', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'ML Ensemble', data: data.mlEnsemble, borderColor: '#5B8C5A', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Statistical', data: data.statistical, borderColor: '#C07F39', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Sentiment', data: data.sentiment, borderColor: '#9B6B6B', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Multi-Factor', data: data.multiFactor, borderColor: '#4A6FA5', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Spatial', data: data.spatial, borderColor: '#1B365D', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Cross-Asset', data: data.crossAsset, borderColor: '#6B8CAE', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Seasonal', data: data.seasonal, borderColor: '#C9A66B', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Market Making', data: data.marketMaking, borderColor: '#8FA998', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Triangular', data: data.triangular, borderColor: '#2D5F3F', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'HFT Micro', data: data.hftMicro, borderColor: '#7A5C52', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 },
+          { label: 'Funding Rate', data: data.funding, borderColor: '#8B3A3A', borderWidth: 3, fill: false, tension: 0.1, pointRadius: 3, pointHoverRadius: 5 }
         ]
       },
       options: {
@@ -1082,7 +1233,11 @@ function initializeStrategyCharts() {
             position: 'top',
             labels: {
               usePointStyle: true,
-              padding: 15
+              padding: 10,
+              boxWidth: 8,
+              font: {
+                size: 10
+              }
             }
           },
           tooltip: {
@@ -1104,7 +1259,7 @@ function initializeStrategyCharts() {
           y: {
             reverse: true,
             min: 1,
-            max: 4,
+            max: 13,
             ticks: {
               stepSize: 1,
               callback: function(value) {
@@ -1682,38 +1837,75 @@ function generateEquityCurveData() {
 
 function generateStrategyPerformanceData() {
   const labels = [];
-  const spatial = [];
-  const triangular = [];
-  const statistical = [];
-  const funding = [];
+  const strategies = {
+    spatial: [],
+    triangular: [],
+    statistical: [],
+    funding: [],
+    multiFactor: [],
+    mlEnsemble: [],
+    deepLearning: [],
+    volatility: [],
+    crossAsset: [],
+    hftMicro: [],
+    marketMaking: [],
+    seasonal: [],
+    sentiment: []
+  };
+  
+  // Performance characteristics: {dailyReturn, volatility}
+  const params = {
+    spatial: {return: 0.41, vol: 0.3},           // 12.4% over 30 days
+    triangular: {return: 0.29, vol: 0.25},       // 8.6% over 30 days
+    statistical: {return: 0.61, vol: 0.8},       // 18.2% over 30 days
+    funding: {return: 0.24, vol: 0.2},           // 7.3% over 30 days
+    multiFactor: {return: 0.43, vol: 0.4},       // 12.9% over 30 days
+    mlEnsemble: {return: 0.57, vol: 0.6},        // 17.1% over 30 days
+    deepLearning: {return: 0.73, vol: 0.9},      // 21.9% over 30 days
+    volatility: {return: 0.67, vol: 1.0},        // 20.1% over 30 days
+    crossAsset: {return: 0.47, vol: 0.5},        // 14.1% over 30 days
+    hftMicro: {return: 0.20, vol: 0.15},         // 6.0% over 30 days
+    marketMaking: {return: 0.37, vol: 0.35},     // 11.1% over 30 days
+    seasonal: {return: 0.40, vol: 0.45},         // 12.0% over 30 days
+    sentiment: {return: 0.50, vol: 0.55}         // 15.0% over 30 days
+  };
   
   for (let i = 0; i < 30; i++) {
     labels.push(`Day ${i + 1}`);
     
-    const baseSpatial = i === 0 ? 0 : spatial[i - 1];
-    const baseTriangular = i === 0 ? 0 : triangular[i - 1];
-    const baseStatistical = i === 0 ? 0 : statistical[i - 1];
-    const baseFunding = i === 0 ? 0 : funding[i - 1];
-    
-    spatial.push(baseSpatial + (Math.random() * 0.8 - 0.2));
-    triangular.push(baseTriangular + (Math.random() * 0.6 - 0.15));
-    statistical.push(baseStatistical + (Math.random() * 1.2 - 0.3));
-    funding.push(baseFunding + (Math.random() * 0.5 - 0.1));
+    // Generate cumulative returns for each strategy
+    Object.keys(strategies).forEach(key => {
+      const base = i === 0 ? 0 : strategies[key][i - 1];
+      const returnVal = params[key].return + (Math.random() - 0.5) * params[key].vol;
+      strategies[key].push(base + returnVal);
+    });
   }
   
-  return { labels, spatial, triangular, statistical, funding };
+  return { labels, ...strategies };
 }
 
 function generateRankingData() {
   const labels = Array.from({length: 15}, (_, i) => `Week ${i + 1}`);
   
-  // Simulate ranking changes over time
+  // Simulate realistic ranking changes over time (1-13 scale)
+  // Top performers: Deep Learning, Volatility, ML Ensemble, Statistical
+  // Mid performers: Sentiment, Multi-Factor, Cross-Asset, Spatial
+  // Lower performers: Seasonal, Market Making, Triangular, Funding, HFT
   return {
     labels,
-    spatial: [1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 1],
-    triangular: [3, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3],
-    statistical: [2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2],
-    funding: [4, 4, 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4]
+    spatial: [7, 6, 7, 8, 7, 6, 7, 7, 8, 7, 6, 7, 8, 7, 8],
+    triangular: [11, 11, 10, 11, 11, 12, 11, 10, 11, 12, 11, 11, 10, 11, 11],
+    statistical: [4, 3, 4, 3, 4, 4, 5, 4, 3, 4, 4, 5, 4, 3, 4],
+    funding: [13, 13, 13, 12, 13, 13, 13, 13, 12, 13, 13, 13, 12, 13, 13],
+    multiFactor: [6, 7, 6, 7, 6, 7, 6, 6, 7, 6, 7, 6, 7, 6, 6],
+    mlEnsemble: [3, 4, 3, 4, 3, 3, 4, 3, 4, 3, 3, 3, 3, 4, 3],
+    deepLearning: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    volatility: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+    crossAsset: [8, 8, 8, 7, 8, 8, 8, 8, 7, 8, 8, 8, 6, 8, 7],
+    hftMicro: [12, 12, 12, 13, 12, 11, 12, 12, 13, 11, 12, 12, 13, 12, 12],
+    marketMaking: [10, 10, 11, 10, 10, 10, 10, 11, 10, 10, 10, 10, 11, 10, 10],
+    seasonal: [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9],
+    sentiment: [5, 5, 5, 5, 5, 5, 3, 5, 5, 5, 5, 4, 5, 5, 5]
   };
 }
 
