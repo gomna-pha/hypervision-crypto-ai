@@ -4,25 +4,36 @@
 
 All chart visualizations have been corrected and enhanced for optimal performance and visual appeal.
 
+### **Critical Height Fix Applied (2025-11-16)**
+**Issue**: Charts were displaying elongated/squashed due to fixed height attributes on canvas elements  
+**Root Cause**: Canvas elements had `height="80"` or `height="100"` attributes causing distorted aspect ratios  
+**Solution**: Wrapped all canvas elements in `<div style="height: 300px; position: relative;">` containers and removed fixed height attributes  
+**Result**: All charts now render with proper proportions and responsive behavior
+
 ---
 
 ## ✅ Changes Made
 
 ### 1. **Equity Curve Chart** (Dashboard)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Added `chart.destroy()` to prevent memory leaks when re-initializing
+- ✅ Set `maintainAspectRatio: false` for responsive container filling
 - ✅ Set `pointRadius: 0` for cleaner line display
 - ✅ Enhanced tooltip formatting with proper currency display
 - ✅ Added grid styling with cream color (#E8DDD0)
 - ✅ Improved legend with point-style labels
 - ✅ Better interaction modes (index, non-intersect)
 
-**Result:** Smooth, professional equity curve showing CNN vs baseline performance
+**Result:** Smooth, professional equity curve showing CNN vs baseline performance with proper proportions
 
 ---
 
 ### 2. **Signal Attribution Chart** (Dashboard)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 200px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Added chart destruction for clean re-renders
 - ✅ Enhanced stacked bar chart with proper colors
 - ✅ Improved tooltip callbacks showing percentage values
@@ -30,12 +41,14 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Added percentage formatting to axis ticks
 - ✅ Changed On-Chain color from cream to dark brown for visibility
 
-**Result:** Clear visual breakdown of ensemble signal contributions
+**Result:** Clear visual breakdown of ensemble signal contributions with proper proportions
 
 ---
 
 ### 3. **Strategy Performance Chart** (Strategies Tab)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Proper chart destruction before re-initialization
 - ✅ Increased line width to 3px for better visibility
 - ✅ Set `pointRadius: 0` for cleaner lines
@@ -43,12 +56,14 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Added grid color styling
 - ✅ Improved percentage formatting on Y-axis
 
-**Result:** Professional multi-line chart comparing 4 arbitrage strategies
+**Result:** Professional multi-line chart comparing 4 arbitrage strategies with proper proportions
 
 ---
 
 ### 4. **Risk-Return Scatter Plot** (Strategies Tab)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Added chart destruction
 - ✅ Increased point radius to 10px (hover: 12px)
 - ✅ Enhanced tooltips showing both risk and return
@@ -56,12 +71,14 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Improved grid styling
 - ✅ Better legend with point-style markers
 
-**Result:** Clear scatter plot showing risk/return trade-offs
+**Result:** Clear scatter plot showing risk/return trade-offs with proper proportions
 
 ---
 
 ### 5. **Strategy Ranking Evolution** (Strategies Tab)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Proper chart destruction
 - ✅ Increased line width to 4px for bump chart effect
 - ✅ Added point markers (radius: 4px, hover: 6px)
@@ -69,12 +86,14 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Better axis formatting with # prefix
 - ✅ Smooth tension (0.1) for bump effect
 
-**Result:** Professional bump chart showing strategy ranking changes over time
+**Result:** Professional bump chart showing strategy ranking changes over time with proper proportions
 
 ---
 
 ### 6. **Prediction Accuracy Chart** (Analytics Tab)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Added chart destruction
 - ✅ Enhanced three-line comparison (Actual, CNN-Enhanced, ML-Only)
 - ✅ Set `pointRadius: 0` for cleaner display
@@ -82,12 +101,14 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Added X-axis title "Trade Number"
 - ✅ Better percentage formatting on Y-axis
 
-**Result:** Clear A/B comparison showing CNN enhancement effectiveness
+**Result:** Clear A/B comparison showing CNN enhancement effectiveness with proper proportions
 
 ---
 
 ### 7. **Drawdown Chart** (Analytics Tab)
 **Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
 - ✅ Proper chart destruction
 - ✅ Enhanced filled area charts with transparency
 - ✅ Improved tooltip formatting
@@ -95,11 +116,27 @@ All chart visualizations have been corrected and enhanced for optimal performanc
 - ✅ Reversed Y-axis for proper drawdown display
 - ✅ Smooth tension (0.4) for area fills
 
-**Result:** Professional drawdown comparison (With CNN vs Without CNN)
+**Result:** Professional drawdown comparison (With CNN vs Without CNN) with proper proportions
+
+---
+
+### 8. **Correlation Heatmap Chart** (Analytics Tab)
+**Fixes Applied:**
+- ✅ **Wrapped canvas in 300px height container (CRITICAL FIX)**
+- ✅ Removed fixed height attribute from canvas element
+- ✅ Set `maintainAspectRatio: false` for proper responsive behavior
+
+**Result:** Correlation matrix now displays with proper proportions
 
 ---
 
 ## 🎯 Key Improvements
+
+### Canvas Height Fixes (CRITICAL)
+- **Removed Fixed Heights**: All `height="80"` and `height="100"` attributes removed from canvas elements
+- **Container Wrapping**: Each canvas wrapped in `<div style="height: 300px; position: relative;">` container
+- **Responsive Behavior**: Charts now properly fill containers with `maintainAspectRatio: false`
+- **Proper Proportions**: Eliminated elongated/squashed chart appearance
 
 ### Performance Optimizations
 - **Memory Leak Prevention**: All charts now properly destroy before re-initialization
@@ -148,6 +185,24 @@ All charts have been tested and verified:
 
 All charts now follow these standards:
 
+### HTML Structure (CRITICAL - Canvas Height Fix)
+```html
+<!-- CORRECT: Canvas wrapped in height-controlled container -->
+<div class="card">
+  <h3>Chart Title</h3>
+  <div style="height: 300px; position: relative;">
+    <canvas id="chart-id"></canvas>
+  </div>
+</div>
+
+<!-- WRONG: Fixed height on canvas causes elongation -->
+<div class="card">
+  <h3>Chart Title</h3>
+  <canvas id="chart-id" height="80"></canvas>
+</div>
+```
+
+### JavaScript Configuration
 ```javascript
 // Standard Chart Configuration
 {
@@ -166,7 +221,7 @@ All charts now follow these standards:
   },
   options: {
     responsive: true,
-    maintainAspectRatio: false,
+    maintainAspectRatio: false, // CRITICAL: Allow container to control size
     interaction: {
       mode: 'index',
       intersect: false
@@ -239,6 +294,9 @@ curl http://localhost:3000
 - [x] All Chart.js charts properly initialized
 - [x] No console errors related to charts
 - [x] Charts destroy before re-initialization (no memory leaks)
+- [x] **All canvas elements wrapped in height-controlled containers (CRITICAL)**
+- [x] **No fixed height attributes on canvas elements**
+- [x] **Charts render with proper proportions (not elongated/squashed)**
 - [x] Tooltips display correct data
 - [x] Legends show proper labels
 - [x] Axes formatted with appropriate units
@@ -278,5 +336,6 @@ If any visualization issues persist:
 ---
 
 **Last Updated**: 2025-11-16  
-**Version**: 1.1.0  
-**Status**: ✅ All Visualizations Fixed
+**Version**: 1.2.0  
+**Status**: ✅ All Visualizations Fixed (Including Canvas Height Issues)  
+**Critical Fix**: All charts now wrapped in height-controlled containers for proper proportions
