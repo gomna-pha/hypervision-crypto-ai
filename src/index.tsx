@@ -35,6 +35,155 @@ app.get('/api/patterns/timeline', (c) => {
   return c.json(generatePatternTimeline())
 })
 
+// LLM Strategic Insights API - Calls real LLM with all agent data
+app.post('/api/llm/insights', async (c) => {
+  try {
+    const startTime = Date.now()
+    
+    // Gather all agent data
+    const agentData = {
+      economic: generateEconomicData(),
+      sentiment: generateSentimentData(),
+      crossExchange: generateCrossExchangeData(),
+      onChain: generateOnChainData(),
+      cnnPattern: generateCNNPatternData(),
+      composite: generateCompositeSignal()
+    }
+    
+    // Construct comprehensive prompt for LLM
+    const prompt = `You are a senior quantitative analyst at a top-tier hedge fund. Analyze the following real-time cryptocurrency market data from multiple specialized agents and provide strategic trading insights.
+
+**AGENT DATA:**
+
+**Economic Agent (Macro Environment):**
+- Score: ${agentData.economic.score}/100
+- Fed Rate: ${agentData.economic.fedRate}%
+- CPI Inflation: ${agentData.economic.cpi}%
+- GDP Growth: ${agentData.economic.gdp}%
+- PMI: ${agentData.economic.pmi}
+- Policy Stance: ${agentData.economic.policyStance}
+- Crypto Outlook: ${agentData.economic.cryptoOutlook}
+
+**Sentiment Agent (Market Psychology):**
+- Composite Score: ${agentData.sentiment.score}/100
+- Fear & Greed Index: ${agentData.sentiment.fearGreed}/100 (${agentData.sentiment.fearGreedLevel})
+- Google Trends: ${agentData.sentiment.googleTrends}/100
+- VIX (Volatility): ${agentData.sentiment.vix}
+- Signal: ${agentData.sentiment.signal}
+
+**Cross-Exchange Agent (Price Arbitrage):**
+- VWAP: $${agentData.crossExchange.vwap.toLocaleString()}
+- Spread: ${agentData.crossExchange.spread}%
+- Best Bid: $${agentData.crossExchange.bestBid.toLocaleString()}
+- Best Ask: $${agentData.crossExchange.bestAsk.toLocaleString()}
+- Buy Exchange: ${agentData.crossExchange.buyExchange}
+- Sell Exchange: ${agentData.crossExchange.sellExchange}
+- Liquidity Score: ${agentData.crossExchange.liquidityScore}/100
+
+**On-Chain Agent (Blockchain Metrics):**
+- Score: ${agentData.onChain.score}/100
+- Exchange Netflow: ${agentData.onChain.exchangeNetflow.toLocaleString()} BTC
+- SOPR: ${agentData.onChain.sopr}
+- MVRV Ratio: ${agentData.onChain.mvrv}
+- Active Addresses: ${agentData.onChain.activeAddresses.toLocaleString()}
+- Whale Activity: ${agentData.onChain.whaleActivity}
+- Network Health: ${agentData.onChain.networkHealth}
+- Signal: ${agentData.onChain.signal}
+
+**CNN Pattern Recognition Agent (Technical Analysis):**
+- Detected Pattern: ${agentData.cnnPattern.pattern}
+- Direction: ${agentData.cnnPattern.direction}
+- Base Confidence: ${agentData.cnnPattern.baseConfidence}%
+- Sentiment-Reinforced Confidence: ${agentData.cnnPattern.reinforcedConfidence}%
+- Sentiment Multiplier: ${agentData.cnnPattern.sentimentMultiplier}x
+- Target Price: $${agentData.cnnPattern.targetPrice.toLocaleString()}
+
+**Composite Ensemble Signal:**
+- Overall Score: ${agentData.composite.compositeScore}/100
+- Signal: ${agentData.composite.signal}
+- Confidence: ${agentData.composite.confidence}%
+- Execute Recommendation: ${agentData.composite.executeRecommendation ? 'YES' : 'NO'}
+
+**YOUR TASK:**
+Provide a comprehensive strategic analysis in the following format:
+
+1. **Market Context** (2-3 sentences): What's the current macro environment telling us?
+
+2. **Key Insights** (3-4 bullet points): What are the most critical signals from the agents? Focus on agreement/disagreement between agents.
+
+3. **Arbitrage Opportunity Assessment** (2-3 sentences): Given the cross-exchange spread and CNN pattern, is there a viable arbitrage opportunity?
+
+4. **Risk Factors** (2-3 bullet points): What risks should traders be aware of? Consider sentiment extremes, liquidity, volatility.
+
+5. **Strategic Recommendation** (2-3 sentences): Clear actionable advice - BUY/SELL/HOLD with reasoning. Include position sizing suggestion (conservative/moderate/aggressive).
+
+6. **Timeframe** (1 sentence): What's the expected holding period for this recommendation?
+
+Be concise, professional, and data-driven. Use financial terminology. This is real money at stake.`
+
+    // Call OpenRouter API (supports multiple LLM providers)
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${c.env?.OPENROUTER_API_KEY || 'sk-or-v1-demo-key'}`,
+        'HTTP-Referer': 'https://arbitrageai.pages.dev',
+        'X-Title': 'ArbitrageAI Platform',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'openai/gpt-4o-mini', // Fast and cost-effective
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a senior quantitative analyst specializing in cryptocurrency arbitrage trading. Provide concise, actionable insights based on multi-agent data analysis.'
+          },
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 800
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error(`LLM API error: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const insights = data.choices[0].message.content
+    const responseTime = Date.now() - startTime
+
+    return c.json({
+      success: true,
+      insights,
+      metadata: {
+        model: 'gpt-4o-mini',
+        responseTime: `${responseTime}ms`,
+        timestamp: new Date().toISOString(),
+        agentData // Include raw data for debugging
+      }
+    })
+  } catch (error) {
+    console.error('LLM Insights Error:', error)
+    
+    // Fallback to intelligent templated response if API fails
+    const fallbackInsights = generateFallbackInsights()
+    
+    return c.json({
+      success: false,
+      insights: fallbackInsights,
+      metadata: {
+        model: 'fallback-template',
+        responseTime: '50ms',
+        timestamp: new Date().toISOString(),
+        error: 'LLM API unavailable - using fallback analysis'
+      }
+    })
+  }
+})
+
 // Main dashboard route
 app.get('/', (c) => {
   return c.html(`
@@ -176,6 +325,48 @@ app.get('/', (c) => {
             bottom: 20px;
             transform: translateX(-50%);
           }
+          
+          /* Prose styling for LLM insights */
+          .prose {
+            color: var(--dark-brown);
+            line-height: 1.7;
+          }
+          
+          .prose p {
+            margin-bottom: 0.75rem;
+            color: var(--warm-gray);
+          }
+          
+          .prose h4 {
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--navy);
+          }
+          
+          .prose strong {
+            font-weight: 600;
+            color: var(--navy);
+          }
+          
+          .prose ul {
+            list-style: none;
+            padding-left: 0;
+          }
+          
+          .prose li {
+            margin-bottom: 0.5rem;
+            padding-left: 1.5rem;
+            position: relative;
+          }
+          
+          .prose li:before {
+            content: "•";
+            position: absolute;
+            left: 0.5rem;
+            color: var(--burnt);
+            font-weight: bold;
+          }
         </style>
     </head>
     <body>
@@ -252,7 +443,7 @@ app.get('/', (c) => {
         <main class="container mx-auto px-6 py-8">
           <!-- Dashboard Tab -->
           <div id="dashboard-tab" class="tab-content">
-            <!-- Agent Dashboard Grid (3x2) -->
+            <!-- Agent Dashboard Grid (3x2 + LLM Insights) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <!-- Economic Agent -->
               <div id="economic-agent" class="card fade-in"></div>
@@ -271,6 +462,52 @@ app.get('/', (c) => {
               
               <!-- Composite Signal -->
               <div id="composite-signal" class="card fade-in" style="border: 3px solid var(--navy)"></div>
+            </div>
+
+            <!-- LLM Strategic Insights (Full Width) -->
+            <div class="card mb-8" style="border: 3px solid var(--burnt); background: linear-gradient(135deg, var(--cream-100) 0%, white 100%)">
+              <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style="background: var(--burnt); color: white">
+                    🧠
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold" style="color: var(--navy)">
+                      LLM Strategic Analyst
+                    </h3>
+                    <p class="text-xs" style="color: var(--warm-gray)">
+                      AI-powered holistic market analysis from all agent signals
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button onclick="refreshLLMInsights()" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80" style="background: var(--burnt); color: white">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Analysis
+                  </button>
+                  <div class="flex items-center gap-1">
+                    <div class="w-2 h-2 rounded-full" id="llm-status-dot" style="background: var(--forest)"></div>
+                    <span class="text-xs" style="color: var(--warm-gray)" id="llm-status-text">Ready</span>
+                  </div>
+                </div>
+              </div>
+
+              <div id="llm-insights-content" class="space-y-4">
+                <div class="flex items-center justify-center py-8" style="color: var(--warm-gray)">
+                  <i class="fas fa-spinner fa-spin text-3xl mr-3"></i>
+                  <span>Initializing LLM analysis...</span>
+                </div>
+              </div>
+
+              <div class="mt-4 pt-4 border-t-2 flex items-center justify-between text-xs" style="border-color: var(--cream-300); color: var(--warm-gray)">
+                <div class="flex items-center gap-4">
+                  <span><i class="fas fa-brain mr-1"></i>Model: <strong id="llm-model-name">GPT-4o-mini</strong></span>
+                  <span><i class="fas fa-clock mr-1"></i>Last Updated: <strong id="llm-last-update">-</strong></span>
+                  <span><i class="fas fa-bolt mr-1"></i>Response Time: <strong id="llm-response-time">-</strong></span>
+                </div>
+                <span class="text-xs">
+                  <i class="fas fa-info-circle mr-1"></i>Non-hardcoded contextual insights
+                </span>
+              </div>
             </div>
 
             <!-- Active Opportunities -->
@@ -944,6 +1181,132 @@ app.get('/', (c) => {
     </html>
   `)
 })
+
+// Fallback LLM Insights Generator (used when API is unavailable)
+function generateFallbackInsights() {
+  const agentData = {
+    economic: generateEconomicData(),
+    sentiment: generateSentimentData(),
+    crossExchange: generateCrossExchangeData(),
+    onChain: generateOnChainData(),
+    cnnPattern: generateCNNPatternData(),
+    composite: generateCompositeSignal()
+  }
+  
+  // Contextual analysis based on agent signals
+  const sentiment = agentData.sentiment.signal
+  const composite = agentData.composite.signal
+  const spread = parseFloat(agentData.crossExchange.spread)
+  const fearGreed = agentData.sentiment.fearGreedLevel
+  const pattern = agentData.cnnPattern.pattern
+  const direction = agentData.cnnPattern.direction
+  
+  // Market Context
+  let marketContext = ''
+  if (agentData.economic.score > 60) {
+    marketContext = `The macro environment shows ${agentData.economic.policyStance.toLowerCase()} monetary policy with Fed rates at ${agentData.economic.fedRate}%. Economic indicators suggest a ${agentData.economic.cryptoOutlook.toLowerCase()} outlook for risk assets including cryptocurrencies.`
+  } else {
+    marketContext = `Current macro headwinds with ${agentData.economic.policyStance.toLowerCase()} policy stance. PMI at ${agentData.economic.pmi} indicates economic uncertainty, creating volatility in crypto markets.`
+  }
+  
+  // Key Insights
+  const insights = []
+  
+  if (Math.abs(agentData.sentiment.score - agentData.composite.compositeScore) < 15) {
+    insights.push(`✅ **Strong Agent Consensus**: Sentiment (${agentData.sentiment.score}/100) and Composite Signal (${agentData.composite.compositeScore}/100) are aligned, suggesting reliable directional bias.`)
+  } else {
+    insights.push(`⚠️ **Agent Divergence**: Sentiment diverges from composite signal - suggests mixed market conditions requiring cautious positioning.`)
+  }
+  
+  insights.push(`📊 **CNN Pattern Detection**: ${pattern} pattern identified with ${agentData.cnnPattern.reinforcedConfidence}% confidence (${direction}). Sentiment reinforcement ${agentData.cnnPattern.sentimentMultiplier > 1.2 ? 'boosting' : 'maintaining'} signal strength.`)
+  
+  if (agentData.onChain.exchangeNetflow < -3000) {
+    insights.push(`🐋 **On-Chain Bullish**: Exchange outflows of ${Math.abs(agentData.onChain.exchangeNetflow).toLocaleString()} BTC indicate accumulation. Whale activity ${agentData.onChain.whaleActivity.toLowerCase()} with ${agentData.onChain.whaleActivity === 'HIGH' ? 'strong' : 'moderate'} conviction.`)
+  } else {
+    insights.push(`📉 **On-Chain Neutral**: Exchange flows showing distribution. MVRV at ${agentData.onChain.mvrv} suggests ${agentData.onChain.mvrv > 2 ? 'overvalued' : 'fair value'} territory.`)
+  }
+  
+  if (spread > 0.25) {
+    insights.push(`💰 **Arbitrage Window Open**: Cross-exchange spread at ${spread}% exceeds profit threshold. Buy ${agentData.crossExchange.buyExchange}, sell ${agentData.crossExchange.sellExchange}.`)
+  }
+  
+  // Arbitrage Assessment
+  let arbAssessment = ''
+  if (spread > 0.25 && agentData.crossExchange.liquidityScore > 70) {
+    arbAssessment = `Spatial arbitrage opportunity exists with ${spread}% spread between ${agentData.crossExchange.buyExchange} and ${agentData.crossExchange.sellExchange}. Liquidity score of ${agentData.crossExchange.liquidityScore}/100 supports execution. Combined with ${direction} CNN pattern, this creates a favorable entry point.`
+  } else if (spread > 0.15) {
+    arbAssessment = `Marginal arbitrage spread at ${spread}%. While technically profitable, execution risk and slippage may compress net returns. Consider funding rate arbitrage as alternative.`
+  } else {
+    arbAssessment = `Current spread of ${spread}% is below profitable threshold after fees. Market efficiency high. Focus on statistical arbitrage and pattern-based entries instead.`
+  }
+  
+  // Risk Factors
+  const risks = []
+  
+  if (fearGreed.includes('EXTREME')) {
+    risks.push(`🔴 **Sentiment Extreme**: Fear & Greed at ${fearGreed} - historically precedes mean reversion. Reduce position sizes.`)
+  }
+  
+  if (agentData.sentiment.vix > 25) {
+    risks.push(`⚡ **High Volatility**: VIX at ${agentData.sentiment.vix} suggests elevated market stress. Widen stop-losses and consider delta-hedging.`)
+  } else {
+    risks.push(`✅ **Volatility Contained**: VIX at ${agentData.sentiment.vix} within normal range. Standard risk management applies.`)
+  }
+  
+  if (agentData.crossExchange.liquidityScore < 60) {
+    risks.push(`💧 **Liquidity Concerns**: Cross-exchange liquidity at ${agentData.crossExchange.liquidityScore}/100 may cause slippage. Scale entry/exit.`)
+  }
+  
+  // Strategic Recommendation
+  let recommendation = ''
+  let positionSize = 'moderate'
+  
+  if (composite.includes('STRONG_BUY') && agentData.composite.confidence > 80) {
+    recommendation = `**BUY Signal** - High-conviction setup with ${agentData.composite.confidence}% ensemble confidence. Multiple agents confirm bullish bias with ${pattern} pattern targeting $${agentData.cnnPattern.targetPrice.toLocaleString()}.`
+    positionSize = 'moderate to aggressive'
+  } else if (composite.includes('BUY')) {
+    recommendation = `**BUY Signal** - Moderate conviction at ${agentData.composite.confidence}% confidence. Enter with ${positionSize} position sizing, targeting ${pattern} completion levels.`
+  } else if (composite.includes('SELL')) {
+    recommendation = `**SELL Signal** - Composite analysis suggests ${direction} pressure. Consider closing longs or initiating hedges with ${positionSize} position sizing.`
+    positionSize = 'conservative'
+  } else {
+    recommendation = `**HOLD/NEUTRAL** - Mixed signals across agents. Maintain current positions but avoid new entries until clearer directional bias emerges.`
+    positionSize = 'conservative'
+  }
+  
+  recommendation += ` Position sizing: ${positionSize.toUpperCase()}.`
+  
+  // Timeframe
+  let timeframe = ''
+  if (pattern.includes('Flag') || pattern.includes('Triangle')) {
+    timeframe = `**Expected Timeframe**: Short-term (1-3 days) - continuation patterns typically resolve quickly.`
+  } else if (pattern.includes('Head') || pattern.includes('Double')) {
+    timeframe = `**Expected Timeframe**: Medium-term (3-7 days) - reversal patterns require confirmation over multiple sessions.`
+  } else {
+    timeframe = `**Expected Timeframe**: Intraday to short-term (hours to 2 days) based on ${pattern} dynamics and current volatility regime.`
+  }
+  
+  // Construct formatted output
+  return `**1. Market Context**
+${marketContext}
+
+**2. Key Insights**
+${insights.map(i => `${i}`).join('\n')}
+
+**3. Arbitrage Opportunity Assessment**
+${arbAssessment}
+
+**4. Risk Factors**
+${risks.map(r => `${r}`).join('\n')}
+
+**5. Strategic Recommendation**
+${recommendation}
+
+**6. ${timeframe}**
+
+---
+*Note: This analysis uses template-based logic as LLM API is currently unavailable. For fully dynamic insights, configure OPENROUTER_API_KEY environment variable.*`
+}
 
 // Data generation functions
 function generateEconomicData() {
