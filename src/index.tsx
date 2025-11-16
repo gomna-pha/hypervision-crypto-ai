@@ -483,11 +483,11 @@ app.get('/', (c) => {
             <div class="flex items-center gap-6">
               <div class="text-right">
                 <div class="text-xs" style="color: var(--warm-gray)">Portfolio Balance</div>
-                <div class="text-xl font-bold" style="color: var(--navy)">$50,000</div>
+                <div id="portfolio-balance" class="text-xl font-bold" style="color: var(--navy)">$200,000</div>
               </div>
               <div class="text-right">
                 <div class="text-xs" style="color: var(--warm-gray)">Active Strategies</div>
-                <div class="text-xl font-bold" style="color: var(--forest)">4</div>
+                <div id="active-strategies" class="text-xl font-bold" style="color: var(--forest)">0</div>
               </div>
               <div class="flex items-center gap-2">
                 <div class="w-2 h-2 rounded-full pulse-dot" style="background: var(--forest)"></div>

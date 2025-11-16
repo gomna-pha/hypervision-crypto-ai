@@ -19,6 +19,11 @@ let currentTab = 'dashboard';
 let updateInterval = null;
 let charts = {};
 
+// Portfolio tracking
+let portfolioBalance = 200000; // Starting balance: $200,000
+let executedTrades = new Set(); // Track which opportunities have been executed
+let activeStrategies = new Set(); // Track unique strategies with executed trades
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   // Show disclaimer modal on first visit
@@ -76,9 +81,26 @@ window.switchTab = switchTab;
 
 // Initialize dashboard
 async function initializeDashboard() {
+  // Initialize portfolio display
+  updatePortfolioDisplay();
+  
   await updateAgentData();
   initializeEquityCurveChart();
   initializeAttributionChart();
+}
+
+function updatePortfolioDisplay() {
+  // Update portfolio balance
+  const balanceEl = document.getElementById('portfolio-balance');
+  if (balanceEl) {
+    balanceEl.textContent = '$' + Math.round(portfolioBalance).toLocaleString();
+  }
+  
+  // Update active strategies count
+  const strategiesEl = document.getElementById('active-strategies');
+  if (strategiesEl) {
+    strategiesEl.textContent = activeStrategies.size;
+  }
 }
 
 // Update all agent data
@@ -2397,7 +2419,8 @@ window.executeArbitrage = async function(oppId) {
       status: 'completed',
       progress: 100,
       profit: result.profit,
-      executionTime: result.executionTime
+      executionTime: result.executionTime,
+      strategy: result.strategy
     };
     
     updateExecutionUI(oppId);
@@ -2405,8 +2428,13 @@ window.executeArbitrage = async function(oppId) {
     // Show success notification
     showExecutionNotification('success', `✓ Arbitrage executed successfully! Profit: $${result.profit}`, oppId);
     
-    // Update portfolio balance
-    updatePortfolioBalance(result.profit);
+    // Update portfolio balance and track strategy
+    const profitNum = parseFloat(result.profit);
+    updatePortfolioBalance(profitNum);
+    updateActiveStrategies(result.strategy);
+    
+    // Mark this trade as executed
+    executedTrades.add(oppId);
     
   } catch (error) {
     console.error('Execution error:', error);
@@ -2500,17 +2528,26 @@ function showExecutionNotification(type, message, oppId) {
 }
 
 function updatePortfolioBalance(profit) {
-  const balanceEl = document.querySelector('[style*="Portfolio Balance"]')?.nextElementSibling;
+  portfolioBalance += profit;
+  
+  const balanceEl = document.getElementById('portfolio-balance');
   if (balanceEl) {
-    const currentBalance = parseFloat(balanceEl.textContent.replace('$', '').replace(',', ''));
-    const newBalance = currentBalance + profit;
-    balanceEl.textContent = '$' + newBalance.toLocaleString();
+    balanceEl.textContent = '$' + Math.round(portfolioBalance).toLocaleString();
     
     // Animate the change
-    balanceEl.style.color = COLORS.forest;
+    balanceEl.style.color = profit > 0 ? COLORS.forest : COLORS.deepRed;
     setTimeout(() => {
       balanceEl.style.color = COLORS.navy;
     }, 2000);
+  }
+}
+
+function updateActiveStrategies(strategy) {
+  activeStrategies.add(strategy);
+  
+  const strategiesEl = document.getElementById('active-strategies');
+  if (strategiesEl) {
+    strategiesEl.textContent = activeStrategies.size;
   }
 }
 
