@@ -8,17 +8,11 @@ A production-ready cryptocurrency arbitrage trading platform combining 13 advanc
 
 ## 🔗 Live Platform
 
-**Production URL**: Coming Soon (Deploy to Cloudflare Pages)
+**Production URL**: https://arbitrage-ai.pages.dev
 
-**Quick Deploy Instructions**:
-```bash
-# 1. Configure Cloudflare API key in Deploy tab
-# 2. Run deployment:
-npm run build
-npx wrangler pages deploy dist --project-name arbitrage-ai
+**Try the live platform now!** Features 13 trading strategies, autonomous AI agent, and comprehensive backtesting.
 
-# Your permanent URL will be: https://arbitrage-ai.pages.dev
-```
+The platform is deployed on Cloudflare Pages with global CDN distribution for fast access worldwide.
 
 ---
 
