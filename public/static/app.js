@@ -521,6 +521,11 @@ function initializeEquityCurveChart() {
   const ctx = document.getElementById('equity-curve-chart');
   if (!ctx) return;
   
+  // Destroy existing chart if it exists
+  if (charts.equityCurve) {
+    charts.equityCurve.destroy();
+  }
+  
   const data = generateEquityCurveData();
   
   charts.equityCurve = new Chart(ctx, {
@@ -535,7 +540,8 @@ function initializeEquityCurveChart() {
           backgroundColor: COLORS.forest + '20',
           borderWidth: 3,
           fill: true,
-          tension: 0.4
+          tension: 0.4,
+          pointRadius: 0
         },
         {
           label: 'Without CNN (Baseline)',
@@ -545,23 +551,47 @@ function initializeEquityCurveChart() {
           borderWidth: 2,
           borderDash: [5, 5],
           fill: false,
-          tension: 0.4
+          tension: 0.4,
+          pointRadius: 0
         }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       plugins: {
         legend: {
           position: 'top',
+          labels: {
+            usePointStyle: true,
+            padding: 15
+          }
         },
         tooltip: {
           mode: 'index',
-          intersect: false
+          intersect: false,
+          callbacks: {
+            label: function(context) {
+              let label = context.dataset.label || '';
+              if (label) {
+                label += ': ';
+              }
+              label += '$' + context.parsed.y.toLocaleString();
+              return label;
+            }
+          }
         }
       },
       scales: {
+        x: {
+          grid: {
+            display: false
+          }
+        },
         y: {
           title: {
             display: true,
@@ -571,6 +601,9 @@ function initializeEquityCurveChart() {
             callback: function(value) {
               return '$' + value.toLocaleString();
             }
+          },
+          grid: {
+            color: COLORS.cream300
           }
         }
       }
@@ -583,6 +616,11 @@ function initializeAttributionChart() {
   const ctx = document.getElementById('attribution-chart');
   if (!ctx) return;
   
+  // Destroy existing chart if it exists
+  if (charts.attribution) {
+    charts.attribution.destroy();
+  }
+  
   charts.attribution = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -592,26 +630,31 @@ function initializeAttributionChart() {
           label: 'Cross-Exchange (35%)',
           data: [35],
           backgroundColor: COLORS.navy,
+          borderWidth: 0
         },
         {
           label: 'CNN Patterns (25%)',
           data: [25],
           backgroundColor: COLORS.forest,
+          borderWidth: 0
         },
         {
           label: 'Sentiment (20%)',
           data: [20],
           backgroundColor: COLORS.burnt,
+          borderWidth: 0
         },
         {
           label: 'Economic (10%)',
           data: [10],
           backgroundColor: COLORS.warmGray,
+          borderWidth: 0
         },
         {
           label: 'On-Chain (10%)',
           data: [10],
-          backgroundColor: COLORS.cream300,
+          backgroundColor: COLORS.darkBrown,
+          borderWidth: 0
         }
       ]
     },
@@ -622,6 +665,20 @@ function initializeAttributionChart() {
       plugins: {
         legend: {
           position: 'bottom',
+          labels: {
+            usePointStyle: true,
+            padding: 15,
+            font: {
+              size: 12
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.dataset.label + ': ' + context.parsed.x + '%';
+            }
+          }
         }
       },
       scales: {
@@ -631,10 +688,21 @@ function initializeAttributionChart() {
           title: {
             display: true,
             text: 'Contribution (%)'
+          },
+          grid: {
+            color: COLORS.cream300
+          },
+          ticks: {
+            callback: function(value) {
+              return value + '%';
+            }
           }
         },
         y: {
-          stacked: true
+          stacked: true,
+          grid: {
+            display: false
+          }
         }
       }
     }
@@ -643,11 +711,14 @@ function initializeAttributionChart() {
 
 // Initialize Strategy Charts
 function initializeStrategyCharts() {
-  if (charts.strategyPerformance) return; // Already initialized
-  
   // Strategy Performance Chart
   const perfCtx = document.getElementById('strategy-performance-chart');
   if (perfCtx) {
+    // Destroy existing chart
+    if (charts.strategyPerformance) {
+      charts.strategyPerformance.destroy();
+    }
+    
     const data = generateStrategyPerformanceData();
     
     charts.strategyPerformance = new Chart(perfCtx, {
@@ -659,45 +730,78 @@ function initializeStrategyCharts() {
             label: 'Spatial Arbitrage',
             data: data.spatial,
             borderColor: COLORS.navy,
-            borderWidth: 2,
-            tension: 0.4
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
           },
           {
             label: 'Triangular Arbitrage',
             data: data.triangular,
             borderColor: COLORS.forest,
-            borderWidth: 2,
-            tension: 0.4
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
           },
           {
             label: 'Statistical Arbitrage',
             data: data.statistical,
             borderColor: COLORS.burnt,
-            borderWidth: 2,
-            tension: 0.4
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
           },
           {
             label: 'Funding Rate',
             data: data.funding,
             borderColor: COLORS.deepRed,
-            borderWidth: 2,
-            tension: 0.4
+            borderWidth: 3,
+            tension: 0.4,
+            pointRadius: 0,
+            fill: false
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
           }
         },
         scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
           y: {
             title: {
               display: true,
               text: 'Cumulative Return (%)'
+            },
+            grid: {
+              color: COLORS.cream300
+            },
+            ticks: {
+              callback: function(value) {
+                return value.toFixed(1) + '%';
+              }
             }
           }
         }
@@ -708,6 +812,11 @@ function initializeStrategyCharts() {
   // Risk-Return Chart
   const rrCtx = document.getElementById('risk-return-chart');
   if (rrCtx) {
+    // Destroy existing chart
+    if (charts.riskReturn) {
+      charts.riskReturn.destroy();
+    }
+    
     charts.riskReturn = new Chart(rrCtx, {
       type: 'scatter',
       data: {
@@ -716,25 +825,29 @@ function initializeStrategyCharts() {
             label: 'Spatial',
             data: [{x: 2.1, y: 12.4}],
             backgroundColor: COLORS.navy,
-            pointRadius: 8
+            pointRadius: 10,
+            pointHoverRadius: 12
           },
           {
             label: 'Triangular',
             data: [{x: 3.2, y: 8.6}],
             backgroundColor: COLORS.forest,
-            pointRadius: 8
+            pointRadius: 10,
+            pointHoverRadius: 12
           },
           {
             label: 'Statistical',
             data: [{x: 4.5, y: 18.2}],
             backgroundColor: COLORS.burnt,
-            pointRadius: 8
+            pointRadius: 10,
+            pointHoverRadius: 12
           },
           {
             label: 'Funding',
             data: [{x: 1.8, y: 7.3}],
             backgroundColor: COLORS.deepRed,
-            pointRadius: 8
+            pointRadius: 10,
+            pointHoverRadius: 12
           }
         ]
       },
@@ -744,6 +857,17 @@ function initializeStrategyCharts() {
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15
+            }
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': Risk ' + context.parsed.x + '%, Return ' + context.parsed.y + '%';
+              }
+            }
           }
         },
         scales: {
@@ -751,12 +875,28 @@ function initializeStrategyCharts() {
             title: {
               display: true,
               text: 'Risk (Volatility %)'
+            },
+            grid: {
+              color: COLORS.cream300
+            },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
             }
           },
           y: {
             title: {
               display: true,
               text: 'Return (%)'
+            },
+            grid: {
+              color: COLORS.cream300
+            },
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
             }
           }
         }
@@ -767,6 +907,11 @@ function initializeStrategyCharts() {
   // Ranking Chart
   const rankCtx = document.getElementById('ranking-chart');
   if (rankCtx) {
+    // Destroy existing chart
+    if (charts.ranking) {
+      charts.ranking.destroy();
+    }
+    
     const data = generateRankingData();
     
     charts.ranking = new Chart(rankCtx, {
@@ -778,51 +923,91 @@ function initializeStrategyCharts() {
             label: 'Spatial',
             data: data.spatial,
             borderColor: COLORS.navy,
-            borderWidth: 3,
-            fill: false
+            borderWidth: 4,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 4,
+            pointHoverRadius: 6
           },
           {
             label: 'Triangular',
             data: data.triangular,
             borderColor: COLORS.forest,
-            borderWidth: 3,
-            fill: false
+            borderWidth: 4,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 4,
+            pointHoverRadius: 6
           },
           {
             label: 'Statistical',
             data: data.statistical,
             borderColor: COLORS.burnt,
-            borderWidth: 3,
-            fill: false
+            borderWidth: 4,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 4,
+            pointHoverRadius: 6
           },
           {
             label: 'Funding',
             data: data.funding,
             borderColor: COLORS.deepRed,
-            borderWidth: 3,
-            fill: false
+            borderWidth: 4,
+            fill: false,
+            tension: 0.1,
+            pointRadius: 4,
+            pointHoverRadius: 6
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': Rank #' + context.parsed.y;
+              }
+            }
           }
         },
         scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
           y: {
             reverse: true,
             min: 1,
             max: 4,
             ticks: {
-              stepSize: 1
+              stepSize: 1,
+              callback: function(value) {
+                return '#' + value;
+              }
             },
             title: {
               display: true,
               text: 'Rank (1 = Best)'
+            },
+            grid: {
+              color: COLORS.cream300
             }
           }
         }
@@ -833,11 +1018,14 @@ function initializeStrategyCharts() {
 
 // Initialize Analytics Charts
 function initializeAnalyticsCharts() {
-  if (charts.predictionAccuracy) return; // Already initialized
-  
   // Prediction Accuracy Chart
   const predCtx = document.getElementById('prediction-accuracy-chart');
   if (predCtx) {
+    // Destroy existing chart
+    if (charts.predictionAccuracy) {
+      charts.predictionAccuracy.destroy();
+    }
+    
     const data = generatePredictionData();
     
     charts.predictionAccuracy = new Chart(predCtx, {
@@ -850,14 +1038,18 @@ function initializeAnalyticsCharts() {
             data: data.actual,
             borderColor: COLORS.forest,
             borderWidth: 3,
-            tension: 0.3
+            tension: 0.3,
+            pointRadius: 0,
+            fill: false
           },
           {
             label: 'ML + CNN Ensemble',
             data: data.cnnEnhanced,
             borderColor: COLORS.navy,
             borderWidth: 2,
-            tension: 0.3
+            tension: 0.3,
+            pointRadius: 0,
+            fill: false
           },
           {
             label: 'ML Only (Baseline)',
@@ -865,23 +1057,59 @@ function initializeAnalyticsCharts() {
             borderColor: COLORS.warmGray,
             borderWidth: 2,
             borderDash: [5, 5],
-            tension: 0.3
+            tension: 0.3,
+            pointRadius: 0,
+            fill: false
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y.toFixed(3) + '%';
+              }
+            }
           }
         },
         scales: {
+          x: {
+            title: {
+              display: true,
+              text: 'Trade Number'
+            },
+            grid: {
+              display: false
+            }
+          },
           y: {
             title: {
               display: true,
               text: 'Profit (%)'
+            },
+            grid: {
+              color: COLORS.cream300
+            },
+            ticks: {
+              callback: function(value) {
+                return value.toFixed(2) + '%';
+              }
             }
           }
         }
@@ -908,6 +1136,11 @@ function initializeAnalyticsCharts() {
   // Drawdown Chart
   const ddCtx = document.getElementById('drawdown-chart');
   if (ddCtx) {
+    // Destroy existing chart
+    if (charts.drawdown) {
+      charts.drawdown.destroy();
+    }
+    
     const data = generateDrawdownData();
     
     charts.drawdown = new Chart(ddCtx, {
@@ -921,7 +1154,9 @@ function initializeAnalyticsCharts() {
             borderColor: COLORS.forest,
             borderWidth: 2,
             fill: true,
-            backgroundColor: COLORS.forest + '20'
+            backgroundColor: COLORS.forest + '20',
+            tension: 0.4,
+            pointRadius: 0
           },
           {
             label: 'Without CNN',
@@ -929,25 +1164,57 @@ function initializeAnalyticsCharts() {
             borderColor: COLORS.deepRed,
             borderWidth: 2,
             fill: true,
-            backgroundColor: COLORS.deepRed + '20'
+            backgroundColor: COLORS.deepRed + '20',
+            tension: 0.4,
+            pointRadius: 0
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: 'index',
+          intersect: false
+        },
         plugins: {
           legend: {
             position: 'top',
+            labels: {
+              usePointStyle: true,
+              padding: 15
+            }
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + '%';
+              }
+            }
           }
         },
         scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
           y: {
             title: {
               display: true,
               text: 'Drawdown (%)'
             },
-            reverse: true
+            reverse: true,
+            grid: {
+              color: COLORS.cream300
+            },
+            ticks: {
+              callback: function(value) {
+                return value.toFixed(1) + '%';
+              }
+            }
           }
         }
       }
