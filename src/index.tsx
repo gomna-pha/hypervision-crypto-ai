@@ -1512,10 +1512,13 @@ function generateCompositeSignal() {
 }
 
 function generateOpportunities() {
+  const now = Date.now()
+  
   return [
+    // Core Spatial Arbitrage
     {
       id: 1,
-      timestamp: new Date(Date.now() - 60000).toISOString(),
+      timestamp: new Date(now - 45000).toISOString(),
       strategy: 'Spatial',
       buyExchange: 'Kraken',
       sellExchange: 'Coinbase',
@@ -1527,9 +1530,75 @@ function generateOpportunities() {
     },
     {
       id: 2,
-      timestamp: new Date(Date.now() - 120000).toISOString(),
-      strategy: 'Funding Rate',
+      timestamp: new Date(now - 90000).toISOString(),
+      strategy: 'Spatial',
       buyExchange: 'Binance',
+      sellExchange: 'Kraken',
+      spread: 0.28,
+      netProfit: 0.15,
+      mlConfidence: 81,
+      cnnConfidence: 89,
+      constraintsPassed: true
+    },
+    
+    // Triangular Arbitrage
+    {
+      id: 3,
+      timestamp: new Date(now - 60000).toISOString(),
+      strategy: 'Triangular',
+      buyExchange: 'BTC-ETH-USDT',
+      sellExchange: 'Binance',
+      spread: 0.22,
+      netProfit: 0.12,
+      mlConfidence: 85,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    {
+      id: 4,
+      timestamp: new Date(now - 135000).toISOString(),
+      strategy: 'Triangular',
+      buyExchange: 'ETH-BTC-USDC',
+      sellExchange: 'Coinbase',
+      spread: 0.19,
+      netProfit: 0.09,
+      mlConfidence: 79,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // Statistical Arbitrage (Pair Trading)
+    {
+      id: 5,
+      timestamp: new Date(now - 120000).toISOString(),
+      strategy: 'Statistical',
+      buyExchange: 'BTC/ETH Pair',
+      sellExchange: 'Mean Reversion',
+      spread: 0.42,
+      netProfit: 0.28,
+      mlConfidence: 71,
+      cnnConfidence: 85,
+      constraintsPassed: true
+    },
+    {
+      id: 6,
+      timestamp: new Date(now - 180000).toISOString(),
+      strategy: 'Statistical',
+      buyExchange: 'SOL/AVAX Pair',
+      sellExchange: 'Cointegration',
+      spread: 0.38,
+      netProfit: 0.24,
+      mlConfidence: 68,
+      cnnConfidence: 82,
+      constraintsPassed: true
+    },
+    
+    // Funding Rate Arbitrage
+    {
+      id: 7,
+      timestamp: new Date(now - 75000).toISOString(),
+      strategy: 'Funding Rate',
+      buyExchange: 'Binance Spot',
       sellExchange: 'Binance Perp',
       spread: 0.25,
       netProfit: 0.19,
@@ -1538,18 +1607,180 @@ function generateOpportunities() {
       constraintsPassed: true
     },
     {
-      id: 3,
-      timestamp: new Date(Date.now() - 180000).toISOString(),
-      strategy: 'Statistical',
-      buyExchange: 'BTC',
-      sellExchange: 'ETH',
-      spread: 0.42,
-      netProfit: 0.28,
-      mlConfidence: 71,
-      cnnConfidence: 85,
+      id: 8,
+      timestamp: new Date(now - 150000).toISOString(),
+      strategy: 'Funding Rate',
+      buyExchange: 'OKX Spot',
+      sellExchange: 'OKX Futures',
+      spread: 0.21,
+      netProfit: 0.16,
+      mlConfidence: 77,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // Multi-Factor Alpha Strategy
+    {
+      id: 9,
+      timestamp: new Date(now - 105000).toISOString(),
+      strategy: 'Multi-Factor Alpha',
+      buyExchange: 'Fama-French 5F',
+      sellExchange: 'Alpha Capture',
+      spread: 0.35,
+      netProfit: 0.21,
+      mlConfidence: 73,
+      cnnConfidence: 80,
+      constraintsPassed: true
+    },
+    {
+      id: 10,
+      timestamp: new Date(now - 195000).toISOString(),
+      strategy: 'Multi-Factor Alpha',
+      buyExchange: 'Carhart 4F + Mom',
+      sellExchange: 'Factor Portfolio',
+      spread: 0.29,
+      netProfit: 0.17,
+      mlConfidence: 70,
+      cnnConfidence: 78,
+      constraintsPassed: true
+    },
+    
+    // ML Ensemble Strategy
+    {
+      id: 11,
+      timestamp: new Date(now - 165000).toISOString(),
+      strategy: 'ML Ensemble',
+      buyExchange: 'RF+XGB+SVM',
+      sellExchange: 'Ensemble Signal',
+      spread: 0.33,
+      netProfit: 0.20,
+      mlConfidence: 88,
+      cnnConfidence: 91,
+      constraintsPassed: true
+    },
+    {
+      id: 12,
+      timestamp: new Date(now - 210000).toISOString(),
+      strategy: 'ML Ensemble',
+      buyExchange: '5-Model Consensus',
+      sellExchange: 'High Conviction',
+      spread: 0.37,
+      netProfit: 0.23,
+      mlConfidence: 92,
+      cnnConfidence: 94,
+      constraintsPassed: true
+    },
+    
+    // Deep Learning Strategy
+    {
+      id: 13,
+      timestamp: new Date(now - 30000).toISOString(),
+      strategy: 'Deep Learning',
+      buyExchange: 'LSTM Forecast',
+      sellExchange: 'Transformer',
+      spread: 0.45,
+      netProfit: 0.31,
+      mlConfidence: 86,
+      cnnConfidence: 93,
+      constraintsPassed: true
+    },
+    {
+      id: 14,
+      timestamp: new Date(now - 225000).toISOString(),
+      strategy: 'Deep Learning',
+      buyExchange: 'GAN Scenario',
+      sellExchange: 'CNN Pattern',
+      spread: 0.41,
+      netProfit: 0.27,
+      mlConfidence: 84,
+      cnnConfidence: 90,
+      constraintsPassed: true
+    },
+    
+    // Volatility Arbitrage
+    {
+      id: 15,
+      timestamp: new Date(now - 195000).toISOString(),
+      strategy: 'Volatility',
+      buyExchange: 'Options Delta',
+      sellExchange: 'Gamma Hedge',
+      spread: 0.52,
+      netProfit: 0.36,
+      mlConfidence: 75,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // Cross-Asset Arbitrage
+    {
+      id: 16,
+      timestamp: new Date(now - 270000).toISOString(),
+      strategy: 'Cross-Asset',
+      buyExchange: 'BTC/Gold Ratio',
+      sellExchange: 'Macro Hedge',
+      spread: 0.48,
+      netProfit: 0.33,
+      mlConfidence: 69,
+      cnnConfidence: 76,
+      constraintsPassed: true
+    },
+    
+    // High-Frequency Micro Arbitrage
+    {
+      id: 17,
+      timestamp: new Date(now - 15000).toISOString(),
+      strategy: 'HFT Micro',
+      buyExchange: 'Latency Edge',
+      sellExchange: 'Order Flow',
+      spread: 0.15,
+      netProfit: 0.08,
+      mlConfidence: 94,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // Market Making Arbitrage
+    {
+      id: 18,
+      timestamp: new Date(now - 240000).toISOString(),
+      strategy: 'Market Making',
+      buyExchange: 'Bid-Ask Spread',
+      sellExchange: 'Inventory Risk',
+      spread: 0.26,
+      netProfit: 0.14,
+      mlConfidence: 80,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // Seasonal/Calendar Arbitrage
+    {
+      id: 19,
+      timestamp: new Date(now - 285000).toISOString(),
+      strategy: 'Seasonal',
+      buyExchange: 'Monthly Pattern',
+      sellExchange: 'Calendar Effect',
+      spread: 0.34,
+      netProfit: 0.22,
+      mlConfidence: 66,
+      cnnConfidence: 74,
+      constraintsPassed: true
+    },
+    
+    // Sentiment-Driven Arbitrage
+    {
+      id: 20,
+      timestamp: new Date(now - 330000).toISOString(),
+      strategy: 'Sentiment',
+      buyExchange: 'Fear & Greed',
+      sellExchange: 'Contrarian',
+      spread: 0.39,
+      netProfit: 0.25,
+      mlConfidence: 72,
+      cnnConfidence: 88,
       constraintsPassed: true
     }
-  ]
+  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) // Sort by most recent first
 }
 
 function generateBacktestData(withCNN: boolean) {
