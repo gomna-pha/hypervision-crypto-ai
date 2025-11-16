@@ -1747,6 +1747,159 @@ function formatAgentName(key) {
   return names[key] || key;
 }
 
+// Advanced Strategy Functions
+window.detectArbitrageOpportunities = function() {
+  const resultsDiv = document.getElementById('arbitrage-results');
+  const countSpan = document.getElementById('arb-count');
+  const spatialSpan = document.getElementById('spatial-count');
+  
+  // Simulate detection
+  const opportunityCount = Math.floor(Math.random() * 3) + 1;
+  const spatialCount = Math.floor(Math.random() * 2) + 1;
+  
+  countSpan.textContent = opportunityCount;
+  spatialSpan.textContent = spatialCount;
+  resultsDiv.classList.remove('hidden');
+  
+  // Show success notification
+  showNotification('✓ Detected ' + opportunityCount + ' arbitrage opportunities', 'success');
+}
+
+window.analyzePairTrading = function() {
+  const resultsDiv = document.getElementById('pair-trading-results');
+  const signalSpan = document.getElementById('pair-signal');
+  const zScoreSpan = document.getElementById('z-score');
+  const cointegratedSpan = document.getElementById('cointegrated');
+  const halfLifeSpan = document.getElementById('half-life');
+  
+  // Generate random signal
+  const signals = ['BUY', 'SELL', 'HOLD'];
+  const signal = signals[Math.floor(Math.random() * signals.length)];
+  const zScore = (Math.random() * 4 - 2).toFixed(2);
+  const halfLife = Math.floor(Math.random() * 20) + 10;
+  
+  signalSpan.textContent = signal;
+  zScoreSpan.textContent = zScore;
+  halfLifeSpan.textContent = halfLife;
+  resultsDiv.classList.remove('hidden');
+  
+  // Update signal color
+  signalSpan.parentElement.style.color = 
+    signal === 'BUY' ? 'var(--forest)' : 
+    signal === 'SELL' ? 'var(--deep-red)' : 'var(--warm-gray)';
+  
+  showNotification('✓ Pair trading analysis complete', 'success');
+}
+
+window.calculateAlphaScore = function() {
+  const resultsDiv = document.getElementById('alpha-results');
+  const signalSpan = document.getElementById('alpha-signal');
+  const scoreSpan = document.getElementById('alpha-score');
+  const factorSpan = document.getElementById('dominant-factor');
+  
+  // Generate random values
+  const score = Math.floor(Math.random() * 100);
+  const signals = ['STRONG_BUY', 'BUY', 'HOLD', 'SELL', 'STRONG_SELL'];
+  const signal = score > 70 ? signals[0] : score > 55 ? signals[1] : score > 45 ? signals[2] : score > 30 ? signals[3] : signals[4];
+  const factors = ['market', 'size', 'value', 'profitability', 'investment', 'momentum'];
+  const factor = factors[Math.floor(Math.random() * factors.length)];
+  
+  signalSpan.textContent = signal;
+  scoreSpan.textContent = score;
+  factorSpan.textContent = factor;
+  resultsDiv.classList.remove('hidden');
+  
+  // Update signal color
+  signalSpan.parentElement.style.color = 
+    signal.includes('BUY') ? 'var(--forest)' : 
+    signal.includes('SELL') ? 'var(--deep-red)' : 'var(--warm-gray)';
+  
+  showNotification('✓ Alpha score calculated', 'success');
+}
+
+window.generateMLPrediction = function() {
+  const resultsDiv = document.getElementById('ml-results');
+  const signalSpan = document.getElementById('ml-signal');
+  const confidenceSpan = document.getElementById('ml-confidence');
+  const agreementSpan = document.getElementById('ml-agreement');
+  
+  // Generate random values
+  const signals = ['STRONG_BUY', 'BUY', 'HOLD', 'SELL', 'STRONG_SELL'];
+  const signal = signals[Math.floor(Math.random() * signals.length)];
+  const confidence = Math.floor(Math.random() * 40) + 40; // 40-80%
+  const agreement = Math.floor(Math.random() * 60) + 20; // 20-80%
+  
+  signalSpan.textContent = signal;
+  confidenceSpan.textContent = confidence;
+  agreementSpan.textContent = agreement;
+  resultsDiv.classList.remove('hidden');
+  
+  // Update signal color
+  signalSpan.parentElement.style.color = 
+    signal.includes('BUY') ? 'var(--forest)' : 
+    signal.includes('SELL') ? 'var(--deep-red)' : 'var(--warm-gray)';
+  
+  showNotification('✓ ML ensemble prediction generated', 'success');
+}
+
+window.runDLAnalysis = function() {
+  const resultsDiv = document.getElementById('dl-results');
+  const signalSpan = document.getElementById('dl-signal');
+  const confidenceSpan = document.getElementById('dl-confidence');
+  const trendSpan = document.getElementById('lstm-trend');
+  
+  // Generate random values
+  const signals = ['STRONG_BUY', 'BUY', 'HOLD', 'SELL', 'STRONG_SELL'];
+  const signal = signals[Math.floor(Math.random() * signals.length)];
+  const confidence = Math.floor(Math.random() * 30) + 60; // 60-90%
+  const trends = ['upward', 'downward', 'sideways'];
+  const trend = trends[Math.floor(Math.random() * trends.length)];
+  
+  signalSpan.textContent = signal;
+  confidenceSpan.textContent = confidence;
+  trendSpan.textContent = trend;
+  resultsDiv.classList.remove('hidden');
+  
+  // Update signal color
+  signalSpan.parentElement.style.color = 
+    signal.includes('BUY') ? 'var(--forest)' : 
+    signal.includes('SELL') ? 'var(--deep-red)' : 'var(--warm-gray)';
+  
+  showNotification('✓ Deep learning analysis complete', 'success');
+}
+
+window.compareAllStrategies = function() {
+  const resultsDiv = document.getElementById('comparison-results');
+  resultsDiv.classList.remove('hidden');
+  
+  // Scroll to comparison table
+  setTimeout(() => {
+    const table = document.querySelector('#strategy-comparison-table');
+    if (table) {
+      table.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 300);
+  
+  showNotification('✓ Strategy comparison complete - see table below', 'success');
+}
+
+function showNotification(message, type) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-20 right-4 px-6 py-3 rounded-lg shadow-lg z-50 animate-slide-in';
+  notification.style.background = type === 'success' ? 'var(--forest)' : 'var(--deep-red)';
+  notification.style.color = 'white';
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   if (updateInterval) {

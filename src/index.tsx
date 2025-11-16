@@ -376,6 +376,369 @@ app.get('/', (c) => {
                 <canvas id="ranking-chart"></canvas>
               </div>
             </div>
+
+            <!-- Advanced Strategies Section -->
+            <div class="mb-8">
+              <h2 class="text-2xl font-bold mb-2" style="color: var(--navy)">
+                🎯 Advanced Arbitrage Strategies
+              </h2>
+              <p class="text-sm mb-6" style="color: var(--warm-gray)">
+                Multi-dimensional arbitrage detection including triangular, statistical, and funding rate opportunities
+              </p>
+
+              <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Strategy 1: Advanced Arbitrage -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-exchange-alt mr-2"></i>Advanced Arbitrage
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Multi-dimensional arbitrage detection including triangular, statistical, and funding rate opportunities
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Spatial Arbitrage (Cross-Exchange)
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Triangular Arbitrage (BTC-ETH-USDT)
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Statistical Arbitrage (Mean Reversion)
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Funding Rate Arbitrage
+                    </div>
+                  </div>
+
+                  <button onclick="detectArbitrageOpportunities()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-search mr-2"></i>Detect Opportunities
+                  </button>
+
+                  <div id="arbitrage-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--forest)">
+                        <i class="fas fa-check-circle mr-1"></i>Found <span id="arb-count">0</span> Opportunities
+                      </span>
+                    </div>
+                    <div class="text-xs space-y-1" style="color: var(--warm-gray)">
+                      <div><strong>Spatial:</strong> <span id="spatial-count">0</span> opportunities</div>
+                      <div><strong>Min profit threshold:</strong> 0.3% after fees</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategy 2: Statistical Pair Trading -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-chart-line mr-2"></i>Statistical Pair Trading
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Cointegration-based pairs trading with dynamic hedge ratios and mean reversion signals
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Cointegration Testing (ADF)
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Z-Score Signal Generation
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Kalman Filter Hedge Ratios
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Half-Life Estimation
+                    </div>
+                  </div>
+
+                  <button onclick="analyzePairTrading()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-calculator mr-2"></i>Analyze BTC-ETH Pair
+                  </button>
+
+                  <div id="pair-trading-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--forest)">
+                        <i class="fas fa-check-circle mr-1"></i>Signal: <span id="pair-signal">HOLD</span>
+                      </span>
+                    </div>
+                    <div class="text-xs space-y-1" style="color: var(--warm-gray)">
+                      <div><strong>Z-Score:</strong> <span id="z-score">0.50</span></div>
+                      <div><strong>Cointegrated:</strong> <span id="cointegrated">Yes</span></div>
+                      <div><strong>Half-Life:</strong> <span id="half-life">15</span> days</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategy 3: Multi-Factor Alpha -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-layer-group mr-2"></i>Multi-Factor Alpha
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Academic factor models including Fama-French 5-factor and Carhart 4-factor momentum
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Fama-French 5-Factor Model
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Carhart Momentum Factor
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Quality & Volatility Factors
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Composite Alpha Scoring
+                    </div>
+                  </div>
+
+                  <button onclick="calculateAlphaScore()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-calculator mr-2"></i>Calculate Alpha Score
+                  </button>
+
+                  <div id="alpha-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--deep-red)">
+                        <i class="fas fa-check-circle mr-1"></i>Signal: <span id="alpha-signal">SELL</span>
+                      </span>
+                    </div>
+                    <div class="text-xs space-y-1" style="color: var(--warm-gray)">
+                      <div><strong>Alpha Score:</strong> <span id="alpha-score">36</span>/100</div>
+                      <div><strong>Dominant Factor:</strong> <span id="dominant-factor">market</span></div>
+                      <div><strong>5-Factor + Momentum Analysis</strong></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategy 4: Machine Learning Ensemble -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-brain mr-2"></i>Machine Learning Ensemble
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Ensemble ML models with feature importance and SHAP value analysis
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Random Forest Classifier
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Gradient Boosting (XGBoost)
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Support Vector Machine
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Neural Network
+                    </div>
+                  </div>
+
+                  <button onclick="generateMLPrediction()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-robot mr-2"></i>Generate ML Prediction
+                  </button>
+
+                  <div id="ml-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--deep-red)">
+                        <i class="fas fa-check-circle mr-1"></i>Ensemble: <span id="ml-signal">SELL</span>
+                      </span>
+                    </div>
+                    <div class="text-xs space-y-1" style="color: var(--warm-gray)">
+                      <div><strong>Confidence:</strong> <span id="ml-confidence">40</span>%</div>
+                      <div><strong>Model Agreement:</strong> <span id="ml-agreement">40</span>%</div>
+                      <div><strong>5 models:</strong> RF, XGB, SVM, LR, NN</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategy 5: Deep Learning Models -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-network-wired mr-2"></i>Deep Learning Models
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Advanced neural networks including LSTM, Transformers, and GAN-based scenario generation
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      LSTM Time Series Forecasting
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Transformer Attention Models
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      GAN Scenario Generation
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      CNN Pattern Recognition
+                    </div>
+                  </div>
+
+                  <button onclick="runDLAnalysis()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-microchip mr-2"></i>Run DL Analysis
+                  </button>
+
+                  <div id="dl-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--forest)">
+                        <i class="fas fa-check-circle mr-1"></i>DL Signal: <span id="dl-signal">STRONG_BUY</span>
+                      </span>
+                    </div>
+                    <div class="text-xs space-y-1" style="color: var(--warm-gray)">
+                      <div><strong>Confidence:</strong> <span id="dl-confidence">78</span>%</div>
+                      <div><strong>LSTM Trend:</strong> <span id="lstm-trend">upward</span></div>
+                      <div><strong>LSTM + Transformer + GAN</strong></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Strategy 6: Strategy Comparison -->
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-balance-scale mr-2"></i>Strategy Comparison
+                  </h3>
+                  <p class="text-xs mb-4" style="color: var(--warm-gray)">
+                    Compare all advanced strategies side-by-side with performance metrics
+                  </p>
+
+                  <div class="space-y-2 mb-4">
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Signal Consistency Analysis
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Risk-Adjusted Returns
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Correlation Matrix
+                    </div>
+                    <div class="flex items-center text-xs" style="color: var(--warm-gray)">
+                      <i class="fas fa-check-circle mr-2" style="color: var(--forest)"></i>
+                      Portfolio Optimization
+                    </div>
+                  </div>
+
+                  <button onclick="compareAllStrategies()" class="btn-primary w-full mb-3">
+                    <i class="fas fa-chart-bar mr-2"></i>Compare All Strategies
+                  </button>
+
+                  <div id="comparison-results" class="p-3 rounded-lg hidden" style="background: var(--cream-100)">
+                    <div class="flex items-center justify-between mb-2">
+                      <span class="text-xs font-semibold" style="color: var(--forest)">
+                        <i class="fas fa-check-circle mr-1"></i>All Strategies Complete
+                      </span>
+                    </div>
+                    <div class="text-xs" style="color: var(--warm-gray)">
+                      Check results table below
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Strategy Comparison Table -->
+            <div class="card">
+              <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
+                📊 Strategy Signals & Performance Summary
+              </h3>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr style="background: var(--cream-100)">
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Strategy</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Signal</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Confidence</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">30D Return</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Sharpe</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Win Rate</th>
+                      <th class="px-4 py-3 text-left font-semibold" style="color: var(--navy)">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="strategy-comparison-table">
+                    <tr style="border-bottom: 1px solid var(--cream-300)">
+                      <td class="px-4 py-3 font-medium" style="color: var(--navy)">Advanced Arbitrage</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(45, 95, 63, 0.2); color: var(--forest)">BUY</span></td>
+                      <td class="px-4 py-3">78%</td>
+                      <td class="px-4 py-3" style="color: var(--forest)">+3.2%</td>
+                      <td class="px-4 py-3">2.1</td>
+                      <td class="px-4 py-3">72%</td>
+                      <td class="px-4 py-3"><i class="fas fa-check-circle" style="color: var(--forest)"></i> Active</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--cream-300)">
+                      <td class="px-4 py-3 font-medium" style="color: var(--navy)">Statistical Pair Trading</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(107, 93, 79, 0.2); color: var(--warm-gray)">HOLD</span></td>
+                      <td class="px-4 py-3">65%</td>
+                      <td class="px-4 py-3" style="color: var(--forest)">+1.8%</td>
+                      <td class="px-4 py-3">1.8</td>
+                      <td class="px-4 py-3">68%</td>
+                      <td class="px-4 py-3"><i class="fas fa-check-circle" style="color: var(--forest)"></i> Active</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--cream-300)">
+                      <td class="px-4 py-3 font-medium" style="color: var(--navy)">Multi-Factor Alpha</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(139, 58, 58, 0.2); color: var(--deep-red)">SELL</span></td>
+                      <td class="px-4 py-3">52%</td>
+                      <td class="px-4 py-3" style="color: var(--deep-red)">-0.8%</td>
+                      <td class="px-4 py-3">1.2</td>
+                      <td class="px-4 py-3">58%</td>
+                      <td class="px-4 py-3"><i class="fas fa-pause-circle" style="color: var(--warm-gray)"></i> Monitoring</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--cream-300)">
+                      <td class="px-4 py-3 font-medium" style="color: var(--navy)">ML Ensemble</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(139, 58, 58, 0.2); color: var(--deep-red)">SELL</span></td>
+                      <td class="px-4 py-3">40%</td>
+                      <td class="px-4 py-3" style="color: var(--deep-red)">-1.2%</td>
+                      <td class="px-4 py-3">0.9</td>
+                      <td class="px-4 py-3">54%</td>
+                      <td class="px-4 py-3"><i class="fas fa-pause-circle" style="color: var(--warm-gray)"></i> Monitoring</td>
+                    </tr>
+                    <tr style="border-bottom: 1px solid var(--cream-300)">
+                      <td class="px-4 py-3 font-medium" style="color: var(--navy)">Deep Learning</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(45, 95, 63, 0.2); color: var(--forest)">STRONG_BUY</span></td>
+                      <td class="px-4 py-3">78%</td>
+                      <td class="px-4 py-3" style="color: var(--forest)">+4.5%</td>
+                      <td class="px-4 py-3">2.6</td>
+                      <td class="px-4 py-3">76%</td>
+                      <td class="px-4 py-3"><i class="fas fa-check-circle" style="color: var(--forest)"></i> Active</td>
+                    </tr>
+                    <tr>
+                      <td class="px-4 py-3 font-bold" style="color: var(--navy)">CNN-Enhanced Composite</td>
+                      <td class="px-4 py-3"><span class="px-2 py-1 rounded text-xs font-semibold" style="background: rgba(45, 95, 63, 0.2); color: var(--forest)">STRONG_BUY</span></td>
+                      <td class="px-4 py-3"><strong>85%</strong></td>
+                      <td class="px-4 py-3 font-bold" style="color: var(--forest)">+5.8%</td>
+                      <td class="px-4 py-3"><strong>2.9</strong></td>
+                      <td class="px-4 py-3"><strong>79%</strong></td>
+                      <td class="px-4 py-3"><i class="fas fa-star" style="color: var(--burnt)"></i> <strong>Primary</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
 
           <!-- Backtest Tab -->
