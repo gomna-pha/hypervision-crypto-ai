@@ -543,51 +543,7 @@ app.get('/', (c) => {
               <div id="composite-signal" class="card fade-in" style="border: 3px solid var(--navy)"></div>
             </div>
 
-            <!-- LLM Strategic Insights (Full Width) -->
-            <div class="card mb-8" style="border: 3px solid var(--burnt); background: linear-gradient(135deg, var(--cream-100) 0%, white 100%)">
-              <div class="flex items-start justify-between mb-4">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 rounded-lg flex items-center justify-center text-2xl" style="background: var(--burnt); color: white">
-                    🧠
-                  </div>
-                  <div>
-                    <h3 class="text-xl font-bold" style="color: var(--navy)">
-                      LLM Strategic Analyst
-                    </h3>
-                    <p class="text-xs" style="color: var(--warm-gray)">
-                      AI-powered holistic market analysis from all agent signals
-                    </p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2">
-                  <button onclick="refreshLLMInsights()" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-80" style="background: var(--burnt); color: white">
-                    <i class="fas fa-sync-alt mr-2"></i>Refresh Analysis
-                  </button>
-                  <div class="flex items-center gap-1">
-                    <div class="w-2 h-2 rounded-full" id="llm-status-dot" style="background: var(--forest)"></div>
-                    <span class="text-xs" style="color: var(--warm-gray)" id="llm-status-text">Ready</span>
-                  </div>
-                </div>
-              </div>
 
-              <div id="llm-insights-content" class="space-y-4">
-                <div class="flex items-center justify-center py-8" style="color: var(--warm-gray)">
-                  <i class="fas fa-spinner fa-spin text-3xl mr-3"></i>
-                  <span>Initializing LLM analysis...</span>
-                </div>
-              </div>
-
-              <div class="mt-4 pt-4 border-t-2 flex items-center justify-between text-xs" style="border-color: var(--cream-300); color: var(--warm-gray)">
-                <div class="flex items-center gap-4">
-                  <span><i class="fas fa-brain mr-1"></i>Model: <strong id="llm-model-name">GPT-4o-mini</strong></span>
-                  <span><i class="fas fa-clock mr-1"></i>Last Updated: <strong id="llm-last-update">-</strong></span>
-                  <span><i class="fas fa-bolt mr-1"></i>Response Time: <strong id="llm-response-time">-</strong></span>
-                </div>
-                <span class="text-xs">
-                  <i class="fas fa-info-circle mr-1"></i>Non-hardcoded contextual insights
-                </span>
-              </div>
-            </div>
 
             <!-- Active Opportunities -->
             <div class="card mb-8">
@@ -667,7 +623,7 @@ app.get('/', (c) => {
                 <canvas id="attribution-chart"></canvas>
               </div>
               <p class="text-xs mt-4 mb-3" style="color: var(--navy); font-weight: 600">
-                📊 Strategy Type Distribution (20 active strategies):
+                Strategy Type Distribution (20 active strategies):
               </p>
               <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
                 <div class="text-xs">
@@ -692,8 +648,62 @@ app.get('/', (c) => {
                 </div>
               </div>
               <p class="text-xs mt-4 pt-4 border-t-2" style="border-color: var(--cream-300); color: var(--warm-gray)">
-                🧠 <strong>Ensemble Weighting:</strong> Core strategies (40%), AI/ML (20%), CNN patterns (15%), Factor models (15%), Sentiment (5%), Alternative (5%). Dynamically adjusted based on market regime and realized performance.
+                <strong>Ensemble Weighting:</strong> Core strategies (40%), AI/ML (20%), CNN patterns (15%), Factor models (15%), Sentiment (5%), Alternative (5%). Dynamically adjusted based on market regime and realized performance.
               </p>
+            </div>
+
+            <!-- LLM Strategic Analyst -->
+            <div class="card" style="border: 2px solid var(--navy); background: white">
+              <div class="border-b-2 pb-4 mb-4" style="border-color: var(--cream-300)">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h3 class="text-xl font-bold mb-2" style="color: var(--navy)">
+                      Strategic Market Analysis
+                    </h3>
+                    <p class="text-sm" style="color: var(--warm-gray)">
+                      AI-powered comprehensive analysis integrating all agent signals and market conditions
+                    </p>
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background: var(--cream-100)">
+                      <div class="w-2 h-2 rounded-full" id="llm-status-dot" style="background: var(--forest)"></div>
+                      <span class="text-xs font-semibold" style="color: var(--navy)" id="llm-status-text">Active</span>
+                    </div>
+                    <button onclick="refreshLLMInsights()" class="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90" style="background: var(--navy); color: white">
+                      <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div id="llm-insights-content" class="mb-4">
+                <div class="flex items-center justify-center py-12" style="color: var(--warm-gray)">
+                  <i class="fas fa-spinner fa-spin text-3xl mr-3"></i>
+                  <span>Loading market analysis...</span>
+                </div>
+              </div>
+
+              <div class="pt-4 border-t-2 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs" style="border-color: var(--cream-300)">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-microchip" style="color: var(--navy)"></i>
+                  <span style="color: var(--warm-gray)">Model:</span>
+                  <strong style="color: var(--navy)" id="llm-model-name">GPT-4o-mini</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-clock" style="color: var(--navy)"></i>
+                  <span style="color: var(--warm-gray)">Last Updated:</span>
+                  <strong style="color: var(--navy)" id="llm-last-update">-</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-tachometer-alt" style="color: var(--navy)"></i>
+                  <span style="color: var(--warm-gray)">Response Time:</span>
+                  <strong style="color: var(--navy)" id="llm-response-time">-</strong>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-3 border-t text-xs" style="border-color: var(--cream-300); color: var(--warm-gray)">
+                <strong>Note:</strong> Analysis is generated dynamically based on real-time market data. Auto-refreshes every 30 seconds.
+              </div>
             </div>
           </div>
 
@@ -1348,21 +1358,21 @@ function generateFallbackInsights() {
   const insights = []
   
   if (Math.abs(agentData.sentiment.score - agentData.composite.compositeScore) < 15) {
-    insights.push(`✅ **Strong Agent Consensus**: Sentiment (${agentData.sentiment.score}/100) and Composite Signal (${agentData.composite.compositeScore}/100) are aligned, suggesting reliable directional bias.`)
+    insights.push(`**Strong Agent Consensus**: Sentiment (${agentData.sentiment.score}/100) and Composite Signal (${agentData.composite.compositeScore}/100) are aligned, suggesting reliable directional bias.`)
   } else {
-    insights.push(`⚠️ **Agent Divergence**: Sentiment diverges from composite signal - suggests mixed market conditions requiring cautious positioning.`)
+    insights.push(`**Agent Divergence**: Sentiment diverges from composite signal - suggests mixed market conditions requiring cautious positioning.`)
   }
   
-  insights.push(`📊 **CNN Pattern Detection**: ${pattern} pattern identified with ${agentData.cnnPattern.reinforcedConfidence}% confidence (${direction}). Sentiment reinforcement ${agentData.cnnPattern.sentimentMultiplier > 1.2 ? 'boosting' : 'maintaining'} signal strength.`)
+  insights.push(`**CNN Pattern Detection**: ${pattern} pattern identified with ${agentData.cnnPattern.reinforcedConfidence}% confidence (${direction}). Sentiment reinforcement ${agentData.cnnPattern.sentimentMultiplier > 1.2 ? 'boosting' : 'maintaining'} signal strength.`)
   
   if (agentData.onChain.exchangeNetflow < -3000) {
-    insights.push(`🐋 **On-Chain Bullish**: Exchange outflows of ${Math.abs(agentData.onChain.exchangeNetflow).toLocaleString()} BTC indicate accumulation. Whale activity ${agentData.onChain.whaleActivity.toLowerCase()} with ${agentData.onChain.whaleActivity === 'HIGH' ? 'strong' : 'moderate'} conviction.`)
+    insights.push(`**On-Chain Bullish**: Exchange outflows of ${Math.abs(agentData.onChain.exchangeNetflow).toLocaleString()} BTC indicate accumulation. Whale activity ${agentData.onChain.whaleActivity.toLowerCase()} with ${agentData.onChain.whaleActivity === 'HIGH' ? 'strong' : 'moderate'} conviction.`)
   } else {
-    insights.push(`📉 **On-Chain Neutral**: Exchange flows showing distribution. MVRV at ${agentData.onChain.mvrv} suggests ${agentData.onChain.mvrv > 2 ? 'overvalued' : 'fair value'} territory.`)
+    insights.push(`**On-Chain Neutral**: Exchange flows showing distribution. MVRV at ${agentData.onChain.mvrv} suggests ${agentData.onChain.mvrv > 2 ? 'overvalued' : 'fair value'} territory.`)
   }
   
   if (spread > 0.25) {
-    insights.push(`💰 **Arbitrage Window Open**: Cross-exchange spread at ${spread}% exceeds profit threshold. Buy ${agentData.crossExchange.buyExchange}, sell ${agentData.crossExchange.sellExchange}.`)
+    insights.push(`**Arbitrage Window Open**: Cross-exchange spread at ${spread}% exceeds profit threshold. Buy ${agentData.crossExchange.buyExchange}, sell ${agentData.crossExchange.sellExchange}.`)
   }
   
   // Arbitrage Assessment
@@ -1379,17 +1389,17 @@ function generateFallbackInsights() {
   const risks = []
   
   if (fearGreed.includes('EXTREME')) {
-    risks.push(`🔴 **Sentiment Extreme**: Fear & Greed at ${fearGreed} - historically precedes mean reversion. Reduce position sizes.`)
+    risks.push(`**Sentiment Extreme**: Fear & Greed at ${fearGreed} - historically precedes mean reversion. Reduce position sizes.`)
   }
   
   if (agentData.sentiment.vix > 25) {
-    risks.push(`⚡ **High Volatility**: VIX at ${agentData.sentiment.vix} suggests elevated market stress. Widen stop-losses and consider delta-hedging.`)
+    risks.push(`**High Volatility**: VIX at ${agentData.sentiment.vix} suggests elevated market stress. Widen stop-losses and consider delta-hedging.`)
   } else {
-    risks.push(`✅ **Volatility Contained**: VIX at ${agentData.sentiment.vix} within normal range. Standard risk management applies.`)
+    risks.push(`**Volatility Contained**: VIX at ${agentData.sentiment.vix} within normal range. Standard risk management applies.`)
   }
   
   if (agentData.crossExchange.liquidityScore < 60) {
-    risks.push(`💧 **Liquidity Concerns**: Cross-exchange liquidity at ${agentData.crossExchange.liquidityScore}/100 may cause slippage. Scale entry/exit.`)
+    risks.push(`**Liquidity Concerns**: Cross-exchange liquidity at ${agentData.crossExchange.liquidityScore}/100 may cause slippage. Scale entry/exit.`)
   }
   
   // Strategic Recommendation
