@@ -306,7 +306,9 @@ app.get('/', (c) => {
                   <div class="text-2xl font-bold" style="color: var(--dark-brown)">247</div>
                 </div>
               </div>
-              <canvas id="equity-curve-chart" height="80"></canvas>
+              <div style="height: 300px; position: relative;">
+                <canvas id="equity-curve-chart"></canvas>
+              </div>
             </div>
 
             <!-- Signal Attribution -->
@@ -314,7 +316,9 @@ app.get('/', (c) => {
               <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                 <i class="fas fa-layer-group mr-2"></i>Ensemble Signal Attribution
               </h3>
-              <canvas id="attribution-chart" height="100"></canvas>
+              <div style="height: 200px; position: relative;">
+                <canvas id="attribution-chart"></canvas>
+              </div>
               <p class="text-xs mt-4" style="color: var(--warm-gray)">
                 📚 Weighted ensemble: Cross-exchange (35%), CNN patterns (25%), Sentiment (20%), Economic (10%), On-chain (10%)
               </p>
@@ -350,13 +354,17 @@ app.get('/', (c) => {
                 <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                   Multi-Strategy Performance Comparison
                 </h3>
-                <canvas id="strategy-performance-chart" height="100"></canvas>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="strategy-performance-chart"></canvas>
+                </div>
               </div>
               <div class="card">
                 <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                   Risk-Return Analysis
                 </h3>
-                <canvas id="risk-return-chart" height="100"></canvas>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="risk-return-chart"></canvas>
+                </div>
               </div>
             </div>
             
@@ -364,7 +372,9 @@ app.get('/', (c) => {
               <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                 Strategy Ranking Evolution
               </h3>
-              <canvas id="ranking-chart" height="80"></canvas>
+              <div style="height: 300px; position: relative;">
+                <canvas id="ranking-chart"></canvas>
+              </div>
             </div>
           </div>
 
@@ -464,7 +474,9 @@ app.get('/', (c) => {
                 <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                   🎯 ML + CNN Prediction Accuracy
                 </h3>
-                <canvas id="prediction-accuracy-chart" height="100"></canvas>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="prediction-accuracy-chart"></canvas>
+                </div>
               </div>
               
               <div class="card">
@@ -501,14 +513,18 @@ app.get('/', (c) => {
                 <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                   Strategy Correlation Heatmap
                 </h3>
-                <canvas id="correlation-heatmap" height="100"></canvas>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="correlation-heatmap"></canvas>
+                </div>
               </div>
               
               <div class="card">
                 <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">
                   Drawdown Comparison
                 </h3>
-                <canvas id="drawdown-chart" height="100"></canvas>
+                <div style="height: 300px; position: relative;">
+                  <canvas id="drawdown-chart"></canvas>
+                </div>
               </div>
             </div>
             
