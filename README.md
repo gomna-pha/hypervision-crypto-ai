@@ -329,31 +329,45 @@ The platform features **6 advanced strategy modules** with live signals and inte
 ### Dashboard Sections
 
 #### 1. **Agent Dashboard** (6 Cards: 5 Agents + Composite Signal)
-- Economic Agent - Macro indicators
-- Sentiment Agent - Market psychology
-- Cross-Exchange Agent - Real-time spreads
-- On-Chain Agent - Blockchain metrics
-- CNN Pattern Agent - Technical patterns
-- **Composite Signal** - Final trading decision
+- Economic Agent - Macro indicators (dynamic Fed rate, CPI, GDP, PMI)
+- Sentiment Agent - Market psychology (Fear & Greed, Google Trends, VIX)
+- Cross-Exchange Agent - Real-time spreads (dynamic pricing and liquidity)
+- On-Chain Agent - Blockchain metrics (MVRV, SOPR, exchange flows)
+- CNN Pattern Agent - Technical patterns (8 patterns with confidence)
+- **Composite Signal** - Ensemble decision (weighted from all 5 agents)
 
-#### 2. **Live Opportunities Table**
-- Real-time arbitrage opportunities
+#### 2. **Autonomous Trading Agent** (NEW - AI-Powered Execution)
+- START/STOP toggle control (one-click activation)
+- Real-time status badge (IDLE / ACTIVE)
+- Risk management configuration display
+- Live performance metrics:
+  * Opportunities Analyzed
+  * Trades Executed
+  * Win Rate (color-coded)
+  * Daily Trade Counter
+  * Total Profit/Loss
+  * Net P&L
+- Enabled strategy badges
+- ML ensemble decision engine with Kelly Criterion position sizing
+
+#### 3. **Live Opportunities Table** (20 Opportunities)
+- Real-time arbitrage opportunities across 13 strategy types
 - Strategy type, exchanges, spread, net profit
 - ML confidence + CNN confidence scores
-- Execute/Blocked status
+- Interactive Execute buttons with real-time status tracking
+- Portfolio balance and active strategies update on execution
 
-#### 3. **Performance Overview**
-- Equity curve comparison (with vs without CNN)
-- Key metrics dashboard
-- Ensemble signal attribution chart
+#### 4. **Performance Overview**
+- Multi-strategy equity curve (3 lines: Multi-Strategy +23.7%, Single +14.8%, Benchmark +8.5%)
+- Key metrics dashboard (Total Return, Sharpe Ratio, Win Rate, Max Drawdown)
+- Ensemble signal attribution chart (weighted contributions from all agents)
 
 ### Navigation Tabs
 
-1. **Dashboard**: Live agent monitoring + opportunities
-2. **Opportunities**: Detailed arbitrage opportunity list
-3. **Strategies**: Multi-strategy performance comparison
-4. **Backtest**: Historical validation with A/B testing
-5. **Analytics**: Deep performance insights + pattern timeline
+1. **Dashboard**: Live agent monitoring + autonomous trading agent + opportunities table
+2. **Strategies**: Multi-strategy performance comparison + advanced strategy cards
+3. **Backtest**: Historical validation with A/B testing + CNN enhancement comparison
+4. **Analytics**: Deep performance insights + pattern timeline + sentiment heatmap
 
 ---
 

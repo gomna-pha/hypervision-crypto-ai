@@ -503,9 +503,6 @@ app.get('/', (c) => {
             <div class="nav-tab active" onclick="switchTab('dashboard')">
               <i class="fas fa-chart-line mr-2"></i>Dashboard
             </div>
-            <div class="nav-tab" onclick="switchTab('opportunities')">
-              <i class="fas fa-bolt mr-2"></i>Opportunities
-            </div>
             <div class="nav-tab" onclick="switchTab('strategies')">
               <i class="fas fa-chess mr-2"></i>Strategies
             </div>
@@ -799,28 +796,6 @@ app.get('/', (c) => {
               <div class="mt-3 pt-3 border-t text-xs" style="border-color: var(--cream-300); color: var(--warm-gray)">
                 <strong>Note:</strong> Analysis is generated dynamically based on real-time market data. Auto-refreshes every 30 seconds.
               </div>
-            </div>
-          </div>
-
-          <!-- Opportunities Tab -->
-          <div id="opportunities-tab" class="tab-content hidden">
-            <div class="card mb-6">
-              <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold" style="color: var(--navy)">Live Arbitrage Opportunities</h2>
-                <div class="flex items-center gap-4">
-                  <select class="px-4 py-2 border-2 rounded-lg" style="border-color: var(--cream-300)">
-                    <option>All Strategies</option>
-                    <option>Spatial Arbitrage</option>
-                    <option>Triangular Arbitrage</option>
-                    <option>Statistical Arbitrage</option>
-                    <option>Funding Rate</option>
-                  </select>
-                  <button class="btn-primary">
-                    <i class="fas fa-filter mr-2"></i>Filters
-                  </button>
-                </div>
-              </div>
-              <div id="all-opportunities-table"></div>
             </div>
           </div>
 
