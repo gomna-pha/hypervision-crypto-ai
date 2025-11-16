@@ -1783,10 +1783,11 @@ function generateOpportunities() {
   const now = Date.now()
   
   return [
-    // Core Spatial Arbitrage
+    // Core Spatial Arbitrage - Multiple Assets
     {
       id: 1,
       timestamp: new Date(now - 45000).toISOString(),
+      asset: 'BTC-USD',
       strategy: 'Spatial',
       buyExchange: 'Kraken',
       sellExchange: 'Coinbase',
@@ -1799,6 +1800,7 @@ function generateOpportunities() {
     {
       id: 2,
       timestamp: new Date(now - 90000).toISOString(),
+      asset: 'ETH-USD',
       strategy: 'Spatial',
       buyExchange: 'Binance',
       sellExchange: 'Kraken',
@@ -1809,10 +1811,11 @@ function generateOpportunities() {
       constraintsPassed: true
     },
     
-    // Triangular Arbitrage
+    // Triangular Arbitrage - Major Pairs
     {
       id: 3,
       timestamp: new Date(now - 60000).toISOString(),
+      asset: 'BTC-ETH-USDT',
       strategy: 'Triangular',
       buyExchange: 'BTC-ETH-USDT',
       sellExchange: 'Binance',
@@ -1825,6 +1828,7 @@ function generateOpportunities() {
     {
       id: 4,
       timestamp: new Date(now - 135000).toISOString(),
+      asset: 'ETH-BTC-USDC',
       strategy: 'Triangular',
       buyExchange: 'ETH-BTC-USDC',
       sellExchange: 'Coinbase',
@@ -1835,10 +1839,11 @@ function generateOpportunities() {
       constraintsPassed: true
     },
     
-    // Statistical Arbitrage (Pair Trading)
+    // Statistical Arbitrage (Pair Trading) - Expanded Assets
     {
       id: 5,
       timestamp: new Date(now - 120000).toISOString(),
+      asset: 'BTC/ETH',
       strategy: 'Statistical',
       buyExchange: 'BTC/ETH Pair',
       sellExchange: 'Mean Reversion',
@@ -1851,6 +1856,7 @@ function generateOpportunities() {
     {
       id: 6,
       timestamp: new Date(now - 180000).toISOString(),
+      asset: 'SOL/AVAX',
       strategy: 'Statistical',
       buyExchange: 'SOL/AVAX Pair',
       sellExchange: 'Cointegration',
@@ -1865,6 +1871,7 @@ function generateOpportunities() {
     {
       id: 7,
       timestamp: new Date(now - 75000).toISOString(),
+      asset: 'BTC-USD',
       strategy: 'Funding Rate',
       buyExchange: 'Binance Spot',
       sellExchange: 'Binance Perp',
@@ -1877,6 +1884,7 @@ function generateOpportunities() {
     {
       id: 8,
       timestamp: new Date(now - 150000).toISOString(),
+      asset: 'ETH-USD',
       strategy: 'Funding Rate',
       buyExchange: 'OKX Spot',
       sellExchange: 'OKX Futures',
@@ -1891,6 +1899,7 @@ function generateOpportunities() {
     {
       id: 9,
       timestamp: new Date(now - 105000).toISOString(),
+      asset: 'SOL-USD',
       strategy: 'Multi-Factor Alpha',
       buyExchange: 'Fama-French 5F',
       sellExchange: 'Alpha Capture',
@@ -1903,6 +1912,7 @@ function generateOpportunities() {
     {
       id: 10,
       timestamp: new Date(now - 195000).toISOString(),
+      asset: 'ADA-USD',
       strategy: 'Multi-Factor Alpha',
       buyExchange: 'Carhart 4F + Mom',
       sellExchange: 'Factor Portfolio',
@@ -1917,6 +1927,7 @@ function generateOpportunities() {
     {
       id: 11,
       timestamp: new Date(now - 165000).toISOString(),
+      asset: 'AVAX-USD',
       strategy: 'ML Ensemble',
       buyExchange: 'RF+XGB+SVM',
       sellExchange: 'Ensemble Signal',
@@ -1929,6 +1940,7 @@ function generateOpportunities() {
     {
       id: 12,
       timestamp: new Date(now - 210000).toISOString(),
+      asset: 'MATIC-USD',
       strategy: 'ML Ensemble',
       buyExchange: '5-Model Consensus',
       sellExchange: 'High Conviction',
@@ -1943,6 +1955,7 @@ function generateOpportunities() {
     {
       id: 13,
       timestamp: new Date(now - 30000).toISOString(),
+      asset: 'DOT-USD',
       strategy: 'Deep Learning',
       buyExchange: 'LSTM Forecast',
       sellExchange: 'Transformer',
@@ -1955,6 +1968,7 @@ function generateOpportunities() {
     {
       id: 14,
       timestamp: new Date(now - 225000).toISOString(),
+      asset: 'LINK-USD',
       strategy: 'Deep Learning',
       buyExchange: 'GAN Scenario',
       sellExchange: 'CNN Pattern',
@@ -1969,6 +1983,7 @@ function generateOpportunities() {
     {
       id: 15,
       timestamp: new Date(now - 195000).toISOString(),
+      asset: 'UNI-USD',
       strategy: 'Volatility',
       buyExchange: 'Options Delta',
       sellExchange: 'Gamma Hedge',
@@ -1983,6 +1998,7 @@ function generateOpportunities() {
     {
       id: 16,
       timestamp: new Date(now - 270000).toISOString(),
+      asset: 'BTC/Gold',
       strategy: 'Cross-Asset',
       buyExchange: 'BTC/Gold Ratio',
       sellExchange: 'Macro Hedge',
@@ -1997,6 +2013,7 @@ function generateOpportunities() {
     {
       id: 17,
       timestamp: new Date(now - 15000).toISOString(),
+      asset: 'ATOM-USD',
       strategy: 'HFT Micro',
       buyExchange: 'Latency Edge',
       sellExchange: 'Order Flow',
@@ -2011,6 +2028,7 @@ function generateOpportunities() {
     {
       id: 18,
       timestamp: new Date(now - 240000).toISOString(),
+      asset: 'XRP-USD',
       strategy: 'Market Making',
       buyExchange: 'Bid-Ask Spread',
       sellExchange: 'Inventory Risk',
@@ -2025,6 +2043,7 @@ function generateOpportunities() {
     {
       id: 19,
       timestamp: new Date(now - 285000).toISOString(),
+      asset: 'LTC-USD',
       strategy: 'Seasonal',
       buyExchange: 'Monthly Pattern',
       sellExchange: 'Calendar Effect',
@@ -2039,6 +2058,7 @@ function generateOpportunities() {
     {
       id: 20,
       timestamp: new Date(now - 330000).toISOString(),
+      asset: 'APT-USD',
       strategy: 'Sentiment',
       buyExchange: 'Fear & Greed',
       sellExchange: 'Contrarian',
@@ -2046,6 +2066,219 @@ function generateOpportunities() {
       netProfit: 0.25,
       mlConfidence: 72,
       cnnConfidence: 88,
+      constraintsPassed: true
+    },
+    
+    // Additional Spatial Arbitrage - Expanded Assets
+    {
+      id: 21,
+      timestamp: new Date(now - 50000).toISOString(),
+      asset: 'ARB-USD',
+      strategy: 'Spatial',
+      buyExchange: 'Bybit',
+      sellExchange: 'OKX',
+      spread: 0.27,
+      netProfit: 0.14,
+      mlConfidence: 76,
+      cnnConfidence: 84,
+      constraintsPassed: true
+    },
+    {
+      id: 22,
+      timestamp: new Date(now - 95000).toISOString(),
+      asset: 'OP-USD',
+      strategy: 'Spatial',
+      buyExchange: 'Gate.io',
+      sellExchange: 'Binance',
+      spread: 0.24,
+      netProfit: 0.13,
+      mlConfidence: 79,
+      cnnConfidence: 86,
+      constraintsPassed: true
+    },
+    {
+      id: 23,
+      timestamp: new Date(now - 110000).toISOString(),
+      asset: 'NEAR-USD',
+      strategy: 'Spatial',
+      buyExchange: 'Kraken',
+      sellExchange: 'Coinbase',
+      spread: 0.30,
+      netProfit: 0.17,
+      mlConfidence: 74,
+      cnnConfidence: 81,
+      constraintsPassed: true
+    },
+    
+    // More Triangular Arbitrage
+    {
+      id: 24,
+      timestamp: new Date(now - 70000).toISOString(),
+      asset: 'SOL-USDT-USD',
+      strategy: 'Triangular',
+      buyExchange: 'SOL-USDT-USD',
+      sellExchange: 'Binance',
+      spread: 0.20,
+      netProfit: 0.11,
+      mlConfidence: 83,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    {
+      id: 25,
+      timestamp: new Date(now - 145000).toISOString(),
+      asset: 'MATIC-ETH-USDC',
+      strategy: 'Triangular',
+      buyExchange: 'MATIC-ETH-USDC',
+      sellExchange: 'Coinbase',
+      spread: 0.18,
+      netProfit: 0.08,
+      mlConfidence: 78,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // More Statistical Arbitrage Pairs
+    {
+      id: 26,
+      timestamp: new Date(now - 130000).toISOString(),
+      asset: 'ETH/SOL',
+      strategy: 'Statistical',
+      buyExchange: 'ETH/SOL Pair',
+      sellExchange: 'Mean Reversion',
+      spread: 0.40,
+      netProfit: 0.26,
+      mlConfidence: 70,
+      cnnConfidence: 83,
+      constraintsPassed: true
+    },
+    {
+      id: 27,
+      timestamp: new Date(now - 190000).toISOString(),
+      asset: 'BTC/AVAX',
+      strategy: 'Statistical',
+      buyExchange: 'BTC/AVAX Pair',
+      sellExchange: 'Cointegration',
+      spread: 0.36,
+      netProfit: 0.22,
+      mlConfidence: 67,
+      cnnConfidence: 80,
+      constraintsPassed: true
+    },
+    
+    // More Funding Rate Arbitrage
+    {
+      id: 28,
+      timestamp: new Date(now - 80000).toISOString(),
+      asset: 'SOL-USD',
+      strategy: 'Funding Rate',
+      buyExchange: 'Bybit Spot',
+      sellExchange: 'Bybit Perp',
+      spread: 0.23,
+      netProfit: 0.18,
+      mlConfidence: 80,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    {
+      id: 29,
+      timestamp: new Date(now - 155000).toISOString(),
+      asset: 'AVAX-USD',
+      strategy: 'Funding Rate',
+      buyExchange: 'Binance Spot',
+      sellExchange: 'Binance Perp',
+      spread: 0.20,
+      netProfit: 0.15,
+      mlConfidence: 76,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // More Deep Learning Strategy
+    {
+      id: 30,
+      timestamp: new Date(now - 35000).toISOString(),
+      asset: 'INJ-USD',
+      strategy: 'Deep Learning',
+      buyExchange: 'LSTM Forecast',
+      sellExchange: 'Transformer',
+      spread: 0.43,
+      netProfit: 0.29,
+      mlConfidence: 85,
+      cnnConfidence: 92,
+      constraintsPassed: true
+    },
+    {
+      id: 31,
+      timestamp: new Date(now - 235000).toISOString(),
+      asset: 'SUI-USD',
+      strategy: 'Deep Learning',
+      buyExchange: 'GAN Scenario',
+      sellExchange: 'CNN Pattern',
+      spread: 0.39,
+      netProfit: 0.25,
+      mlConfidence: 83,
+      cnnConfidence: 89,
+      constraintsPassed: true
+    },
+    
+    // More Volatility Arbitrage
+    {
+      id: 32,
+      timestamp: new Date(now - 200000).toISOString(),
+      asset: 'TIA-USD',
+      strategy: 'Volatility',
+      buyExchange: 'Options Delta',
+      sellExchange: 'Gamma Hedge',
+      spread: 0.50,
+      netProfit: 0.34,
+      mlConfidence: 74,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // More HFT Micro Arbitrage
+    {
+      id: 33,
+      timestamp: new Date(now - 20000).toISOString(),
+      asset: 'FTM-USD',
+      strategy: 'HFT Micro',
+      buyExchange: 'Latency Edge',
+      sellExchange: 'Order Flow',
+      spread: 0.14,
+      netProfit: 0.07,
+      mlConfidence: 93,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // More Market Making
+    {
+      id: 34,
+      timestamp: new Date(now - 245000).toISOString(),
+      asset: 'RENDER-USD',
+      strategy: 'Market Making',
+      buyExchange: 'Bid-Ask Spread',
+      sellExchange: 'Inventory Risk',
+      spread: 0.25,
+      netProfit: 0.13,
+      mlConfidence: 79,
+      cnnConfidence: null,
+      constraintsPassed: true
+    },
+    
+    // More Sentiment Trading
+    {
+      id: 35,
+      timestamp: new Date(now - 335000).toISOString(),
+      asset: 'WLD-USD',
+      strategy: 'Sentiment',
+      buyExchange: 'Fear & Greed',
+      sellExchange: 'Contrarian',
+      spread: 0.37,
+      netProfit: 0.23,
+      mlConfidence: 71,
+      cnnConfidence: 87,
       constraintsPassed: true
     }
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) // Sort by most recent first

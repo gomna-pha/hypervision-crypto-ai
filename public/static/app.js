@@ -517,6 +517,7 @@ function updateOpportunitiesTable(opportunities) {
       <thead style="background: ${COLORS.cream100}">
         <tr>
           <th class="p-3 text-left">Time</th>
+          <th class="p-3 text-left">Asset</th>
           <th class="p-3 text-left">Strategy</th>
           <th class="p-3 text-left">Exchanges</th>
           <th class="p-3 text-right">Spread</th>
@@ -534,6 +535,11 @@ function updateOpportunitiesTable(opportunities) {
           return `
           <tr id="opp-row-${opp.id}" class="border-b hover:bg-opacity-50" style="border-color: ${COLORS.cream300}; cursor: pointer;" onmouseover="this.style.background='${COLORS.cream100}'" onmouseout="this.style.background='white'">
             <td class="p-3">${formatTime(opp.timestamp)}</td>
+            <td class="p-3">
+              <span class="px-2 py-1 rounded text-xs font-bold" style="background: ${COLORS.burnt}; color: white">
+                ${opp.asset || 'BTC-USD'}
+              </span>
+            </td>
             <td class="p-3">
               <span class="px-2 py-1 rounded text-xs font-semibold" style="background: ${COLORS.navy}; color: ${COLORS.cream}">
                 ${opp.strategy}
