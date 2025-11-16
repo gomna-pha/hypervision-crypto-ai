@@ -184,6 +184,85 @@ Be concise, professional, and data-driven. Use financial terminology. This is re
   }
 })
 
+// Execute Arbitrage Opportunity API
+app.post('/api/execute/:id', async (c) => {
+  const oppId = parseInt(c.req.param('id'))
+  const startTime = Date.now()
+  
+  try {
+    // Simulate execution time (real implementation would call exchange APIs)
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    
+    // Get opportunity details
+    const opportunities = generateOpportunities()
+    const opportunity = opportunities.find(o => o.id === oppId)
+    
+    if (!opportunity) {
+      return c.json({
+        success: false,
+        error: 'Opportunity not found'
+      }, 404)
+    }
+    
+    // Calculate actual profit (with slippage simulation)
+    const slippage = 0.05 + Math.random() * 0.10 // 0.05-0.15% slippage
+    const actualNetProfit = Math.max(0.05, opportunity.netProfit - slippage)
+    const positionSize = 10000 // $10k per trade
+    const profit = (positionSize * actualNetProfit / 100)
+    
+    // Calculate execution time
+    const executionTime = Date.now() - startTime
+    
+    // Log execution (in production, this would go to database)
+    console.log(`[EXECUTION] Opportunity #${oppId} executed successfully`)
+    console.log(`  Strategy: ${opportunity.strategy}`)
+    console.log(`  Route: ${opportunity.buyExchange} → ${opportunity.sellExchange}`)
+    console.log(`  Gross Spread: ${opportunity.spread}%`)
+    console.log(`  Net Profit: ${actualNetProfit.toFixed(3)}%`)
+    console.log(`  Position Size: $${positionSize}`)
+    console.log(`  Realized Profit: $${profit.toFixed(2)}`)
+    console.log(`  Execution Time: ${executionTime}ms`)
+    console.log(`  ML Confidence: ${opportunity.mlConfidence}%`)
+    console.log(`  CNN Confidence: ${opportunity.cnnConfidence || 'N/A'}%`)
+    
+    return c.json({
+      success: true,
+      opportunityId: oppId,
+      strategy: opportunity.strategy,
+      route: `${opportunity.buyExchange} → ${opportunity.sellExchange}`,
+      grossSpread: opportunity.spread,
+      slippage: slippage.toFixed(3),
+      netProfit: actualNetProfit.toFixed(3),
+      positionSize: positionSize,
+      profit: profit.toFixed(2),
+      executionTime: executionTime,
+      timestamp: new Date().toISOString(),
+      details: {
+        buyExchange: opportunity.buyExchange,
+        sellExchange: opportunity.sellExchange,
+        buyPrice: 94000 - (Math.random() * 100),
+        sellPrice: 94000 + (Math.random() * 100),
+        volume: (positionSize / 94000).toFixed(6) + ' BTC',
+        fees: {
+          buy: (positionSize * 0.001).toFixed(2),
+          sell: (positionSize * 0.001).toFixed(2),
+          total: (positionSize * 0.002).toFixed(2)
+        }
+      }
+    })
+    
+  } catch (error) {
+    console.error('[EXECUTION ERROR]', error)
+    
+    return c.json({
+      success: false,
+      error: error.message || 'Execution failed',
+      opportunityId: oppId,
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+})
+
 // Main dashboard route
 app.get('/', (c) => {
   return c.html(`

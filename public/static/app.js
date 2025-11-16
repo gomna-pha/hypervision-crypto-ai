@@ -463,6 +463,9 @@ function updateCompositeSignal(data) {
 }
 
 // Opportunities Table
+// Track execution states
+const executionStates = {};
+
 function updateOpportunitiesTable(opportunities) {
   const tableHTML = `
     <table class="w-full text-sm">
@@ -475,12 +478,16 @@ function updateOpportunitiesTable(opportunities) {
           <th class="p-3 text-right">Net Profit</th>
           <th class="p-3 text-right">ML %</th>
           <th class="p-3 text-right">CNN %</th>
+          <th class="p-3 text-center">Status</th>
           <th class="p-3 text-center">Action</th>
         </tr>
       </thead>
       <tbody>
-        ${opportunities.map(opp => `
-          <tr class="border-b hover:bg-opacity-50" style="border-color: ${COLORS.cream300}; cursor: pointer;" onmouseover="this.style.background='${COLORS.cream100}'" onmouseout="this.style.background='white'">
+        ${opportunities.map(opp => {
+          const state = executionStates[opp.id] || { status: 'ready', progress: 0 };
+          
+          return `
+          <tr id="opp-row-${opp.id}" class="border-b hover:bg-opacity-50" style="border-color: ${COLORS.cream300}; cursor: pointer;" onmouseover="this.style.background='${COLORS.cream100}'" onmouseout="this.style.background='white'">
             <td class="p-3">${formatTime(opp.timestamp)}</td>
             <td class="p-3">
               <span class="px-2 py-1 rounded text-xs font-semibold" style="background: ${COLORS.navy}; color: ${COLORS.cream}">
@@ -489,22 +496,21 @@ function updateOpportunitiesTable(opportunities) {
             </td>
             <td class="p-3 text-xs">${opp.buyExchange} → ${opp.sellExchange}</td>
             <td class="p-3 text-right font-semibold">${opp.spread.toFixed(2)}%</td>
-            <td class="p-3 text-right font-bold" style="color: ${COLORS.forest}">${opp.netProfit.toFixed(2)}%</td>
+            <td class="p-3 text-right font-bold" style="color: ${COLORS.forest}">+${opp.netProfit.toFixed(2)}%</td>
             <td class="p-3 text-right">${opp.mlConfidence}%</td>
             <td class="p-3 text-right">${opp.cnnConfidence ? opp.cnnConfidence + '%' : 'N/A'}</td>
             <td class="p-3 text-center">
-              ${opp.constraintsPassed ? `
-                <button class="px-4 py-2 rounded-lg text-xs font-semibold text-white" style="background: ${COLORS.navy}" onmouseover="this.style.background='${COLORS.navy}dd'" onmouseout="this.style.background='${COLORS.navy}'">
-                  Execute
-                </button>
-              ` : `
-                <button class="px-4 py-2 rounded-lg text-xs cursor-not-allowed" style="background: ${COLORS.cream300}; color: ${COLORS.warmGray}">
-                  Blocked
-                </button>
-              `}
+              <div id="status-${opp.id}">
+                ${getStatusBadge(state)}
+              </div>
+            </td>
+            <td class="p-3 text-center">
+              <div id="action-${opp.id}">
+                ${getActionButton(opp, state)}
+              </div>
             </td>
           </tr>
-        `).join('')}
+        `}).join('')}
       </tbody>
     </table>
   `;
@@ -514,6 +520,72 @@ function updateOpportunitiesTable(opportunities) {
   if (document.getElementById('all-opportunities-table')) {
     document.getElementById('all-opportunities-table').innerHTML = tableHTML;
   }
+}
+
+function getStatusBadge(state) {
+  const statusConfig = {
+    ready: { icon: 'circle', color: COLORS.warmGray, text: 'Ready' },
+    executing: { icon: 'spinner fa-spin', color: COLORS.burnt, text: 'Executing' },
+    buying: { icon: 'arrow-down', color: COLORS.burnt, text: 'Buying' },
+    selling: { icon: 'arrow-up', color: COLORS.burnt, text: 'Selling' },
+    completed: { icon: 'check-circle', color: COLORS.forest, text: 'Completed' },
+    failed: { icon: 'times-circle', color: COLORS.deepRed, text: 'Failed' }
+  };
+  
+  const config = statusConfig[state.status] || statusConfig.ready;
+  
+  return `
+    <div class="flex items-center justify-center gap-2">
+      <i class="fas fa-${config.icon}" style="color: ${config.color}"></i>
+      <span class="text-xs font-semibold" style="color: ${config.color}">${config.text}</span>
+    </div>
+    ${state.status === 'executing' || state.status === 'buying' || state.status === 'selling' ? `
+      <div class="mt-1 h-1 bg-gray-200 rounded-full overflow-hidden">
+        <div class="h-full transition-all duration-300" style="background: ${COLORS.burnt}; width: ${state.progress}%"></div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function getActionButton(opp, state) {
+  if (!opp.constraintsPassed) {
+    return `
+      <button class="px-4 py-2 rounded-lg text-xs font-semibold cursor-not-allowed" style="background: ${COLORS.cream300}; color: ${COLORS.warmGray}">
+        <i class="fas fa-ban mr-1"></i>Blocked
+      </button>
+    `;
+  }
+  
+  if (state.status === 'completed') {
+    return `
+      <div class="text-xs" style="color: ${COLORS.forest}">
+        <div class="font-bold">✓ Profit: $${state.profit || 0}</div>
+        <div class="text-xs opacity-75">${state.executionTime || 0}ms</div>
+      </div>
+    `;
+  }
+  
+  if (state.status === 'failed') {
+    return `
+      <button onclick="executeArbitrage(${opp.id})" class="px-4 py-2 rounded-lg text-xs font-semibold" style="background: ${COLORS.burnt}; color: white">
+        <i class="fas fa-redo mr-1"></i>Retry
+      </button>
+    `;
+  }
+  
+  if (state.status === 'executing' || state.status === 'buying' || state.status === 'selling') {
+    return `
+      <button class="px-4 py-2 rounded-lg text-xs font-semibold cursor-wait" style="background: ${COLORS.warmGray}; color: white">
+        <i class="fas fa-spinner fa-spin mr-1"></i>Executing...
+      </button>
+    `;
+  }
+  
+  return `
+    <button onclick="executeArbitrage(${opp.id})" class="px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:scale-105" style="background: ${COLORS.forest}">
+      <i class="fas fa-bolt mr-1"></i>Execute Now
+    </button>
+  `;
 }
 
 // Initialize Equity Curve Chart
@@ -2033,6 +2105,161 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', startLLMUpdates);
 } else {
   startLLMUpdates();
+}
+
+// Execute Arbitrage Opportunity
+window.executeArbitrage = async function(oppId) {
+  console.log(`Executing arbitrage opportunity #${oppId}`);
+  
+  // Update state to executing
+  executionStates[oppId] = { status: 'executing', progress: 0 };
+  updateExecutionUI(oppId);
+  
+  try {
+    // Simulate execution stages
+    await simulateExecution(oppId);
+    
+    // Call backend API for actual execution
+    const response = await fetch(`/api/execute/${oppId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        timestamp: new Date().toISOString()
+      })
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Execution failed: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    
+    // Update state to completed
+    executionStates[oppId] = {
+      status: 'completed',
+      progress: 100,
+      profit: result.profit,
+      executionTime: result.executionTime
+    };
+    
+    updateExecutionUI(oppId);
+    
+    // Show success notification
+    showExecutionNotification('success', `✓ Arbitrage executed successfully! Profit: $${result.profit}`, oppId);
+    
+    // Update portfolio balance
+    updatePortfolioBalance(result.profit);
+    
+  } catch (error) {
+    console.error('Execution error:', error);
+    
+    // Update state to failed
+    executionStates[oppId] = { status: 'failed', progress: 0 };
+    updateExecutionUI(oppId);
+    
+    // Show error notification
+    showExecutionNotification('error', `✗ Execution failed: ${error.message}`, oppId);
+  }
+}
+
+async function simulateExecution(oppId) {
+  // Stage 1: Buying
+  executionStates[oppId] = { status: 'buying', progress: 10 };
+  updateExecutionUI(oppId);
+  await sleep(500);
+  
+  executionStates[oppId] = { status: 'buying', progress: 30 };
+  updateExecutionUI(oppId);
+  await sleep(500);
+  
+  executionStates[oppId] = { status: 'buying', progress: 50 };
+  updateExecutionUI(oppId);
+  await sleep(300);
+  
+  // Stage 2: Selling
+  executionStates[oppId] = { status: 'selling', progress: 60 };
+  updateExecutionUI(oppId);
+  await sleep(500);
+  
+  executionStates[oppId] = { status: 'selling', progress: 80 };
+  updateExecutionUI(oppId);
+  await sleep(500);
+  
+  executionStates[oppId] = { status: 'selling', progress: 95 };
+  updateExecutionUI(oppId);
+  await sleep(300);
+}
+
+function updateExecutionUI(oppId) {
+  const statusDiv = document.getElementById(`status-${oppId}`);
+  const actionDiv = document.getElementById(`action-${oppId}`);
+  
+  if (!statusDiv || !actionDiv) return;
+  
+  const state = executionStates[oppId];
+  
+  // Find the opportunity data
+  fetch('/api/opportunities')
+    .then(res => res.json())
+    .then(opportunities => {
+      const opp = opportunities.find(o => o.id === oppId);
+      if (opp) {
+        statusDiv.innerHTML = getStatusBadge(state);
+        actionDiv.innerHTML = getActionButton(opp, state);
+      }
+    });
+}
+
+function showExecutionNotification(type, message, oppId) {
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-20 right-4 px-6 py-4 rounded-lg shadow-2xl z-50 animate-slide-in max-w-md';
+  notification.style.background = type === 'success' ? COLORS.forest : COLORS.deepRed;
+  notification.style.color = 'white';
+  notification.style.border = `3px solid ${type === 'success' ? COLORS.forest : COLORS.deepRed}`;
+  
+  notification.innerHTML = `
+    <div class="flex items-start gap-3">
+      <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} text-2xl"></i>
+      <div class="flex-1">
+        <div class="font-bold mb-1">${type === 'success' ? 'Execution Successful' : 'Execution Failed'}</div>
+        <div class="text-sm opacity-90">${message}</div>
+        <div class="text-xs opacity-75 mt-2">Opportunity #${oppId}</div>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" class="text-white opacity-75 hover:opacity-100">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto-remove after 5 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => notification.remove(), 300);
+  }, 5000);
+}
+
+function updatePortfolioBalance(profit) {
+  const balanceEl = document.querySelector('[style*="Portfolio Balance"]')?.nextElementSibling;
+  if (balanceEl) {
+    const currentBalance = parseFloat(balanceEl.textContent.replace('$', '').replace(',', ''));
+    const newBalance = currentBalance + profit;
+    balanceEl.textContent = '$' + newBalance.toLocaleString();
+    
+    // Animate the change
+    balanceEl.style.color = COLORS.forest;
+    setTimeout(() => {
+      balanceEl.style.color = COLORS.navy;
+    }, 2000);
+  }
+}
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 // Cleanup on page unload
