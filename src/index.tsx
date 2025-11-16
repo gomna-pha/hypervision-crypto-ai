@@ -1455,15 +1455,40 @@ ${recommendation}
 
 // Data generation functions
 function generateEconomicData() {
+  // Randomize economic indicators within realistic ranges
+  const fedRate = 4.00 + Math.random() * 0.50  // 4.00-4.50%
+  const cpi = 2.8 + Math.random() * 0.8        // 2.8-3.6%
+  const gdp = 2.5 + Math.random() * 1.2        // 2.5-3.7%
+  const pmi = 47.0 + Math.random() * 4.0       // 47.0-51.0
+  const unemployment = 3.5 + Math.random() * 0.6  // 3.5-4.1%
+  
+  // Calculate score based on economic conditions (lower rates/inflation = better for crypto)
+  const rateScore = (5.0 - fedRate) * 10        // Lower rates = higher score
+  const inflationScore = (4.0 - cpi) * 8        // Lower inflation = higher score
+  const growthScore = (gdp - 2.0) * 12          // Higher GDP = higher score
+  const jobScore = (4.5 - unemployment) * 5     // Lower unemployment = higher score
+  
+  const score = Math.round(
+    Math.max(0, Math.min(100, 
+      rateScore * 0.35 + 
+      inflationScore * 0.30 + 
+      growthScore * 0.25 + 
+      jobScore * 0.10
+    ))
+  )
+  
+  const policyStance = fedRate < 4.15 ? 'DOVISH' : fedRate > 4.35 ? 'HAWKISH' : 'NEUTRAL'
+  const cryptoOutlook = score > 55 ? 'BULLISH' : score < 45 ? 'BEARISH' : 'NEUTRAL'
+  
   return {
-    score: Math.round(45 + Math.random() * 20),
-    fedRate: 4.09,
-    cpi: 3.2,
-    gdp: 3.1,
-    pmi: 48.5,
-    unemployment: 3.7,
-    policyStance: 'NEUTRAL',
-    cryptoOutlook: 'NEUTRAL',
+    score,
+    fedRate: Number(fedRate.toFixed(2)),
+    cpi: Number(cpi.toFixed(1)),
+    gdp: Number(gdp.toFixed(1)),
+    pmi: Number(pmi.toFixed(1)),
+    unemployment: Number(unemployment.toFixed(1)),
+    policyStance,
+    cryptoOutlook,
     lastUpdate: new Date().toISOString()
   }
 }
@@ -1496,50 +1521,97 @@ function generateSentimentData() {
 function generateCrossExchangeData() {
   const basePrice = 94000 + (Math.random() - 0.5) * 1000
   const spread = 0.15 + Math.random() * 0.25
+  const liquidityScore = Math.round(70 + Math.random() * 25)
+  
+  // Calculate score based on spread tightness and liquidity
+  // Tighter spreads and higher liquidity = better arbitrage opportunities
+  const spreadScore = Math.max(0, 100 - (spread * 200))  // Lower spread = higher score
+  const liquidityWeight = liquidityScore / 100
+  const score = Math.round(spreadScore * 0.60 + liquidityScore * 0.40)
+  
+  const liquidityRating = liquidityScore > 85 ? 'excellent' : 
+                         liquidityScore > 70 ? 'good' : 'moderate'
+  const marketEfficiency = spread < 0.25 ? 'Highly Efficient' : 
+                          spread < 0.35 ? 'Efficient' : 'Moderate'
   
   return {
+    score,
     vwap: Math.round(basePrice),
     bestBid: Math.round(basePrice - 50),
     bestAsk: Math.round(basePrice + 150),
     spread: spread.toFixed(3),
     buyExchange: 'Kraken',
     sellExchange: 'Coinbase',
-    liquidityScore: Math.round(70 + Math.random() * 25),
-    liquidityRating: 'good',
-    marketEfficiency: 'Efficient',
+    liquidityScore,
+    liquidityRating,
+    marketEfficiency,
     lastUpdate: new Date().toISOString()
   }
 }
 
 function generateOnChainData() {
+  // Randomize on-chain metrics within realistic ranges
+  const exchangeNetflow = -8000 + Math.random() * 6000  // -8000 to -2000 (negative = bullish)
+  const sopr = 0.92 + Math.random() * 0.12               // 0.92 to 1.04
+  const mvrv = 1.5 + Math.random() * 0.8                 // 1.5 to 2.3
+  const activeAddresses = 850000 + Math.random() * 150000  // 850k to 1M
+  
+  // Calculate score from on-chain indicators
+  const netflowScore = Math.min(100, Math.max(0, (exchangeNetflow * -0.01) + 30))  // Negative flow = bullish
+  const soprScore = sopr > 1.0 ? 75 : 45  // SOPR > 1 = profitable sells = bullish
+  const mvrvScore = Math.min(100, (mvrv - 1.0) * 40)  // Higher MVRV = more bullish (but not overheated)
+  const addressScore = ((activeAddresses - 850000) / 1500)  // More addresses = more bullish
+  
+  const score = Math.round(
+    netflowScore * 0.40 + 
+    soprScore * 0.25 + 
+    mvrvScore * 0.20 + 
+    addressScore * 0.15
+  )
+  
+  const whaleActivity = Math.abs(exchangeNetflow) > 6000 ? 'HIGH' : 
+                        Math.abs(exchangeNetflow) > 4000 ? 'MODERATE' : 'LOW'
+  const networkHealth = activeAddresses > 950000 ? 'STRONG' : 
+                        activeAddresses > 900000 ? 'HEALTHY' : 'MODERATE'
+  const signal = score > 60 ? 'BULLISH' : score < 45 ? 'BEARISH' : 'NEUTRAL'
+  
   return {
-    score: Math.round(55 + Math.random() * 15),
-    exchangeNetflow: -5200,
-    sopr: 0.97,
-    mvrv: 1.8,
-    activeAddresses: 920000,
-    whaleActivity: 'HIGH',
-    networkHealth: 'STRONG',
-    signal: 'BULLISH',
+    score,
+    exchangeNetflow: Math.round(exchangeNetflow),
+    sopr: Number(sopr.toFixed(2)),
+    mvrv: Number(mvrv.toFixed(1)),
+    activeAddresses: Math.round(activeAddresses),
+    whaleActivity,
+    networkHealth,
+    signal,
     lastUpdate: new Date().toISOString()
   }
 }
 
 function generateCNNPatternData() {
-  const patterns = ['Head & Shoulders', 'Double Top', 'Bull Flag', 'Bear Flag', 'Triangle Breakout']
+  const patterns = ['Head & Shoulders', 'Double Top', 'Bull Flag', 'Bear Flag', 'Triangle Breakout', 
+                    'Ascending Triangle', 'Cup & Handle', 'Double Bottom']
   const pattern = patterns[Math.floor(Math.random() * patterns.length)]
   const isBearish = pattern.includes('Head') || pattern.includes('Double Top') || pattern.includes('Bear')
-  const baseConfidence = 0.75 + Math.random() * 0.20
-  const sentimentBoost = isBearish ? 1.30 : 1.20
-  const reinforcedConfidence = Math.min(0.99, baseConfidence * sentimentBoost)
+  const baseConfidence = 0.65 + Math.random() * 0.25  // 65-90%
+  const sentimentBoost = isBearish ? (1.15 + Math.random() * 0.15) : (1.10 + Math.random() * 0.15)
+  const reinforcedConfidence = Math.min(0.96, baseConfidence * sentimentBoost)
+  
+  // Use reinforced confidence as the score (0-100 scale)
+  const score = Math.round(reinforcedConfidence * 100)
+  
+  // Target price varies based on pattern strength
+  const priceMove = (baseConfidence * 3000) * (isBearish ? -1 : 1)
+  const targetPrice = Math.round(94000 + priceMove)
   
   return {
+    score,  // Add score field based on pattern confidence
     pattern,
     direction: isBearish ? 'bearish' : 'bullish',
     baseConfidence: (baseConfidence * 100).toFixed(0),
     reinforcedConfidence: (reinforcedConfidence * 100).toFixed(0),
-    sentimentMultiplier: sentimentBoost,
-    targetPrice: isBearish ? 92340 : 96780,
+    sentimentMultiplier: Number(sentimentBoost.toFixed(2)),
+    targetPrice,
     timeframe: '1h',
     chartImage: 'data:image/svg+xml;base64,...', // Would be actual chart image
     lastUpdate: new Date().toISOString()
@@ -1547,32 +1619,78 @@ function generateCNNPatternData() {
 }
 
 function generateCompositeSignal() {
-  const crossExchangeContrib = 24.5
-  const cnnContrib = 22.8
-  const sentimentContrib = 13.6
-  const economicContrib = 5.2
-  const onChainContrib = 6.4
+  // Get actual scores from all agents
+  const economic = generateEconomicData()
+  const sentiment = generateSentimentData()
+  const crossExchange = generateCrossExchangeData()
+  const onChain = generateOnChainData()
+  const cnnPattern = generateCNNPatternData()
   
+  // Define strategic weights (must sum to 1.0)
+  const weights = {
+    crossExchange: 0.35,  // Most important for arbitrage opportunities
+    cnnPattern: 0.30,     // Technical pattern signals
+    sentiment: 0.20,      // Market psychology
+    economic: 0.10,       // Macro environment
+    onChain: 0.05         // Blockchain fundamentals
+  }
+  
+  // Calculate weighted contributions (each agent's impact on composite score)
+  const crossExchangeContrib = crossExchange.score * weights.crossExchange
+  const cnnContrib = cnnPattern.score * weights.cnnPattern
+  const sentimentContrib = sentiment.score * weights.sentiment
+  const economicContrib = economic.score * weights.economic
+  const onChainContrib = onChain.score * weights.onChain
+  
+  // Calculate composite score (0-100 scale)
   const compositeScore = Math.round(
     crossExchangeContrib + cnnContrib + sentimentContrib + economicContrib + onChainContrib
   )
   
+  // Determine signal based on composite score
+  let signal: string
+  if (compositeScore > 70) signal = 'STRONG_BUY'
+  else if (compositeScore > 55) signal = 'BUY'
+  else if (compositeScore > 45) signal = 'NEUTRAL'
+  else if (compositeScore > 30) signal = 'SELL'
+  else signal = 'STRONG_SELL'
+  
+  // Calculate confidence based on agent agreement
+  // If agents have similar scores (low variance), confidence is higher
+  const scores = [economic.score, sentiment.score, crossExchange.score, onChain.score, cnnPattern.score]
+  const avgScore = scores.reduce((a, b) => a + b, 0) / scores.length
+  const variance = scores.reduce((sum, score) => sum + Math.pow(score - avgScore, 2), 0) / scores.length
+  const stdDev = Math.sqrt(variance)
+  const confidence = Math.round(Math.max(60, Math.min(95, 100 - stdDev)))  // Lower std dev = higher confidence
+  
+  // Risk vetos: Check for critical warnings
+  const riskVetos = []
+  if (crossExchange.liquidityScore < 60) {
+    riskVetos.push('Low liquidity warning')
+  }
+  if (economic.score < 35 && economic.policyStance === 'HAWKISH') {
+    riskVetos.push('Hawkish Fed policy headwind')
+  }
+  if (sentiment.fearGreed < 20) {
+    riskVetos.push('Extreme fear in market')
+  }
+  
+  // Execute recommendation: composite > 65 AND no critical risk vetos
+  const executeRecommendation = compositeScore > 65 && riskVetos.length === 0
+  
   return {
     compositeScore,
-    signal: compositeScore > 70 ? 'STRONG_BUY' :
-            compositeScore > 55 ? 'BUY' :
-            compositeScore > 45 ? 'NEUTRAL' :
-            compositeScore > 30 ? 'SELL' : 'STRONG_SELL',
-    confidence: 85,
+    signal,
+    confidence,
     contributions: {
-      crossExchange: crossExchangeContrib,
-      cnnPattern: cnnContrib,
-      sentiment: sentimentContrib,
-      economic: economicContrib,
-      onChain: onChainContrib
+      crossExchange: Number(crossExchangeContrib.toFixed(1)),
+      cnnPattern: Number(cnnContrib.toFixed(1)),
+      sentiment: Number(sentimentContrib.toFixed(1)),
+      economic: Number(economicContrib.toFixed(1)),
+      onChain: Number(onChainContrib.toFixed(1))
     },
-    riskVetos: [],
-    executeRecommendation: compositeScore > 65,
+    riskVetos,
+    executeRecommendation,
     lastUpdate: new Date().toISOString()
   }
 }
