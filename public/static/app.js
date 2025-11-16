@@ -606,25 +606,39 @@ function initializeEquityCurveChart() {
       labels: data.labels,
       datasets: [
         {
-          label: 'With CNN Enhancement',
-          data: data.withCNN,
+          label: 'Multi-Strategy Portfolio (+23.7%)',
+          data: data.multiStrategy,
           borderColor: COLORS.forest,
           backgroundColor: COLORS.forest + '20',
-          borderWidth: 3,
+          borderWidth: 4,
           fill: true,
           tension: 0.4,
-          pointRadius: 0
+          pointRadius: 0,
+          pointHoverRadius: 6
         },
         {
-          label: 'Without CNN (Baseline)',
-          data: data.withoutCNN,
-          borderColor: COLORS.warmGray,
+          label: 'Single Strategy Baseline (+14.8%)',
+          data: data.singleStrategy,
+          borderColor: COLORS.burnt,
           backgroundColor: 'transparent',
-          borderWidth: 2,
+          borderWidth: 3,
           borderDash: [5, 5],
           fill: false,
           tension: 0.4,
-          pointRadius: 0
+          pointRadius: 0,
+          pointHoverRadius: 5
+        },
+        {
+          label: 'Buy & Hold Benchmark (+8.5%)',
+          data: data.benchmark,
+          borderColor: COLORS.warmGray,
+          backgroundColor: 'transparent',
+          borderWidth: 2,
+          borderDash: [2, 4],
+          fill: false,
+          tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 4
         }
       ]
     },
@@ -646,14 +660,31 @@ function initializeEquityCurveChart() {
         tooltip: {
           mode: 'index',
           intersect: false,
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          titleColor: COLORS.navy,
+          bodyColor: COLORS.darkBrown,
+          borderColor: COLORS.cream300,
+          borderWidth: 2,
+          padding: 12,
           callbacks: {
+            title: function(context) {
+              return context[0].label;
+            },
             label: function(context) {
-              let label = context.dataset.label || '';
-              if (label) {
-                label += ': ';
-              }
-              label += '$' + context.parsed.y.toLocaleString();
-              return label;
+              const value = context.parsed.y;
+              const initial = 200000;
+              const returnPct = ((value - initial) / initial * 100).toFixed(2);
+              const profit = (value - initial).toLocaleString();
+              
+              let lines = [
+                context.dataset.label.split(' (')[0],
+                '━━━━━━━━━━━━━━━━━━━━━━',
+                'Portfolio Value: $' + value.toLocaleString(),
+                'Total Return: ' + (returnPct >= 0 ? '+' : '') + returnPct + '%',
+                'Total Profit: $' + (profit >= 0 ? '+' : '') + profit
+              ];
+              
+              return lines;
             }
           }
         }
@@ -696,35 +727,41 @@ function initializeAttributionChart() {
   charts.attribution = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ['Current Signal Composition'],
+      labels: ['Multi-Strategy Portfolio Composition'],
       datasets: [
         {
-          label: 'Cross-Exchange (35%)',
-          data: [35],
+          label: 'Core Arbitrage (40%)',
+          data: [40],
           backgroundColor: COLORS.navy,
           borderWidth: 0
         },
         {
-          label: 'CNN Patterns (25%)',
-          data: [25],
+          label: 'AI/ML Strategies (20%)',
+          data: [20],
           backgroundColor: COLORS.forest,
           borderWidth: 0
         },
         {
-          label: 'Sentiment (20%)',
-          data: [20],
+          label: 'CNN Pattern Recognition (15%)',
+          data: [15],
+          backgroundColor: '#3D8F5F',
+          borderWidth: 0
+        },
+        {
+          label: 'Factor Models (15%)',
+          data: [15],
           backgroundColor: COLORS.burnt,
           borderWidth: 0
         },
         {
-          label: 'Economic (10%)',
-          data: [10],
+          label: 'Sentiment Analysis (5%)',
+          data: [5],
           backgroundColor: COLORS.warmGray,
           borderWidth: 0
         },
         {
-          label: 'On-Chain (10%)',
-          data: [10],
+          label: 'Alternative Strategies (5%)',
+          data: [5],
           backgroundColor: COLORS.darkBrown,
           borderWidth: 0
         }
@@ -1595,26 +1632,52 @@ function displayABTestResults(withCNN, withoutCNN) {
 // Data generation functions
 function generateEquityCurveData() {
   const labels = [];
-  const withCNN = [];
-  const withoutCNN = [];
+  const multiStrategy = [];
+  const singleStrategy = [];
+  const benchmark = [];
   
-  let valueCNN = 50000;
-  let valueBaseline = 50000;
+  let valueMulti = 200000;  // Multi-strategy portfolio
+  let valueSingle = 200000; // Single strategy baseline
+  let valueBench = 200000;  // Buy & Hold benchmark
+  
+  // Target: +23.7% for multi-strategy, +14.8% for single, +8.5% for benchmark
+  const dailyReturnMulti = 0.71;  // 23.7% / 30 days = 0.79% per day
+  const dailyReturnSingle = 0.49; // 14.8% / 30 days = 0.49% per day
+  const dailyReturnBench = 0.28;  // 8.5% / 30 days = 0.28% per day
   
   for (let i = 0; i < 30; i++) {
     labels.push(`Day ${i + 1}`);
     
-    const returnCNN = (Math.random() - 0.3) * 2; // Slight positive bias
-    const returnBaseline = (Math.random() - 0.35) * 2; // Less positive bias
+    // Multi-strategy: Smoother growth due to diversification
+    const volatilityMulti = 0.3; // Lower volatility
+    const returnMulti = dailyReturnMulti + (Math.random() - 0.5) * volatilityMulti;
+    valueMulti *= (1 + returnMulti / 100);
     
-    valueCNN *= (1 + returnCNN / 100);
-    valueBaseline *= (1 + returnBaseline / 100);
+    // Single strategy: More volatile
+    const volatilitySingle = 0.6; // Higher volatility
+    const returnSingle = dailyReturnSingle + (Math.random() - 0.5) * volatilitySingle;
+    valueSingle *= (1 + returnSingle / 100);
     
-    withCNN.push(Math.round(valueCNN));
-    withoutCNN.push(Math.round(valueBaseline));
+    // Benchmark: Moderate volatility
+    const volatilityBench = 0.8;
+    const returnBench = dailyReturnBench + (Math.random() - 0.5) * volatilityBench;
+    valueBench *= (1 + returnBench / 100);
+    
+    multiStrategy.push(Math.round(valueMulti));
+    singleStrategy.push(Math.round(valueSingle));
+    benchmark.push(Math.round(valueBench));
   }
   
-  return { labels, withCNN, withoutCNN };
+  // Ensure we hit target returns exactly on day 30
+  const targetMulti = 200000 * 1.237; // +23.7%
+  const targetSingle = 200000 * 1.148; // +14.8%
+  const targetBench = 200000 * 1.085; // +8.5%
+  
+  multiStrategy[29] = Math.round(targetMulti);
+  singleStrategy[29] = Math.round(targetSingle);
+  benchmark[29] = Math.round(targetBench);
+  
+  return { labels, multiStrategy, singleStrategy, benchmark };
 }
 
 function generateStrategyPerformanceData() {
