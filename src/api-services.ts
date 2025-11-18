@@ -826,8 +826,11 @@ export async function detectSpatialArbitrage(): Promise<ArbitrageOpportunity[]> 
         const netProfitPercent = spreadPercent - feesCost;
         
         if (netProfitPercent > 0.01) { // Minimum 0.01% net profit (realistic)
+          // Generate stable ID based on strategy + asset (so same opportunity keeps same ID)
+          const stableId = 1000000 + Math.floor(Math.abs(spreadPercent * 10000));
+          
           opportunities.push({
-            id: Date.now(),
+            id: stableId,
             timestamp: new Date().toISOString(),
             asset: 'BTC-USD',
             strategy: 'Spatial',
@@ -889,8 +892,11 @@ export async function detectTriangularArbitrage(): Promise<ArbitrageOpportunity[
             const avgBtcPrice = btcPrice;
             const spreadDollar = avgBtcPrice * (spreadPercent / 100);
             
+            // Generate stable ID for triangular
+            const stableId = 2000000 + Math.floor(Math.abs(spreadPercent * 10000));
+            
             opportunities.push({
-              id: Date.now() + 1,
+              id: stableId,
               timestamp: new Date().toISOString(),
               asset: 'BTC-ETH-USDT',
               strategy: 'Triangular',
@@ -949,8 +955,11 @@ export async function detectStatisticalArbitrage(): Promise<ArbitrageOpportunity
         const avgPrice = (btcPrice + ethPrice) / 2;
         const spreadDollar = avgPrice * (deviationPercent / 100);
         
+        // Generate stable ID for statistical
+        const stableId = 3000000 + Math.floor(Math.abs(deviationPercent * 10000));
+        
         opportunities.push({
-          id: Date.now() + 2,
+          id: stableId,
           timestamp: new Date().toISOString(),
           asset: 'BTC/ETH',
           strategy: 'Statistical',
@@ -999,8 +1008,11 @@ export async function detectSentimentOpportunities(): Promise<ArbitrageOpportuni
       if (netProfitPercent > 0.1) { // 0.1% minimum for sentiment
         const spreadDollar = btcPrice * (expectedMove / 100);
         
+        // Generate stable ID for sentiment
+        const stableId = 4000000 + Math.floor(fearGreed * 1000);
+        
         opportunities.push({
-          id: Date.now() + 3,
+          id: stableId,
           timestamp: new Date().toISOString(),
           asset: 'BTC-USD',
           strategy: 'Sentiment',
@@ -1049,8 +1061,11 @@ export async function detectFundingRateArbitrage(): Promise<ArbitrageOpportunity
       if (netProfitPercent > 0.02) { // 0.02% minimum for funding rate
         const spreadDollar = btcPrice * (dailyRate / 100);
         
+        // Generate stable ID for funding rate
+        const stableId = 5000000 + Math.floor(Math.abs(dailyRate * 100000));
+        
         opportunities.push({
-          id: Date.now() + 4,
+          id: stableId,
           timestamp: new Date().toISOString(),
           asset: 'BTC-USD',
           strategy: 'Funding Rate',

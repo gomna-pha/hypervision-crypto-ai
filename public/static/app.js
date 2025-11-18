@@ -2643,8 +2643,11 @@ window.executeArbitrage = async function(oppId) {
     executionStates[oppId] = { status: 'failed', progress: 0 };
     updateExecutionUI(oppId);
     
-    // Show error notification
-    showExecutionNotification('error', `✗ Execution failed: ${error.message}`, oppId);
+    // Show error notification with helpful message
+    const errorMsg = error.message.includes('404') 
+      ? '✗ Opportunity expired or no longer available' 
+      : `✗ Execution failed: ${error.message}`;
+    showExecutionNotification('error', errorMsg, oppId);
   }
 }
 

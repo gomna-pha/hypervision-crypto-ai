@@ -278,14 +278,29 @@ app.post('/api/execute/:id', async (c) => {
     // Simulate execution time (real implementation would call exchange APIs)
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // Get opportunity details
-    const opportunities = generateOpportunities()
-    const opportunity = opportunities.find(o => o.id === oppId)
+    // Get opportunity details - fetch from current opportunities (includes real algorithms)
+    const { detectAllRealOpportunities } = await import('./api-services')
+    const realOpportunities = await detectAllRealOpportunities()
+    const demoOpportunities = generateOpportunities()
+    
+    // Combine real and demo opportunities (same as /api/opportunities)
+    const markedDemoOpportunities = demoOpportunities.map((opp: any) => ({
+      ...opp,
+      realAlgorithm: false
+    }))
+    
+    const allOpportunities = [
+      ...realOpportunities,
+      ...markedDemoOpportunities.slice(0, 10)
+    ]
+    
+    const opportunity = allOpportunities.find((o: any) => o.id === oppId)
     
     if (!opportunity) {
+      console.error(`[EXECUTION] Opportunity #${oppId} not found in current opportunities`)
       return c.json({
         success: false,
-        error: 'Opportunity not found'
+        error: 'Opportunity not found or expired'
       }, 404)
     }
     
