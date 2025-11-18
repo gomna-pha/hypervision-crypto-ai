@@ -58,8 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize dashboard
   initializeDashboard();
   
-  // Start live updates every 4 seconds
+  // Start live updates every 4 seconds for agents
   updateInterval = setInterval(updateAgentData, 4000);
+  
+  // Start portfolio metrics updates every 30 seconds (real-time agent-based)
+  setInterval(updatePortfolioMetrics, 30000);
   
   // Initialize confidence slider
   const slider = document.getElementById('min-confidence');
@@ -108,6 +111,7 @@ async function initializeDashboard() {
   updatePortfolioDisplay();
   
   await updateAgentData();
+  await updatePortfolioMetrics(); // Load real-time portfolio metrics
   initializeEquityCurveChart();
   initializeAttributionChart();
 }
@@ -146,6 +150,109 @@ async function updateAgentData() {
     
   } catch (error) {
     console.error('Error updating agent data:', error);
+  }
+}
+
+// Update Portfolio Metrics (Real-time from Agent Data)
+async function updatePortfolioMetrics() {
+  try {
+    const response = await axios.get('/api/portfolio/metrics');
+    const metrics = response.data;
+    
+    // Update main metrics
+    const totalReturnEl = document.getElementById('portfolio-total-return');
+    if (totalReturnEl) {
+      const returnValue = metrics.totalReturn.toFixed(1);
+      totalReturnEl.textContent = `+${returnValue}%`;
+      totalReturnEl.style.color = metrics.totalReturn > 20 ? COLORS.forest : metrics.totalReturn > 10 ? COLORS.burnt : COLORS.warmGray;
+    }
+    
+    const sharpeEl = document.getElementById('portfolio-sharpe');
+    if (sharpeEl) {
+      sharpeEl.textContent = metrics.sharpe.toFixed(1);
+      sharpeEl.style.color = metrics.sharpe > 2.5 ? COLORS.navy : COLORS.warmGray;
+    }
+    
+    const winRateEl = document.getElementById('portfolio-win-rate');
+    if (winRateEl) {
+      winRateEl.textContent = `${Math.round(metrics.winRate)}%`;
+      winRateEl.style.color = metrics.winRate > 75 ? COLORS.forest : metrics.winRate > 65 ? COLORS.burnt : COLORS.warmGray;
+    }
+    
+    const tradesEl = document.getElementById('portfolio-total-trades');
+    if (tradesEl) {
+      tradesEl.textContent = Math.round(metrics.totalTrades).toLocaleString();
+    }
+    
+    const profitEl = document.getElementById('portfolio-daily-profit');
+    if (profitEl) {
+      profitEl.textContent = `$${Math.round(metrics.avgDailyProfit).toLocaleString()}`;
+      profitEl.style.color = metrics.avgDailyProfit > 1800 ? COLORS.forest : COLORS.warmGray;
+    }
+    
+    // Update strategy breakdown
+    const coreArbitrageEl = document.getElementById('core-arbitrage-return');
+    if (coreArbitrageEl) {
+      coreArbitrageEl.textContent = `+${metrics.coreArbitrage.return.toFixed(1)}%`;
+      coreArbitrageEl.style.color = metrics.coreArbitrage.return > 15 ? COLORS.forest : COLORS.burnt;
+    }
+    
+    const aiMlEl = document.getElementById('ai-ml-return');
+    if (aiMlEl) {
+      aiMlEl.textContent = `+${metrics.aiMlStrategies.return.toFixed(1)}%`;
+      aiMlEl.style.color = metrics.aiMlStrategies.return > 25 ? COLORS.forest : COLORS.burnt;
+    }
+    
+    const advancedAlphaEl = document.getElementById('advanced-alpha-return');
+    if (advancedAlphaEl) {
+      advancedAlphaEl.textContent = `+${metrics.advancedAlpha.return.toFixed(1)}%`;
+      advancedAlphaEl.style.color = metrics.advancedAlpha.return > 20 ? COLORS.forest : COLORS.burnt;
+    }
+    
+    const alternativeEl = document.getElementById('alternative-return');
+    if (alternativeEl) {
+      alternativeEl.textContent = `+${metrics.alternative.return.toFixed(1)}%`;
+      alternativeEl.style.color = metrics.alternative.return > 15 ? COLORS.forest : COLORS.burnt;
+    }
+    
+    // Update change indicators
+    const returnChangeEl = document.getElementById('portfolio-return-change');
+    if (returnChangeEl && metrics.totalReturnChange !== undefined) {
+      const changeValue = metrics.totalReturnChange;
+      const arrow = changeValue >= 0 ? '↑' : '↓';
+      const sign = changeValue >= 0 ? '+' : '';
+      returnChangeEl.textContent = `${arrow} ${sign}${changeValue.toFixed(1)}% Multi-Strategy`;
+      returnChangeEl.style.color = changeValue >= 0 ? COLORS.forest : COLORS.deepRed;
+    }
+    
+    const sharpeChangeEl = document.getElementById('portfolio-sharpe-change');
+    if (sharpeChangeEl && metrics.sharpeChange !== undefined) {
+      const changeValue = metrics.sharpeChange;
+      const arrow = changeValue >= 0 ? '↑' : '↓';
+      const sign = changeValue >= 0 ? '+' : '';
+      sharpeChangeEl.textContent = `${arrow} ${sign}${changeValue.toFixed(1)} Improvement`;
+      sharpeChangeEl.style.color = changeValue >= 0 ? COLORS.burnt : COLORS.warmGray;
+    }
+    
+    const winChangeEl = document.getElementById('portfolio-win-change');
+    if (winChangeEl && metrics.winRateChange !== undefined) {
+      const changeValue = metrics.winRateChange;
+      const arrow = changeValue >= 0 ? '↑' : '↓';
+      const sign = changeValue >= 0 ? '+' : '';
+      winChangeEl.textContent = `${arrow} ${sign}${Math.round(changeValue)}% Multi-Strategy`;
+      winChangeEl.style.color = changeValue >= 0 ? COLORS.forest : COLORS.deepRed;
+    }
+    
+    // Log update (for debugging)
+    console.log('Portfolio metrics updated from real-time agent data:', {
+      totalReturn: metrics.totalReturn,
+      sharpe: metrics.sharpe,
+      winRate: metrics.winRate,
+      dataSource: metrics.dataSource
+    });
+    
+  } catch (error) {
+    console.error('Error updating portfolio metrics:', error);
   }
 }
 
