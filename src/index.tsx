@@ -159,45 +159,56 @@ Provide a comprehensive strategic analysis in the following format:
 
 Be concise, professional, and data-driven. Use financial terminology. This is real money at stake.`
 
-    // Call OpenRouter API (supports multiple LLM providers)
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    // Call Google Gemini API (FREE - 1,500 requests/day)
+    const geminiApiKey = c.env?.GEMINI_API_KEY || 'AIzaSyCl7tNhqO26QyfyLFXVsiH5RawkFIN86hQ';
+    
+    // Use correct Gemini API endpoint with v1 API
+    // gemini-2.0-flash has separate quota from 2.5-flash
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=${geminiApiKey}`;
+    
+    const systemPrompt = 'You are a senior quantitative analyst specializing in cryptocurrency arbitrage trading. Provide concise, actionable insights based on multi-agent data analysis.';
+    const fullPrompt = `${systemPrompt}\n\n${prompt}`;
+    
+    const response = await fetch(geminiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${c.env?.OPENROUTER_API_KEY || 'sk-or-v1-demo-key'}`,
-        'HTTP-Referer': 'https://arbitrageai.pages.dev',
-        'X-Title': 'ArbitrageAI Platform',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4o-mini', // Fast and cost-effective
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a senior quantitative analyst specializing in cryptocurrency arbitrage trading. Provide concise, actionable insights based on multi-agent data analysis.'
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 800
+        contents: [{
+          parts: [{
+            text: fullPrompt
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 800,
+          topP: 0.95,
+          topK: 40
+        }
       })
     })
 
     if (!response.ok) {
-      throw new Error(`LLM API error: ${response.status}`)
+      const errorText = await response.text();
+      console.error('Gemini API error response:', errorText);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json()
-    const insights = data.choices[0].message.content
+    
+    // Extract insights from Gemini response format
+    const insights = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                     'Unable to generate insights at this time.';
+    
     const responseTime = Date.now() - startTime
 
     return c.json({
       success: true,
       insights,
       metadata: {
-        model: 'gpt-4o-mini',
+        model: 'gemini-2.0-flash',
+        provider: 'Google AI (Free)',
         responseTime: `${responseTime}ms`,
         timestamp: new Date().toISOString(),
         agentData // Include raw data for debugging
