@@ -301,6 +301,151 @@ app.post('/api/execute/:id', async (c) => {
   }
 })
 
+// ===================================================================
+// PAPER TRADING API ENDPOINTS - Real Binance Market Data
+// ===================================================================
+
+// GET /api/paper-trading/market-data - Real-time market data for all supported pairs
+app.get('/api/paper-trading/market-data', async (c) => {
+  try {
+    const { getBinanceMarketData } = await import('./api-services')
+    const marketData = await getBinanceMarketData()
+    
+    if (!marketData) {
+      return c.json({
+        error: 'Unable to fetch market data',
+        timestamp: new Date().toISOString()
+      }, 503)
+    }
+    
+    return c.json({
+      success: true,
+      ...marketData,
+      disclaimer: 'Real-time data from Binance API'
+    })
+  } catch (error) {
+    console.error('Market data endpoint error:', error)
+    return c.json({
+      error: 'Internal server error',
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+})
+
+// GET /api/paper-trading/price/:symbol - Get real-time price for specific symbol
+app.get('/api/paper-trading/price/:symbol', async (c) => {
+  try {
+    const symbol = c.req.param('symbol').toUpperCase()
+    const { getBinancePrice } = await import('./api-services')
+    const priceData = await getBinancePrice(symbol)
+    
+    if (!priceData) {
+      return c.json({
+        error: `Unable to fetch price for ${symbol}`,
+        timestamp: new Date().toISOString()
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      ...priceData
+    })
+  } catch (error) {
+    console.error('Price endpoint error:', error)
+    return c.json({
+      error: 'Internal server error',
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+})
+
+// GET /api/paper-trading/orderbook/:symbol - Get real-time order book
+app.get('/api/paper-trading/orderbook/:symbol', async (c) => {
+  try {
+    const symbol = c.req.param('symbol').toUpperCase()
+    const limit = parseInt(c.req.query('limit') || '10')
+    const { getBinanceOrderBook } = await import('./api-services')
+    const orderBook = await getBinanceOrderBook(symbol, limit)
+    
+    if (!orderBook) {
+      return c.json({
+        error: `Unable to fetch order book for ${symbol}`,
+        timestamp: new Date().toISOString()
+      }, 404)
+    }
+    
+    return c.json({
+      success: true,
+      ...orderBook
+    })
+  } catch (error) {
+    console.error('Order book endpoint error:', error)
+    return c.json({
+      error: 'Internal server error',
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+})
+
+// POST /api/paper-trading/order - Execute simulated order with real market conditions
+app.post('/api/paper-trading/order', async (c) => {
+  try {
+    const { symbol, side, type, quantity, price } = await c.req.json()
+    
+    // Validation
+    if (!symbol || !side || !type || !quantity) {
+      return c.json({
+        error: 'Missing required fields: symbol, side, type, quantity',
+        timestamp: new Date().toISOString()
+      }, 400)
+    }
+    
+    if (side !== 'BUY' && side !== 'SELL') {
+      return c.json({
+        error: 'Invalid side: must be BUY or SELL',
+        timestamp: new Date().toISOString()
+      }, 400)
+    }
+    
+    if (type !== 'MARKET' && type !== 'LIMIT') {
+      return c.json({
+        error: 'Invalid type: must be MARKET or LIMIT',
+        timestamp: new Date().toISOString()
+      }, 400)
+    }
+    
+    if (type === 'LIMIT' && !price) {
+      return c.json({
+        error: 'Price is required for LIMIT orders',
+        timestamp: new Date().toISOString()
+      }, 400)
+    }
+    
+    // Execute simulated order based on real market data
+    const { simulateOrderExecution } = await import('./api-services')
+    const execution = await simulateOrderExecution(
+      symbol.toUpperCase(),
+      side,
+      type,
+      quantity,
+      price
+    )
+    
+    return c.json({
+      success: true,
+      ...execution,
+      disclaimer: 'Paper trading simulation based on real Binance market data'
+    })
+    
+  } catch (error) {
+    console.error('Order execution error:', error)
+    return c.json({
+      error: error.message || 'Order execution failed',
+      timestamp: new Date().toISOString()
+    }, 500)
+  }
+})
+
 // Main dashboard route
 app.get('/', (c) => {
   return c.html(`
@@ -549,6 +694,10 @@ app.get('/', (c) => {
             </div>
             <div class="nav-tab" onclick="switchTab('analytics')">
               <i class="fas fa-chart-bar mr-2"></i>Analytics
+            </div>
+            <div class="nav-tab" onclick="switchTab('paper-trading')">
+              <i class="fas fa-coins mr-2"></i>Paper Trading
+              <span class="ml-2 px-2 py-0.5 text-xs rounded" style="background: var(--forest); color: white;">LIVE DATA</span>
             </div>
           </div>
         </nav>
@@ -1402,6 +1551,259 @@ app.get('/', (c) => {
                 All algorithms and weightings are backed by peer-reviewed academic research:
               </p>
               <div id="academic-references" class="space-y-4"></div>
+            </div>
+          </div>
+
+          <!-- Paper Trading Tab -->
+          <div id="paper-trading-tab" class="tab-content hidden">
+            <div class="mb-6">
+              <h2 class="text-3xl font-bold mb-2" style="color: var(--navy)">
+                <i class="fas fa-coins mr-2"></i>Paper Trading
+              </h2>
+              <p class="text-sm" style="color: var(--warm-gray)">
+                Practice trading with <strong>REAL Binance market data</strong> | Zero risk, realistic execution | Perfect for testing strategies before live trading
+              </p>
+              <div class="mt-2 inline-block px-3 py-1 rounded text-xs font-semibold" style="background: var(--forest); color: white;">
+                <i class="fas fa-check-circle mr-1"></i>100% Real Market Data from Binance API
+              </div>
+            </div>
+
+            <!-- Virtual Portfolio Overview -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div class="card">
+                <div class="text-xs mb-1" style="color: var(--warm-gray)">
+                  <i class="fas fa-wallet mr-1"></i>Available Balance
+                </div>
+                <div id="pt-balance" class="text-2xl font-bold" style="color: var(--navy)">$200,000.00</div>
+                <div class="text-xs mt-1" style="color: var(--warm-gray)">Initial capital</div>
+              </div>
+              <div class="card">
+                <div class="text-xs mb-1" style="color: var(--warm-gray)">
+                  <i class="fas fa-chart-line mr-1"></i>Portfolio Value
+                </div>
+                <div id="pt-equity" class="text-2xl font-bold" style="color: var(--forest)">$200,000.00</div>
+                <div id="pt-equity-change" class="text-xs mt-1" style="color: var(--forest)">$0.00 (0.00%)</div>
+              </div>
+              <div class="card">
+                <div class="text-xs mb-1" style="color: var(--warm-gray)">
+                  <i class="fas fa-coins mr-1"></i>Open Positions
+                </div>
+                <div id="pt-positions-count" class="text-2xl font-bold" style="color: var(--burnt)">0</div>
+                <div class="text-xs mt-1" style="color: var(--warm-gray)">Active trades</div>
+              </div>
+              <div class="card">
+                <div class="text-xs mb-1" style="color: var(--warm-gray)">
+                  <i class="fas fa-exchange-alt mr-1"></i>Total Trades
+                </div>
+                <div id="pt-total-trades" class="text-2xl font-bold" style="color: var(--dark-brown)">0</div>
+                <div id="pt-win-rate" class="text-xs mt-1" style="color: var(--warm-gray)">Win rate: 0%</div>
+              </div>
+            </div>
+
+            <!-- Market Data & Order Form Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <!-- Real-Time Market Data -->
+              <div class="lg:col-span-2">
+                <div class="card">
+                  <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold" style="color: var(--navy)">
+                      <i class="fas fa-chart-candlestick mr-2"></i>Live Market Data
+                    </h3>
+                    <div class="flex items-center gap-2">
+                      <div id="market-data-status" class="flex items-center gap-1 text-xs">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span style="color: var(--forest)">LIVE</span>
+                      </div>
+                      <span id="market-data-timestamp" class="text-xs" style="color: var(--warm-gray)">Updating...</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Market Data Table -->
+                  <div class="overflow-x-auto" style="max-height: 400px;">
+                    <table class="w-full text-sm">
+                      <thead style="background: var(--cream-100); position: sticky; top: 0;">
+                        <tr>
+                          <th class="text-left p-2" style="color: var(--navy)">Symbol</th>
+                          <th class="text-right p-2" style="color: var(--navy)">Price</th>
+                          <th class="text-right p-2" style="color: var(--navy)">24h Change</th>
+                          <th class="text-right p-2" style="color: var(--navy)">24h Volume</th>
+                          <th class="text-right p-2" style="color: var(--navy)">Spread</th>
+                          <th class="text-center p-2" style="color: var(--navy)">Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="market-data-body">
+                        <tr>
+                          <td colspan="6" class="text-center p-4" style="color: var(--warm-gray)">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>Loading real-time market data from Binance...
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order Placement Form -->
+              <div class="lg:col-span-1">
+                <div class="card">
+                  <h3 class="text-lg font-bold mb-4" style="color: var(--navy)">
+                    <i class="fas fa-shopping-cart mr-2"></i>Place Order
+                  </h3>
+                  
+                  <div class="space-y-3">
+                    <!-- Symbol Selection -->
+                    <div>
+                      <label class="block text-xs font-semibold mb-1" style="color: var(--navy)">Symbol</label>
+                      <select id="order-symbol" class="w-full p-2 rounded border text-sm" style="border-color: var(--cream-300)">
+                        <option value="">Loading symbols...</option>
+                      </select>
+                    </div>
+
+                    <!-- Order Type -->
+                    <div>
+                      <label class="block text-xs font-semibold mb-1" style="color: var(--navy)">Order Type</label>
+                      <div class="flex gap-2">
+                        <button id="order-type-market" onclick="setOrderType('MARKET')" class="flex-1 py-2 px-3 rounded text-sm font-semibold" style="background: var(--navy); color: white;">
+                          Market
+                        </button>
+                        <button id="order-type-limit" onclick="setOrderType('LIMIT')" class="flex-1 py-2 px-3 rounded text-sm" style="background: var(--cream-100); color: var(--navy);">
+                          Limit
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Side Selection -->
+                    <div>
+                      <label class="block text-xs font-semibold mb-1" style="color: var(--navy)">Side</label>
+                      <div class="flex gap-2">
+                        <button id="order-side-buy" onclick="setOrderSide('BUY')" class="flex-1 py-2 px-3 rounded text-sm font-semibold" style="background: var(--forest); color: white;">
+                          <i class="fas fa-arrow-up mr-1"></i>BUY
+                        </button>
+                        <button id="order-side-sell" onclick="setOrderSide('SELL')" class="flex-1 py-2 px-3 rounded text-sm" style="background: var(--cream-100); color: var(--navy);">
+                          <i class="fas fa-arrow-down mr-1"></i>SELL
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div>
+                      <label class="block text-xs font-semibold mb-1" style="color: var(--navy)">Quantity</label>
+                      <input id="order-quantity" type="number" step="0.0001" placeholder="0.0000" class="w-full p-2 rounded border text-sm" style="border-color: var(--cream-300)" />
+                      <div class="text-xs mt-1" style="color: var(--warm-gray)">
+                        <span id="order-quantity-usd">≈ $0.00</span>
+                      </div>
+                    </div>
+
+                    <!-- Limit Price (hidden for market orders) -->
+                    <div id="limit-price-container" style="display: none;">
+                      <label class="block text-xs font-semibold mb-1" style="color: var(--navy)">Limit Price (USDT)</label>
+                      <input id="order-price" type="number" step="0.01" placeholder="0.00" class="w-full p-2 rounded border text-sm" style="border-color: var(--cream-300)" />
+                    </div>
+
+                    <!-- Market Price Display -->
+                    <div id="market-price-display">
+                      <div class="text-xs" style="color: var(--warm-gray)">
+                        Market Price: <span id="current-market-price" class="font-semibold" style="color: var(--navy)">---</span>
+                      </div>
+                    </div>
+
+                    <!-- Total Cost/Proceeds -->
+                    <div class="p-3 rounded" style="background: var(--cream-100)">
+                      <div class="flex justify-between text-xs mb-1">
+                        <span style="color: var(--warm-gray)">Est. Total:</span>
+                        <span id="order-total" class="font-semibold" style="color: var(--navy)">$0.00</span>
+                      </div>
+                      <div class="flex justify-between text-xs">
+                        <span style="color: var(--warm-gray)">Est. Fee (0.1%):</span>
+                        <span id="order-fee" style="color: var(--warm-gray)">$0.00</span>
+                      </div>
+                    </div>
+
+                    <!-- Place Order Button -->
+                    <button id="place-order-btn" onclick="placeOrder()" class="w-full py-3 rounded font-semibold text-sm" style="background: var(--forest); color: white;" disabled>
+                      <i class="fas fa-paper-plane mr-2"></i>Place Simulated Order
+                    </button>
+
+                    <div class="text-xs text-center" style="color: var(--warm-gray)">
+                      <i class="fas fa-info-circle mr-1"></i>Execution based on real Binance order book
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Open Positions & Trade History -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+              <!-- Open Positions -->
+              <div class="card">
+                <h3 class="text-lg font-bold mb-4" style="color: var(--navy)">
+                  <i class="fas fa-briefcase mr-2"></i>Open Positions
+                </h3>
+                <div id="open-positions-container">
+                  <div class="text-center py-8" style="color: var(--warm-gray)">
+                    <i class="fas fa-inbox text-4xl mb-2"></i>
+                    <p class="text-sm">No open positions</p>
+                    <p class="text-xs mt-1">Place your first trade to see positions here</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Trade History -->
+              <div class="card">
+                <h3 class="text-lg font-bold mb-4" style="color: var(--navy)">
+                  <i class="fas fa-history mr-2"></i>Trade History
+                </h3>
+                <div id="trade-history-container">
+                  <div class="text-center py-8" style="color: var(--warm-gray)">
+                    <i class="fas fa-file-invoice text-4xl mb-2"></i>
+                    <p class="text-sm">No trade history</p>
+                    <p class="text-xs mt-1">Your executed trades will appear here</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Performance Chart -->
+            <div class="card mb-6">
+              <h3 class="text-lg font-bold mb-4" style="color: var(--navy)">
+                <i class="fas fa-chart-area mr-2"></i>Portfolio Performance
+              </h3>
+              <div style="height: 300px; position: relative;">
+                <canvas id="paper-trading-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Paper Trading Instructions -->
+            <div class="card" style="background: linear-gradient(135deg, var(--cream-100) 0%, var(--cream-200) 100%);">
+              <h3 class="text-lg font-bold mb-3" style="color: var(--navy)">
+                <i class="fas fa-graduation-cap mr-2"></i>How Paper Trading Works
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div>
+                  <div class="font-semibold mb-1" style="color: var(--forest)">
+                    <i class="fas fa-database mr-1"></i>1. Real Market Data
+                  </div>
+                  <p style="color: var(--warm-gray)">
+                    All prices, spreads, and order book data come directly from Binance API in real-time. No simulated prices.
+                  </p>
+                </div>
+                <div>
+                  <div class="font-semibold mb-1" style="color: var(--burnt)">
+                    <i class="fas fa-calculator mr-1"></i>2. Realistic Execution
+                  </div>
+                  <p style="color: var(--warm-gray)">
+                    Orders are executed with realistic slippage (0.01-0.15%) and fees (0.1% like Binance), based on actual order book depth.
+                  </p>
+                </div>
+                <div>
+                  <div class="font-semibold mb-1" style="color: var(--navy)">
+                    <i class="fas fa-shield-alt mr-1"></i>3. Zero Risk
+                  </div>
+                  <p style="color: var(--warm-gray)">
+                    Your virtual $200k portfolio is completely separate from real money. Perfect for testing strategies safely.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </main>

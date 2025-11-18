@@ -294,6 +294,212 @@ export async function calculateArbitrageOpportunities() {
 }
 
 // ===================================================================
+// 6. PAPER TRADING - Real-time Binance Market Data
+// ===================================================================
+
+// Supported trading pairs for paper trading
+const PAPER_TRADING_SYMBOLS = [
+  'BTCUSDT', 'ETHUSDT', 'BNBUSDT', 'SOLUSDT', 'XRPUSDT',
+  'ADAUSDT', 'DOGEUSDT', 'MATICUSDT', 'DOTUSDT', 'AVAXUSDT',
+  'LINKUSDT', 'UNIUSDT', 'ATOMUSDT', 'LTCUSDT', 'NEARUSDT'
+];
+
+export async function getBinanceMarketData() {
+  const cacheKey = 'binance_market_data';
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
+  try {
+    // Fetch 24hr ticker for all symbols in one call
+    const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+    const allTickers = await response.json();
+
+    // Filter and format data for our supported symbols
+    const marketData = PAPER_TRADING_SYMBOLS.map(symbol => {
+      const ticker = allTickers.find((t: any) => t.symbol === symbol);
+      
+      if (!ticker) {
+        return null;
+      }
+
+      return {
+        symbol,
+        displaySymbol: symbol.replace('USDT', '/USDT'),
+        lastPrice: parseFloat(ticker.lastPrice),
+        priceChange24h: parseFloat(ticker.priceChange),
+        priceChangePercent24h: parseFloat(ticker.priceChangePercent),
+        high24h: parseFloat(ticker.highPrice),
+        low24h: parseFloat(ticker.lowPrice),
+        volume24h: parseFloat(ticker.volume),
+        quoteVolume24h: parseFloat(ticker.quoteVolume),
+        openPrice: parseFloat(ticker.openPrice),
+        bidPrice: parseFloat(ticker.bidPrice),
+        askPrice: parseFloat(ticker.askPrice),
+        spread: ((parseFloat(ticker.askPrice) - parseFloat(ticker.bidPrice)) / parseFloat(ticker.bidPrice) * 100).toFixed(3),
+        lastUpdateTime: ticker.closeTime,
+        source: 'binance',
+        dataType: 'real-time'
+      };
+    }).filter(Boolean); // Remove null entries
+
+    const result = {
+      markets: marketData,
+      timestamp: Date.now(),
+      source: 'binance',
+      dataType: 'real-time',
+      symbolCount: marketData.length
+    };
+
+    setCache(cacheKey, result);
+    return result;
+
+  } catch (error) {
+    console.error('Binance market data error:', error);
+    return null;
+  }
+}
+
+export async function getBinancePrice(symbol: string) {
+  try {
+    const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+    const data = await response.json();
+    
+    return {
+      symbol,
+      price: parseFloat(data.price),
+      timestamp: Date.now(),
+      source: 'binance'
+    };
+  } catch (error) {
+    console.error(`Binance price error for ${symbol}:`, error);
+    return null;
+  }
+}
+
+export async function getBinanceOrderBook(symbol: string, limit: number = 10) {
+  const cacheKey = `orderbook_${symbol}`;
+  const cached = getCached(cacheKey);
+  if (cached) return cached;
+
+  try {
+    const response = await fetch(`https://api.binance.com/api/v3/depth?symbol=${symbol}&limit=${limit}`);
+    const data = await response.json();
+    
+    const result = {
+      symbol,
+      bids: data.bids.map((b: any) => ({
+        price: parseFloat(b[0]),
+        quantity: parseFloat(b[1]),
+        total: parseFloat(b[0]) * parseFloat(b[1])
+      })),
+      asks: data.asks.map((a: any) => ({
+        price: parseFloat(a[0]),
+        quantity: parseFloat(a[1]),
+        total: parseFloat(a[0]) * parseFloat(a[1])
+      })),
+      bestBid: parseFloat(data.bids[0][0]),
+      bestAsk: parseFloat(data.asks[0][0]),
+      spread: ((parseFloat(data.asks[0][0]) - parseFloat(data.bids[0][0])) / parseFloat(data.bids[0][0]) * 100).toFixed(3),
+      timestamp: Date.now(),
+      source: 'binance'
+    };
+
+    setCache(cacheKey, result);
+    return result;
+
+  } catch (error) {
+    console.error(`Binance orderbook error for ${symbol}:`, error);
+    return null;
+  }
+}
+
+// Simulate realistic order execution based on real market conditions
+export async function simulateOrderExecution(
+  symbol: string,
+  side: 'BUY' | 'SELL',
+  type: 'MARKET' | 'LIMIT',
+  quantity: number,
+  limitPrice?: number
+) {
+  try {
+    // Get real-time order book for realistic execution
+    const orderBook = await getBinanceOrderBook(symbol, 20);
+    if (!orderBook) {
+      throw new Error('Unable to fetch order book');
+    }
+
+    let executionPrice: number;
+    let slippage = 0;
+
+    if (type === 'MARKET') {
+      // Market order: execute at best available price with slippage
+      if (side === 'BUY') {
+        // For buy orders, we take from asks
+        executionPrice = orderBook.bestAsk;
+        
+        // Simulate slippage based on order size
+        const liquidityDepth = orderBook.asks.slice(0, 5).reduce((sum, ask) => sum + ask.quantity, 0);
+        if (quantity > liquidityDepth * 0.1) {
+          // Large order: 0.05-0.15% slippage
+          slippage = 0.05 + Math.random() * 0.10;
+          executionPrice *= (1 + slippage / 100);
+        } else {
+          // Small order: 0.01-0.05% slippage
+          slippage = 0.01 + Math.random() * 0.04;
+          executionPrice *= (1 + slippage / 100);
+        }
+      } else {
+        // For sell orders, we take from bids
+        executionPrice = orderBook.bestBid;
+        
+        const liquidityDepth = orderBook.bids.slice(0, 5).reduce((sum, bid) => sum + bid.quantity, 0);
+        if (quantity > liquidityDepth * 0.1) {
+          slippage = 0.05 + Math.random() * 0.10;
+          executionPrice *= (1 - slippage / 100);
+        } else {
+          slippage = 0.01 + Math.random() * 0.04;
+          executionPrice *= (1 - slippage / 100);
+        }
+      }
+    } else {
+      // Limit order: use specified price
+      executionPrice = limitPrice!;
+      slippage = 0;
+    }
+
+    // Calculate fees (Binance taker fee: 0.1%)
+    const feeRate = 0.001; // 0.1%
+    const notionalValue = quantity * executionPrice;
+    const fee = notionalValue * feeRate;
+
+    return {
+      orderId: `PT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      symbol,
+      side,
+      type,
+      quantity,
+      executionPrice,
+      notionalValue,
+      fee,
+      slippage,
+      timestamp: new Date().toISOString(),
+      status: 'FILLED',
+      source: 'paper-trading',
+      basedOnRealData: true,
+      marketData: {
+        bestBid: orderBook.bestBid,
+        bestAsk: orderBook.bestAsk,
+        spread: orderBook.spread
+      }
+    };
+
+  } catch (error) {
+    console.error('Order execution simulation error:', error);
+    throw error;
+  }
+}
+
+// ===================================================================
 // HELPER FUNCTIONS
 // ===================================================================
 
@@ -307,4 +513,8 @@ export function getCacheStats() {
     keys: Array.from(cache.keys()),
     oldestEntry: Math.min(...Array.from(cache.values()).map(v => v.timestamp))
   };
+}
+
+export function getSupportedSymbols() {
+  return PAPER_TRADING_SYMBOLS;
 }

@@ -101,6 +101,8 @@ function switchTab(tabName) {
     initializeStrategyCharts();
   } else if (tabName === 'analytics') {
     initializeAnalyticsCharts();
+  } else if (tabName === 'paper-trading') {
+    initializePaperTrading();
   }
 }
 window.switchTab = switchTab;
@@ -3099,6 +3101,791 @@ window.updateAgentMetricsDisplay = updateAgentMetricsDisplay;
 // END AUTONOMOUS TRADING AGENT SYSTEM
 // ============================================================================
 
+// ============================================================================
+// PAPER TRADING SYSTEM - Real Binance Market Data
+// ============================================================================
+
+// Paper Trading State
+class PaperTradingPortfolio {
+  constructor() {
+    this.balance = 200000; // Initial $200k
+    this.positions = []; // {symbol, quantity, avgPrice, side, entryTime}
+    this.trades = []; // {orderId, symbol, side, quantity, price, fee, pnl, timestamp}
+    this.equityHistory = []; // {timestamp, value}
+    this.load();
+  }
+
+  load() {
+    const saved = localStorage.getItem('paperTradingPortfolio');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.balance = data.balance || 200000;
+      this.positions = data.positions || [];
+      this.trades = data.trades || [];
+      this.equityHistory = data.equityHistory || [];
+    }
+    
+    // Initialize equity history if empty
+    if (this.equityHistory.length === 0) {
+      this.equityHistory.push({
+        timestamp: new Date().toISOString(),
+        value: 200000
+      });
+    }
+  }
+
+  save() {
+    localStorage.setItem('paperTradingPortfolio', JSON.stringify({
+      balance: this.balance,
+      positions: this.positions,
+      trades: this.trades,
+      equityHistory: this.equityHistory
+    }));
+  }
+
+  reset() {
+    this.balance = 200000;
+    this.positions = [];
+    this.trades = [];
+    this.equityHistory = [{
+      timestamp: new Date().toISOString(),
+      value: 200000
+    }];
+    this.save();
+  }
+
+  addTrade(execution) {
+    const trade = {
+      orderId: execution.orderId,
+      symbol: execution.symbol,
+      side: execution.side,
+      type: execution.type,
+      quantity: execution.quantity,
+      price: execution.executionPrice,
+      notionalValue: execution.notionalValue,
+      fee: execution.fee,
+      slippage: execution.slippage,
+      timestamp: execution.timestamp,
+      pnl: 0 // Will be calculated when position is closed
+    };
+
+    this.trades.push(trade);
+    this.updatePosition(execution);
+    this.save();
+    
+    return trade;
+  }
+
+  updatePosition(execution) {
+    const { symbol, side, quantity, executionPrice, fee, notionalValue } = execution;
+
+    if (side === 'BUY') {
+      // Deduct cost from balance
+      this.balance -= (notionalValue + fee);
+
+      // Find or create position
+      const existing = this.positions.find(p => p.symbol === symbol && p.side === 'LONG');
+      if (existing) {
+        // Add to existing position
+        const totalCost = (existing.avgPrice * existing.quantity) + notionalValue;
+        existing.quantity += quantity;
+        existing.avgPrice = totalCost / existing.quantity;
+      } else {
+        // Create new position
+        this.positions.push({
+          symbol,
+          side: 'LONG',
+          quantity,
+          avgPrice: executionPrice,
+          entryTime: execution.timestamp,
+          entryValue: notionalValue
+        });
+      }
+    } else {
+      // SELL
+      // Add proceeds to balance
+      this.balance += (notionalValue - fee);
+
+      // Find or create short position / close long position
+      const longPosition = this.positions.find(p => p.symbol === symbol && p.side === 'LONG');
+      
+      if (longPosition) {
+        // Closing long position
+        const closedQuantity = Math.min(quantity, longPosition.quantity);
+        const pnl = (executionPrice - longPosition.avgPrice) * closedQuantity - fee;
+        
+        // Update last trade with realized P&L
+        if (this.trades.length > 0) {
+          this.trades[this.trades.length - 1].pnl = pnl;
+        }
+
+        longPosition.quantity -= closedQuantity;
+        if (longPosition.quantity <= 0.0001) {
+          // Close position
+          this.positions = this.positions.filter(p => p !== longPosition);
+        }
+
+        // If sold more than we had, create short position
+        if (quantity > closedQuantity) {
+          const shortQuantity = quantity - closedQuantity;
+          this.positions.push({
+            symbol,
+            side: 'SHORT',
+            quantity: shortQuantity,
+            avgPrice: executionPrice,
+            entryTime: execution.timestamp,
+            entryValue: shortQuantity * executionPrice
+          });
+        }
+      } else {
+        // Opening short position
+        const shortPosition = this.positions.find(p => p.symbol === symbol && p.side === 'SHORT');
+        if (shortPosition) {
+          const totalValue = (shortPosition.avgPrice * shortPosition.quantity) + notionalValue;
+          shortPosition.quantity += quantity;
+          shortPosition.avgPrice = totalValue / shortPosition.quantity;
+        } else {
+          this.positions.push({
+            symbol,
+            side: 'SHORT',
+            quantity,
+            avgPrice: executionPrice,
+            entryTime: execution.timestamp,
+            entryValue: notionalValue
+          });
+        }
+      }
+    }
+  }
+
+  calculateEquity(currentPrices) {
+    let positionsValue = 0;
+
+    this.positions.forEach(pos => {
+      const currentPrice = currentPrices[pos.symbol] || pos.avgPrice;
+      
+      if (pos.side === 'LONG') {
+        positionsValue += pos.quantity * currentPrice;
+      } else {
+        // SHORT: profit when price goes down
+        const pnl = (pos.avgPrice - currentPrice) * pos.quantity;
+        positionsValue += pos.entryValue + pnl;
+      }
+    });
+
+    return this.balance + positionsValue;
+  }
+
+  updateEquityHistory(currentPrices) {
+    const equity = this.calculateEquity(currentPrices);
+    this.equityHistory.push({
+      timestamp: new Date().toISOString(),
+      value: equity
+    });
+
+    // Keep only last 1000 points
+    if (this.equityHistory.length > 1000) {
+      this.equityHistory = this.equityHistory.slice(-1000);
+    }
+
+    this.save();
+  }
+
+  getStats() {
+    const totalTrades = this.trades.length;
+    const profitableTrades = this.trades.filter(t => t.pnl > 0).length;
+    const winRate = totalTrades > 0 ? (profitableTrades / totalTrades * 100) : 0;
+    const totalPnL = this.trades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+
+    return {
+      totalTrades,
+      profitableTrades,
+      winRate: winRate.toFixed(1),
+      totalPnL: totalPnL.toFixed(2)
+    };
+  }
+}
+
+// Global paper trading state
+let paperTradingPortfolio = new PaperTradingPortfolio();
+let currentMarketData = null;
+let selectedSymbol = 'BTCUSDT';
+let selectedSide = 'BUY';
+let selectedType = 'MARKET';
+let paperTradingChart = null;
+let marketDataUpdateInterval = null;
+
+// Initialize Paper Trading
+async function initializePaperTrading() {
+  console.log('Initializing Paper Trading...');
+  
+  // Load portfolio
+  paperTradingPortfolio.load();
+  
+  // Fetch initial market data
+  await updateMarketData();
+  
+  // Initialize chart
+  initializePaperTradingChart();
+  
+  // Update portfolio display
+  updatePortfolioDisplay();
+  updatePositionsDisplay();
+  updateTradeHistoryDisplay();
+  
+  // Start real-time updates every 5 seconds
+  marketDataUpdateInterval = setInterval(updateMarketData, 5000);
+  
+  console.log('Paper Trading initialized successfully');
+}
+
+// Fetch real-time market data from Binance
+async function updateMarketData() {
+  try {
+    const response = await axios.get('/api/paper-trading/market-data');
+    
+    if (response.data.success) {
+      currentMarketData = response.data.markets;
+      
+      // Update market data table
+      updateMarketDataTable(currentMarketData);
+      
+      // Update symbol dropdown
+      updateSymbolDropdown(currentMarketData);
+      
+      // Update current price display
+      updateCurrentPriceDisplay();
+      
+      // Update portfolio equity
+      const prices = {};
+      currentMarketData.forEach(m => {
+        prices[m.symbol] = m.lastPrice;
+      });
+      paperTradingPortfolio.updateEquityHistory(prices);
+      updatePortfolioDisplay();
+      updatePositionsDisplay();
+      
+      // Update timestamp
+      const timestamp = new Date().toLocaleTimeString();
+      document.getElementById('market-data-timestamp').textContent = `Updated: ${timestamp}`;
+      
+      // Update chart
+      if (paperTradingChart) {
+        updatePaperTradingChart();
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching market data:', error);
+    document.getElementById('market-data-status').innerHTML = `
+      <div class="w-2 h-2 rounded-full bg-red-500"></div>
+      <span style="color: var(--deep-red)">ERROR</span>
+    `;
+  }
+}
+
+// Update market data table
+function updateMarketDataTable(markets) {
+  const tbody = document.getElementById('market-data-body');
+  if (!tbody) return;
+
+  tbody.innerHTML = markets.map(market => {
+    const changeColor = market.priceChangePercent24h >= 0 ? COLORS.forest : COLORS.deepRed;
+    const changeIcon = market.priceChangePercent24h >= 0 ? '▲' : '▼';
+    
+    return `
+      <tr style="border-bottom: 1px solid var(--cream-200);">
+        <td class="p-2 font-semibold" style="color: var(--navy)">${market.displaySymbol}</td>
+        <td class="p-2 text-right font-mono" style="color: var(--dark-brown)">$${market.lastPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})}</td>
+        <td class="p-2 text-right font-semibold" style="color: ${changeColor}">
+          ${changeIcon} ${Math.abs(market.priceChangePercent24h).toFixed(2)}%
+        </td>
+        <td class="p-2 text-right" style="color: var(--warm-gray)">
+          $${(market.quoteVolume24h / 1000000).toFixed(1)}M
+        </td>
+        <td class="p-2 text-right text-xs" style="color: var(--burnt)">${market.spread}%</td>
+        <td class="p-2 text-center">
+          <button onclick="selectSymbolForTrading('${market.symbol}')" class="px-2 py-1 rounded text-xs" style="background: var(--cream-200); color: var(--navy)">
+            Trade
+          </button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// Update symbol dropdown
+function updateSymbolDropdown(markets) {
+  const dropdown = document.getElementById('order-symbol');
+  if (!dropdown) return;
+
+  dropdown.innerHTML = markets.map(market => `
+    <option value="${market.symbol}">${market.displaySymbol}</option>
+  `).join('');
+  
+  dropdown.value = selectedSymbol;
+}
+
+// Select symbol for trading
+function selectSymbolForTrading(symbol) {
+  selectedSymbol = symbol;
+  document.getElementById('order-symbol').value = symbol;
+  updateCurrentPriceDisplay();
+  calculateOrderTotal();
+}
+window.selectSymbolForTrading = selectSymbolForTrading;
+
+// Set order type
+function setOrderType(type) {
+  selectedType = type;
+  
+  // Update button styles
+  const marketBtn = document.getElementById('order-type-market');
+  const limitBtn = document.getElementById('order-type-limit');
+  
+  if (type === 'MARKET') {
+    marketBtn.style.background = COLORS.navy;
+    marketBtn.style.color = 'white';
+    limitBtn.style.background = COLORS.cream100;
+    limitBtn.style.color = COLORS.navy;
+    document.getElementById('limit-price-container').style.display = 'none';
+    document.getElementById('market-price-display').style.display = 'block';
+  } else {
+    limitBtn.style.background = COLORS.navy;
+    limitBtn.style.color = 'white';
+    marketBtn.style.background = COLORS.cream100;
+    marketBtn.style.color = COLORS.navy;
+    document.getElementById('limit-price-container').style.display = 'block';
+    document.getElementById('market-price-display').style.display = 'none';
+  }
+  
+  calculateOrderTotal();
+}
+window.setOrderType = setOrderType;
+
+// Set order side
+function setOrderSide(side) {
+  selectedSide = side;
+  
+  // Update button styles
+  const buyBtn = document.getElementById('order-side-buy');
+  const sellBtn = document.getElementById('order-side-sell');
+  
+  if (side === 'BUY') {
+    buyBtn.style.background = COLORS.forest;
+    buyBtn.style.color = 'white';
+    sellBtn.style.background = COLORS.cream100;
+    sellBtn.style.color = COLORS.navy;
+  } else {
+    sellBtn.style.background = COLORS.deepRed;
+    sellBtn.style.color = 'white';
+    buyBtn.style.background = COLORS.cream100;
+    buyBtn.style.color = COLORS.navy;
+  }
+  
+  calculateOrderTotal();
+}
+window.setOrderSide = setOrderSide;
+
+// Update current price display
+function updateCurrentPriceDisplay() {
+  if (!currentMarketData) return;
+  
+  const market = currentMarketData.find(m => m.symbol === selectedSymbol);
+  if (market) {
+    const priceEl = document.getElementById('current-market-price');
+    if (priceEl) {
+      priceEl.textContent = `$${market.lastPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})}`;
+    }
+  }
+}
+
+// Calculate order total
+function calculateOrderTotal() {
+  const quantity = parseFloat(document.getElementById('order-quantity').value) || 0;
+  const priceInput = document.getElementById('order-price');
+  
+  let price = 0;
+  if (selectedType === 'MARKET' && currentMarketData) {
+    const market = currentMarketData.find(m => m.symbol === selectedSymbol);
+    price = market ? (selectedSide === 'BUY' ? market.askPrice : market.bidPrice) : 0;
+  } else {
+    price = parseFloat(priceInput.value) || 0;
+  }
+  
+  const total = quantity * price;
+  const fee = total * 0.001; // 0.1% fee
+  
+  document.getElementById('order-quantity-usd').textContent = `≈ $${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  document.getElementById('order-total').textContent = `$${total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  document.getElementById('order-fee').textContent = `$${fee.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})}`;
+  
+  // Enable/disable place order button
+  const btn = document.getElementById('place-order-btn');
+  if (quantity > 0 && (selectedType === 'MARKET' || price > 0)) {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  } else {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+  }
+}
+
+// Place order
+async function placeOrder() {
+  try {
+    const symbol = selectedSymbol;
+    const side = selectedSide;
+    const type = selectedType;
+    const quantity = parseFloat(document.getElementById('order-quantity').value);
+    const price = type === 'LIMIT' ? parseFloat(document.getElementById('order-price').value) : undefined;
+    
+    // Validation
+    if (!quantity || quantity <= 0) {
+      alert('Please enter a valid quantity');
+      return;
+    }
+    
+    if (type === 'LIMIT' && (!price || price <= 0)) {
+      alert('Please enter a valid limit price');
+      return;
+    }
+    
+    // Check balance for BUY orders
+    if (side === 'BUY') {
+      const market = currentMarketData.find(m => m.symbol === symbol);
+      const estimatedCost = quantity * (type === 'MARKET' ? market.askPrice : price) * 1.001; // Include fee
+      
+      if (estimatedCost > paperTradingPortfolio.balance) {
+        alert(`Insufficient balance. Required: $${estimatedCost.toFixed(2)}, Available: $${paperTradingPortfolio.balance.toFixed(2)}`);
+        return;
+      }
+    }
+    
+    // Show loading
+    const btn = document.getElementById('place-order-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Executing...';
+    btn.disabled = true;
+    
+    // Execute order
+    const response = await axios.post('/api/paper-trading/order', {
+      symbol,
+      side,
+      type,
+      quantity,
+      price
+    });
+    
+    if (response.data.success) {
+      const execution = response.data;
+      
+      // Add to portfolio
+      paperTradingPortfolio.addTrade(execution);
+      
+      // Update displays
+      updatePortfolioDisplay();
+      updatePositionsDisplay();
+      updateTradeHistoryDisplay();
+      updatePaperTradingChart();
+      
+      // Show success notification
+      showNotification(
+        `Order executed! ${side} ${quantity} ${symbol} at $${execution.executionPrice.toFixed(2)}`,
+        'success'
+      );
+      
+      // Reset form
+      document.getElementById('order-quantity').value = '';
+      if (type === 'LIMIT') {
+        document.getElementById('order-price').value = '';
+      }
+      calculateOrderTotal();
+    }
+    
+    // Restore button
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    
+  } catch (error) {
+    console.error('Error placing order:', error);
+    alert('Order execution failed: ' + (error.response?.data?.error || error.message));
+    
+    // Restore button
+    const btn = document.getElementById('place-order-btn');
+    btn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Place Simulated Order';
+    btn.disabled = false;
+  }
+}
+window.placeOrder = placeOrder;
+
+// Update portfolio display
+function updatePortfolioDisplay() {
+  const prices = {};
+  if (currentMarketData) {
+    currentMarketData.forEach(m => {
+      prices[m.symbol] = m.lastPrice;
+    });
+  }
+  
+  const equity = paperTradingPortfolio.calculateEquity(prices);
+  const initialValue = 200000;
+  const pnl = equity - initialValue;
+  const pnlPercent = (pnl / initialValue * 100);
+  const stats = paperTradingPortfolio.getStats();
+  
+  // Update balance
+  document.getElementById('pt-balance').textContent = `$${paperTradingPortfolio.balance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  
+  // Update equity
+  document.getElementById('pt-equity').textContent = `$${equity.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+  document.getElementById('pt-equity').style.color = pnl >= 0 ? COLORS.forest : COLORS.deepRed;
+  
+  const changeEl = document.getElementById('pt-equity-change');
+  const sign = pnl >= 0 ? '+' : '';
+  changeEl.textContent = `${sign}$${pnl.toFixed(2)} (${sign}${pnlPercent.toFixed(2)}%)`;
+  changeEl.style.color = pnl >= 0 ? COLORS.forest : COLORS.deepRed;
+  
+  // Update positions count
+  document.getElementById('pt-positions-count').textContent = paperTradingPortfolio.positions.length;
+  
+  // Update trades count
+  document.getElementById('pt-total-trades').textContent = stats.totalTrades;
+  document.getElementById('pt-win-rate').textContent = `Win rate: ${stats.winRate}%`;
+  document.getElementById('pt-win-rate').style.color = parseFloat(stats.winRate) >= 50 ? COLORS.forest : COLORS.deepRed;
+}
+
+// Update positions display
+function updatePositionsDisplay() {
+  const container = document.getElementById('open-positions-container');
+  if (!container) return;
+  
+  const prices = {};
+  if (currentMarketData) {
+    currentMarketData.forEach(m => {
+      prices[m.symbol] = m.lastPrice;
+    });
+  }
+  
+  if (paperTradingPortfolio.positions.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8" style="color: var(--warm-gray)">
+        <i class="fas fa-inbox text-4xl mb-2"></i>
+        <p class="text-sm">No open positions</p>
+        <p class="text-xs mt-1">Place your first trade to see positions here</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = `
+    <div class="space-y-2">
+      ${paperTradingPortfolio.positions.map(pos => {
+        const currentPrice = prices[pos.symbol] || pos.avgPrice;
+        let pnl, pnlPercent;
+        
+        if (pos.side === 'LONG') {
+          pnl = (currentPrice - pos.avgPrice) * pos.quantity;
+          pnlPercent = ((currentPrice - pos.avgPrice) / pos.avgPrice * 100);
+        } else {
+          // SHORT position
+          pnl = (pos.avgPrice - currentPrice) * pos.quantity;
+          pnlPercent = ((pos.avgPrice - currentPrice) / pos.avgPrice * 100);
+        }
+        
+        const pnlColor = pnl >= 0 ? COLORS.forest : COLORS.deepRed;
+        const sideColor = pos.side === 'LONG' ? COLORS.forest : COLORS.deepRed;
+        const sign = pnl >= 0 ? '+' : '';
+        
+        return `
+          <div class="p-3 rounded" style="background: var(--cream-100); border-left: 3px solid ${sideColor}">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <div class="font-semibold" style="color: var(--navy)">${pos.symbol.replace('USDT', '/USDT')}</div>
+                <div class="text-xs" style="color: var(--warm-gray)">
+                  <span class="font-semibold" style="color: ${sideColor}">${pos.side}</span> | 
+                  ${pos.quantity} @ $${pos.avgPrice.toFixed(2)}
+                </div>
+              </div>
+              <div class="text-right">
+                <div class="font-semibold" style="color: ${pnlColor}">${sign}$${pnl.toFixed(2)}</div>
+                <div class="text-xs" style="color: ${pnlColor}">${sign}${pnlPercent.toFixed(2)}%</div>
+              </div>
+            </div>
+            <div class="text-xs" style="color: var(--warm-gray)">
+              Current: $${currentPrice.toFixed(2)} | Value: $${(pos.quantity * currentPrice).toFixed(2)}
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+// Update trade history display
+function updateTradeHistoryDisplay() {
+  const container = document.getElementById('trade-history-container');
+  if (!container) return;
+  
+  if (paperTradingPortfolio.trades.length === 0) {
+    container.innerHTML = `
+      <div class="text-center py-8" style="color: var(--warm-gray)">
+        <i class="fas fa-file-invoice text-4xl mb-2"></i>
+        <p class="text-sm">No trade history</p>
+        <p class="text-xs mt-1">Your executed trades will appear here</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Show most recent trades first
+  const recentTrades = [...paperTradingPortfolio.trades].reverse().slice(0, 10);
+  
+  container.innerHTML = `
+    <div class="overflow-x-auto" style="max-height: 300px;">
+      <table class="w-full text-xs">
+        <thead style="background: var(--cream-100); position: sticky; top: 0;">
+          <tr>
+            <th class="text-left p-2" style="color: var(--navy)">Time</th>
+            <th class="text-left p-2" style="color: var(--navy)">Symbol</th>
+            <th class="text-left p-2" style="color: var(--navy)">Side</th>
+            <th class="text-right p-2" style="color: var(--navy)">Qty</th>
+            <th class="text-right p-2" style="color: var(--navy)">Price</th>
+            <th class="text-right p-2" style="color: var(--navy)">P&L</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${recentTrades.map(trade => {
+            const time = new Date(trade.timestamp).toLocaleTimeString();
+            const sideColor = trade.side === 'BUY' ? COLORS.forest : COLORS.deepRed;
+            const pnlColor = trade.pnl >= 0 ? COLORS.forest : COLORS.deepRed;
+            const pnlSign = trade.pnl >= 0 ? '+' : '';
+            
+            return `
+              <tr style="border-bottom: 1px solid var(--cream-200);">
+                <td class="p-2" style="color: var(--warm-gray)">${time}</td>
+                <td class="p-2" style="color: var(--navy)">${trade.symbol.replace('USDT', '/USDT')}</td>
+                <td class="p-2 font-semibold" style="color: ${sideColor}">${trade.side}</td>
+                <td class="p-2 text-right" style="color: var(--dark-brown)">${trade.quantity}</td>
+                <td class="p-2 text-right font-mono" style="color: var(--navy)">$${trade.price.toFixed(2)}</td>
+                <td class="p-2 text-right font-semibold" style="color: ${pnlColor}">
+                  ${trade.pnl !== 0 ? `${pnlSign}$${trade.pnl.toFixed(2)}` : '-'}
+                </td>
+              </tr>
+            `;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// Initialize paper trading chart
+function initializePaperTradingChart() {
+  const ctx = document.getElementById('paper-trading-chart');
+  if (!ctx) return;
+  
+  paperTradingChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Portfolio Value',
+        data: [],
+        borderColor: COLORS.forest,
+        backgroundColor: COLORS.forest + '20',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top'
+        },
+        tooltip: {
+          mode: 'index',
+          intersect: false,
+          callbacks: {
+            label: function(context) {
+              return 'Value: $' + context.parsed.y.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+          ticks: {
+            callback: function(value) {
+              return '$' + (value / 1000).toFixed(0) + 'k';
+            }
+          }
+        },
+        x: {
+          display: false
+        }
+      }
+    }
+  });
+  
+  updatePaperTradingChart();
+}
+
+// Update paper trading chart
+function updatePaperTradingChart() {
+  if (!paperTradingChart) return;
+  
+  const history = paperTradingPortfolio.equityHistory;
+  const labels = history.map(h => new Date(h.timestamp).toLocaleTimeString());
+  const data = history.map(h => h.value);
+  
+  paperTradingChart.data.labels = labels;
+  paperTradingChart.data.datasets[0].data = data;
+  
+  // Update line color based on performance
+  const initialValue = history[0]?.value || 200000;
+  const currentValue = history[history.length - 1]?.value || 200000;
+  const isProfit = currentValue >= initialValue;
+  
+  paperTradingChart.data.datasets[0].borderColor = isProfit ? COLORS.forest : COLORS.deepRed;
+  paperTradingChart.data.datasets[0].backgroundColor = (isProfit ? COLORS.forest : COLORS.deepRed) + '20';
+  
+  paperTradingChart.update('none'); // Update without animation for performance
+}
+
+// Add event listeners for order form inputs
+document.addEventListener('DOMContentLoaded', () => {
+  const quantityInput = document.getElementById('order-quantity');
+  const priceInput = document.getElementById('order-price');
+  const symbolSelect = document.getElementById('order-symbol');
+  
+  if (quantityInput) {
+    quantityInput.addEventListener('input', calculateOrderTotal);
+  }
+  
+  if (priceInput) {
+    priceInput.addEventListener('input', calculateOrderTotal);
+  }
+  
+  if (symbolSelect) {
+    symbolSelect.addEventListener('change', (e) => {
+      selectedSymbol = e.target.value;
+      updateCurrentPriceDisplay();
+      calculateOrderTotal();
+    });
+  }
+});
+
+// ============================================================================
+// END PAPER TRADING SYSTEM
+// ============================================================================
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   if (updateInterval) {
@@ -3109,5 +3896,8 @@ window.addEventListener('beforeunload', () => {
   }
   if (agentInterval) {
     clearInterval(agentInterval);
+  }
+  if (marketDataUpdateInterval) {
+    clearInterval(marketDataUpdateInterval);
   }
 });
