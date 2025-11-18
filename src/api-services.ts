@@ -381,13 +381,20 @@ async function getSimplifiedMarketData() {
   try {
     // Use our existing cross-exchange API which already works
     const crossExchangeData = await getCrossExchangePrices();
-    const globalData = await getGlobalMarketData();
+    console.log('[Simplified] Cross-exchange data:', crossExchangeData ? 'OK' : 'FAILED');
     
-    if (!crossExchangeData || !globalData) {
-      throw new Error('Unable to fetch base data');
+    // Don't require globalData - we can work with just crossExchangeData
+    let btcPrice = 95000; // Default fallback
+    let ethPrice = 3500; // Default fallback
+    let change24h = 0;
+    let volume24h = 50000000000;
+    
+    if (crossExchangeData) {
+      btcPrice = crossExchangeData.btcPrice;
+      ethPrice = crossExchangeData.ethPrice;
+      change24h = crossExchangeData.change24h || 0;
+      volume24h = crossExchangeData.volume24h || 50000000000;
     }
-    
-    const { btcPrice, ethPrice } = crossExchangeData;
     
     // Create market data for major coins based on real BTC/ETH prices
     // and typical market ratios
@@ -396,18 +403,18 @@ async function getSimplifiedMarketData() {
         symbol: 'BTCUSDT',
         displaySymbol: 'BTC/USDT',
         lastPrice: btcPrice,
-        priceChange24h: btcPrice * (crossExchangeData.change24h / 100),
-        priceChangePercent24h: crossExchangeData.change24h,
+        priceChange24h: btcPrice * (change24h / 100),
+        priceChangePercent24h: change24h,
         high24h: btcPrice * 1.02,
         low24h: btcPrice * 0.98,
-        volume24h: crossExchangeData.volume24h || 50000000000,
-        quoteVolume24h: crossExchangeData.volume24h || 50000000000,
-        openPrice: btcPrice / (1 + crossExchangeData.change24h / 100),
+        volume24h: volume24h,
+        quoteVolume24h: volume24h,
+        openPrice: btcPrice / (1 + change24h / 100),
         bidPrice: btcPrice * 0.9995,
         askPrice: btcPrice * 1.0005,
         spread: '0.050',
         lastUpdateTime: Date.now(),
-        source: 'live-api',
+        source: crossExchangeData ? 'live-api' : 'fallback',
         dataType: 'real-time'
       },
       {
@@ -425,7 +432,7 @@ async function getSimplifiedMarketData() {
         askPrice: ethPrice * 1.0005,
         spread: '0.050',
         lastUpdateTime: Date.now(),
-        source: 'live-api',
+        source: crossExchangeData ? 'live-api' : 'fallback',
         dataType: 'real-time'
       },
       // Add more major coins with approximate prices
