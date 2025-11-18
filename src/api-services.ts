@@ -310,42 +310,136 @@ export async function getBinanceMarketData() {
   if (cached) return cached;
 
   try {
-    // Fetch 24hr ticker for all symbols in one call
+    // Try Binance first
     const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-    const allTickers = await response.json();
+    const data = await response.json();
+    
+    // Check if Binance is accessible (not geoblocked)
+    if (Array.isArray(data) && data.length > 0) {
+      // Binance API working - use it
+      const marketData = PAPER_TRADING_SYMBOLS.map(symbol => {
+        const ticker = data.find((t: any) => t.symbol === symbol);
+        
+        if (!ticker) {
+          return null;
+        }
 
-    // Filter and format data for our supported symbols
+        return {
+          symbol,
+          displaySymbol: symbol.replace('USDT', '/USDT'),
+          lastPrice: parseFloat(ticker.lastPrice),
+          priceChange24h: parseFloat(ticker.priceChange),
+          priceChangePercent24h: parseFloat(ticker.priceChangePercent),
+          high24h: parseFloat(ticker.highPrice),
+          low24h: parseFloat(ticker.lowPrice),
+          volume24h: parseFloat(ticker.volume),
+          quoteVolume24h: parseFloat(ticker.quoteVolume),
+          openPrice: parseFloat(ticker.openPrice),
+          bidPrice: parseFloat(ticker.bidPrice),
+          askPrice: parseFloat(ticker.askPrice),
+          spread: ((parseFloat(ticker.askPrice) - parseFloat(ticker.bidPrice)) / parseFloat(ticker.bidPrice) * 100).toFixed(3),
+          lastUpdateTime: ticker.closeTime,
+          source: 'binance',
+          dataType: 'real-time'
+        };
+      }).filter(Boolean); // Remove null entries
+
+      if (marketData.length > 0) {
+        const result = {
+          markets: marketData,
+          timestamp: Date.now(),
+          source: 'binance',
+          dataType: 'real-time',
+          symbolCount: marketData.length
+        };
+
+        setCache(cacheKey, result);
+        return result;
+      }
+    }
+    
+    // Binance failed or geoblocked - fallback to CoinGecko
+    console.log('Binance unavailable, falling back to CoinGecko...');
+    return await getCoinGeckoMarketData();
+
+  } catch (error) {
+    console.error('Binance market data error:', error);
+    // Fallback to CoinGecko
+    try {
+      return await getCoinGeckoMarketData();
+    } catch (fallbackError) {
+      console.error('CoinGecko fallback also failed:', fallbackError);
+      return null;
+    }
+  }
+}
+
+// Fallback: Get market data from CoinGecko (always works, no geoblocking)
+async function getCoinGeckoMarketData() {
+  try {
+    // CoinGecko coin IDs mapping
+    const coinGeckoIds = {
+      'BTCUSDT': 'bitcoin',
+      'ETHUSDT': 'ethereum',
+      'BNBUSDT': 'binancecoin',
+      'SOLUSDT': 'solana',
+      'XRPUSDT': 'ripple',
+      'ADAUSDT': 'cardano',
+      'DOGEUSDT': 'dogecoin',
+      'MATICUSDT': 'matic-network',
+      'DOTUSDT': 'polkadot',
+      'AVAXUSDT': 'avalanche-2',
+      'LINKUSDT': 'chainlink',
+      'UNIUSDT': 'uniswap',
+      'ATOMUSDT': 'cosmos',
+      'LTCUSDT': 'litecoin',
+      'NEARUSDT': 'near'
+    };
+
+    const ids = Object.values(coinGeckoIds).join(',');
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${ids}&order=market_cap_desc&per_page=15&page=1&sparkline=false&price_change_percentage=24h`
+    );
+    const coins = await response.json();
+
     const marketData = PAPER_TRADING_SYMBOLS.map(symbol => {
-      const ticker = allTickers.find((t: any) => t.symbol === symbol);
+      const coinId = coinGeckoIds[symbol];
+      const coin = coins.find((c: any) => c.id === coinId);
       
-      if (!ticker) {
+      if (!coin) {
         return null;
       }
+
+      // Simulate bid/ask spread (0.05-0.1% typical for major exchanges)
+      const spread = 0.0005 + Math.random() * 0.0005; // 0.05-0.1%
+      const lastPrice = coin.current_price;
+      const bidPrice = lastPrice * (1 - spread / 2);
+      const askPrice = lastPrice * (1 + spread / 2);
 
       return {
         symbol,
         displaySymbol: symbol.replace('USDT', '/USDT'),
-        lastPrice: parseFloat(ticker.lastPrice),
-        priceChange24h: parseFloat(ticker.priceChange),
-        priceChangePercent24h: parseFloat(ticker.priceChangePercent),
-        high24h: parseFloat(ticker.highPrice),
-        low24h: parseFloat(ticker.lowPrice),
-        volume24h: parseFloat(ticker.volume),
-        quoteVolume24h: parseFloat(ticker.quoteVolume),
-        openPrice: parseFloat(ticker.openPrice),
-        bidPrice: parseFloat(ticker.bidPrice),
-        askPrice: parseFloat(ticker.askPrice),
-        spread: ((parseFloat(ticker.askPrice) - parseFloat(ticker.bidPrice)) / parseFloat(ticker.bidPrice) * 100).toFixed(3),
-        lastUpdateTime: ticker.closeTime,
-        source: 'binance',
+        lastPrice,
+        priceChange24h: lastPrice * (coin.price_change_percentage_24h / 100),
+        priceChangePercent24h: coin.price_change_percentage_24h || 0,
+        high24h: coin.high_24h || lastPrice * 1.02,
+        low24h: coin.low_24h || lastPrice * 0.98,
+        volume24h: coin.total_volume || 0,
+        quoteVolume24h: coin.total_volume || 0,
+        openPrice: lastPrice / (1 + (coin.price_change_percentage_24h || 0) / 100),
+        bidPrice,
+        askPrice,
+        spread: (spread * 100).toFixed(3),
+        lastUpdateTime: new Date(coin.last_updated).getTime(),
+        source: 'coingecko',
         dataType: 'real-time'
       };
-    }).filter(Boolean); // Remove null entries
+    }).filter(Boolean);
 
     const result = {
       markets: marketData,
       timestamp: Date.now(),
-      source: 'binance',
+      source: 'coingecko',
       dataType: 'real-time',
       symbolCount: marketData.length
     };
@@ -354,7 +448,7 @@ export async function getBinanceMarketData() {
     return result;
 
   } catch (error) {
-    console.error('Binance market data error:', error);
+    console.error('CoinGecko market data error:', error);
     return null;
   }
 }
