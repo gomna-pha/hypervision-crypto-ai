@@ -412,7 +412,8 @@ async function getSimplifiedMarketData() {
         openPrice: btcPrice / (1 + change24h / 100),
         bidPrice: btcPrice * 0.9995,
         askPrice: btcPrice * 1.0005,
-        spread: '0.050',
+        spread: (btcPrice * 0.001).toFixed(2), // Actual dollar spread: 0.1% of price
+        spreadPercent: 0.10, // 0.10% spread
         lastUpdateTime: Date.now(),
         source: crossExchangeData ? 'live-api' : 'fallback',
         dataType: 'real-time'
@@ -430,7 +431,8 @@ async function getSimplifiedMarketData() {
         openPrice: ethPrice * 0.985,
         bidPrice: ethPrice * 0.9995,
         askPrice: ethPrice * 1.0005,
-        spread: '0.050',
+        spread: (ethPrice * 0.001).toFixed(2), // Actual dollar spread: 0.1% of price
+        spreadPercent: 0.10, // 0.10% spread
         lastUpdateTime: Date.now(),
         source: crossExchangeData ? 'live-api' : 'fallback',
         dataType: 'real-time'
@@ -439,6 +441,22 @@ async function getSimplifiedMarketData() {
       ...['BNB', 'SOL', 'XRP', 'ADA', 'DOGE', 'MATIC', 'DOT', 'AVAX', 'LINK', 'UNI', 'ATOM', 'LTC', 'NEAR'].map((coin, idx) => {
         const basePrice = [610, 245, 1.18, 1.05, 0.38, 0.94, 7.5, 41, 15.8, 11.2, 8.9, 102, 6.2][idx];
         const change = (Math.random() - 0.5) * 10; // -5% to +5%
+        
+        // Calculate realistic spread based on price range
+        let spreadPercent;
+        if (basePrice > 1000) {
+          spreadPercent = 0.05; // 0.05% for high-value coins
+        } else if (basePrice > 100) {
+          spreadPercent = 0.08; // 0.08% for mid-value coins
+        } else if (basePrice > 10) {
+          spreadPercent = 0.12; // 0.12% for lower-value coins
+        } else if (basePrice > 1) {
+          spreadPercent = 0.15; // 0.15% for low-value coins
+        } else {
+          spreadPercent = 0.20; // 0.20% for very low-value coins
+        }
+        
+        const spreadDollar = basePrice * (spreadPercent / 100);
         
         return {
           symbol: `${coin}USDT`,
@@ -451,9 +469,10 @@ async function getSimplifiedMarketData() {
           volume24h: 500000000 + Math.random() * 1000000000,
           quoteVolume24h: 500000000 + Math.random() * 1000000000,
           openPrice: basePrice / (1 + change / 100),
-          bidPrice: basePrice * 0.9995,
-          askPrice: basePrice * 1.0005,
-          spread: '0.050',
+          bidPrice: basePrice * (1 - spreadPercent / 200),
+          askPrice: basePrice * (1 + spreadPercent / 200),
+          spread: spreadDollar.toFixed(basePrice < 1 ? 4 : 2), // Dollar amount
+          spreadPercent: spreadPercent,
           lastUpdateTime: Date.now(),
           source: 'estimated',
           dataType: 'real-time'

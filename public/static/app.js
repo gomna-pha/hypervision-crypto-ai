@@ -3402,7 +3402,7 @@ function updateMarketDataTable(markets) {
         <td class="p-2 text-right" style="color: var(--warm-gray)">
           $${(market.quoteVolume24h / 1000000).toFixed(1)}M
         </td>
-        <td class="p-2 text-right text-xs" style="color: var(--burnt)">${market.spread}%</td>
+        <td class="p-2 text-right text-xs" style="color: var(--burnt)">$${market.spread}</td>
         <td class="p-2 text-center">
           <button onclick="selectSymbolForTrading('${market.symbol}')" class="px-2 py-1 rounded text-xs" style="background: var(--cream-200); color: var(--navy)">
             Trade
@@ -3805,15 +3805,25 @@ function updateTradeHistoryDisplay() {
 // Initialize paper trading chart
 function initializePaperTradingChart() {
   const ctx = document.getElementById('paper-trading-chart');
-  if (!ctx) return;
+  if (!ctx) {
+    console.error('Chart canvas not found');
+    return;
+  }
+  
+  // Get initial equity history
+  const history = paperTradingPortfolio.equityHistory;
+  const initialLabels = history.length > 0 ? history.map(h => new Date(h.timestamp).toLocaleTimeString()) : ['Start'];
+  const initialData = history.length > 0 ? history.map(h => h.value) : [200000];
+  
+  console.log('Initializing chart with', initialData.length, 'data points');
   
   paperTradingChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: [],
+      labels: initialLabels,
       datasets: [{
         label: 'Portfolio Value',
-        data: [],
+        data: initialData,
         borderColor: COLORS.forest,
         backgroundColor: COLORS.forest + '20',
         borderWidth: 2,
@@ -3860,11 +3870,25 @@ function initializePaperTradingChart() {
 
 // Update paper trading chart
 function updatePaperTradingChart() {
-  if (!paperTradingChart) return;
+  if (!paperTradingChart) {
+    console.warn('Chart not initialized yet');
+    return;
+  }
   
   const history = paperTradingPortfolio.equityHistory;
+  
+  // Ensure we have at least some data
+  if (history.length === 0) {
+    history.push({
+      timestamp: new Date().toISOString(),
+      value: 200000
+    });
+  }
+  
   const labels = history.map(h => new Date(h.timestamp).toLocaleTimeString());
   const data = history.map(h => h.value);
+  
+  console.log('Updating chart with', data.length, 'points, latest value:', data[data.length - 1]);
   
   paperTradingChart.data.labels = labels;
   paperTradingChart.data.datasets[0].data = data;
