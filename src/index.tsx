@@ -2432,7 +2432,42 @@ function generateCompositeSignal() {
 function generateOpportunities() {
   const now = Date.now()
   
-  return [
+  // Approximate current prices for dollar spread calculation
+  const assetPrices: Record<string, number> = {
+    'BTC-USD': 93234,
+    'ETH-USD': 3151,
+    'SOL-USD': 245,
+    'AVAX-USD': 41,
+    'MATIC-USD': 0.94,
+    'LINK-USD': 15.80,
+    'SUI-USD': 4.20,
+    'DOT-USD': 7.50,
+    'INJ-USD': 28.50,
+    'FTM-USD': 0.88,
+    'ATOM-USD': 8.90,
+    'ARB-USD': 1.75,
+    'OP-USD': 3.20,
+    'NEAR-USD': 6.20,
+    'ADA-USD': 1.05,
+    'UNI-USD': 11.20,
+    'XRP-USD': 1.18,
+    'LTC-USD': 102,
+    'RENDER-USD': 9.50,
+    'WLD-USD': 6.80,
+    'APT-USD': 13.50,
+    'TIA-USD': 14.20
+  };
+  
+  // Helper function to calculate dollar spread
+  const getDollarSpread = (asset: string, spreadPercent: number) => {
+    const baseAsset = asset.split('-')[0].split('/')[0]; // Extract base asset (BTC, ETH, etc.)
+    const matchingKey = Object.keys(assetPrices).find(key => key.startsWith(baseAsset + '-'));
+    const price = matchingKey ? assetPrices[matchingKey] : 1000; // Default $1000 if not found
+    const dollarSpread = price * (spreadPercent / 100);
+    return dollarSpread < 0.01 ? 0.01 : parseFloat(dollarSpread.toFixed(2));
+  };
+  
+  const opportunities = [
     // Core Spatial Arbitrage - Multiple Assets
     {
       id: 1,
@@ -2932,6 +2967,12 @@ function generateOpportunities() {
       constraintsPassed: true
     }
   ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()) // Sort by most recent first
+    .map(opp => ({
+      ...opp,
+      spreadDollar: getDollarSpread(opp.asset, opp.spread)
+    }));
+  
+  return opportunities;
 }
 
 // NEW: Calculate Portfolio Metrics based on Real Agent Data

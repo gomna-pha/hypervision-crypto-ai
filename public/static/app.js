@@ -655,7 +655,7 @@ function updateOpportunitiesTable(opportunities) {
               </span>
             </td>
             <td class="p-3 text-xs">${opp.buyExchange} → ${opp.sellExchange}</td>
-            <td class="p-3 text-right font-semibold">${opp.spread.toFixed(2)}%</td>
+            <td class="p-3 text-right font-semibold">$${opp.spreadDollar ? opp.spreadDollar.toFixed(2) : opp.spread.toFixed(2)}</td>
             <td class="p-3 text-right font-bold" style="color: ${COLORS.forest}">+${opp.netProfit.toFixed(2)}%</td>
             <td class="p-3 text-right">${opp.mlConfidence}%</td>
             <td class="p-3 text-right">${opp.cnnConfidence ? opp.cnnConfidence + '%' : 'N/A'}</td>
