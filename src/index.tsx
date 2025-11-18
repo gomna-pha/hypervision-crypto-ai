@@ -59,8 +59,44 @@ app.get('/api/portfolio/metrics', async (c) => {
   return c.json(metrics);
 })
 
-app.get('/api/opportunities', (c) => {
-  return c.json(generateOpportunities())
+app.get('/api/opportunities', async (c) => {
+  try {
+    // Try to get REAL opportunities from actual algorithms
+    const { detectAllRealOpportunities } = await import('./api-services')
+    const realOpportunities = await detectAllRealOpportunities()
+    
+    console.log(`[Opportunities API] Real algorithms found ${realOpportunities.length} opportunities`)
+    
+    // Get demo opportunities for comparison/filling
+    const demoOpportunities = generateOpportunities()
+    
+    // HYBRID APPROACH: Show real opportunities first, then demo ones
+    // Mark demo opportunities clearly
+    const markedDemoOpportunities = demoOpportunities.map((opp: any) => ({
+      ...opp,
+      realAlgorithm: false, // Mark as demo/simulated
+      strategy: opp.strategy + ' (Demo)' // Add (Demo) label
+    }))
+    
+    // Combine: Real first, then demo
+    const allOpportunities = [
+      ...realOpportunities,
+      ...markedDemoOpportunities.slice(0, 10) // Add top 10 demo for UI completeness
+    ]
+    
+    console.log(`[Opportunities API] Returning ${realOpportunities.length} real + ${Math.min(10, demoOpportunities.length)} demo opportunities`)
+    
+    return c.json(allOpportunities)
+  } catch (error) {
+    console.error('[Opportunities API] Error:', error)
+    // Fallback to demo data on error
+    const demoOpportunities = generateOpportunities()
+    return c.json(demoOpportunities.map((opp: any) => ({
+      ...opp,
+      realAlgorithm: false,
+      strategy: opp.strategy + ' (Demo)'
+    })))
+  }
 })
 
 app.get('/api/backtest', (c) => {

@@ -650,8 +650,8 @@ function updateOpportunitiesTable(opportunities) {
               </span>
             </td>
             <td class="p-3">
-              <span class="px-2 py-1 rounded text-xs font-semibold" style="background: ${COLORS.navy}; color: ${COLORS.cream}">
-                ${opp.strategy}
+              <span class="px-2 py-1 rounded text-xs font-semibold" style="background: ${opp.realAlgorithm ? COLORS.forest : COLORS.navy}; color: ${COLORS.cream}">
+                ${opp.realAlgorithm ? '✓ ' : ''}${opp.strategy}
               </span>
             </td>
             <td class="p-3 text-xs">${opp.buyExchange} → ${opp.sellExchange}</td>
