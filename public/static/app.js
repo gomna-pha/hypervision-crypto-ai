@@ -3696,6 +3696,10 @@ async function initializePaperTrading() {
   updatePositionsDisplay();
   updateTradeHistoryDisplay();
   
+  // Initialize order form display
+  updateCurrentPriceDisplay();
+  calculateOrderTotal();
+  
   // Start real-time updates every 5 seconds
   marketDataUpdateInterval = setInterval(updateMarketData, 5000);
   
@@ -3704,6 +3708,19 @@ async function initializePaperTrading() {
   
   // Update auto-trade status every 5 seconds
   setInterval(updateAutoTradeStatus, 5000);
+  
+  // Check if auto-trade was previously enabled (session persistence)
+  // Note: We don't auto-start it, just update UI to show it's available
+  if (autoTradeEngine.enabled) {
+    console.log('[AutoTrade] Engine was previously active, updating UI...');
+    const btn = document.getElementById('auto-trade-toggle-btn');
+    const badge = document.getElementById('auto-trade-status-badge');
+    btn.innerHTML = '<i class="fas fa-stop mr-2"></i>STOP AUTO-TRADE';
+    btn.style.background = 'var(--deep-red)';
+    badge.textContent = 'ACTIVE';
+    badge.style.background = 'var(--forest)';
+    startAutoTradeCountdown();
+  }
   
   console.log('Paper Trading initialized successfully');
 }
@@ -3857,14 +3874,19 @@ window.setOrderSide = setOrderSide;
 
 // Update current price display
 function updateCurrentPriceDisplay() {
-  if (!currentMarketData) return;
+  const priceEl = document.getElementById('current-market-price');
+  if (!priceEl) return;
+  
+  if (!currentMarketData || currentMarketData.length === 0) {
+    priceEl.textContent = 'Loading...';
+    return;
+  }
   
   const market = currentMarketData.find(m => m.symbol === selectedSymbol);
   if (market) {
-    const priceEl = document.getElementById('current-market-price');
-    if (priceEl) {
-      priceEl.textContent = `$${market.lastPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})}`;
-    }
+    priceEl.textContent = `$${market.lastPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 6})}`;
+  } else {
+    priceEl.textContent = 'N/A';
   }
 }
 
@@ -4288,6 +4310,14 @@ function toggleAutoTrade() {
     btn.style.background = 'var(--forest)';
     badge.textContent = 'INACTIVE';
     badge.style.background = 'var(--warm-gray)';
+    
+    // Stop countdown
+    if (autoTradeCountdownInterval) {
+      clearInterval(autoTradeCountdownInterval);
+      autoTradeCountdownInterval = null;
+    }
+    document.getElementById('at-countdown').textContent = '--';
+    
     showNotification('🛑 Auto-trade engine stopped', 'info');
   } else {
     // Start auto-trading

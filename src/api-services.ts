@@ -471,7 +471,7 @@ async function getSimplifiedMarketData() {
           openPrice: basePrice / (1 + change / 100),
           bidPrice: basePrice * (1 - spreadPercent / 200),
           askPrice: basePrice * (1 + spreadPercent / 200),
-          spread: spreadDollar.toFixed(basePrice < 1 ? 4 : 2), // Dollar amount
+          spread: spreadDollar < 0.01 ? '0.01' : spreadDollar.toFixed(basePrice < 1 ? 4 : 2), // Minimum $0.01 spread
           spreadPercent: spreadPercent,
           lastUpdateTime: Date.now(),
           source: 'estimated',
