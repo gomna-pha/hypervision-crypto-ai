@@ -3507,7 +3507,14 @@ function calculateOrderTotal() {
   let price = 0;
   if (selectedType === 'MARKET' && currentMarketData) {
     const market = currentMarketData.find(m => m.symbol === selectedSymbol);
-    price = market ? (selectedSide === 'BUY' ? market.askPrice : market.bidPrice) : 0;
+    if (market) {
+      // Use askPrice/bidPrice if available, fallback to lastPrice with spread
+      if (selectedSide === 'BUY') {
+        price = market.askPrice || (market.lastPrice * 1.0005);
+      } else {
+        price = market.bidPrice || (market.lastPrice * 0.9995);
+      }
+    }
   } else {
     price = parseFloat(priceInput.value) || 0;
   }
@@ -3535,11 +3542,14 @@ function calculateOrderTotal() {
 // Place order
 async function placeOrder() {
   try {
+    console.log('[PlaceOrder] Starting order placement...');
     const symbol = selectedSymbol;
     const side = selectedSide;
     const type = selectedType;
     const quantity = parseFloat(document.getElementById('order-quantity').value);
     const price = type === 'LIMIT' ? parseFloat(document.getElementById('order-price').value) : undefined;
+    
+    console.log('[PlaceOrder] Order details:', { symbol, side, type, quantity, price });
     
     // Validation
     if (!quantity || quantity <= 0) {
@@ -3552,10 +3562,21 @@ async function placeOrder() {
       return;
     }
     
+    // Check if market data is available
+    if (!currentMarketData || currentMarketData.length === 0) {
+      alert('Market data not available. Please wait for data to load.');
+      return;
+    }
+    
     // Check balance for BUY orders
     if (side === 'BUY') {
       const market = currentMarketData.find(m => m.symbol === symbol);
-      const estimatedCost = quantity * (type === 'MARKET' ? market.askPrice : price) * 1.001; // Include fee
+      let orderPrice = price;
+      if (type === 'MARKET' && market) {
+        // Use askPrice if available, fallback to lastPrice with spread
+        orderPrice = market.askPrice || (market.lastPrice * 1.0005);
+      }
+      const estimatedCost = quantity * orderPrice * 1.001; // Include fee
       
       if (estimatedCost > paperTradingPortfolio.balance) {
         alert(`Insufficient balance. Required: $${estimatedCost.toFixed(2)}, Available: $${paperTradingPortfolio.balance.toFixed(2)}`);
