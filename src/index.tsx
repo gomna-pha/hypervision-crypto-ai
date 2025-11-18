@@ -1611,6 +1611,98 @@ app.get('/', (c) => {
               </div>
             </div>
 
+            <!-- Auto-Trade Engine Controls -->
+            <div class="card mb-6" style="background: linear-gradient(135deg, var(--cream) 0%, var(--cream-100) 100%); border: 2px solid var(--forest);">
+              <div class="flex items-center justify-between mb-4">
+                <div>
+                  <h3 class="text-xl font-bold flex items-center gap-2" style="color: var(--navy)">
+                    <i class="fas fa-robot"></i>
+                    Autonomous Trading Engine
+                    <span id="auto-trade-status-badge" class="text-xs px-2 py-1 rounded" style="background: var(--warm-gray); color: white;">
+                      INACTIVE
+                    </span>
+                  </h3>
+                  <p class="text-xs mt-1" style="color: var(--warm-gray)">
+                    AI-powered autonomous trading based on multi-agent signals | Set it and forget it
+                  </p>
+                </div>
+                <div class="flex items-center gap-4">
+                  <button id="auto-trade-settings-btn" onclick="toggleAutoTradeSettings()" class="px-4 py-2 rounded text-sm" style="background: var(--cream-200); color: var(--navy)">
+                    <i class="fas fa-cog mr-1"></i>Settings
+                  </button>
+                  <button id="auto-trade-toggle-btn" onclick="toggleAutoTrade()" class="px-6 py-2 rounded font-semibold text-sm" style="background: var(--forest); color: white;">
+                    <i class="fas fa-play mr-2"></i>START AUTO-TRADE
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Auto-Trade Status Display -->
+              <div id="auto-trade-status" class="grid grid-cols-2 md:grid-cols-5 gap-3 p-3 rounded" style="background: var(--cream-200);">
+                <div class="text-center">
+                  <div class="text-xs" style="color: var(--warm-gray)">Confidence Score</div>
+                  <div id="at-confidence" class="text-lg font-bold" style="color: var(--navy)">--</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs" style="color: var(--warm-gray)">Auto Trades</div>
+                  <div id="at-trades" class="text-lg font-bold" style="color: var(--burnt)">0</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs" style="color: var(--warm-gray)">Daily Limit</div>
+                  <div id="at-daily" class="text-lg font-bold" style="color: var(--dark-brown)">0/20</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs" style="color: var(--warm-gray)">Win Rate</div>
+                  <div id="at-winrate" class="text-lg font-bold" style="color: var(--forest)">0%</div>
+                </div>
+                <div class="text-center">
+                  <div class="text-xs" style="color: var(--warm-gray)">Next Analysis</div>
+                  <div id="at-countdown" class="text-lg font-bold" style="color: var(--navy)">--</div>
+                </div>
+              </div>
+              
+              <!-- Auto-Trade Settings Panel (Hidden by default) -->
+              <div id="auto-trade-settings-panel" class="mt-4 p-4 rounded hidden" style="background: white; border: 1px solid var(--cream-300);">
+                <h4 class="font-bold mb-3" style="color: var(--navy)">
+                  <i class="fas fa-sliders-h mr-2"></i>Auto-Trade Configuration
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label class="text-xs font-semibold" style="color: var(--navy)">Min Confidence Threshold</label>
+                    <div class="flex items-center gap-2 mt-1">
+                      <input type="range" id="at-min-confidence" min="50" max="95" value="75" class="flex-1" oninput="updateAutoTradeConfig()">
+                      <span id="at-min-confidence-value" class="text-sm font-bold" style="color: var(--burnt)">75%</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold" style="color: var(--navy)">Max Position Size</label>
+                    <div class="flex items-center gap-2 mt-1">
+                      <input type="range" id="at-max-position" min="1000" max="20000" step="1000" value="5000" class="flex-1" oninput="updateAutoTradeConfig()">
+                      <span id="at-max-position-value" class="text-sm font-bold" style="color: var(--burnt)">$5k</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold" style="color: var(--navy)">Max Daily Trades</label>
+                    <div class="flex items-center gap-2 mt-1">
+                      <input type="range" id="at-daily-trades" min="5" max="50" step="5" value="20" class="flex-1" oninput="updateAutoTradeConfig()">
+                      <span id="at-daily-trades-value" class="text-sm font-bold" style="color: var(--burnt)">20</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-xs font-semibold" style="color: var(--navy)">Max Open Positions</label>
+                    <div class="flex items-center gap-2 mt-1">
+                      <input type="range" id="at-max-positions" min="1" max="10" value="5" class="flex-1" oninput="updateAutoTradeConfig()">
+                      <span id="at-max-positions-value" class="text-sm font-bold" style="color: var(--burnt)">5</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mt-3 p-2 rounded text-xs" style="background: var(--cream-100); color: var(--warm-gray)">
+                  <i class="fas fa-info-circle mr-1"></i>
+                  Auto-trade will analyze agent signals every 10 seconds and execute trades when confidence exceeds threshold.
+                  Risk management limits ensure safe trading.
+                </div>
+              </div>
+            </div>
+
             <!-- Market Data & Order Form Row -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
               <!-- Real-Time Market Data -->

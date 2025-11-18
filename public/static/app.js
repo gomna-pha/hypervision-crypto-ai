@@ -3306,8 +3306,371 @@ class PaperTradingPortfolio {
   }
 }
 
+// ===================================================================
+// AUTO-TRADE ENGINE - Autonomous Trading Based on Agent Signals
+// ===================================================================
+
+class AutoTradeEngine {
+  constructor(portfolio) {
+    this.portfolio = portfolio;
+    this.enabled = false;
+    this.config = {
+      minConfidence: 75,           // Minimum composite score to trade (75%)
+      maxPositionSize: 5000,        // Max $5k per trade
+      maxDailyTrades: 20,           // Max 20 trades per day
+      maxOpenPositions: 5,          // Max 5 concurrent positions
+      minProfitTarget: 0.5,         // Target 0.5% profit per trade
+      stopLossPercent: 1.0,         // Stop loss at 1% drawdown
+      cooldownSeconds: 10,          // 10 seconds between trades
+      enabledStrategies: {
+        'spatial': true,
+        'triangular': true,
+        'statistical': true,
+        'sentiment': true,
+        'onchain': true,
+        'economic': true
+      }
+    };
+    this.stats = {
+      tradesExecuted: 0,
+      tradesAnalyzed: 0,
+      profitTotal: 0,
+      lossTotal: 0,
+      lastExecutionTime: 0,
+      dailyTradeCount: 0,
+      lastResetDate: new Date().toDateString()
+    };
+    this.monitoringInterval = null;
+    this.lastAgentData = null;
+    this.load();
+  }
+
+  load() {
+    const saved = localStorage.getItem('autoTradeEngine');
+    if (saved) {
+      const data = JSON.parse(saved);
+      this.config = { ...this.config, ...data.config };
+      this.stats = { ...this.stats, ...data.stats };
+      // Don't restore enabled state - require manual activation each session
+    }
+  }
+
+  save() {
+    localStorage.setItem('autoTradeEngine', JSON.stringify({
+      config: this.config,
+      stats: this.stats
+    }));
+  }
+
+  start() {
+    if (this.enabled) return;
+    
+    console.log('[AutoTrade] Starting autonomous trading engine...');
+    this.enabled = true;
+    
+    // Monitor agent signals every 10 seconds
+    this.monitoringInterval = setInterval(() => {
+      this.analyzeAndExecute();
+    }, 10000);
+    
+    // Run first analysis immediately
+    this.analyzeAndExecute();
+    
+    this.save();
+  }
+
+  stop() {
+    console.log('[AutoTrade] Stopping autonomous trading engine...');
+    this.enabled = false;
+    
+    if (this.monitoringInterval) {
+      clearInterval(this.monitoringInterval);
+      this.monitoringInterval = null;
+    }
+    
+    this.save();
+  }
+
+  async analyzeAndExecute() {
+    if (!this.enabled) return;
+    
+    // Reset daily counter if new day
+    const today = new Date().toDateString();
+    if (this.stats.lastResetDate !== today) {
+      this.stats.dailyTradeCount = 0;
+      this.stats.lastResetDate = today;
+    }
+    
+    // Check daily trade limit
+    if (this.stats.dailyTradeCount >= this.config.maxDailyTrades) {
+      console.log('[AutoTrade] Daily trade limit reached:', this.stats.dailyTradeCount);
+      return;
+    }
+    
+    // Check cooldown
+    const now = Date.now();
+    const timeSinceLastTrade = (now - this.stats.lastExecutionTime) / 1000;
+    if (timeSinceLastTrade < this.config.cooldownSeconds) {
+      console.log('[AutoTrade] Cooldown active:', this.config.cooldownSeconds - timeSinceLastTrade, 'seconds remaining');
+      return;
+    }
+    
+    // Check max positions
+    if (this.portfolio.positions.length >= this.config.maxOpenPositions) {
+      console.log('[AutoTrade] Max positions reached:', this.portfolio.positions.length);
+      return;
+    }
+    
+    try {
+      // Fetch latest agent data
+      const agentData = await this.fetchAgentData();
+      if (!agentData) {
+        console.log('[AutoTrade] No agent data available');
+        return;
+      }
+      
+      this.lastAgentData = agentData;
+      this.stats.tradesAnalyzed++;
+      
+      // Analyze composite signal
+      const signal = this.analyzeSignal(agentData);
+      
+      if (signal.shouldTrade) {
+        console.log('[AutoTrade] SIGNAL DETECTED:', signal);
+        await this.executeAutoTrade(signal);
+      } else {
+        console.log('[AutoTrade] No qualifying signal. Composite:', signal.compositeScore);
+      }
+      
+    } catch (error) {
+      console.error('[AutoTrade] Error in analysis:', error);
+    }
+  }
+
+  async fetchAgentData() {
+    try {
+      // Fetch all agent data from APIs
+      const [economic, sentiment, crossExchange, onChain, composite] = await Promise.all([
+        axios.get('/api/economic-indicators').then(r => r.data).catch(() => null),
+        axios.get('/api/sentiment-data').then(r => r.data).catch(() => null),
+        axios.get('/api/cross-exchange-prices').then(r => r.data).catch(() => null),
+        axios.get('/api/onchain-metrics').then(r => r.data).catch(() => null),
+        axios.get('/api/composite-agent-data').then(r => r.data).catch(() => null)
+      ]);
+      
+      return {
+        economic,
+        sentiment,
+        crossExchange,
+        onChain,
+        composite,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error('[AutoTrade] Error fetching agent data:', error);
+      return null;
+    }
+  }
+
+  analyzeSignal(agentData) {
+    const { composite, sentiment, crossExchange, onChain, economic } = agentData;
+    
+    // Calculate composite confidence score
+    let compositeScore = 0;
+    let scoreCount = 0;
+    
+    // Composite agent score (most important)
+    if (composite && composite.overall_confidence !== undefined) {
+      compositeScore += composite.overall_confidence * 0.4; // 40% weight
+      scoreCount++;
+    }
+    
+    // Sentiment score
+    if (sentiment && sentiment.fear_greed_index !== undefined) {
+      const sentimentScore = sentiment.fear_greed_index; // 0-100
+      compositeScore += sentimentScore * 0.2; // 20% weight
+      scoreCount++;
+    }
+    
+    // Cross-exchange arbitrage opportunity
+    if (crossExchange && crossExchange.spread !== undefined) {
+      const arbScore = Math.min(crossExchange.spread * 20, 100); // Convert spread % to score
+      compositeScore += arbScore * 0.2; // 20% weight
+      scoreCount++;
+    }
+    
+    // On-chain strength
+    if (onChain && onChain.active_addresses_change !== undefined) {
+      const onChainScore = Math.max(0, Math.min(100, 50 + onChain.active_addresses_change * 10));
+      compositeScore += onChainScore * 0.1; // 10% weight
+      scoreCount++;
+    }
+    
+    // Economic indicators
+    if (economic && economic.inflation_rate !== undefined) {
+      const economicScore = Math.max(0, Math.min(100, 50 - economic.inflation_rate * 10));
+      compositeScore += economicScore * 0.1; // 10% weight
+      scoreCount++;
+    }
+    
+    // Normalize score
+    if (scoreCount > 0) {
+      compositeScore = compositeScore / (scoreCount * 0.01); // Normalize to 0-100
+    }
+    
+    // Determine trade direction
+    let direction = 'BUY'; // Default to BUY
+    
+    // Use sentiment and composite data to determine direction
+    if (sentiment && sentiment.fear_greed_index < 30) {
+      direction = 'BUY'; // Fear = buy opportunity
+    } else if (sentiment && sentiment.fear_greed_index > 70) {
+      direction = 'SELL'; // Greed = sell opportunity
+    }
+    
+    // Check if meets minimum confidence
+    const shouldTrade = compositeScore >= this.config.minConfidence;
+    
+    return {
+      shouldTrade,
+      compositeScore: compositeScore.toFixed(2),
+      direction,
+      symbol: 'BTCUSDT', // Focus on BTC for auto-trading
+      confidence: compositeScore,
+      reasoning: this.generateReasoning(agentData, compositeScore)
+    };
+  }
+
+  generateReasoning(agentData, score) {
+    const reasons = [];
+    
+    if (agentData.composite && agentData.composite.overall_confidence > 70) {
+      reasons.push('Strong composite signal');
+    }
+    
+    if (agentData.sentiment && agentData.sentiment.fear_greed_index < 30) {
+      reasons.push('Extreme fear detected');
+    } else if (agentData.sentiment && agentData.sentiment.fear_greed_index > 70) {
+      reasons.push('Extreme greed detected');
+    }
+    
+    if (agentData.crossExchange && agentData.crossExchange.spread > 0.5) {
+      reasons.push(`Arbitrage opportunity: ${agentData.crossExchange.spread.toFixed(2)}%`);
+    }
+    
+    if (agentData.onChain && agentData.onChain.active_addresses_change > 5) {
+      reasons.push('Increasing on-chain activity');
+    }
+    
+    return reasons.join(' | ') || 'Standard market conditions';
+  }
+
+  async executeAutoTrade(signal) {
+    try {
+      // Calculate position size (use configured max or 2% of portfolio)
+      const portfolioValue = this.portfolio.calculateEquity(this.getCurrentPrices());
+      const positionSize = Math.min(
+        this.config.maxPositionSize,
+        portfolioValue * 0.02 // 2% of portfolio
+      );
+      
+      // Get current market price
+      if (!currentMarketData) {
+        console.log('[AutoTrade] No market data available');
+        return;
+      }
+      
+      const market = currentMarketData.find(m => m.symbol === signal.symbol);
+      if (!market) {
+        console.log('[AutoTrade] Market not found:', signal.symbol);
+        return;
+      }
+      
+      const price = signal.direction === 'BUY' ? market.askPrice || market.lastPrice : market.bidPrice || market.lastPrice;
+      const quantity = positionSize / price;
+      
+      console.log('[AutoTrade] Executing trade:', {
+        symbol: signal.symbol,
+        direction: signal.direction,
+        quantity,
+        price,
+        positionSize,
+        confidence: signal.confidence
+      });
+      
+      // Execute the order
+      const response = await axios.post('/api/paper-trading/order', {
+        symbol: signal.symbol,
+        side: signal.direction,
+        type: 'MARKET',
+        quantity: quantity
+      });
+      
+      if (response.data.success) {
+        // Add to portfolio
+        paperTradingPortfolio.addTrade(response.data);
+        
+        // Update stats
+        this.stats.tradesExecuted++;
+        this.stats.dailyTradeCount++;
+        this.stats.lastExecutionTime = Date.now();
+        
+        // Update displays
+        updatePortfolioDisplay();
+        updatePositionsDisplay();
+        updateTradeHistoryDisplay();
+        updatePaperTradingChart();
+        updateAutoTradeStatus();
+        
+        // Show notification
+        showNotification(
+          `🤖 AUTO-TRADE: ${signal.direction} ${quantity.toFixed(6)} ${signal.symbol} @ $${response.data.executionPrice.toFixed(2)} | Confidence: ${signal.confidence}%`,
+          'success'
+        );
+        
+        this.save();
+        
+        console.log('[AutoTrade] Trade executed successfully');
+      }
+      
+    } catch (error) {
+      console.error('[AutoTrade] Error executing trade:', error);
+      showNotification('Auto-trade execution failed: ' + error.message, 'error');
+    }
+  }
+
+  getCurrentPrices() {
+    const prices = {};
+    if (currentMarketData) {
+      currentMarketData.forEach(m => {
+        prices[m.symbol] = m.lastPrice;
+      });
+    }
+    return prices;
+  }
+
+  updateConfig(newConfig) {
+    this.config = { ...this.config, ...newConfig };
+    this.save();
+    console.log('[AutoTrade] Config updated:', this.config);
+  }
+
+  getStats() {
+    const totalTrades = this.stats.tradesExecuted;
+    const winRate = totalTrades > 0 ? ((this.stats.profitTotal / (this.stats.profitTotal + this.stats.lossTotal)) * 100) : 0;
+    
+    return {
+      ...this.stats,
+      winRate: winRate.toFixed(1),
+      isActive: this.enabled,
+      compositeScore: this.lastAgentData?.composite?.overall_confidence || 0
+    };
+  }
+}
+
 // Global paper trading state
 let paperTradingPortfolio = new PaperTradingPortfolio();
+let autoTradeEngine = new AutoTradeEngine(paperTradingPortfolio);
 let currentMarketData = null;
 let selectedSymbol = 'BTCUSDT';
 let selectedSide = 'BUY';
@@ -3335,6 +3698,12 @@ async function initializePaperTrading() {
   
   // Start real-time updates every 5 seconds
   marketDataUpdateInterval = setInterval(updateMarketData, 5000);
+  
+  // Initialize auto-trade status display
+  updateAutoTradeStatus();
+  
+  // Update auto-trade status every 5 seconds
+  setInterval(updateAutoTradeStatus, 5000);
   
   console.log('Paper Trading initialized successfully');
 }
@@ -3902,6 +4271,137 @@ function updatePaperTradingChart() {
   paperTradingChart.data.datasets[0].backgroundColor = (isProfit ? COLORS.forest : COLORS.deepRed) + '20';
   
   paperTradingChart.update('none'); // Update without animation for performance
+}
+
+// ===================================================================
+// AUTO-TRADE UI CONTROLS
+// ===================================================================
+
+function toggleAutoTrade() {
+  const btn = document.getElementById('auto-trade-toggle-btn');
+  const badge = document.getElementById('auto-trade-status-badge');
+  
+  if (autoTradeEngine.enabled) {
+    // Stop auto-trading
+    autoTradeEngine.stop();
+    btn.innerHTML = '<i class="fas fa-play mr-2"></i>START AUTO-TRADE';
+    btn.style.background = 'var(--forest)';
+    badge.textContent = 'INACTIVE';
+    badge.style.background = 'var(--warm-gray)';
+    showNotification('🛑 Auto-trade engine stopped', 'info');
+  } else {
+    // Start auto-trading
+    autoTradeEngine.start();
+    btn.innerHTML = '<i class="fas fa-stop mr-2"></i>STOP AUTO-TRADE';
+    btn.style.background = 'var(--deep-red)';
+    badge.textContent = 'ACTIVE';
+    badge.style.background = 'var(--forest)';
+    showNotification('🤖 Auto-trade engine started! Monitoring agent signals...', 'success');
+    
+    // Start countdown timer
+    startAutoTradeCountdown();
+  }
+  
+  updateAutoTradeStatus();
+}
+window.toggleAutoTrade = toggleAutoTrade;
+
+function toggleAutoTradeSettings() {
+  const panel = document.getElementById('auto-trade-settings-panel');
+  panel.classList.toggle('hidden');
+}
+window.toggleAutoTradeSettings = toggleAutoTradeSettings;
+
+function updateAutoTradeConfig() {
+  const minConfidence = parseInt(document.getElementById('at-min-confidence').value);
+  const maxPosition = parseInt(document.getElementById('at-max-position').value);
+  const dailyTrades = parseInt(document.getElementById('at-daily-trades').value);
+  const maxPositions = parseInt(document.getElementById('at-max-positions').value);
+  
+  // Update display values
+  document.getElementById('at-min-confidence-value').textContent = minConfidence + '%';
+  document.getElementById('at-max-position-value').textContent = '$' + (maxPosition / 1000).toFixed(0) + 'k';
+  document.getElementById('at-daily-trades-value').textContent = dailyTrades;
+  document.getElementById('at-max-positions-value').textContent = maxPositions;
+  
+  // Update engine config
+  autoTradeEngine.updateConfig({
+    minConfidence,
+    maxPositionSize: maxPosition,
+    maxDailyTrades: dailyTrades,
+    maxOpenPositions: maxPositions
+  });
+}
+window.updateAutoTradeConfig = updateAutoTradeConfig;
+
+function updateAutoTradeStatus() {
+  const stats = autoTradeEngine.getStats();
+  
+  // Update status displays
+  document.getElementById('at-confidence').textContent = stats.compositeScore ? stats.compositeScore.toFixed(0) + '%' : '--';
+  document.getElementById('at-trades').textContent = stats.tradesExecuted;
+  document.getElementById('at-daily').textContent = `${stats.dailyTradeCount}/${autoTradeEngine.config.maxDailyTrades}`;
+  document.getElementById('at-winrate').textContent = stats.winRate + '%';
+  
+  // Color code confidence
+  const confEl = document.getElementById('at-confidence');
+  if (stats.compositeScore >= 75) {
+    confEl.style.color = 'var(--forest)';
+  } else if (stats.compositeScore >= 50) {
+    confEl.style.color = 'var(--burnt)';
+  } else {
+    confEl.style.color = 'var(--deep-red)';
+  }
+}
+
+let autoTradeCountdownInterval = null;
+
+function startAutoTradeCountdown() {
+  if (autoTradeCountdownInterval) {
+    clearInterval(autoTradeCountdownInterval);
+  }
+  
+  let countdown = 10; // 10 seconds between analyses
+  
+  autoTradeCountdownInterval = setInterval(() => {
+    if (!autoTradeEngine.enabled) {
+      clearInterval(autoTradeCountdownInterval);
+      document.getElementById('at-countdown').textContent = '--';
+      return;
+    }
+    
+    document.getElementById('at-countdown').textContent = countdown + 's';
+    countdown--;
+    
+    if (countdown < 0) {
+      countdown = 10;
+      updateAutoTradeStatus(); // Update after each analysis cycle
+    }
+  }, 1000);
+}
+
+function showNotification(message, type = 'info') {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white font-semibold z-50 animate-fade-in';
+  
+  if (type === 'success') {
+    notification.style.background = 'var(--forest)';
+  } else if (type === 'error') {
+    notification.style.background = 'var(--deep-red)';
+  } else {
+    notification.style.background = 'var(--burnt)';
+  }
+  
+  notification.textContent = message;
+  document.body.appendChild(notification);
+  
+  // Remove after 5 seconds
+  setTimeout(() => {
+    notification.style.opacity = '0';
+    notification.style.transition = 'opacity 0.5s';
+    setTimeout(() => notification.remove(), 500);
+  }, 5000);
 }
 
 // Add event listeners for order form inputs
