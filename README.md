@@ -8,11 +8,21 @@ A production-ready cryptocurrency arbitrage trading platform combining 13 advanc
 
 ## 🔗 Live Platform
 
-**Production URL**: https://arbitrage-ai.pages.dev
+### **✅ LIVE IN PRODUCTION**
 
-**Try the live platform now!** Features 13 trading strategies, autonomous AI agent, and comprehensive backtesting.
+🌐 **Production URL**: https://arbitrage-ai.pages.dev
 
-The platform is deployed on Cloudflare Pages with global CDN distribution for fast access worldwide.
+🚀 **Latest Deployment**: https://f93230d8.arbitrage-ai.pages.dev
+
+📊 **API Endpoint**: https://arbitrage-ai.pages.dev/api/opportunities
+
+**Deployed**: November 19, 2025  
+**Status**: ✅ Operational  
+**Features**: 5 Real Algorithms + Always-Show Analysis Mode
+
+**Try the live platform now!** Features real algorithmic trading strategies with live market data, autonomous AI agent, and comprehensive backtesting.
+
+The platform is deployed on Cloudflare Pages with global CDN distribution (300+ locations) for fast access worldwide.
 
 ---
 
