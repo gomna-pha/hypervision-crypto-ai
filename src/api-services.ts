@@ -824,7 +824,8 @@ export async function detectSpatialArbitrage(): Promise<ArbitrageOpportunity[]> 
       const netProfitPercent = spreadPercent - feesCost;
       
       // ALWAYS show the analysis, mark as not passing if below threshold
-      const isProfitable = spreadPercent > 0.05 && netProfitPercent > 0.01;
+      // Lowered threshold: 0.01% spread (still profitable after 0.2% fees)
+      const isProfitable = spreadPercent > 0.01 && netProfitPercent > 0.001;
       const stableId = 1000000 + Math.floor(Math.abs(spreadPercent * 10000));
       
       opportunities.push({
@@ -886,7 +887,8 @@ export async function detectTriangularArbitrage(): Promise<ArbitrageOpportunity[
         const spreadDollar = avgBtcPrice * (spreadPercent / 100);
         
         // ALWAYS show the analysis, mark profitability
-        const isProfitable = spreadPercent > 0.1 && netProfitPercent > 0.01;
+        // Lowered threshold: 0.01% spread (realistic for triangular)
+        const isProfitable = spreadPercent > 0.01 && netProfitPercent > 0.001;
         const stableId = 2000000 + Math.floor(Math.abs(spreadPercent * 10000));
         
         opportunities.push({
@@ -945,7 +947,8 @@ export async function detectStatisticalArbitrage(): Promise<ArbitrageOpportunity
     const spreadDollar = avgPrice * (deviationPercent / 100);
     
     // ALWAYS show the analysis, mark profitability
-    const isProfitable = deviationPercent > 2 && netProfitPercent > 0.05;
+    // Lowered threshold: 0.5% deviation (reasonable for mean reversion)
+    const isProfitable = deviationPercent > 0.5 && netProfitPercent > 0.001;
     const stableId = 3000000 + Math.floor(Math.abs(deviationPercent * 10000));
     
     opportunities.push({
@@ -995,7 +998,8 @@ export async function detectSentimentOpportunities(): Promise<ArbitrageOpportuni
     const spreadDollar = btcPrice * (expectedMove / 100);
     
     // ALWAYS show the analysis, mark profitability
-    const isProfitable = (fearGreed < 25 || fearGreed > 75) && netProfitPercent > 0.1;
+    // Lowered threshold: 0.01% expected move (sentiment-based can be smaller)
+    const isProfitable = (fearGreed < 25 || fearGreed > 75) && netProfitPercent > 0.01;
     const stableId = 4000000 + Math.floor(fearGreed * 1000);
     
     opportunities.push({
@@ -1045,7 +1049,8 @@ export async function detectFundingRateArbitrage(): Promise<ArbitrageOpportunity
       const spreadDollar = btcPrice * (dailyRate / 100);
       
       // ALWAYS show the analysis, mark profitability
-      const isProfitable = Math.abs(fundingRate) > 0.0001 && netProfitPercent > 0.02;
+      // Lowered threshold: 0.01% daily rate (still profitable after fees)
+      const isProfitable = Math.abs(fundingRate) > 0.0001 && netProfitPercent > 0.01;
       const stableId = 5000000 + Math.floor(Math.abs(dailyRate * 100000));
       
       opportunities.push({
