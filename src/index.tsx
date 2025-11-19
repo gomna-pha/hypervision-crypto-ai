@@ -61,32 +61,14 @@ app.get('/api/portfolio/metrics', async (c) => {
 
 app.get('/api/opportunities', async (c) => {
   try {
-    // Try to get REAL opportunities from actual algorithms
+    // Get REAL opportunities from all 10 actual algorithms
     const { detectAllRealOpportunities } = await import('./api-services')
     const realOpportunities = await detectAllRealOpportunities()
     
     console.log(`[Opportunities API] Real algorithms found ${realOpportunities.length} opportunities`)
     
-    // Get demo opportunities for comparison/filling
-    const demoOpportunities = generateOpportunities()
-    
-    // HYBRID APPROACH: Show real opportunities first, then demo ones
-    // Mark demo opportunities clearly
-    const markedDemoOpportunities = demoOpportunities.map((opp: any) => ({
-      ...opp,
-      realAlgorithm: false, // Mark as demo/simulated
-      strategy: opp.strategy + ' (Demo)' // Add (Demo) label
-    }))
-    
-    // Combine: Real first, then demo
-    const allOpportunities = [
-      ...realOpportunities,
-      ...markedDemoOpportunities.slice(0, 10) // Add top 10 demo for UI completeness
-    ]
-    
-    console.log(`[Opportunities API] Returning ${realOpportunities.length} real + ${Math.min(10, demoOpportunities.length)} demo opportunities`)
-    
-    return c.json(allOpportunities)
+    // Return ONLY real opportunities (we now have 10 real algorithms, no need for demo)
+    return c.json(realOpportunities)
   } catch (error) {
     console.error('[Opportunities API] Error:', error)
     // Fallback to demo data on error
@@ -278,23 +260,11 @@ app.post('/api/execute/:id', async (c) => {
     // Simulate execution time (real implementation would call exchange APIs)
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // Get opportunity details - fetch from current opportunities (includes real algorithms)
+    // Get opportunity details - fetch from real algorithms only
     const { detectAllRealOpportunities } = await import('./api-services')
     const realOpportunities = await detectAllRealOpportunities()
-    const demoOpportunities = generateOpportunities()
     
-    // Combine real and demo opportunities (same as /api/opportunities)
-    const markedDemoOpportunities = demoOpportunities.map((opp: any) => ({
-      ...opp,
-      realAlgorithm: false
-    }))
-    
-    const allOpportunities = [
-      ...realOpportunities,
-      ...markedDemoOpportunities.slice(0, 10)
-    ]
-    
-    const opportunity = allOpportunities.find((o: any) => o.id === oppId)
+    const opportunity = realOpportunities.find((o: any) => o.id === oppId)
     
     if (!opportunity) {
       console.error(`[EXECUTION] Opportunity #${oppId} not found in current opportunities`)
