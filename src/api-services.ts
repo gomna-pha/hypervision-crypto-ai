@@ -974,13 +974,13 @@ export async function detectStatisticalArbitrage(): Promise<ArbitrageOpportunity
 // 4. SENTIMENT-BASED TRADING - Real Fear & Greed contrarian
 export async function detectSentimentOpportunities(): Promise<ArbitrageOpportunity[]> {
   try {
-    const sentiment = await getSentimentData();
+    const sentiment = await getFearGreedIndex();
     const crossExchange = await getCrossExchangePrices();
     
     if (!sentiment || !crossExchange) return [];
 
     const opportunities: ArbitrageOpportunity[] = [];
-    const fearGreed = sentiment.fear_greed_index;
+    const fearGreed = sentiment.fearGreed;
     
     // Calculate sentiment metrics (always, regardless of extremeness)
     const isExtremeFear = fearGreed < 25;
