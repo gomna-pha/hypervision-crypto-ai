@@ -17,6 +17,25 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
+// Opportunities cache - shorter TTL to allow execution
+const opportunitiesCache = {
+  data: null as any,
+  timestamp: 0,
+  TTL: 10000 // 10 seconds - enough time for execution
+};
+
+export function getCachedOpportunities() {
+  if (opportunitiesCache.data && Date.now() - opportunitiesCache.timestamp < opportunitiesCache.TTL) {
+    return opportunitiesCache.data;
+  }
+  return null;
+}
+
+export function setCachedOpportunities(data: any) {
+  opportunitiesCache.data = data;
+  opportunitiesCache.timestamp = Date.now();
+}
+
 // ===================================================================
 // 1. CROSS-EXCHANGE AGENT - Real BTC/ETH Prices
 // ===================================================================
@@ -1329,8 +1348,15 @@ export async function detectMarketMaking(): Promise<ArbitrageOpportunity[]> {
   }
 }
 
-// Master function to detect all real opportunities
+// Master function to detect all real opportunities (with caching for execution stability)
 export async function detectAllRealOpportunities(): Promise<ArbitrageOpportunity[]> {
+  // Check cache first
+  const cached = getCachedOpportunities();
+  if (cached) {
+    console.log('[Real Algorithms] Returning cached opportunities');
+    return cached;
+  }
+  
   console.log('[Real Algorithms] Detecting arbitrage opportunities...');
   
   try {
@@ -1371,11 +1397,16 @@ export async function detectAllRealOpportunities(): Promise<ArbitrageOpportunity
       ...marketMaking
     ];
     
-    console.log(`[Real Algorithms] Found ${allOpportunities.length} real opportunities`);
-    
-    return allOpportunities.sort((a, b) => 
+    const sorted = allOpportunities.sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
+    
+    // Cache for 10 seconds
+    setCachedOpportunities(sorted);
+    
+    console.log(`[Real Algorithms] Found ${allOpportunities.length} real opportunities (cached for 10s)`);
+    
+    return sorted;
   } catch (error) {
     console.error('[Real Algorithms] Detection error:', error);
     return [];
