@@ -17,11 +17,11 @@ function setCache(key: string, data: any) {
   cache.set(key, { data, timestamp: Date.now() });
 }
 
-// Opportunities cache - shorter TTL to allow execution
+// Opportunities cache - longer TTL for reliable auto-execution
 const opportunitiesCache = {
   data: null as any,
   timestamp: 0,
-  TTL: 10000 // 10 seconds - enough time for execution
+  TTL: 30000 // 30 seconds - ensures auto-trader has enough time
 };
 
 export function getCachedOpportunities() {
@@ -1401,10 +1401,10 @@ export async function detectAllRealOpportunities(): Promise<ArbitrageOpportunity
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
     
-    // Cache for 10 seconds
+    // Cache for 30 seconds (enough for auto-trader)
     setCachedOpportunities(sorted);
     
-    console.log(`[Real Algorithms] Found ${allOpportunities.length} real opportunities (cached for 10s)`);
+    console.log(`[Real Algorithms] Found ${allOpportunities.length} real opportunities (cached for 30s)`);
     
     return sorted;
   } catch (error) {
