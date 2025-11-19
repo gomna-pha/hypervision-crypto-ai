@@ -19,26 +19,31 @@ The platform is deployed on Cloudflare Pages with global CDN distribution for fa
 ## 🎯 Platform Overview
 
 **Architecture**: 3-Tier Hybrid (API + CNN + AI Ensemble)  
-**Trading Strategies**: 13 Unique Strategies  
+**Trading Strategies**: 13 Unique Strategies (5 Real + 8 Demo)  
+**Real Algorithms**: Spatial, Triangular, Statistical, Sentiment, Funding Rate  
 **Tech Stack**: Hono + TypeScript + Cloudflare Workers + Chart.js + TailwindCSS  
 **Deployment**: Cloudflare Pages (Global Edge Network)  
 
 ### Core Capabilities
 
-✅ **13 Trading Strategies**
-- Deep Learning
-- Volatility Arbitrage  
-- ML Ensemble
-- Statistical Arbitrage
-- Sentiment Trading
-- Cross-Asset Arbitrage
-- Multi-Factor Alpha
-- Spatial Arbitrage
-- Seasonal Trading
-- Market Making
-- Triangular Arbitrage
-- HFT Micro Arbitrage
-- Funding Rate Arbitrage
+✅ **5 REAL Algorithmic Strategies** (Live Market Analysis)
+- **Spatial Arbitrage** - Cross-exchange price comparison (Binance vs Coinbase)
+- **Triangular Arbitrage** - BTC-ETH-USDT cycle detection
+- **Statistical Arbitrage** - BTC/ETH ratio mean reversion analysis
+- **Sentiment Trading** - Fear & Greed Index contrarian strategy
+- **Funding Rate Arbitrage** - Spot-perpetual spread capture
+
+**NEW FEATURE**: **Always-Show Analysis Mode**
+- All 5 real algorithms ALWAYS display their analysis
+- Shows real-time market monitoring even when no profitable opportunities exist
+- `constraintsPassed` flag indicates profitability (true = profitable, false = monitoring)
+- Demonstrates comprehensive platform capabilities to investors
+- Validates algorithms through transparent real-time analysis
+
+✅ **8 Demo Strategies** (Simulated for UI/UX Testing)
+- Deep Learning, Volatility Arbitrage, ML Ensemble
+- Cross-Asset Arbitrage, Multi-Factor Alpha
+- Seasonal Trading, Market Making, HFT Micro Arbitrage
 
 ✅ **5 Specialized AI Agents**
 - Economic Agent (Macro indicators: Fed Rate, CPI, GDP)
@@ -464,8 +469,12 @@ webapp/
 ## 🎯 Key Features
 
 ### ✅ Implemented
-- 13 Trading Strategies (fully functional)
-- 5 AI Agents (fully dynamic data)
+- **5 Real Algorithmic Strategies** (using live market data via free APIs)
+- **Always-Show Analysis Mode** (demonstrates continuous market monitoring)
+- **Stable Opportunity IDs** (based on strategy metrics, not timestamps)
+- **Real Algorithm Badges** (green ✓ badge for real algorithms vs blue for demo)
+- **Paper Trading System** (zero-risk execution with real market data)
+- 5 AI Agents (fully dynamic data from real APIs)
 - Autonomous Trading Agent (ML ensemble + Kelly Criterion)
 - Multi-Strategy Performance Charts (all 13 strategies)
 - Strategy-Sentiment Heatmap (13 × 5 grid)
@@ -565,9 +574,11 @@ Educational demonstration platform. Not licensed for production trading without 
 
 ---
 
-**Last Updated**: 2025-11-16  
-**Version**: 2.0.0  
-**Status**: Production-Ready Demo  
-**Strategies**: 13 (all functional)  
+**Last Updated**: 2025-11-19  
+**Version**: 3.0.0 - Always-Show Analysis Update  
+**Status**: Production-Ready with Real Algorithms  
+**Real Strategies**: 5 (Spatial, Triangular, Statistical, Sentiment, Funding Rate)  
+**Demo Strategies**: 8 (for UI/UX demonstration)  
 **Deployment**: Cloudflare Pages Ready  
+**Key Innovation**: All algorithms continuously display their analysis, even when not profitable  
 **Performance**: 23.7% (30-day multi-strategy portfolio)
