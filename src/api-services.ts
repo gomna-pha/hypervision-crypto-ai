@@ -818,34 +818,30 @@ export async function detectSpatialArbitrage(): Promise<ArbitrageOpportunity[]> 
       const avgPrice = (crossExchange.binancePrice + crossExchange.coinbasePrice) / 2;
       const spreadPercent = (priceDiff / avgPrice) * 100;
       
-      // Only consider if spread > 0.05% (realistic threshold)
-      if (spreadPercent > 0.05) {
-        const buyExchange = crossExchange.binancePrice < crossExchange.coinbasePrice ? 'Binance' : 'Coinbase';
-        const sellExchange = buyExchange === 'Binance' ? 'Coinbase' : 'Binance';
-        const feesCost = 0.002; // 0.1% buy + 0.1% sell = 0.2%
-        const netProfitPercent = spreadPercent - feesCost;
-        
-        if (netProfitPercent > 0.01) { // Minimum 0.01% net profit (realistic)
-          // Generate stable ID based on strategy + asset (so same opportunity keeps same ID)
-          const stableId = 1000000 + Math.floor(Math.abs(spreadPercent * 10000));
-          
-          opportunities.push({
-            id: stableId,
-            timestamp: new Date().toISOString(),
-            asset: 'BTC-USD',
-            strategy: 'Spatial',
-            buyExchange,
-            sellExchange,
-            spread: spreadPercent,
-            spreadDollar: priceDiff,
-            netProfit: netProfitPercent,
-            mlConfidence: Math.min(95, 70 + Math.round(netProfitPercent * 10)),
-            cnnConfidence: Math.min(95, 75 + Math.round(netProfitPercent * 8)),
-            constraintsPassed: true,
-            realAlgorithm: true
-          });
-        }
-      }
+      const buyExchange = crossExchange.binancePrice < crossExchange.coinbasePrice ? 'Binance' : 'Coinbase';
+      const sellExchange = buyExchange === 'Binance' ? 'Coinbase' : 'Binance';
+      const feesCost = 0.002; // 0.1% buy + 0.1% sell = 0.2%
+      const netProfitPercent = spreadPercent - feesCost;
+      
+      // ALWAYS show the analysis, mark as not passing if below threshold
+      const isProfitable = spreadPercent > 0.05 && netProfitPercent > 0.01;
+      const stableId = 1000000 + Math.floor(Math.abs(spreadPercent * 10000));
+      
+      opportunities.push({
+        id: stableId,
+        timestamp: new Date().toISOString(),
+        asset: 'BTC-USD',
+        strategy: 'Spatial',
+        buyExchange,
+        sellExchange,
+        spread: spreadPercent,
+        spreadDollar: priceDiff,
+        netProfit: netProfitPercent,
+        mlConfidence: Math.min(95, Math.max(30, 70 + Math.round(netProfitPercent * 10))),
+        cnnConfidence: Math.min(95, Math.max(30, 75 + Math.round(netProfitPercent * 8))),
+        constraintsPassed: isProfitable,
+        realAlgorithm: true
+      });
     }
     
     return opportunities;
@@ -880,38 +876,34 @@ export async function detectTriangularArbitrage(): Promise<ArbitrageOpportunity[
         const ethBtcRate = parseFloat(btcEthTicker.price); // ETH in terms of BTC
         const impliedEthBtcRate = 1 / btcEthRate;
         
-        // Check for arbitrage opportunity
+        // Calculate cycle analysis metrics
         const rateDiff = Math.abs(ethBtcRate - impliedEthBtcRate);
         const spreadPercent = (rateDiff / ethBtcRate) * 100;
+        const feesCost = 0.003; // 3 trades × 0.1% = 0.3%
+        const netProfitPercent = spreadPercent - feesCost;
         
-        if (spreadPercent > 0.1) { // Minimum threshold (realistic)
-          const feesCost = 0.003; // 3 trades × 0.1% = 0.3%
-          const netProfitPercent = spreadPercent - feesCost;
-          
-          if (netProfitPercent > 0.01) { // Very small profit ok for triangular
-            const avgBtcPrice = btcPrice;
-            const spreadDollar = avgBtcPrice * (spreadPercent / 100);
-            
-            // Generate stable ID for triangular
-            const stableId = 2000000 + Math.floor(Math.abs(spreadPercent * 10000));
-            
-            opportunities.push({
-              id: stableId,
-              timestamp: new Date().toISOString(),
-              asset: 'BTC-ETH-USDT',
-              strategy: 'Triangular',
-              buyExchange: 'BTC→ETH→USDT',
-              sellExchange: 'Binance',
-              spread: spreadPercent,
-              spreadDollar,
-              netProfit: netProfitPercent,
-              mlConfidence: Math.min(95, 75 + Math.round(netProfitPercent * 5)),
-              cnnConfidence: null,
-              constraintsPassed: true,
-              realAlgorithm: true
-            });
-          }
-        }
+        const avgBtcPrice = btcPrice;
+        const spreadDollar = avgBtcPrice * (spreadPercent / 100);
+        
+        // ALWAYS show the analysis, mark profitability
+        const isProfitable = spreadPercent > 0.1 && netProfitPercent > 0.01;
+        const stableId = 2000000 + Math.floor(Math.abs(spreadPercent * 10000));
+        
+        opportunities.push({
+          id: stableId,
+          timestamp: new Date().toISOString(),
+          asset: 'BTC-ETH-USDT',
+          strategy: 'Triangular',
+          buyExchange: 'BTC→ETH→USDT',
+          sellExchange: 'Binance',
+          spread: spreadPercent,
+          spreadDollar,
+          netProfit: netProfitPercent,
+          mlConfidence: Math.min(95, Math.max(30, 75 + Math.round(netProfitPercent * 5))),
+          cnnConfidence: null,
+          constraintsPassed: isProfitable,
+          realAlgorithm: true
+        });
       }
     } catch (error) {
       console.error('Triangular arbitrage BTC/ETH check error:', error);
@@ -941,40 +933,36 @@ export async function detectStatisticalArbitrage(): Promise<ArbitrageOpportunity
     // Historical average ratio (approximate)
     const historicalAvgRatio = 30; // BTC typically 25-35x ETH
     
-    // Check for mean reversion opportunity
+    // Calculate mean reversion metrics
     const ratioDeviation = Math.abs(btcEthRatio - historicalAvgRatio) / historicalAvgRatio;
     const deviationPercent = ratioDeviation * 100;
+    const direction = btcEthRatio > historicalAvgRatio ? 'Short BTC / Long ETH' : 'Long BTC / Short ETH';
+    const expectedReturn = deviationPercent * 0.5; // Conservative: capture 50% of reversion
+    const feesCost = 0.004; // 2 trades × 2 legs × 0.1% = 0.4%
+    const netProfitPercent = expectedReturn - feesCost;
     
-    if (deviationPercent > 2) { // More than 2% deviation from mean (realistic)
-      const direction = btcEthRatio > historicalAvgRatio ? 'Short BTC / Long ETH' : 'Long BTC / Short ETH';
-      const expectedReturn = deviationPercent * 0.5; // Conservative: capture 50% of reversion
-      const feesCost = 0.004; // 2 trades × 2 legs × 0.1% = 0.4%
-      const netProfitPercent = expectedReturn - feesCost;
-      
-      if (netProfitPercent > 0.05) { // 0.05% minimum for stat arb
-        const avgPrice = (btcPrice + ethPrice) / 2;
-        const spreadDollar = avgPrice * (deviationPercent / 100);
-        
-        // Generate stable ID for statistical
-        const stableId = 3000000 + Math.floor(Math.abs(deviationPercent * 10000));
-        
-        opportunities.push({
-          id: stableId,
-          timestamp: new Date().toISOString(),
-          asset: 'BTC/ETH',
-          strategy: 'Statistical',
-          buyExchange: 'BTC/ETH Pair',
-          sellExchange: 'Mean Reversion',
-          spread: deviationPercent,
-          spreadDollar,
-          netProfit: netProfitPercent,
-          mlConfidence: Math.min(90, 60 + Math.round(deviationPercent * 3)),
-          cnnConfidence: Math.min(90, 70 + Math.round(deviationPercent * 2)),
-          constraintsPassed: true,
-          realAlgorithm: true
-        });
-      }
-    }
+    const avgPrice = (btcPrice + ethPrice) / 2;
+    const spreadDollar = avgPrice * (deviationPercent / 100);
+    
+    // ALWAYS show the analysis, mark profitability
+    const isProfitable = deviationPercent > 2 && netProfitPercent > 0.05;
+    const stableId = 3000000 + Math.floor(Math.abs(deviationPercent * 10000));
+    
+    opportunities.push({
+      id: stableId,
+      timestamp: new Date().toISOString(),
+      asset: 'BTC/ETH',
+      strategy: 'Statistical',
+      buyExchange: 'BTC/ETH Pair',
+      sellExchange: 'Mean Reversion',
+      spread: deviationPercent,
+      spreadDollar,
+      netProfit: netProfitPercent,
+      mlConfidence: Math.min(90, Math.max(30, 60 + Math.round(deviationPercent * 3))),
+      cnnConfidence: Math.min(90, Math.max(30, 70 + Math.round(deviationPercent * 2))),
+      constraintsPassed: isProfitable,
+      realAlgorithm: true
+    });
     
     return opportunities;
   } catch (error) {
@@ -994,40 +982,37 @@ export async function detectSentimentOpportunities(): Promise<ArbitrageOpportuni
     const opportunities: ArbitrageOpportunity[] = [];
     const fearGreed = sentiment.fear_greed_index;
     
-    // Extreme fear (< 25) or extreme greed (> 75) = contrarian opportunity
-    if (fearGreed < 25 || fearGreed > 75) {
-      const isExtremeFear = fearGreed < 25;
-      const extremeness = isExtremeFear ? (25 - fearGreed) : (fearGreed - 75);
-      const confidence = Math.min(95, 60 + extremeness * 2);
-      
-      const btcPrice = crossExchange.btcPrice;
-      const volatility = crossExchange.spread || 0.5;
-      const expectedMove = volatility * (extremeness / 10);
-      const netProfitPercent = expectedMove - 0.002; // Minus fees
-      
-      if (netProfitPercent > 0.1) { // 0.1% minimum for sentiment
-        const spreadDollar = btcPrice * (expectedMove / 100);
-        
-        // Generate stable ID for sentiment
-        const stableId = 4000000 + Math.floor(fearGreed * 1000);
-        
-        opportunities.push({
-          id: stableId,
-          timestamp: new Date().toISOString(),
-          asset: 'BTC-USD',
-          strategy: 'Sentiment',
-          buyExchange: 'Fear & Greed',
-          sellExchange: 'Contrarian',
-          spread: expectedMove,
-          spreadDollar,
-          netProfit: netProfitPercent,
-          mlConfidence: Math.round(confidence),
-          cnnConfidence: Math.round(confidence * 1.15),
-          constraintsPassed: true,
-          realAlgorithm: true
-        });
-      }
-    }
+    // Calculate sentiment metrics (always, regardless of extremeness)
+    const isExtremeFear = fearGreed < 25;
+    const isExtremeGreed = fearGreed > 75;
+    const extremeness = isExtremeFear ? (25 - fearGreed) : (isExtremeGreed ? (fearGreed - 75) : 0);
+    const confidence = Math.min(95, 60 + extremeness * 2);
+    
+    const btcPrice = crossExchange.btcPrice;
+    const volatility = crossExchange.spread || 0.5;
+    const expectedMove = extremeness > 0 ? volatility * (extremeness / 10) : volatility * 0.1; // Small move when not extreme
+    const netProfitPercent = expectedMove - 0.002; // Minus fees
+    const spreadDollar = btcPrice * (expectedMove / 100);
+    
+    // ALWAYS show the analysis, mark profitability
+    const isProfitable = (fearGreed < 25 || fearGreed > 75) && netProfitPercent > 0.1;
+    const stableId = 4000000 + Math.floor(fearGreed * 1000);
+    
+    opportunities.push({
+      id: stableId,
+      timestamp: new Date().toISOString(),
+      asset: 'BTC-USD',
+      strategy: 'Sentiment',
+      buyExchange: 'Fear & Greed',
+      sellExchange: 'Contrarian',
+      spread: expectedMove,
+      spreadDollar,
+      netProfit: netProfitPercent,
+      mlConfidence: Math.max(30, Math.round(confidence)),
+      cnnConfidence: Math.max(30, Math.round(confidence * 1.15)),
+      constraintsPassed: isProfitable,
+      realAlgorithm: true
+    });
     
     return opportunities;
   } catch (error) {
@@ -1047,7 +1032,7 @@ export async function detectFundingRateArbitrage(): Promise<ArbitrageOpportunity
       .then(data => data[0] ? parseFloat(data[0].fundingRate) : null)
       .catch(() => null);
     
-    if (fundingRate && Math.abs(fundingRate) > 0.0001) { // > 0.01%
+    if (fundingRate !== null) {
       const annualizedRate = fundingRate * 3 * 365; // 3 times per day
       const spreadPercent = Math.abs(annualizedRate) * 100;
       const dailyRate = Math.abs(fundingRate) * 3 * 100; // Daily rate as %
@@ -1057,29 +1042,27 @@ export async function detectFundingRateArbitrage(): Promise<ArbitrageOpportunity
       
       const feesCost = 0.002; // Spot buy + perp short
       const netProfitPercent = dailyRate - feesCost;
+      const spreadDollar = btcPrice * (dailyRate / 100);
       
-      if (netProfitPercent > 0.02) { // 0.02% minimum for funding rate
-        const spreadDollar = btcPrice * (dailyRate / 100);
-        
-        // Generate stable ID for funding rate
-        const stableId = 5000000 + Math.floor(Math.abs(dailyRate * 100000));
-        
-        opportunities.push({
-          id: stableId,
-          timestamp: new Date().toISOString(),
-          asset: 'BTC-USD',
-          strategy: 'Funding Rate',
-          buyExchange: 'Binance Spot',
-          sellExchange: 'Binance Perp',
-          spread: dailyRate,
-          spreadDollar,
-          netProfit: netProfitPercent,
-          mlConfidence: Math.min(90, 75 + Math.round(dailyRate * 5)),
-          cnnConfidence: null,
-          constraintsPassed: true,
-          realAlgorithm: true
-        });
-      }
+      // ALWAYS show the analysis, mark profitability
+      const isProfitable = Math.abs(fundingRate) > 0.0001 && netProfitPercent > 0.02;
+      const stableId = 5000000 + Math.floor(Math.abs(dailyRate * 100000));
+      
+      opportunities.push({
+        id: stableId,
+        timestamp: new Date().toISOString(),
+        asset: 'BTC-USD',
+        strategy: 'Funding Rate',
+        buyExchange: 'Binance Spot',
+        sellExchange: 'Binance Perp',
+        spread: dailyRate,
+        spreadDollar,
+        netProfit: netProfitPercent,
+        mlConfidence: Math.min(90, Math.max(30, 75 + Math.round(dailyRate * 5))),
+        cnnConfidence: null,
+        constraintsPassed: isProfitable,
+        realAlgorithm: true
+      });
     }
     
     return opportunities;
