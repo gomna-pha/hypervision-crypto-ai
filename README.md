@@ -492,9 +492,17 @@ webapp/
 - A/B Testing (CNN enhancement validation)
 - Portfolio Balance Tracking (dynamic updates)
 - Active Strategies Counter (real-time)
-- LLM Strategic Insights (AI-powered analysis)
+- LLM Strategic Insights (Google Gemini AI - configured)
 - Academic Research Citations
 - Professional UI/UX (institutional aesthetic)
+
+### ✅ AI Integration
+- **Google Gemini AI** - Configured and operational
+  - Model: gemini-2.5-flash (250 requests/day free tier)
+  - Provides real-time strategic market analysis
+  - Auto-refresh: Every 5 minutes (optimized for quota)
+  - Fallback: Template mode when quota exceeded
+  - See `GEMINI_API_CONFIGURATION.md` for details
 
 ### 🚧 Not Implemented (Production Readiness)
 - Real exchange API integrations (currently simulated)

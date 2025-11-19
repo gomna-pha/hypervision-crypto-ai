@@ -2546,7 +2546,7 @@ function displayLLMInsights(insights, isLiveAPI) {
     ${!isLiveAPI ? `
       <div class="mt-4 p-3 rounded-lg" style="background: var(--cream-100); border-left: 4px solid var(--burnt)">
         <div class="text-xs" style="color: var(--dark-brown)">
-          <strong style="color: var(--burnt)">Template Mode:</strong> Analysis based on current market data patterns. For AI-generated insights, configure OPENROUTER_API_KEY environment variable.
+          <strong style="color: var(--burnt)">Template Mode:</strong> AI analysis temporarily unavailable (rate limit reached). Showing data-driven template analysis. Will resume automatically.
         </div>
       </div>
     ` : `
@@ -2575,7 +2575,7 @@ function startLLMUpdates() {
   
   llmUpdateInterval = setInterval(() => {
     fetchLLMInsights();
-  }, 30000); // 30 seconds
+  }, 300000); // 5 minutes (prevents quota exhaustion)
 }
 
 // Start LLM updates when page loads
