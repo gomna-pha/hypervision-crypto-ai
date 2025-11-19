@@ -12,7 +12,7 @@ A production-ready cryptocurrency arbitrage trading platform combining 13 advanc
 
 🌐 **Production URL**: https://arbitrage-ai.pages.dev
 
-🚀 **Latest Deployment**: https://f93230d8.arbitrage-ai.pages.dev
+🚀 **Latest Deployment**: https://02eff17b.arbitrage-ai.pages.dev (Gemini AI configured)
 
 📊 **API Endpoint**: https://arbitrage-ai.pages.dev/api/opportunities
 
