@@ -976,8 +976,9 @@ export async function detectStatisticalArbitrage(): Promise<ArbitrageOpportunity
     const spreadDollar = avgPrice * (deviationPercent / 100);
     
     // ALWAYS show the analysis, mark profitability
-    // Lowered threshold: 0.5% deviation (reasonable for mean reversion)
-    const isProfitable = deviationPercent > 0.5 && netProfitPercent > 0.001;
+    // Lowered threshold: 0.25% deviation (realistic for statistical arbitrage in efficient markets)
+    // Primary check: Net profit after fees must be positive
+    const isProfitable = deviationPercent > 0.25 && netProfitPercent > 0.05;
     const stableId = 3000000 + Math.floor(Math.abs(deviationPercent * 10000));
     
     opportunities.push({
