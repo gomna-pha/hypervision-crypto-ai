@@ -708,105 +708,15 @@ app.post('/api/portfolio/optimize', async (c) => {
     // request: {
     //   strategies: ['Spatial', 'Triangular', 'Statistical', ...],
     //   method: 'mean-variance' | 'risk-parity' | 'equal-weight',
-    //   riskPreference: 5 (0-10),
-    //   agentStrategyMatrix: { "Spatial": ["CrossExchange"], ... } // OPTIONAL: if provided, use agent-based returns
+    //   riskPreference: 5 (0-10)
     // }
     
-    const { strategies, method, riskPreference, agentStrategyMatrix } = request;
+    const { strategies, method, riskPreference } = request;
     
     console.log(`[Portfolio Optimize] Method: ${method}, Strategies: ${strategies?.length || 0}, Risk: ${riskPreference}`);
     
-    // Step 1: Decide data source - Agent-based or Historical prices
-    let strategyReturns: Record<string, number[]> = {};
-    let dataSource = 'Historical Prices';
-    
-    if (agentStrategyMatrix && Object.keys(agentStrategyMatrix).length > 0) {
-      // NEW PATH: Use agent-informed strategy returns
-      console.log('[Portfolio Optimize] Using agent-informed strategy returns');
-      dataSource = 'Agent-Informed Performance';
-      
-      // Get agent scores and calculate strategy returns
-      const [crossExchangeData, fearGreedData, onChainApiData, globalData] = await Promise.all([
-        getCrossExchangePrices(),
-        getFearGreedIndex(),
-        getOnChainData(),
-        getGlobalMarketData()
-      ]);
-      
-      const agentData = {
-        Economic: generateEconomicData(),
-        Sentiment: await generateSentimentDataWithAPI(fearGreedData),
-        CrossExchange: await generateCrossExchangeDataWithAPI(crossExchangeData),
-        OnChain: await generateOnChainDataWithAPI(onChainApiData, globalData)
-      };
-      
-      // Generate 252 days of historical agent scores
-      const historicalAgentScores: Record<string, number[]> = {};
-      for (const agentName of Object.keys(agentData)) {
-        const currentScore = agentData[agentName as keyof typeof agentData].score;
-        const scores: number[] = [];
-        let score = currentScore;
-        
-        for (let day = 0; day < 252; day++) {
-          const drift = (currentScore - score) * 0.05;
-          const volatility = 5 + Math.random() * 5;
-          const change = drift + (Math.random() - 0.5) * volatility;
-          score = Math.max(0, Math.min(100, score + change));
-          scores.push(score);
-        }
-        
-        historicalAgentScores[agentName] = scores;
-      }
-      
-      // Calculate strategy returns from agent scores
-      for (const strategyName of strategies) {
-        const selectedAgents = agentStrategyMatrix[strategyName] || [];
-        if (selectedAgents.length === 0) continue;
-        
-        const dailyReturns: number[] = [];
-        
-        for (let day = 0; day < 252; day++) {
-          const agentScores = selectedAgents.map((agentName: string) => 
-            historicalAgentScores[agentName][day]
-          );
-          
-          let dailyReturn = 0;
-          
-          // Strategy-specific return formulas
-          if (strategyName === 'Spatial') {
-            const crossExScore = agentScores.find((_, i) => selectedAgents[i] === 'CrossExchange') || 50;
-            dailyReturn = (crossExScore - 50) * 0.0015;
-          } else if (strategyName === 'Triangular') {
-            const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            dailyReturn = (avgScore - 50) * 0.0018;
-          } else if (strategyName === 'Statistical') {
-            const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            const deviation = Math.abs(avgScore - 50);
-            dailyReturn = deviation * 0.002;
-          } else if (strategyName === 'ML Ensemble') {
-            const weights = [0.3, 0.3, 0.2, 0.2];
-            dailyReturn = agentScores.reduce((sum: number, score: number, i: number) => 
-              sum + (score - 50) * (weights[i] || 0.25) * 0.0012, 0
-            );
-          } else if (strategyName === 'Deep Learning' || strategyName === 'CNN Pattern') {
-            const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            const nonlinearity = Math.pow((avgScore - 50) / 50, 2) * Math.sign(avgScore - 50);
-            dailyReturn = nonlinearity * 0.003;
-          } else {
-            const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            dailyReturn = (avgScore - 50) * 0.0012;
-          }
-          
-          dailyReturns.push(dailyReturn);
-        }
-        
-        strategyReturns[strategyName] = dailyReturns;
-      }
-      
-    } else {
-      // OLD PATH: Use historical price-based returns
-      console.log('[Portfolio Optimize] Using historical price-based returns');
-      let histData: any;
+    // Step 1: Get historical prices (reuse cache if available)
+    let histData: any;
     
     if (historicalDataCache && (Date.now() - historicalDataCache.timestamp < CACHE_TTL)) {
       console.log('[Portfolio Optimize] Using cached historical data');
@@ -857,21 +767,21 @@ app.post('/api/portfolio/optimize', async (c) => {
     
     console.log(`[Portfolio Optimize] Calculated returns for ${Object.keys(assetReturns).length} assets`);
     
-      // Step 3: Map asset returns to strategy returns
-      const allStrategyReturns = calculateStrategyReturns(assetReturns);
-      
-      // Step 4: Filter to requested strategies
-      if (strategies && strategies.length > 0) {
-        for (const strategy of strategies) {
-          if (allStrategyReturns[strategy]) {
-            strategyReturns[strategy] = allStrategyReturns[strategy];
-          }
+    // Step 3: Map asset returns to strategy returns
+    const allStrategyReturns = calculateStrategyReturns(assetReturns);
+    
+    // Step 4: Filter to requested strategies
+    const strategyReturns: Record<string, number[]> = {};
+    if (strategies && strategies.length > 0) {
+      for (const strategy of strategies) {
+        if (allStrategyReturns[strategy]) {
+          strategyReturns[strategy] = allStrategyReturns[strategy];
         }
-      } else {
-        // Use all strategies if none specified
-        Object.assign(strategyReturns, allStrategyReturns);
       }
-    } // Close else block
+    } else {
+      // Use all strategies if none specified
+      Object.assign(strategyReturns, allStrategyReturns);
+    }
     
     console.log(`[Portfolio Optimize] Using ${Object.keys(strategyReturns).length} strategies`);
     
@@ -926,7 +836,7 @@ app.post('/api/portfolio/optimize', async (c) => {
         sharpeRatio: result.metrics.sharpeRatio
       },
       strategies: stratList,
-      dataSource
+      dataSource: histData.metadata.source
     });
     
   } catch (error) {
@@ -934,156 +844,6 @@ app.post('/api/portfolio/optimize', async (c) => {
     return c.json({
       success: false,
       error: 'Portfolio optimization failed',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, 500);
-  }
-});
-
-// ============================================================================
-// AGENT-STRATEGY PERFORMANCE API - Calculate returns from agent scores
-// ============================================================================
-
-app.post('/api/strategy/performance', async (c) => {
-  try {
-    const request = await c.req.json();
-    // request: { agentStrategyMatrix: { "Spatial": ["CrossExchange"], "Triangular": ["Sentiment", "CrossExchange"], ... } }
-    
-    const { agentStrategyMatrix } = request;
-    
-    console.log(`[Strategy Performance] Calculating for ${Object.keys(agentStrategyMatrix).length} strategies`);
-    
-    // Step 1: Get current agent scores
-    const [crossExchangeData, fearGreedData, onChainApiData, globalData] = await Promise.all([
-      getCrossExchangePrices(),
-      getFearGreedIndex(),
-      getOnChainData(),
-      getGlobalMarketData()
-    ]);
-    
-    const agentData = {
-      Economic: generateEconomicData(),
-      Sentiment: await generateSentimentDataWithAPI(fearGreedData),
-      CrossExchange: await generateCrossExchangeDataWithAPI(crossExchangeData),
-      OnChain: await generateOnChainDataWithAPI(onChainApiData, globalData)
-    };
-    
-    // Step 2: Generate 252 days of historical agent scores (simulated based on current scores)
-    const historicalAgentScores: Record<string, number[]> = {};
-    
-    for (const agentName of Object.keys(agentData)) {
-      const currentScore = agentData[agentName as keyof typeof agentData].score;
-      const scores: number[] = [];
-      
-      // Generate realistic random walk around current score
-      let score = currentScore;
-      for (let day = 0; day < 252; day++) {
-        // Mean reversion: drift towards current score
-        const drift = (currentScore - score) * 0.05;
-        // Volatility: random daily change
-        const volatility = 5 + Math.random() * 5; // 5-10 points daily volatility
-        const change = drift + (Math.random() - 0.5) * volatility;
-        
-        score = Math.max(0, Math.min(100, score + change));
-        scores.push(score);
-      }
-      
-      historicalAgentScores[agentName] = scores;
-    }
-    
-    // Step 3: Calculate strategy performance based on selected agents
-    const strategyPerformance: Record<string, any> = {};
-    
-    for (const [strategyName, selectedAgents] of Object.entries(agentStrategyMatrix)) {
-      if (!Array.isArray(selectedAgents) || selectedAgents.length === 0) {
-        // No agents selected, skip
-        continue;
-      }
-      
-      // Calculate daily returns from selected agent scores
-      const dailyReturns: number[] = [];
-      
-      for (let day = 0; day < 252; day++) {
-        // Get agent scores for this day
-        const agentScores = selectedAgents.map(agentName => 
-          historicalAgentScores[agentName][day]
-        );
-        
-        // Calculate strategy return using agent scores
-        // Formula varies by strategy type
-        let dailyReturn = 0;
-        
-        if (strategyName === 'Spatial') {
-          // Cross-exchange arbitrage: return proportional to cross-exchange score
-          const crossExScore = agentScores.find((_, i) => selectedAgents[i] === 'CrossExchange') || 50;
-          dailyReturn = (crossExScore - 50) * 0.00005; // -0.25% to +0.25% daily range
-          
-        } else if (strategyName === 'Triangular') {
-          // Triangular arbitrage: combo of cross-exchange + sentiment
-          const avgScore = agentScores.reduce((sum, s) => sum + s, 0) / agentScores.length;
-          dailyReturn = (avgScore - 50) * 0.00006;
-          
-        } else if (strategyName === 'Statistical') {
-          // Mean reversion: benefits from extremes
-          const avgScore = agentScores.reduce((sum, s) => sum + s, 0) / agentScores.length;
-          const deviation = Math.abs(avgScore - 50);
-          dailyReturn = deviation * 0.00007;
-          
-        } else if (strategyName === 'ML Ensemble') {
-          // Machine learning: weighted combination
-          const weights = [0.3, 0.3, 0.2, 0.2]; // Economic, Sentiment, CrossEx, OnChain
-          dailyReturn = agentScores.reduce((sum, score, i) => 
-            sum + (score - 50) * (weights[i] || 0.25) * 0.00005, 0
-          );
-          
-        } else if (strategyName === 'Deep Learning' || strategyName === 'CNN Pattern') {
-          // Non-linear: higher returns but more volatility
-          const avgScore = agentScores.reduce((sum, s) => sum + s, 0) / agentScores.length;
-          const nonlinearity = Math.pow((avgScore - 50) / 50, 2) * Math.sign(avgScore - 50);
-          dailyReturn = nonlinearity * 0.0001;
-          
-        } else {
-          // Default: simple average
-          const avgScore = agentScores.reduce((sum, s) => sum + s, 0) / agentScores.length;
-          dailyReturn = (avgScore - 50) * 0.00005;
-        }
-        
-        dailyReturns.push(dailyReturn);
-      }
-      
-      // Calculate statistics
-      const meanReturn = dailyReturns.reduce((sum, r) => sum + r, 0) / dailyReturns.length;
-      const variance = dailyReturns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (dailyReturns.length - 1);
-      const volatility = Math.sqrt(variance);
-      
-      // Annualize
-      const expectedReturn = meanReturn * 252 * 100; // %
-      const annualVolatility = volatility * Math.sqrt(252) * 100; // %
-      const sharpeRatio = (meanReturn * 252) / (volatility * Math.sqrt(252) + 0.0001);
-      
-      strategyPerformance[strategyName] = {
-        selectedAgents,
-        expectedReturn: parseFloat(expectedReturn.toFixed(2)),
-        volatility: parseFloat(annualVolatility.toFixed(2)),
-        sharpeRatio: parseFloat(sharpeRatio.toFixed(2)),
-        dailyReturns,
-        agentScores: selectedAgents.map(name => ({
-          agent: name,
-          currentScore: agentData[name as keyof typeof agentData].score
-        }))
-      };
-    }
-    
-    return c.json({
-      success: true,
-      strategyPerformance,
-      timestamp: new Date().toISOString()
-    });
-    
-  } catch (error) {
-    console.error('[Strategy Performance] Error:', error);
-    return c.json({
-      success: false,
-      error: 'Failed to calculate strategy performance',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, 500);
   }
@@ -1565,6 +1325,10 @@ app.get('/', (c) => {
             <div class="nav-tab" onclick="switchTab('analytics')">
               <i class="fas fa-chart-bar mr-2"></i>Analytics
             </div>
+            <div class="nav-tab" onclick="switchTab('paper-trading')">
+              <i class="fas fa-coins mr-2"></i>Paper Trading
+              <span class="ml-2 px-2 py-0.5 text-xs rounded" style="background: var(--forest); color: white;">LIVE DATA</span>
+            </div>
           </div>
         </nav>
 
@@ -1763,297 +1527,6 @@ app.get('/', (c) => {
               </div>
             </div>
 
-            <!-- Agent-Strategy Configuration Matrix - NEW FEATURE -->
-            <div class="card mb-8" style="border: 3px solid var(--navy)">
-              <div class="mb-6">
-                <h3 class="text-xl font-bold mb-2" style="color: var(--navy)">
-                  <i class="fas fa-network-wired mr-2"></i>Agent-Strategy Configuration
-                </h3>
-                <p class="text-sm" style="color: var(--warm-gray)">
-                  Select which agents power each strategy. Agents provide real-time market signals that drive strategy performance. 
-                  Customize agent selection to optimize individual strategy return-risk profiles.
-                </p>
-              </div>
-
-              <!-- Agent-Strategy Matrix (10 strategies × 4 agents = 40 checkboxes) -->
-              <div class="overflow-x-auto">
-                <table class="w-full text-sm">
-                  <thead>
-                    <tr style="background: var(--cream-200)">
-                      <th class="p-3 text-left font-semibold" style="color: var(--navy)">Strategy</th>
-                      <th class="p-3 text-center font-semibold" style="color: var(--navy)">
-                        <div class="flex flex-col items-center">
-                          <i class="fas fa-chart-line mb-1"></i>
-                          <span>Economic</span>
-                        </div>
-                      </th>
-                      <th class="p-3 text-center font-semibold" style="color: var(--navy)">
-                        <div class="flex flex-col items-center">
-                          <i class="fas fa-smile mb-1"></i>
-                          <span>Sentiment</span>
-                        </div>
-                      </th>
-                      <th class="p-3 text-center font-semibold" style="color: var(--navy)">
-                        <div class="flex flex-col items-center">
-                          <i class="fas fa-exchange-alt mb-1"></i>
-                          <span>Cross-Exchange</span>
-                        </div>
-                      </th>
-                      <th class="p-3 text-center font-semibold" style="color: var(--navy)">
-                        <div class="flex flex-col items-center">
-                          <i class="fas fa-link mb-1"></i>
-                          <span>On-Chain</span>
-                        </div>
-                      </th>
-                      <th class="p-3 text-center font-semibold" style="color: var(--warm-gray)">Performance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <!-- Spatial Arbitrage -->
-                    <tr class="border-t-2" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Spatial Arbitrage</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Spatial" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Spatial" data-agent="Sentiment">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Spatial" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Spatial" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Spatial" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Triangular Arbitrage -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Triangular Arbitrage</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Triangular" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Triangular" data-agent="Sentiment" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Triangular" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Triangular" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Triangular" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Statistical Arbitrage -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Statistical Arbitrage</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Statistical" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Statistical" data-agent="Sentiment">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Statistical" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Statistical" data-agent="OnChain" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Statistical" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- ML Ensemble -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">ML Ensemble</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="ML Ensemble" data-agent="Economic" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="ML Ensemble" data-agent="Sentiment" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="ML Ensemble" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="ML Ensemble" data-agent="OnChain" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-ML Ensemble" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Deep Learning -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Deep Learning</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Deep Learning" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Deep Learning" data-agent="Sentiment" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Deep Learning" data-agent="CrossExchange">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Deep Learning" data-agent="OnChain" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Deep Learning" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- CNN Pattern -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">CNN Pattern</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="CNN Pattern" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="CNN Pattern" data-agent="Sentiment" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="CNN Pattern" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="CNN Pattern" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-CNN Pattern" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Sentiment -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Sentiment Analysis</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Sentiment" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Sentiment" data-agent="Sentiment" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Sentiment" data-agent="CrossExchange">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Sentiment" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Sentiment" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Funding Rate -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Funding Rate Arbitrage</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Funding Rate" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Funding Rate" data-agent="Sentiment">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Funding Rate" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Funding Rate" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Funding Rate" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Volatility -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Volatility Arbitrage</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Volatility" data-agent="Economic" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Volatility" data-agent="Sentiment">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Volatility" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Volatility" data-agent="OnChain">
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Volatility" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                    <!-- Market Making -->
-                    <tr class="border-t" style="border-color: var(--cream-300)">
-                      <td class="p-3 font-medium" style="color: var(--dark-brown)">Market Making</td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Market Making" data-agent="Economic">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Market Making" data-agent="Sentiment">
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Market Making" data-agent="CrossExchange" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <input type="checkbox" class="agent-checkbox w-5 h-5" data-strategy="Market Making" data-agent="OnChain" checked>
-                      </td>
-                      <td class="p-3 text-center">
-                        <div id="perf-Market Making" class="text-xs">
-                          <div class="font-bold" style="color: var(--forest)">Return: --</div>
-                          <div style="color: var(--warm-gray)">Risk: --</div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <!-- Calculate Button -->
-              <div class="mt-4 text-center">
-                <button 
-                  id="calculate-agent-performance-btn" 
-                  onclick="calculateAgentStrategyPerformance()" 
-                  class="btn-primary"
-                  style="background: var(--navy)"
-                >
-                  <i class="fas fa-calculator mr-2"></i>Calculate Strategy Performance from Agents
-                </button>
-              </div>
-
-              <!-- Explanation -->
-              <div class="mt-4 p-3 rounded text-xs" style="background: var(--cream-200); color: var(--warm-gray)">
-                <strong style="color: var(--navy)">How it works:</strong> Each agent provides a real-time score (0-100%). 
-                Strategies use these scores to generate returns. For example, Spatial Arbitrage with only Cross-Exchange agent 
-                will have returns driven purely by price spread signals. Adding Sentiment agent may improve or change the return-risk profile.
-                Click "Calculate" to see how your agent selections affect each strategy's expected return and volatility.
-              </div>
-            </div>
-
             <!-- Portfolio Optimization Engine - NEW FEATURE -->
             <div class="card mb-8" style="border: 3px solid var(--burnt)">
               <div class="mb-6">
@@ -2061,7 +1534,7 @@ app.get('/', (c) => {
                   <i class="fas fa-calculator mr-2"></i>Portfolio Optimization Engine
                 </h3>
                 <p class="text-sm" style="color: var(--warm-gray)">
-                  Portfolio weights are allocated based on individual strategy returns and volatility from agent-informed performance.
+                  Quantitative portfolio construction using Mean-Variance Optimization framework with real market data.
                   Select strategies and risk preferences to generate optimal portfolio allocations.
                 </p>
               </div>

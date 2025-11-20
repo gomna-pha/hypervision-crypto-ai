@@ -4677,6 +4677,164 @@ function displayWeightPieChart(strategies, weights) {
 // END PORTFOLIO OPTIMIZATION SYSTEM
 // ============================================================================
 
+// ============================================================================
+// AGENT-STRATEGY CONFIGURATION SYSTEM
+// ============================================================================
+
+// Calculate strategy performance based on selected agents
+async function calculateAgentStrategyPerformance() {
+  try {
+    console.log('[Agent-Strategy] Calculating performance...');
+    
+    // Collect agent-strategy matrix from checkboxes
+    const agentStrategyMatrix = {};
+    const strategies = ['Spatial', 'Triangular', 'Statistical', 'ML Ensemble', 'Deep Learning', 
+                       'CNN Pattern', 'Sentiment', 'Funding Rate', 'Volatility', 'Market Making'];
+    
+    strategies.forEach(strategy => {
+      const checkboxes = document.querySelectorAll(`input[data-strategy="${strategy}"]:checked`);
+      const selectedAgents = Array.from(checkboxes).map(cb => cb.getAttribute('data-agent'));
+      
+      if (selectedAgents.length > 0) {
+        agentStrategyMatrix[strategy] = selectedAgents;
+      }
+    });
+    
+    console.log('[Agent-Strategy] Matrix:', agentStrategyMatrix);
+    
+    if (Object.keys(agentStrategyMatrix).length === 0) {
+      alert('Please select at least one agent for at least one strategy');
+      return;
+    }
+    
+    // Call API
+    const response = await fetch('/api/strategy/performance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ agentStrategyMatrix })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to calculate performance');
+    }
+    
+    const result = await response.json();
+    console.log('[Agent-Strategy] Result:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Calculation failed');
+    }
+    
+    // Update performance displays
+    for (const [strategy, performance] of Object.entries(result.strategyPerformance)) {
+      const perfDiv = document.getElementById(`perf-${strategy}`);
+      if (perfDiv) {
+        perfDiv.innerHTML = `
+          <div class="font-bold" style="color: var(--forest)">Return: ${performance.expectedReturn.toFixed(1)}%</div>
+          <div style="color: var(--warm-gray)">Risk: ${performance.volatility.toFixed(1)}%</div>
+          <div class="text-xs" style="color: var(--navy)">Sharpe: ${performance.sharpeRatio.toFixed(2)}</div>
+        `;
+      }
+    }
+    
+    // Store for portfolio optimization
+    window.agentStrategyPerformance = result.strategyPerformance;
+    
+    // Show success message
+    showNotification('Strategy performance calculated successfully!', 'success');
+    
+  } catch (error) {
+    console.error('[Agent-Strategy] Error:', error);
+    showNotification('Failed to calculate performance: ' + error.message, 'error');
+  }
+}
+
+// Update portfolio optimization to use agent-strategy configuration
+const originalRunPortfolioOptimization = runPortfolioOptimization;
+runPortfolioOptimization = async function() {
+  try {
+    // Show loading
+    document.getElementById('optimization-loading').classList.remove('hidden');
+    document.getElementById('optimization-results').classList.add('hidden');
+    document.getElementById('optimization-error').classList.add('hidden');
+    
+    // Get selected strategies
+    const checkboxes = document.querySelectorAll('.strategy-checkbox:checked');
+    const strategies = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (strategies.length === 0) {
+      throw new Error('Please select at least one strategy');
+    }
+    
+    // Get configuration
+    const riskPreference = parseFloat(document.getElementById('risk-slider').value);
+    const method = document.getElementById('optimization-method').value;
+    
+    // Collect agent-strategy matrix
+    const agentStrategyMatrix = {};
+    strategies.forEach(strategy => {
+      const agentCheckboxes = document.querySelectorAll(`input[data-strategy="${strategy}"]:checked`);
+      const selectedAgents = Array.from(agentCheckboxes).map(cb => cb.getAttribute('data-agent'));
+      
+      if (selectedAgents.length > 0) {
+        agentStrategyMatrix[strategy] = selectedAgents;
+      }
+    });
+    
+    console.log('[Portfolio Optimization] Running with:', { 
+      strategies, 
+      method, 
+      riskPreference,
+      agentStrategyMatrix: Object.keys(agentStrategyMatrix).length > 0 ? agentStrategyMatrix : 'not provided'
+    });
+    
+    // Build request body
+    const requestBody = {
+      strategies,
+      method,
+      riskPreference
+    };
+    
+    // Add agent-strategy matrix if agents are selected
+    if (Object.keys(agentStrategyMatrix).length > 0) {
+      requestBody.agentStrategyMatrix = agentStrategyMatrix;
+    }
+    
+    // Call API
+    const response = await fetch('/api/portfolio/optimize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Optimization failed');
+    }
+    
+    const result = await response.json();
+    
+    console.log('[Portfolio Optimization] Result:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Optimization failed');
+    }
+    
+    // Display results
+    displayOptimizationResults(result);
+    
+  } catch (error) {
+    console.error('[Portfolio Optimization] Error:', error);
+    document.getElementById('optimization-loading').classList.add('hidden');
+    document.getElementById('optimization-error').classList.remove('hidden');
+    document.getElementById('optimization-error-msg').textContent = error.message;
+  }
+};
+
+// ============================================================================
+// END AGENT-STRATEGY CONFIGURATION SYSTEM
+// ============================================================================
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   if (updateInterval) {
