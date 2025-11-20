@@ -1452,6 +1452,197 @@ app.post('/api/portfolio/recommend-method', async (c) => {
 });
 
 // ============================================================================
+// AGENT ALLOCATION OPTIMIZATION API - Optimize strategy weights for autonomous agent
+// ============================================================================
+
+app.post('/api/agent/optimize-allocation', async (c) => {
+  try {
+    const request = await c.req.json();
+    const { enabledStrategies, totalCapital, riskTolerance } = request;
+    
+    console.log(`[Agent Allocation] Optimizing for ${enabledStrategies?.length || 0} strategies, Capital: $${totalCapital}`);
+    
+    if (!enabledStrategies || enabledStrategies.length === 0) {
+      return c.json({
+        success: false,
+        error: 'No strategies provided'
+      }, 400);
+    }
+    
+    // Step 1: Get agent scores
+    const [crossExchangeData, fearGreedData, onChainApiData, globalData] = await Promise.all([
+      getCrossExchangePrices(),
+      getFearGreedIndex(),
+      getOnChainData(),
+      getGlobalMarketData()
+    ]);
+    
+    const economicData = generateEconomicData();
+    const sentimentData = await generateSentimentDataWithAPI(fearGreedData);
+    const crossExchangeDataResult = await generateCrossExchangeDataWithAPI(crossExchangeData);
+    const onChainDataResult = await generateOnChainDataWithAPI(onChainApiData, globalData);
+    
+    const agentScores = {
+      Economic: typeof economicData === 'number' ? economicData : economicData.score,
+      Sentiment: typeof sentimentData === 'number' ? sentimentData : sentimentData.score,
+      CrossExchange: typeof crossExchangeDataResult === 'number' ? crossExchangeDataResult : crossExchangeDataResult.score,
+      OnChain: typeof onChainDataResult === 'number' ? onChainDataResult : onChainDataResult.score
+    };
+    
+    // Step 2: Create default agent-strategy matrix for enabled strategies
+    const agentStrategyMatrix: Record<string, string[]> = {};
+    const strategyAgentMapping: Record<string, string[]> = {
+      'Spatial Arbitrage': ['CrossExchange'],
+      'Triangular Arbitrage': ['Sentiment', 'CrossExchange'],
+      'Statistical Arbitrage': ['Economic', 'OnChain'],
+      'ML Ensemble': ['Economic', 'Sentiment', 'CrossExchange', 'OnChain'],
+      'Deep Learning': ['Economic', 'Sentiment', 'CrossExchange'],
+      'CNN Pattern Recognition': ['Sentiment', 'CrossExchange'],
+      'Sentiment Analysis': ['Sentiment', 'Economic'],
+      'Funding Rate Arbitrage': ['Economic', 'OnChain'],
+      'Volatility Arbitrage': ['Sentiment', 'CrossExchange', 'OnChain'],
+      'Market Making': ['CrossExchange', 'OnChain'],
+      'HFT Micro Arbitrage': ['CrossExchange']
+    };
+    
+    for (const strategy of enabledStrategies) {
+      agentStrategyMatrix[strategy] = strategyAgentMapping[strategy] || ['Economic', 'Sentiment'];
+    }
+    
+    // Step 3: Run meta-optimization to select best method
+    const metaRecommendation = selectOptimalOptimizationMethod(enabledStrategies, agentScores);
+    
+    console.log(`[Agent Allocation] Meta-optimization recommends: ${metaRecommendation.recommendedMethod} (${metaRecommendation.confidence}%)`);
+    
+    // Step 4: Calculate strategy performance (simplified - use agent scores directly)
+    const strategyReturns: Record<string, number[]> = {};
+    const historicalAgentScores: Record<string, number[]> = {};
+    
+    // Generate 252 days of agent score history
+    for (const [agentName, currentScore] of Object.entries(agentScores)) {
+      const scores: number[] = [];
+      let score = currentScore;
+      
+      for (let day = 0; day < 252; day++) {
+        const drift = (currentScore - score) * 0.05;
+        const volatility = 5 + Math.random() * 5;
+        const change = drift + (Math.random() - 0.5) * volatility;
+        score = Math.max(0, Math.min(100, score + change));
+        scores.push(score);
+      }
+      
+      historicalAgentScores[agentName] = scores;
+    }
+    
+    // Calculate strategy returns from agent scores
+    for (const [strategyName, selectedAgents] of Object.entries(agentStrategyMatrix)) {
+      const dailyReturns: number[] = [];
+      
+      for (let day = 0; day < 252; day++) {
+        let agentScoreValues = selectedAgents.map(agentName => 
+          historicalAgentScores[agentName][day]
+        );
+        
+        // Normalize scores
+        const normalizeScore = (score: number) => {
+          const clamped = Math.max(20, Math.min(80, score));
+          return 40 + ((clamped - 20) / 60) * 30;
+        };
+        agentScoreValues = agentScoreValues.map(normalizeScore);
+        
+        // Calculate daily return based on strategy type
+        let dailyReturn = 0;
+        const avgScore = agentScoreValues.reduce((sum, s) => sum + s, 0) / agentScoreValues.length;
+        
+        if (strategyName === 'Spatial Arbitrage') {
+          const crossExScore = agentScoreValues.find((_, i) => selectedAgents[i] === 'CrossExchange') || 50;
+          dailyReturn = (crossExScore - 50) * 0.00005;
+        } else if (strategyName === 'Triangular Arbitrage') {
+          dailyReturn = (avgScore - 50) * 0.00006;
+        } else if (strategyName === 'Statistical Arbitrage') {
+          const deviation = Math.abs(avgScore - 50);
+          dailyReturn = deviation * 0.00007;
+        } else if (strategyName === 'Deep Learning' || strategyName === 'CNN Pattern Recognition') {
+          const nonlinearity = Math.pow((avgScore - 50) / 50, 2) * Math.sign(avgScore - 50);
+          dailyReturn = nonlinearity * 0.0001;
+        } else {
+          dailyReturn = (avgScore - 50) * 0.00005;
+        }
+        
+        dailyReturns.push(dailyReturn);
+      }
+      
+      strategyReturns[strategyName] = dailyReturns;
+    }
+    
+    // Step 5: Run portfolio optimization
+    let optimizationResult: any;
+    
+    if (metaRecommendation.recommendedMethod === 'risk-parity') {
+      optimizationResult = optimizeRiskParity(strategyReturns);
+    } else if (metaRecommendation.recommendedMethod === 'max-sharpe') {
+      optimizationResult = optimizeMaxSharpe(strategyReturns);
+    } else if (metaRecommendation.recommendedMethod === 'mean-variance') {
+      optimizationResult = optimizeMeanVariance(strategyReturns, riskTolerance || 5);
+    } else {
+      // Equal weight fallback
+      const n = enabledStrategies.length;
+      optimizationResult = {
+        weights: enabledStrategies.map(() => 1 / n),
+        metrics: { expectedReturn: 0, volatility: 0, sharpeRatio: 0 }
+      };
+    }
+    
+    // Step 6: Calculate allocations
+    const allocations: Record<string, any> = {};
+    const strategyList = Object.keys(strategyReturns);
+    
+    for (let i = 0; i < strategyList.length; i++) {
+      const strategy = strategyList[i];
+      const weight = optimizationResult.weights[i];
+      const returns = strategyReturns[strategy];
+      const meanReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+      const variance = returns.reduce((sum, r) => sum + Math.pow(r - meanReturn, 2), 0) / (returns.length - 1);
+      const volatility = Math.sqrt(variance);
+      
+      allocations[strategy] = {
+        weight,
+        maxPosition: totalCapital * weight,
+        expectedReturn: meanReturn * 252 * 100, // Annualized %
+        risk: volatility * Math.sqrt(252) * 100, // Annualized %
+        sharpeRatio: volatility > 0 ? (meanReturn * 252) / (volatility * Math.sqrt(252)) : 0
+      };
+    }
+    
+    console.log(`[Agent Allocation] Optimization complete. Portfolio Sharpe: ${optimizationResult.metrics.sharpeRatio.toFixed(2)}`);
+    
+    return c.json({
+      success: true,
+      method: metaRecommendation.recommendedMethod,
+      confidence: metaRecommendation.confidence,
+      marketRegime: metaRecommendation.marketRegime,
+      signalStrength: metaRecommendation.signalStrength,
+      reasoning: metaRecommendation.reasoning,
+      allocations,
+      portfolioMetrics: {
+        expectedReturn: optimizationResult.metrics.expectedReturn,
+        volatility: optimizationResult.metrics.volatility,
+        sharpeRatio: optimizationResult.metrics.sharpeRatio
+      },
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('[Agent Allocation] Error:', error);
+    return c.json({
+      success: false,
+      error: 'Agent allocation optimization failed',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, 500);
+  }
+});
+
+// ============================================================================
 // AGENT-STRATEGY PERFORMANCE API - Calculate returns from agent scores
 // ============================================================================
 
@@ -2194,6 +2385,51 @@ app.get('/', (c) => {
                     <span style="color: var(--dark-brown)">Net P&L:</span>
                     <span class="font-bold" style="color: var(--warm-gray)">$0.00</span>
                   </div>
+                </div>
+              </div>
+
+              <!-- Strategy Allocation Optimization Section -->
+              <div class="mt-4 p-4 rounded border-2" style="border-color: var(--cream-300); background: var(--cream-100)">
+                <div class="flex items-center justify-between mb-3">
+                  <div>
+                    <div class="text-sm font-semibold" style="color: var(--navy)">
+                      <i class="fas fa-chart-pie mr-2"></i>Strategy Allocation
+                    </div>
+                    <div id="allocation-status" class="text-xs mt-1" style="color: var(--warm-gray)">
+                      ⚠️ <strong>EQUAL WEIGHT</strong> (Not Optimized) - All strategies use equal capital allocation
+                    </div>
+                  </div>
+                  <button 
+                    id="optimize-allocation-btn" 
+                    onclick="optimizeAgentAllocation()" 
+                    class="px-4 py-2 rounded font-semibold text-white text-sm" 
+                    style="background: var(--burnt)"
+                  >
+                    <i class="fas fa-brain mr-2"></i>Optimize Allocation
+                  </button>
+                </div>
+
+                <!-- Auto-Optimization Toggle -->
+                <div class="mt-3 p-3 rounded border-2" style="border-color: var(--cream-300); background: white">
+                  <label class="flex items-center cursor-pointer">
+                    <input type="checkbox" id="auto-optimize-toggle" onchange="toggleAutoOptimization()" class="mr-3 w-4 h-4">
+                    <div class="flex-1">
+                      <span class="font-medium text-xs" style="color: var(--navy)">
+                        🔄 Auto-Optimize Every 30 Minutes
+                      </span>
+                      <p class="text-xs mt-1" style="color: var(--warm-gray)">
+                        Automatically re-optimize allocation while agent is active
+                      </p>
+                    </div>
+                  </label>
+                  <div id="auto-optimize-status" class="hidden mt-2 text-xs" style="color: var(--warm-gray)">
+                    <i class="fas fa-clock mr-1"></i>Last optimized: <span id="last-optimize-time">Never</span>
+                  </div>
+                </div>
+
+                <!-- Allocation Display -->
+                <div id="agent-allocation-display" class="hidden mt-3">
+                  <!-- Will be populated by JavaScript -->
                 </div>
               </div>
 

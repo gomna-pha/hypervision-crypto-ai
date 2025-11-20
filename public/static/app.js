@@ -2763,6 +2763,195 @@ function sleep(ms) {
 // Industry-standard AI agent with ML-driven execution decisions
 // ============================================================================
 
+// Global variables for agent allocation
+window.agentAllocation = null;
+window.autoOptimizeInterval = null;
+window.lastOptimizationTime = null;
+
+// Optimize agent strategy allocation
+async function optimizeAgentAllocation() {
+  try {
+    // Show loading
+    const btn = document.getElementById('optimize-allocation-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Optimizing...';
+    btn.disabled = true;
+    
+    // Get enabled strategies (hardcoded for now - matches current agent)
+    const enabledStrategies = [
+      'Spatial Arbitrage',
+      'Triangular Arbitrage',
+      'Statistical Arbitrage',
+      'ML Ensemble',
+      'Deep Learning'
+    ];
+    
+    // Call API
+    const response = await fetch('/api/agent/optimize-allocation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        enabledStrategies,
+        totalCapital: 10000,
+        riskTolerance: 5
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Store allocation globally
+      window.agentAllocation = result.allocations;
+      window.lastOptimizationTime = new Date();
+      
+      // Update UI
+      displayAgentAllocation(result);
+      updateAllocationStatus('optimized', result.method, result.confidence);
+      
+      // Update last optimization time
+      const timeStr = window.lastOptimizationTime.toLocaleTimeString();
+      document.getElementById('last-optimize-time').textContent = timeStr;
+      document.getElementById('auto-optimize-status').classList.remove('hidden');
+      
+      showNotification(
+        `Allocation optimized using ${result.method.toUpperCase()} (${result.confidence}% confidence)`,
+        'success'
+      );
+    } else {
+      throw new Error(result.error || 'Optimization failed');
+    }
+    
+  } catch (error) {
+    console.error('[Agent Allocation] Error:', error);
+    showNotification('Optimization failed: ' + error.message, 'error');
+  } finally {
+    // Restore button
+    const btn = document.getElementById('optimize-allocation-btn');
+    btn.innerHTML = '<i class="fas fa-brain mr-2"></i>Optimize Allocation';
+    btn.disabled = false;
+  }
+}
+
+// Display optimized allocation
+function displayAgentAllocation(result) {
+  const container = document.getElementById('agent-allocation-display');
+  
+  // Sort by weight descending
+  const sortedAlloc = Object.entries(result.allocations).sort((a, b) => b[1].weight - a[1].weight);
+  
+  container.innerHTML = `
+    <div class="p-4 rounded border-2" style="background: #F0F9F4; border-color: var(--light-green)">
+      <div class="flex items-center mb-3">
+        <i class="fas fa-check-circle text-lg mr-2" style="color: var(--forest)"></i>
+        <div>
+          <span class="font-semibold text-sm" style="color: var(--forest)">
+            Optimized: ${result.method.toUpperCase().replace('-', ' ')}
+          </span>
+          <div class="text-xs mt-1" style="color: var(--warm-gray)">
+            Confidence: ${result.confidence}% | Market: ${result.marketRegime} | Signal: ${result.signalStrength.toFixed(0)}%
+          </div>
+        </div>
+      </div>
+      
+      <div class="space-y-2 mb-3">
+        ${sortedAlloc.map(([strategy, alloc]) => `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-medium">${strategy}</span>
+            <div class="text-right">
+              <span class="font-bold" style="color: var(--navy)">${(alloc.weight * 100).toFixed(1)}%</span>
+              <span class="text-xs" style="color: var(--warm-gray)"> = $${alloc.maxPosition.toFixed(0)}</span>
+            </div>
+          </div>
+          <div class="h-2 rounded overflow-hidden" style="background: var(--cream-300)">
+            <div class="h-full" style="width: ${(alloc.weight * 100)}%; background: var(--forest)"></div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <div class="pt-3 border-t text-xs" style="border-color: var(--cream-300)">
+        <div class="flex justify-between">
+          <span style="color: var(--warm-gray)">Portfolio Return:</span>
+          <span class="font-bold" style="color: var(--forest)">${result.portfolioMetrics.expectedReturn.toFixed(1)}%/year</span>
+        </div>
+        <div class="flex justify-between mt-1">
+          <span style="color: var(--warm-gray)">Portfolio Risk:</span>
+          <span class="font-bold" style="color: var(--burnt)">${result.portfolioMetrics.volatility.toFixed(1)}%/year</span>
+        </div>
+        <div class="flex justify-between mt-1">
+          <span style="color: var(--warm-gray)">Sharpe Ratio:</span>
+          <span class="font-bold" style="color: var(--navy)">${result.portfolioMetrics.sharpeRatio.toFixed(2)}</span>
+        </div>
+      </div>
+      
+      <div class="mt-3 flex gap-2">
+        <button onclick="optimizeAgentAllocation()" class="px-3 py-1 rounded text-xs font-semibold text-white" style="background: var(--burnt)">
+          Re-Optimize
+        </button>
+        <button onclick="resetAgentAllocation()" class="px-3 py-1 rounded text-xs font-semibold" style="background: var(--cream-300); color: var(--dark-brown)">
+          Reset to Equal
+        </button>
+      </div>
+    </div>
+  `;
+  
+  container.classList.remove('hidden');
+}
+
+// Update allocation status indicator
+function updateAllocationStatus(status, method, confidence) {
+  const statusDiv = document.getElementById('allocation-status');
+  
+  if (status === 'optimized') {
+    statusDiv.innerHTML = `
+      ✅ <strong>${method.toUpperCase().replace('-', ' ')}</strong> 
+      (${confidence}% confidence) - Capital allocated based on risk-return optimization
+    `;
+    statusDiv.style.color = 'var(--forest)';
+  } else {
+    statusDiv.innerHTML = `
+      ⚠️ <strong>EQUAL WEIGHT</strong> (Not Optimized) - All strategies use equal capital allocation
+    `;
+    statusDiv.style.color = 'var(--warm-gray)';
+  }
+}
+
+// Reset to equal weight
+function resetAgentAllocation() {
+  window.agentAllocation = null;
+  document.getElementById('agent-allocation-display').classList.add('hidden');
+  updateAllocationStatus('equal');
+  showNotification('Allocation reset to equal weight', 'info');
+}
+
+// Toggle auto-optimization
+function toggleAutoOptimization() {
+  const toggle = document.getElementById('auto-optimize-toggle');
+  
+  if (toggle.checked) {
+    // Enable auto-optimization
+    showNotification('Auto-optimization enabled (every 30 minutes)', 'success');
+    
+    // Run immediately
+    optimizeAgentAllocation();
+    
+    // Set interval (30 minutes)
+    window.autoOptimizeInterval = setInterval(() => {
+      if (autonomousMode) {
+        console.log('[Auto-Optimize] Running scheduled optimization...');
+        optimizeAgentAllocation();
+      }
+    }, 30 * 60 * 1000); // 30 minutes
+    
+  } else {
+    // Disable auto-optimization
+    if (window.autoOptimizeInterval) {
+      clearInterval(window.autoOptimizeInterval);
+      window.autoOptimizeInterval = null;
+    }
+    showNotification('Auto-optimization disabled', 'info');
+  }
+}
+
 // Toggle autonomous trading mode
 window.toggleAutonomousMode = function() {
   autonomousMode = !autonomousMode;
