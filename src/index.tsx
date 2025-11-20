@@ -2047,10 +2047,14 @@ app.get('/', (c) => {
 
               <!-- Explanation -->
               <div class="mt-4 p-3 rounded text-xs" style="background: var(--cream-200); color: var(--warm-gray)">
-                <strong style="color: var(--navy)">How it works:</strong> Each agent provides a real-time score (0-100%). 
-                Strategies use these scores to generate returns. For example, Spatial Arbitrage with only Cross-Exchange agent 
-                will have returns driven purely by price spread signals. Adding Sentiment agent may improve or change the return-risk profile.
-                Click "Calculate" to see how your agent selections affect each strategy's expected return and volatility.
+                <strong style="color: var(--navy)">Instructions:</strong><br>
+                1. <strong>Check at least one agent</strong> for each strategy you want to analyze<br>
+                2. Click <strong>"Calculate Strategy Performance"</strong> button to compute returns and volatility<br>
+                3. Performance is based on 252 days of agent scores (0-100%) transformed into daily returns<br>
+                4. Different agent combinations produce different return-risk profiles<br>
+                <br>
+                <strong style="color: var(--navy)">Example:</strong> Spatial Arbitrage with only Cross-Exchange agent will have returns driven purely by price spread signals. 
+                Adding Sentiment agent may improve or change the return-risk profile.
               </div>
             </div>
 
