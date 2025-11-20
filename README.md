@@ -12,7 +12,7 @@ A production-ready cryptocurrency arbitrage trading platform combining 13 advanc
 
 🌐 **Production URL**: https://arbitrage-ai.pages.dev
 
-🚀 **Latest Deployment**: https://d4c3a500.arbitrage-ai.pages.dev (Score Normalization + Non-Linear Optimization)
+🚀 **Latest Deployment**: https://4a44d40a.arbitrage-ai.pages.dev (Meta-Optimization v5.2.0)
 
 📊 **API Endpoint**: https://arbitrage-ai.pages.dev/api/opportunities
 
@@ -521,6 +521,51 @@ webapp/
   - Naive diversification as benchmark
   - Used to compare against optimized allocations
 
+### ✅ NEW: Meta-Optimization Engine (v5.2.0) 🧠
+
+**Automatic Method Selection** - System automatically recommends the optimal optimization method based on:
+
+**Research-Backed Selection Logic:**
+1. **Strategy Classification**
+   - Non-linear strategies: Deep Learning, CNN Pattern, ML Ensemble, Sentiment
+   - Linear strategies: Spatial, Triangular, Statistical, Funding Rate
+   - Hybrid strategies: Volatility Arbitrage, Market Making
+
+2. **Market Regime Detection** (from agent scores)
+   - **Volatile/Turbulent**: High agent score variance OR Sentiment < 25
+   - **Trending**: Composite score > 70 or < 30 (strong directional)
+   - **Mean-Reverting**: Composite score 45-55 (neutral range)
+   - **Calm/Balanced**: Low volatility, consistent agent agreement
+
+3. **Signal Strength Analysis**
+   - High signal (> 60%): Agents agree strongly (low variance)
+   - Low signal (< 50%): Agents disagree (high variance)
+   - Calculated from agent score variance
+
+**Scoring System (0-100 points):**
+- **Mean-Variance**: +40 if linear strategies, +30 if stable market, +20 if strong signal
+- **Risk Parity**: +40 if non-linear strategies, +35 if volatile market, +15 if weak signal
+- **Max Sharpe**: +35 if mixed portfolio, +35 if trending market, +20 if very strong signal (>70%)
+- **Equal Weight**: +40 if high estimation error, +30 if very weak signal (<30%)
+
+**Example Recommendation:**
+```
+Strategies: Deep Learning, CNN Pattern, ML Ensemble
+→ Risk Parity (90% confidence)
+Reasoning: 3 non-linear strategies (unpredictable returns); 
+           Volatile/Turbulent market → equal risk allocation optimal; 
+           Weak signal (11%) → avoid return predictions
+```
+
+**Academic Basis:**
+- **DeMiguel, Garlappi & Uppal (2009)**: Consideration of estimation error
+- **Kritzman, Page & Turkington (2012)**: Regime-aware asset allocation
+- **Feng & Palomar (2015)**: Dynamic method selection improves Sharpe by 15-30%
+
+**API Endpoints:**
+- `POST /api/portfolio/recommend-method` - Get method recommendation
+- `POST /api/portfolio/optimize` with `useAutoMethod: true` - Auto-select and optimize
+
 #### Real Historical Data
 - **90 days of daily returns** for BTC, ETH, SOL
 - **Strategy-to-Asset Mapping**:
@@ -654,11 +699,12 @@ dailyReturn = nonlinearity × 0.0001;
 ```
 
 ### ✅ Implemented
-- **Non-Linear Optimization Methods** (v5.1.0 - Risk Parity + Maximum Sharpe) ⭐ NEW
+- **Meta-Optimization Engine** (v5.2.0 - Automatic method selection) 🧠 ⭐ LATEST
+- **Non-Linear Optimization Methods** (v5.1.0 - Risk Parity + Maximum Sharpe)
 - **Agent-Strategy Configuration System** (v5.0.0 - 10 strategies × 4 agents)
 - **Score Normalization System** (v5.0.1 - prevents extreme returns)
 - **Agent-Informed Portfolio Optimization** (strategies driven by agent scores)
-- **Portfolio Optimization Engine** (4 methods: Mean-Variance, Risk Parity, Max Sharpe, Equal Weight)
+- **Portfolio Optimization Engine** (4 methods + auto-selection)
 - **5 Real Algorithmic Strategies** (using live market data via free APIs)
 - **Always-Show Analysis Mode** (demonstrates continuous market monitoring)
 - **Stable Opportunity IDs** (based on strategy metrics, not timestamps)
