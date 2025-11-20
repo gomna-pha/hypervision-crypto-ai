@@ -2683,10 +2683,45 @@ app.get('/', (c) => {
                       </div>
                     </div>
 
-                    <!-- Optimization Method -->
-                    <div>
+                    <!-- Meta-Optimization Toggle -->
+                    <div class="mb-4 p-3 rounded border-2" style="border-color: var(--cream-300); background: var(--cream-100)">
+                      <label class="flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-method-toggle" onchange="toggleAutoMethod()" class="mr-3 w-5 h-5" checked>
+                        <div class="flex-1">
+                          <span class="font-medium text-sm" style="color: var(--navy)">
+                            🧠 Smart Optimization (Meta-Optimization)
+                          </span>
+                          <p class="text-xs mt-1" style="color: var(--warm-gray)">
+                            Automatically selects the best method based on strategy types, market regime, and signal strength
+                          </p>
+                        </div>
+                      </label>
+                      
+                      <!-- Recommendation Display -->
+                      <div id="method-recommendation" class="mt-3 p-3 rounded border-2 hidden" style="border-color: var(--light-green); background: #F0F9F4">
+                        <div class="flex items-start">
+                          <i class="fas fa-lightbulb text-lg mr-2" style="color: var(--forest)"></i>
+                          <div class="flex-1">
+                            <div class="text-sm font-semibold mb-1" style="color: var(--forest)">
+                              Recommended: <span id="rec-method">-</span>
+                            </div>
+                            <div class="text-xs mb-2" style="color: var(--warm-gray)">
+                              <strong>Confidence:</strong> <span id="rec-confidence">-</span> | 
+                              <strong>Market:</strong> <span id="rec-regime">-</span> | 
+                              <strong>Signal:</strong> <span id="rec-signal">-</span>
+                            </div>
+                            <div class="text-xs" style="color: var(--warm-gray)">
+                              <strong>Why:</strong> <span id="rec-reasoning">-</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Optimization Method (Manual Override) -->
+                    <div id="manual-method-section">
                       <label class="text-sm font-medium mb-2 block" style="color: var(--dark-brown)">
-                        Optimization Method:
+                        Optimization Method: <span id="manual-override-label" class="hidden text-xs" style="color: var(--warm-gray)">(Manual Override)</span>
                       </label>
                       <select id="optimization-method" class="w-full p-2 rounded border-2" style="border-color: var(--cream-300)" onchange="updateOptimizationExplanation()">
                         <option value="mean-variance">Mean-Variance (Linear Strategies)</option>

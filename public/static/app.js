@@ -4590,7 +4590,14 @@ function displayOptimizationResults(result) {
   document.getElementById('opt-sharpe').textContent = metrics.sharpeRatio.toFixed(2);
   
   // Update data source
-  const source = result.dataSource || 'Realistic Market Simulation (Geometric Brownian Motion)';
+  let source = result.dataSource || 'Realistic Market Simulation (Geometric Brownian Motion)';
+  
+  // Add meta-optimization info if used
+  if (result.metaOptimization && result.metaOptimization.used) {
+    const meta = result.metaOptimization;
+    source += ` | 🧠 Auto-Selected: ${result.method.toUpperCase().replace('-', ' ')} (${meta.confidence}% confidence, ${meta.marketRegime})`;
+  }
+  
   document.getElementById('opt-data-source').textContent = source;
   
   // Display weight bars
@@ -4782,6 +4789,100 @@ async function calculateAgentStrategyPerformance() {
   }
 }
 
+// Initialize meta-optimization (call on page load and when strategies change)
+function initMetaOptimization() {
+  // Add event listeners to strategy checkboxes
+  const strategyCheckboxes = document.querySelectorAll('.strategy-checkbox');
+  strategyCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      // If auto-method is enabled, update recommendation
+      const toggle = document.getElementById('auto-method-toggle');
+      if (toggle && toggle.checked) {
+        getMethodRecommendation();
+      }
+    });
+  });
+  
+  // Initial recommendation if auto-method is enabled
+  const toggle = document.getElementById('auto-method-toggle');
+  if (toggle && toggle.checked) {
+    getMethodRecommendation();
+  }
+}
+
+// Toggle auto-method selection
+function toggleAutoMethod() {
+  const toggle = document.getElementById('auto-method-toggle');
+  const recommendation = document.getElementById('method-recommendation');
+  const manualSection = document.getElementById('manual-method-section');
+  const overrideLabel = document.getElementById('manual-override-label');
+  
+  if (toggle.checked) {
+    // Auto mode: get recommendation
+    getMethodRecommendation();
+    if (overrideLabel) overrideLabel.classList.add('hidden');
+  } else {
+    // Manual mode: hide recommendation
+    if (recommendation) recommendation.classList.add('hidden');
+    if (overrideLabel) overrideLabel.classList.remove('hidden');
+  }
+}
+
+// Call initialization when switching to portfolio optimization tab
+if (typeof switchTab === 'function') {
+  const originalSwitchTab = switchTab;
+  switchTab = function(tab) {
+    originalSwitchTab(tab);
+    if (tab === 'portfolio-optimization') {
+      setTimeout(initMetaOptimization, 100);
+    }
+  };
+}
+
+// Get method recommendation from meta-optimization API
+async function getMethodRecommendation() {
+  try {
+    const checkboxes = document.querySelectorAll('.strategy-checkbox:checked');
+    const strategies = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (strategies.length === 0) {
+      document.getElementById('method-recommendation').classList.add('hidden');
+      return;
+    }
+    
+    const response = await fetch('/api/portfolio/recommend-method', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ strategies })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      const rec = result.recommendation;
+      
+      // Update UI
+      document.getElementById('rec-method').textContent = rec.method.toUpperCase().replace('-', ' ');
+      document.getElementById('rec-confidence').textContent = rec.confidence + '%';
+      document.getElementById('rec-regime').textContent = rec.marketRegime;
+      document.getElementById('rec-signal').textContent = rec.signalStrength.toFixed(0) + '%';
+      document.getElementById('rec-reasoning').textContent = rec.reasoning;
+      
+      // Auto-select the recommended method
+      document.getElementById('optimization-method').value = rec.method;
+      updateOptimizationExplanation();
+      
+      // Show recommendation
+      document.getElementById('method-recommendation').classList.remove('hidden');
+      
+      // Store recommendation for optimization
+      window.methodRecommendation = rec;
+    }
+  } catch (error) {
+    console.error('[Meta-Optimization] Error:', error);
+  }
+}
+
 // Update portfolio optimization to use agent-strategy configuration
 const originalRunPortfolioOptimization = runPortfolioOptimization;
 runPortfolioOptimization = async function() {
@@ -4801,7 +4902,8 @@ runPortfolioOptimization = async function() {
     
     // Get configuration
     const riskPreference = parseFloat(document.getElementById('risk-slider').value);
-    const method = document.getElementById('optimization-method').value;
+    const useAutoMethod = document.getElementById('auto-method-toggle').checked;
+    const method = useAutoMethod ? null : document.getElementById('optimization-method').value;
     
     // Collect agent-strategy matrix
     const agentStrategyMatrix = {};
@@ -4824,9 +4926,14 @@ runPortfolioOptimization = async function() {
     // Build request body
     const requestBody = {
       strategies,
-      method,
-      riskPreference
+      riskPreference,
+      useAutoMethod
     };
+    
+    // Add method if manual mode
+    if (!useAutoMethod) {
+      requestBody.method = method;
+    }
     
     // Add agent-strategy matrix if agents are selected
     if (Object.keys(agentStrategyMatrix).length > 0) {
