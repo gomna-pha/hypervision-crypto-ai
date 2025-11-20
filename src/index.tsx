@@ -279,6 +279,171 @@ let historicalDataCache: {
 
 const CACHE_TTL = 30 * 60 * 1000; // 30 minutes
 
+// Strategy-to-Asset Mapping (which strategies trade which assets)
+const STRATEGY_ASSET_MAP: Record<string, string[]> = {
+  'Spatial': ['bitcoin'],           // BTC cross-exchange arbitrage
+  'Triangular': ['bitcoin', 'ethereum'], // BTC-ETH-USDT cycles
+  'Statistical': ['bitcoin', 'ethereum'], // BTC/ETH ratio mean reversion
+  'ML Ensemble': ['bitcoin', 'ethereum', 'solana'], // Multi-asset ML
+  'Deep Learning': ['bitcoin'], // BTC price prediction
+  'CNN Pattern': ['bitcoin'], // BTC chart patterns
+  'Sentiment': ['bitcoin'], // BTC sentiment trading
+  'Funding Rate': ['bitcoin'], // BTC funding arbitrage
+  'Volatility': ['bitcoin', 'ethereum'], // Multi-asset volatility arbitrage
+  'Market Making': ['bitcoin', 'ethereum'] // Multi-asset market making
+};
+
+// Calculate strategy returns from underlying asset returns
+function calculateStrategyReturns(assetReturns: Record<string, number[]>): Record<string, number[]> {
+  const strategyReturns: Record<string, number[]> = {};
+  
+  for (const [strategy, assets] of Object.entries(STRATEGY_ASSET_MAP)) {
+    // Strategy return = weighted average of its asset returns
+    const weights = assets.map(() => 1 / assets.length); // Equal weight allocation
+    
+    const numDays = assetReturns[assets[0]]?.length || 0;
+    if (numDays === 0) continue;
+    
+    strategyReturns[strategy] = [];
+    
+    for (let day = 0; day < numDays; day++) {
+      let strategyReturn = 0;
+      for (let i = 0; i < assets.length; i++) {
+        const asset = assets[i];
+        if (assetReturns[asset] && assetReturns[asset][day] !== undefined) {
+          strategyReturn += weights[i] * assetReturns[asset][day];
+        }
+      }
+      strategyReturns[strategy].push(strategyReturn);
+    }
+  }
+  
+  return strategyReturns;
+}
+
+// Calculate covariance matrix from returns
+function calculateCovarianceMatrix(returns: Record<string, number[]>): { matrix: number[][], strategies: string[] } {
+  const strategies = Object.keys(returns);
+  const n = strategies.length;
+  const T = returns[strategies[0]]?.length || 0;
+  
+  if (T === 0) {
+    return { matrix: [], strategies: [] };
+  }
+  
+  // Calculate means
+  const means = strategies.map(strategy => {
+    const stratReturns = returns[strategy];
+    return stratReturns.reduce((sum, r) => sum + r, 0) / T;
+  });
+  
+  // Calculate covariance matrix: Cov(i,j) = E[(Xi - μi)(Xj - μj)]
+  const covMatrix: number[][] = [];
+  
+  for (let i = 0; i < n; i++) {
+    covMatrix[i] = [];
+    for (let j = 0; j < n; j++) {
+      let cov = 0;
+      for (let t = 0; t < T; t++) {
+        const devI = returns[strategies[i]][t] - means[i];
+        const devJ = returns[strategies[j]][t] - means[j];
+        cov += devI * devJ;
+      }
+      covMatrix[i][j] = cov / (T - 1); // Sample covariance
+    }
+  }
+  
+  return { matrix: covMatrix, strategies };
+}
+
+// Mean-Variance Optimization (Simplified - uses equal risk contribution as approximation)
+function optimizeMeanVariance(
+  returns: Record<string, number[]>,
+  lambda: number // Risk aversion: 0-10 (0=max return, 10=min risk)
+): { weights: number[]; metrics: any } {
+  const strategies = Object.keys(returns);
+  const n = strategies.length;
+  const T = returns[strategies[0]]?.length || 0;
+  
+  if (n === 0 || T === 0) {
+    return {
+      weights: [],
+      metrics: {
+        expectedReturn: 0,
+        volatility: 0,
+        sharpeRatio: 0
+      }
+    };
+  }
+  
+  // Calculate expected returns (mean)
+  const mu = strategies.map(strategy => {
+    const stratReturns = returns[strategy];
+    return stratReturns.reduce((sum, r) => sum + r, 0) / T;
+  });
+  
+  // Calculate covariance matrix
+  const { matrix: Sigma } = calculateCovarianceMatrix(returns);
+  
+  // Simplified optimization: Risk Parity with return tilt
+  // For full Mean-Variance, we'd need quadratic programming solver
+  // This approach balances risk contribution while tilting toward higher returns
+  
+  // Calculate volatility for each strategy
+  const volatilities = strategies.map((strategy, i) => Math.sqrt(Sigma[i][i]));
+  
+  // Initial weights based on inverse volatility (risk parity)
+  let weights = volatilities.map(vol => 1 / (vol + 0.001)); // Avoid division by zero
+  
+  // Apply return tilt based on lambda (lower lambda = more return focus)
+  const returnTilt = (10 - lambda) / 10; // 0 to 1 scale
+  if (returnTilt > 0) {
+    // Boost weights for higher-return strategies
+    const maxReturn = Math.max(...mu);
+    const returnWeights = mu.map(r => Math.max(0, r / maxReturn));
+    
+    weights = weights.map((w, i) => {
+      const riskWeight = w * (1 - returnTilt);
+      const returnWeight = returnWeights[i] * returnTilt;
+      return riskWeight + returnWeight;
+    });
+  }
+  
+  // Normalize weights to sum to 1
+  const sumWeights = weights.reduce((sum, w) => sum + w, 0);
+  weights = weights.map(w => w / sumWeights);
+  
+  // Ensure non-negativity
+  weights = weights.map(w => Math.max(0, w));
+  const sumPositive = weights.reduce((sum, w) => sum + w, 0);
+  weights = weights.map(w => w / sumPositive);
+  
+  // Calculate portfolio metrics
+  const expectedReturn = weights.reduce((sum, w, i) => sum + w * mu[i], 0);
+  
+  // Portfolio variance: w' * Sigma * w
+  let portfolioVariance = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      portfolioVariance += weights[i] * weights[j] * Sigma[i][j];
+    }
+  }
+  
+  const portfolioVolatility = Math.sqrt(portfolioVariance);
+  const sharpeRatio = portfolioVolatility > 0 ? (expectedReturn - 0.02 / 252) / portfolioVolatility : 0;
+  
+  return {
+    weights,
+    metrics: {
+      expectedReturn: expectedReturn * 252 * 100, // Annualized %
+      volatility: portfolioVolatility * Math.sqrt(252) * 100, // Annualized %
+      sharpeRatio: sharpeRatio * Math.sqrt(252), // Annualized
+      covarianceMatrix: Sigma,
+      strategies
+    }
+  };
+}
+
 // Generate REAL-IST IC historical returns based on CURRENT market data
 // This avoids API rate limits while maintaining statistical validity
 function generateRealisticHistoricalReturns(days: number = 90) {
@@ -527,6 +692,158 @@ app.post('/api/historical/returns', async (c) => {
     return c.json({ 
       success: false,
       error: 'Failed to calculate returns',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }, 500);
+  }
+});
+
+// ============================================================================
+// PORTFOLIO OPTIMIZATION API - Mean-Variance
+// ============================================================================
+
+app.post('/api/portfolio/optimize', async (c) => {
+  try {
+    const request = await c.req.json();
+    
+    // request: {
+    //   strategies: ['Spatial', 'Triangular', 'Statistical', ...],
+    //   method: 'mean-variance' | 'risk-parity' | 'equal-weight',
+    //   riskPreference: 5 (0-10)
+    // }
+    
+    const { strategies, method, riskPreference } = request;
+    
+    console.log(`[Portfolio Optimize] Method: ${method}, Strategies: ${strategies?.length || 0}, Risk: ${riskPreference}`);
+    
+    // Step 1: Get historical prices (reuse cache if available)
+    let histData: any;
+    
+    if (historicalDataCache && (Date.now() - historicalDataCache.timestamp < CACHE_TTL)) {
+      console.log('[Portfolio Optimize] Using cached historical data');
+      histData = { success: true, ...historicalDataCache.data };
+    } else {
+      // Generate fresh data
+      const days = 90;
+      const historicalPriceData = generateRealisticHistoricalReturns(days);
+      
+      histData = {
+        success: true,
+        data: historicalPriceData,
+        metadata: {
+          days,
+          source: 'Realistic Simulation',
+          dataPoints: historicalPriceData.reduce((sum: number, d: any) => sum + d.prices.length, 0)
+        }
+      };
+      
+      // Update cache
+      historicalDataCache = {
+        data: histData,
+        timestamp: Date.now()
+      };
+    }
+    
+    if (!histData.success || !histData.data) {
+      return c.json({
+        success: false,
+        error: 'Failed to fetch historical data'
+      }, 500);
+    }
+    
+    // Step 2: Calculate returns for each asset
+    const assetReturns: Record<string, number[]> = {};
+    
+    for (const asset of histData.data) {
+      if (!asset.prices || asset.prices.length < 2) continue;
+      
+      assetReturns[asset.symbol] = [];
+      for (let i = 1; i < asset.prices.length; i++) {
+        const prevPrice = asset.prices[i - 1].price;
+        const currPrice = asset.prices[i].price;
+        const dailyReturn = (currPrice - prevPrice) / prevPrice;
+        assetReturns[asset.symbol].push(dailyReturn);
+      }
+    }
+    
+    console.log(`[Portfolio Optimize] Calculated returns for ${Object.keys(assetReturns).length} assets`);
+    
+    // Step 3: Map asset returns to strategy returns
+    const allStrategyReturns = calculateStrategyReturns(assetReturns);
+    
+    // Step 4: Filter to requested strategies
+    const strategyReturns: Record<string, number[]> = {};
+    if (strategies && strategies.length > 0) {
+      for (const strategy of strategies) {
+        if (allStrategyReturns[strategy]) {
+          strategyReturns[strategy] = allStrategyReturns[strategy];
+        }
+      }
+    } else {
+      // Use all strategies if none specified
+      Object.assign(strategyReturns, allStrategyReturns);
+    }
+    
+    console.log(`[Portfolio Optimize] Using ${Object.keys(strategyReturns).length} strategies`);
+    
+    // Step 5: Optimize based on method
+    let result: any;
+    
+    if (method === 'mean-variance' || !method) {
+      result = optimizeMeanVariance(strategyReturns, riskPreference || 5);
+    } else if (method === 'equal-weight') {
+      const stratList = Object.keys(strategyReturns);
+      const n = stratList.length;
+      result = {
+        weights: stratList.map(() => 1 / n),
+        metrics: {
+          expectedReturn: 0,
+          volatility: 0,
+          sharpeRatio: 0,
+          strategies: stratList
+        }
+      };
+      
+      // Calculate equal-weight portfolio metrics
+      const T = strategyReturns[stratList[0]]?.length || 0;
+      const mu = stratList.map(s => {
+        const returns = strategyReturns[s];
+        return returns.reduce((sum, r) => sum + r, 0) / T;
+      });
+      
+      const expectedReturn = mu.reduce((sum, m) => sum + m, 0) / n;
+      result.metrics.expectedReturn = expectedReturn * 252 * 100;
+      
+    } else {
+      // Default to mean-variance
+      result = optimizeMeanVariance(strategyReturns, riskPreference || 5);
+    }
+    
+    // Step 6: Map weights back to strategy names
+    const weightMap: Record<string, number> = {};
+    const stratList = Object.keys(strategyReturns);
+    result.weights.forEach((weight: number, i: number) => {
+      weightMap[stratList[i]] = weight;
+    });
+    
+    return c.json({
+      success: true,
+      method,
+      riskPreference,
+      weights: weightMap,
+      metrics: {
+        expectedReturn: result.metrics.expectedReturn,
+        volatility: result.metrics.volatility,
+        sharpeRatio: result.metrics.sharpeRatio
+      },
+      strategies: stratList,
+      dataSource: histData.metadata.source
+    });
+    
+  } catch (error) {
+    console.error('[Portfolio Optimize] Error:', error);
+    return c.json({
+      success: false,
+      error: 'Portfolio optimization failed',
       details: error instanceof Error ? error.message : 'Unknown error'
     }, 500);
   }
