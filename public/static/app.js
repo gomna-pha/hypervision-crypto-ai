@@ -4483,6 +4483,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Update optimization explanation based on selected method
+function updateOptimizationExplanation() {
+  const method = document.getElementById('optimization-method')?.value;
+  const explanationDiv = document.getElementById('optimization-explanation');
+  
+  if (!explanationDiv) return;
+  
+  const explanations = {
+    'mean-variance': `
+      <strong style="color: var(--navy)">Mean-Variance (Linear):</strong> Balances return vs risk for linear strategies.<br>
+      <code class="text-xs">max μᵀw - (λ/2)wᵀΣw</code><br>
+      Best for: Spatial, Triangular, Statistical Arbitrage
+    `,
+    'risk-parity': `
+      <strong style="color: var(--navy)">Risk Parity (Non-Linear):</strong> Equal risk contribution from each strategy.<br>
+      <code class="text-xs">w_i ∝ 1/σ_i</code> where σ_i = strategy volatility<br>
+      Best for: Deep Learning, CNN Pattern, ML Ensemble (unpredictable returns)
+    `,
+    'max-sharpe': `
+      <strong style="color: var(--navy)">Maximum Sharpe (Non-Linear):</strong> Maximizes risk-adjusted returns.<br>
+      <code class="text-xs">max (μᵀw - r_f) / √(wᵀΣw)</code><br>
+      Best for: Mixed portfolios with non-linear strategies (CNN, Deep Learning)
+    `,
+    'equal-weight': `
+      <strong style="color: var(--navy)">Equal Weight (Baseline):</strong> Naive diversification.<br>
+      <code class="text-xs">w_i = 1/n</code> for all strategies<br>
+      Used as benchmark to compare against optimized allocations
+    `
+  };
+  
+  explanationDiv.innerHTML = explanations[method] || explanations['mean-variance'];
+}
+
 // Run portfolio optimization
 async function runPortfolioOptimization() {
   try {

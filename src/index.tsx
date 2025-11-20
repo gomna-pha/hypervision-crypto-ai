@@ -444,6 +444,213 @@ function optimizeMeanVariance(
   };
 }
 
+// ============================================================================
+// RISK PARITY OPTIMIZATION - Equal risk contribution
+// ============================================================================
+// Optimal for non-linear strategies with unpredictable return distributions
+// Allocates weights so each strategy contributes equally to portfolio risk
+function optimizeRiskParity(
+  returns: Record<string, number[]>
+): { weights: number[]; metrics: any } {
+  const strategies = Object.keys(returns);
+  const n = strategies.length;
+  const T = returns[strategies[0]]?.length || 0;
+  
+  if (n === 0 || T === 0) {
+    return {
+      weights: [],
+      metrics: { expectedReturn: 0, volatility: 0, sharpeRatio: 0 }
+    };
+  }
+  
+  // Calculate expected returns
+  const mu = strategies.map(strategy => {
+    const stratReturns = returns[strategy];
+    return stratReturns.reduce((sum, r) => sum + r, 0) / T;
+  });
+  
+  // Calculate covariance matrix
+  const { matrix: Sigma } = calculateCovarianceMatrix(returns);
+  
+  // Calculate volatility for each strategy
+  const volatilities = strategies.map((strategy, i) => Math.sqrt(Sigma[i][i]));
+  
+  // Risk Parity: weights inversely proportional to volatility
+  // This ensures each strategy contributes equally to portfolio risk
+  let weights = volatilities.map(vol => 1 / (vol + 0.0001));
+  
+  // Normalize to sum to 1
+  const sumWeights = weights.reduce((sum, w) => sum + w, 0);
+  weights = weights.map(w => w / sumWeights);
+  
+  // Calculate portfolio metrics
+  const expectedReturn = weights.reduce((sum, w, i) => sum + w * mu[i], 0);
+  
+  let portfolioVariance = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      portfolioVariance += weights[i] * weights[j] * Sigma[i][j];
+    }
+  }
+  
+  const portfolioVolatility = Math.sqrt(portfolioVariance);
+  const sharpeRatio = portfolioVolatility > 0 ? (expectedReturn - 0.02 / 252) / portfolioVolatility : 0;
+  
+  return {
+    weights,
+    metrics: {
+      expectedReturn: expectedReturn * 252 * 100,
+      volatility: portfolioVolatility * Math.sqrt(252) * 100,
+      sharpeRatio: sharpeRatio * Math.sqrt(252),
+      covarianceMatrix: Sigma,
+      strategies
+    }
+  };
+}
+
+// ============================================================================
+// MAXIMUM SHARPE RATIO OPTIMIZATION - Optimal risk-adjusted returns
+// ============================================================================
+// Best for portfolios with non-linear strategies (Deep Learning, CNN)
+// Maximizes return per unit of risk using iterative optimization
+function optimizeMaxSharpe(
+  returns: Record<string, number[]>
+): { weights: number[]; metrics: any } {
+  const strategies = Object.keys(returns);
+  const n = strategies.length;
+  const T = returns[strategies[0]]?.length || 0;
+  
+  if (n === 0 || T === 0) {
+    return {
+      weights: [],
+      metrics: { expectedReturn: 0, volatility: 0, sharpeRatio: 0 }
+    };
+  }
+  
+  // Calculate expected returns
+  const mu = strategies.map(strategy => {
+    const stratReturns = returns[strategy];
+    return stratReturns.reduce((sum, r) => sum + r, 0) / T;
+  });
+  
+  // Calculate covariance matrix
+  const { matrix: Sigma } = calculateCovarianceMatrix(returns);
+  
+  // Iterative optimization to maximize Sharpe ratio
+  // Start with equal weights and adjust toward optimal
+  let bestWeights = new Array(n).fill(1 / n);
+  let bestSharpe = -Infinity;
+  
+  // Try 100 random weight combinations + gradient descent
+  for (let iteration = 0; iteration < 100; iteration++) {
+    // Generate random weights
+    let weights = new Array(n).fill(0).map(() => Math.random());
+    const sum = weights.reduce((s, w) => s + w, 0);
+    weights = weights.map(w => w / sum);
+    
+    // Calculate Sharpe ratio
+    const expectedReturn = weights.reduce((sum, w, i) => sum + w * mu[i], 0);
+    
+    let portfolioVariance = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        portfolioVariance += weights[i] * weights[j] * Sigma[i][j];
+      }
+    }
+    
+    const portfolioVolatility = Math.sqrt(portfolioVariance);
+    const sharpe = portfolioVolatility > 0 ? (expectedReturn - 0.02 / 252) / portfolioVolatility : 0;
+    
+    if (sharpe > bestSharpe) {
+      bestSharpe = sharpe;
+      bestWeights = [...weights];
+    }
+  }
+  
+  // Gradient ascent refinement (10 steps)
+  for (let step = 0; step < 10; step++) {
+    const learningRate = 0.1 * (1 - step / 10); // Decay learning rate
+    
+    // Calculate gradient
+    const gradient = new Array(n).fill(0);
+    const expectedReturn = bestWeights.reduce((sum, w, i) => sum + w * mu[i], 0);
+    
+    let portfolioVariance = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        portfolioVariance += bestWeights[i] * bestWeights[j] * Sigma[i][j];
+      }
+    }
+    const portfolioVolatility = Math.sqrt(portfolioVariance);
+    
+    // Approximate gradient
+    for (let i = 0; i < n; i++) {
+      const epsilon = 0.001;
+      const weightsPlus = [...bestWeights];
+      weightsPlus[i] += epsilon;
+      
+      const returnPlus = weightsPlus.reduce((sum, w, j) => sum + w * mu[j], 0);
+      let variancePlus = 0;
+      for (let j = 0; j < n; j++) {
+        for (let k = 0; k < n; k++) {
+          variancePlus += weightsPlus[j] * weightsPlus[k] * Sigma[j][k];
+        }
+      }
+      const volPlus = Math.sqrt(variancePlus);
+      const sharpePlus = volPlus > 0 ? (returnPlus - 0.02 / 252) / volPlus : 0;
+      
+      gradient[i] = (sharpePlus - bestSharpe) / epsilon;
+    }
+    
+    // Update weights
+    bestWeights = bestWeights.map((w, i) => w + learningRate * gradient[i]);
+    
+    // Project back to simplex (normalize and ensure non-negative)
+    bestWeights = bestWeights.map(w => Math.max(0, w));
+    const sum = bestWeights.reduce((s, w) => s + w, 0);
+    if (sum > 0) {
+      bestWeights = bestWeights.map(w => w / sum);
+    } else {
+      bestWeights = new Array(n).fill(1 / n);
+    }
+    
+    // Recalculate best Sharpe
+    const newReturn = bestWeights.reduce((sum, w, i) => sum + w * mu[i], 0);
+    let newVariance = 0;
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) {
+        newVariance += bestWeights[i] * bestWeights[j] * Sigma[i][j];
+      }
+    }
+    const newVol = Math.sqrt(newVariance);
+    bestSharpe = newVol > 0 ? (newReturn - 0.02 / 252) / newVol : 0;
+  }
+  
+  // Final portfolio metrics
+  const expectedReturn = bestWeights.reduce((sum, w, i) => sum + w * mu[i], 0);
+  
+  let portfolioVariance = 0;
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < n; j++) {
+      portfolioVariance += bestWeights[i] * bestWeights[j] * Sigma[i][j];
+    }
+  }
+  
+  const portfolioVolatility = Math.sqrt(portfolioVariance);
+  const sharpeRatio = portfolioVolatility > 0 ? (expectedReturn - 0.02 / 252) / portfolioVolatility : 0;
+  
+  return {
+    weights: bestWeights,
+    metrics: {
+      expectedReturn: expectedReturn * 252 * 100,
+      volatility: portfolioVolatility * Math.sqrt(252) * 100,
+      sharpeRatio: sharpeRatio * Math.sqrt(252),
+      covarianceMatrix: Sigma,
+      strategies
+    }
+  };
+}
+
 // Generate REAL-IST IC historical returns based on CURRENT market data
 // This avoids API rate limits while maintaining statistical validity
 function generateRealisticHistoricalReturns(days: number = 90) {
@@ -888,6 +1095,10 @@ app.post('/api/portfolio/optimize', async (c) => {
     
     if (method === 'mean-variance' || !method) {
       result = optimizeMeanVariance(strategyReturns, riskPreference || 5);
+    } else if (method === 'risk-parity') {
+      result = optimizeRiskParity(strategyReturns);
+    } else if (method === 'max-sharpe') {
+      result = optimizeMaxSharpe(strategyReturns);
     } else if (method === 'equal-weight') {
       const stratList = Object.keys(strategyReturns);
       const n = stratList.length;
@@ -2184,9 +2395,11 @@ app.get('/', (c) => {
                       <label class="text-sm font-medium mb-2 block" style="color: var(--dark-brown)">
                         Optimization Method:
                       </label>
-                      <select id="optimization-method" class="w-full p-2 rounded border-2" style="border-color: var(--cream-300)">
-                        <option value="mean-variance">Mean-Variance (Markowitz)</option>
-                        <option value="equal-weight">Equal Weight</option>
+                      <select id="optimization-method" class="w-full p-2 rounded border-2" style="border-color: var(--cream-300)" onchange="updateOptimizationExplanation()">
+                        <option value="mean-variance">Mean-Variance (Linear Strategies)</option>
+                        <option value="risk-parity">Risk Parity (Non-Linear Strategies)</option>
+                        <option value="max-sharpe">Maximum Sharpe Ratio (Non-Linear)</option>
+                        <option value="equal-weight">Equal Weight (Baseline)</option>
                       </select>
                     </div>
 
@@ -2201,7 +2414,7 @@ app.get('/', (c) => {
                     </button>
 
                     <!-- Optimization Explanation -->
-                    <div class="text-xs p-3 rounded border-2 mt-4" style="border-color: var(--cream-300); color: var(--warm-gray)">
+                    <div id="optimization-explanation" class="text-xs p-3 rounded border-2 mt-4" style="border-color: var(--cream-300); color: var(--warm-gray)">
                       <strong style="color: var(--navy)">Method:</strong> Mean-Variance Optimization solves:<br>
                       <code class="text-xs">max μᵀw - (λ/2)wᵀΣw</code><br>
                       where μ = expected returns, Σ = covariance matrix, λ = risk aversion, w = weights
