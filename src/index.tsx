@@ -766,35 +766,43 @@ app.post('/api/portfolio/optimize', async (c) => {
         const dailyReturns: number[] = [];
         
         for (let day = 0; day < 252; day++) {
-          const agentScores = selectedAgents.map((agentName: string) => 
+          let agentScores = selectedAgents.map((agentName: string) => 
             historicalAgentScores[agentName][day]
           );
+          
+          // NORMALIZE SCORES: Scale to reasonable range (40-70) to prevent extreme returns
+          const normalizeScore = (score: number) => {
+            const clamped = Math.max(20, Math.min(80, score));
+            return 40 + ((clamped - 20) / 60) * 30; // Maps [20,80] → [40,70]
+          };
+          
+          agentScores = agentScores.map(normalizeScore);
           
           let dailyReturn = 0;
           
           // Strategy-specific return formulas
           if (strategyName === 'Spatial') {
             const crossExScore = agentScores.find((_, i) => selectedAgents[i] === 'CrossExchange') || 50;
-            dailyReturn = (crossExScore - 50) * 0.0015;
+            dailyReturn = (crossExScore - 50) * 0.00005;
           } else if (strategyName === 'Triangular') {
             const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            dailyReturn = (avgScore - 50) * 0.0018;
+            dailyReturn = (avgScore - 50) * 0.00006;
           } else if (strategyName === 'Statistical') {
             const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
             const deviation = Math.abs(avgScore - 50);
-            dailyReturn = deviation * 0.002;
+            dailyReturn = deviation * 0.00007;
           } else if (strategyName === 'ML Ensemble') {
             const weights = [0.3, 0.3, 0.2, 0.2];
             dailyReturn = agentScores.reduce((sum: number, score: number, i: number) => 
-              sum + (score - 50) * (weights[i] || 0.25) * 0.0012, 0
+              sum + (score - 50) * (weights[i] || 0.25) * 0.00005, 0
             );
           } else if (strategyName === 'Deep Learning' || strategyName === 'CNN Pattern') {
             const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
             const nonlinearity = Math.pow((avgScore - 50) / 50, 2) * Math.sign(avgScore - 50);
-            dailyReturn = nonlinearity * 0.003;
+            dailyReturn = nonlinearity * 0.0001;
           } else {
             const avgScore = agentScores.reduce((sum: number, s: number) => sum + s, 0) / agentScores.length;
-            dailyReturn = (avgScore - 50) * 0.0012;
+            dailyReturn = (avgScore - 50) * 0.00005;
           }
           
           dailyReturns.push(dailyReturn);
@@ -1004,9 +1012,19 @@ app.post('/api/strategy/performance', async (c) => {
       
       for (let day = 0; day < 252; day++) {
         // Get agent scores for this day
-        const agentScores = selectedAgents.map(agentName => 
+        let agentScores = selectedAgents.map(agentName => 
           historicalAgentScores[agentName][day]
         );
+        
+        // NORMALIZE SCORES: Scale to reasonable range (40-70) to prevent extreme returns
+        // This ensures strategies have realistic return distributions
+        const normalizeScore = (score: number) => {
+          // Clamp to 20-80 range, then scale to 40-70
+          const clamped = Math.max(20, Math.min(80, score));
+          return 40 + ((clamped - 20) / 60) * 30; // Maps [20,80] → [40,70]
+        };
+        
+        agentScores = agentScores.map(normalizeScore);
         
         // Calculate strategy return using agent scores
         // Formula varies by strategy type
