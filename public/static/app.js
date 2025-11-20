@@ -4552,8 +4552,8 @@ function displayOptimizationResults(result) {
   
   // Update metrics
   const metrics = result.metrics;
-  document.getElementById('opt-return').textContent = (metrics.expectedReturn * 100).toFixed(2) + '%';
-  document.getElementById('opt-volatility').textContent = (metrics.volatility * 100).toFixed(2) + '%';
+  document.getElementById('opt-return').textContent = metrics.expectedReturn.toFixed(2) + '%';
+  document.getElementById('opt-volatility').textContent = metrics.volatility.toFixed(2) + '%';
   document.getElementById('opt-sharpe').textContent = metrics.sharpeRatio.toFixed(2);
   
   // Update data source
@@ -4576,7 +4576,8 @@ function displayWeightBars(strategies, weights) {
   container.innerHTML = '';
   
   strategies.forEach((strategy, i) => {
-    const weight = weights[i];
+    // weights is an object like {Spatial: 0.21, Triangular: 0.26}
+    const weight = weights[strategy];
     const percentage = (weight * 100).toFixed(1);
     
     const barDiv = document.createElement('div');
@@ -4624,7 +4625,7 @@ function displayWeightPieChart(strategies, weights) {
     data: {
       labels: strategies,
       datasets: [{
-        data: weights.map(w => (w * 100).toFixed(1)),
+        data: strategies.map(s => (weights[s] * 100).toFixed(1)),
         backgroundColor: colors.slice(0, strategies.length),
         borderColor: 'white',
         borderWidth: 2
