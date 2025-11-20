@@ -12,7 +12,7 @@ A production-ready cryptocurrency arbitrage trading platform combining 13 advanc
 
 🌐 **Production URL**: https://arbitrage-ai.pages.dev
 
-🚀 **Latest Deployment**: https://b02241fa.arbitrage-ai.pages.dev (Real algorithm portfolio metrics)
+🚀 **Latest Deployment**: https://d4c3a500.arbitrage-ai.pages.dev (Score Normalization + Non-Linear Optimization)
 
 📊 **API Endpoint**: https://arbitrage-ai.pages.dev/api/opportunities
 
@@ -494,13 +494,32 @@ webapp/
 
 **Addresses Professor Feedback: "Platform must be less fanciful for VC pitch"**
 
-#### Mathematical Framework
-- **Mean-Variance Optimization (Markowitz, 1952)**
+#### Mathematical Framework (4 Optimization Methods)
+
+**1. Mean-Variance Optimization (Linear Strategies)**
   - Formula: `max μᵀw - (λ/2)wᵀΣw`
   - μ = expected returns vector
   - Σ = covariance matrix (calculated from historical returns)
   - λ = risk aversion parameter (0-10 scale)
   - w = portfolio weights (optimized)
+  - Best for: Spatial, Triangular, Statistical Arbitrage
+
+**2. Risk Parity (Non-Linear Strategies)** ⭐ NEW v5.1.0
+  - Formula: `w_i ∝ 1/σ_i` where σ_i = strategy volatility
+  - Equal risk contribution from each strategy
+  - Optimal for unpredictable return distributions
+  - Best for: Deep Learning, CNN Pattern Recognition, ML Ensemble
+
+**3. Maximum Sharpe Ratio (Non-Linear)** ⭐ NEW v5.1.0
+  - Formula: `max (μᵀw - r_f) / √(wᵀΣw)`
+  - Maximizes risk-adjusted returns via iterative optimization
+  - Uses gradient ascent with 100 random starts + 10 refinement steps
+  - Best for: Mixed portfolios with non-linear strategies
+
+**4. Equal Weight (Baseline)**
+  - Formula: `w_i = 1/n` for all strategies
+  - Naive diversification as benchmark
+  - Used to compare against optimized allocations
 
 #### Real Historical Data
 - **90 days of daily returns** for BTC, ETH, SOL
@@ -516,13 +535,18 @@ webapp/
 #### Interactive UI Features
 1. **Strategy Selection Matrix** - Choose which strategies to include (checkboxes for all 10)
 2. **Risk Preference Slider** - Adjust risk aversion (0=aggressive, 10=conservative)
-3. **Optimization Method** - Mean-Variance or Equal Weight
-4. **Real-Time Results Display**:
+3. **Optimization Method** - 4 options:
+   - Mean-Variance (Linear Strategies)
+   - Risk Parity (Non-Linear Strategies) ⭐ NEW
+   - Maximum Sharpe Ratio (Non-Linear) ⭐ NEW
+   - Equal Weight (Baseline)
+4. **Dynamic Explanation** - Formula and best-use-case updates based on selected method
+5. **Real-Time Results Display**:
    - Expected Annual Return (%)
    - Portfolio Volatility (%)
    - Sharpe Ratio
    - Optimal Weight Distribution (bar chart + pie chart)
-5. **Transparency**: Shows mathematical formula and data source
+6. **Transparency**: Shows mathematical formula and data source
 
 #### API Endpoints
 - `POST /api/portfolio/optimize` - Run optimization with selected strategies
@@ -604,10 +628,15 @@ dailyReturn = nonlinearity × 0.0001;
 #### Portfolio Optimization with Agent Scores
 1. **Investor selects** which agents feed each strategy (via checkboxes)
 2. **System calculates** 252 days of strategy returns from agent scores
-3. **Mean-Variance Optimization** allocates weights based on:
+3. **Choose optimization method** based on strategy types:
+   - **Mean-Variance** - For linear strategies (Spatial, Triangular, Statistical)
+   - **Risk Parity** - For non-linear strategies (Deep Learning, CNN, ML Ensemble)
+   - **Maximum Sharpe** - For mixed portfolios with non-linear strategies
+4. **Optimization allocates weights** based on:
    - Expected Return (mean of daily returns × 252)
    - Volatility (stddev of daily returns × √252)
    - Covariance Matrix (between strategy returns)
+   - Risk-adjusted returns (Sharpe Ratio)
 4. **Dynamic Configuration**: Different agent selections → Different portfolio weights
 
 #### API Endpoints
@@ -625,10 +654,11 @@ dailyReturn = nonlinearity × 0.0001;
 ```
 
 ### ✅ Implemented
+- **Non-Linear Optimization Methods** (v5.1.0 - Risk Parity + Maximum Sharpe) ⭐ NEW
 - **Agent-Strategy Configuration System** (v5.0.0 - 10 strategies × 4 agents)
 - **Score Normalization System** (v5.0.1 - prevents extreme returns)
 - **Agent-Informed Portfolio Optimization** (strategies driven by agent scores)
-- **Portfolio Optimization Engine** (Mean-Variance, real data, interactive UI)
+- **Portfolio Optimization Engine** (4 methods: Mean-Variance, Risk Parity, Max Sharpe, Equal Weight)
 - **5 Real Algorithmic Strategies** (using live market data via free APIs)
 - **Always-Show Analysis Mode** (demonstrates continuous market monitoring)
 - **Stable Opportunity IDs** (based on strategy metrics, not timestamps)
