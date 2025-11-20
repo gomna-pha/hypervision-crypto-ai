@@ -149,6 +149,16 @@ The platform is deployed on Cloudflare Pages with global CDN distribution (300+ 
 - Strategy Correlation Analysis
 - Academic Research Citations
 
+**5. Portfolio Optimization** ⭐ NEW
+- Agent-Strategy Configuration Matrix (10 strategies × 4 agents = 40 checkboxes)
+- Strategy Performance Calculation (Return, Risk, Sharpe Ratio from agent scores)
+- Strategy Selection (choose which strategies to include in portfolio)
+- Risk Preference Slider (0=aggressive, 10=conservative)
+- Optimization Method Selection (Mean-Variance, Equal Weight, Risk Parity)
+- Real-Time Results Display (Expected Return, Volatility, Sharpe Ratio)
+- Weight Distribution Visualization (bar chart + pie chart)
+- Mathematical Formula Display (transparency)
+
 ---
 
 ## 🧠 AI Architecture
@@ -544,13 +554,85 @@ webapp/
 - ✅ Results change based on selected strategies and risk preferences
 - ✅ Data refreshes every 30 minutes (cached for performance)
 
+### ✅ NEW: Agent-Strategy Configuration System (v5.0.0)
+
+**Addresses Professor Feedback: "Agent-strategy combination flexibility"**
+
+#### Multi-Agent System Architecture
+- **4 AI Agents as Data Sources**: Economic, Sentiment, Cross-Exchange, On-Chain
+- **10 Trading Strategies**: Investors choose which agents feed which strategies
+- **Configuration Matrix**: 10 strategies × 4 agents = 40 flexible checkboxes
+
+#### Agent-Informed Strategy Returns
+**Critical Innovation**: Strategy returns calculated from agent scores (0-100%), NOT from historical prices
+
+**Score Normalization (v5.0.1)**:
+```typescript
+// Prevents extreme returns from low/high agent scores
+const normalizeScore = (score: number) => {
+  const clamped = Math.max(20, Math.min(80, score));
+  return 40 + ((clamped - 20) / 60) * 30; // Maps [20,80] → [40,70]
+};
+```
+
+**Example**: Economic Agent score = 8 → Normalized to 44 (prevents -18.6% negative returns)
+
+**Strategy Return Formulas**:
+```typescript
+// Spatial Arbitrage (from Cross-Exchange agent)
+dailyReturn = (crossExScore - 50) × 0.00005;
+
+// Triangular Arbitrage (from multiple agents)
+avgScore = mean(selectedAgentScores);
+dailyReturn = (avgScore - 50) × 0.00006;
+
+// ML Ensemble (weighted agent combination)
+weights = [0.3, 0.3, 0.2, 0.2];
+dailyReturn = Σ(agentScore - 50) × weight × 0.00005;
+
+// Deep Learning (non-linear transformation)
+nonlinearity = ((avgScore - 50) / 50)² × sign(avgScore - 50);
+dailyReturn = nonlinearity × 0.0001;
+```
+
+#### Historical Simulation
+- **252 trading days** of agent score movements generated via Geometric Brownian Motion
+- **Drift**: Pulls score toward current value (mean reversion)
+- **Volatility**: 5-10% daily randomness
+- **Strategy Performance**: Calculated from simulated agent score history
+
+#### Portfolio Optimization with Agent Scores
+1. **Investor selects** which agents feed each strategy (via checkboxes)
+2. **System calculates** 252 days of strategy returns from agent scores
+3. **Mean-Variance Optimization** allocates weights based on:
+   - Expected Return (mean of daily returns × 252)
+   - Volatility (stddev of daily returns × √252)
+   - Covariance Matrix (between strategy returns)
+4. **Dynamic Configuration**: Different agent selections → Different portfolio weights
+
+#### API Endpoints
+- `POST /api/strategy/performance` - Calculate strategy performance from selected agents
+- `POST /api/portfolio/optimize` - Optimize portfolio with agent-strategy matrix
+
+#### Example Agent-Strategy Matrix
+```json
+{
+  "Spatial": ["CrossExchange"],
+  "Triangular": ["Sentiment", "CrossExchange"],
+  "Statistical": ["Economic", "OnChain"],
+  "ML Ensemble": ["Economic", "Sentiment", "CrossExchange", "OnChain"]
+}
+```
+
 ### ✅ Implemented
+- **Agent-Strategy Configuration System** (v5.0.0 - 10 strategies × 4 agents)
+- **Score Normalization System** (v5.0.1 - prevents extreme returns)
+- **Agent-Informed Portfolio Optimization** (strategies driven by agent scores)
 - **Portfolio Optimization Engine** (Mean-Variance, real data, interactive UI)
 - **5 Real Algorithmic Strategies** (using live market data via free APIs)
 - **Always-Show Analysis Mode** (demonstrates continuous market monitoring)
 - **Stable Opportunity IDs** (based on strategy metrics, not timestamps)
 - **Real Algorithm Badges** (green ✓ badge for real algorithms vs blue for demo)
-- **Paper Trading System** (zero-risk execution with real market data)
 - 5 AI Agents (fully dynamic data from real APIs)
 - Autonomous Trading Agent (ML ensemble + Kelly Criterion)
 - Multi-Strategy Performance Charts (all 13 strategies)
