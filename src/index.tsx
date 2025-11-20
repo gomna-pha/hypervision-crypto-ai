@@ -1527,6 +1527,204 @@ app.get('/', (c) => {
               </div>
             </div>
 
+            <!-- Portfolio Optimization Engine - NEW FEATURE -->
+            <div class="card mb-8" style="border: 3px solid var(--burnt)">
+              <div class="mb-6">
+                <h3 class="text-xl font-bold mb-2" style="color: var(--navy)">
+                  <i class="fas fa-calculator mr-2"></i>Portfolio Optimization Engine
+                </h3>
+                <p class="text-sm" style="color: var(--warm-gray)">
+                  Quantitative portfolio construction using Mean-Variance Optimization framework with real market data.
+                  Select strategies and risk preferences to generate optimal portfolio allocations.
+                </p>
+              </div>
+
+              <!-- Configuration Panel -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <!-- Strategy Selection -->
+                <div>
+                  <h4 class="font-semibold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-check-square mr-2"></i>Strategy Selection
+                  </h4>
+                  <div class="p-4 rounded" style="background: var(--cream-100)">
+                    <div class="grid grid-cols-1 gap-2">
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Spatial" checked>
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Spatial Arbitrage</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Triangular" checked>
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Triangular Arbitrage</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC, ETH)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Statistical" checked>
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Statistical Arbitrage</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC, ETH)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="ML Ensemble" checked>
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">ML Ensemble</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC, ETH, SOL)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Deep Learning">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Deep Learning</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="CNN Pattern">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">CNN Pattern Recognition</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Sentiment">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Sentiment Analysis</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Funding Rate">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Funding Rate Arbitrage</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Volatility">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Volatility Arbitrage</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC, ETH)</span>
+                      </label>
+                      <label class="flex items-center gap-2 cursor-pointer hover:bg-white p-2 rounded transition">
+                        <input type="checkbox" class="strategy-checkbox w-4 h-4" value="Market Making">
+                        <span class="text-sm font-medium" style="color: var(--dark-brown)">Market Making</span>
+                        <span class="text-xs ml-auto" style="color: var(--warm-gray)">(BTC, ETH)</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Risk Configuration -->
+                <div>
+                  <h4 class="font-semibold mb-3" style="color: var(--navy)">
+                    <i class="fas fa-sliders-h mr-2"></i>Risk Preferences
+                  </h4>
+                  <div class="p-4 rounded space-y-4" style="background: var(--cream-100)">
+                    <!-- Risk Preference Slider -->
+                    <div>
+                      <label class="text-sm font-medium mb-2 block" style="color: var(--dark-brown)">
+                        Risk Aversion (λ): <span id="risk-value" class="font-bold" style="color: var(--navy)">5</span>
+                      </label>
+                      <input 
+                        type="range" 
+                        id="risk-slider" 
+                        min="0" 
+                        max="10" 
+                        value="5" 
+                        step="0.5" 
+                        class="w-full"
+                        style="accent-color: var(--navy)"
+                      >
+                      <div class="flex justify-between text-xs mt-1" style="color: var(--warm-gray)">
+                        <span>Aggressive (0)</span>
+                        <span>Balanced (5)</span>
+                        <span>Conservative (10)</span>
+                      </div>
+                    </div>
+
+                    <!-- Optimization Method -->
+                    <div>
+                      <label class="text-sm font-medium mb-2 block" style="color: var(--dark-brown)">
+                        Optimization Method:
+                      </label>
+                      <select id="optimization-method" class="w-full p-2 rounded border-2" style="border-color: var(--cream-300)">
+                        <option value="mean-variance">Mean-Variance (Markowitz)</option>
+                        <option value="equal-weight">Equal Weight</option>
+                      </select>
+                    </div>
+
+                    <!-- Optimize Button -->
+                    <button 
+                      id="optimize-btn" 
+                      onclick="runPortfolioOptimization()" 
+                      class="btn-primary w-full mt-4"
+                      style="background: var(--burnt)"
+                    >
+                      <i class="fas fa-chart-line mr-2"></i>Optimize Portfolio
+                    </button>
+
+                    <!-- Optimization Explanation -->
+                    <div class="text-xs p-3 rounded border-2 mt-4" style="border-color: var(--cream-300); color: var(--warm-gray)">
+                      <strong style="color: var(--navy)">Method:</strong> Mean-Variance Optimization solves:<br>
+                      <code class="text-xs">max μᵀw - (λ/2)wᵀΣw</code><br>
+                      where μ = expected returns, Σ = covariance matrix, λ = risk aversion, w = weights
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Results Display -->
+              <div id="optimization-results" class="hidden">
+                <div class="border-t-2 pt-6" style="border-color: var(--cream-300)">
+                  <h4 class="font-semibold mb-4" style="color: var(--navy)">
+                    <i class="fas fa-chart-pie mr-2"></i>Optimization Results
+                  </h4>
+
+                  <!-- Portfolio Metrics -->
+                  <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 rounded text-center" style="background: var(--cream-100)">
+                      <div class="text-xs mb-1" style="color: var(--warm-gray)">Expected Return (Annual)</div>
+                      <div id="opt-return" class="text-2xl font-bold" style="color: var(--forest)">-</div>
+                    </div>
+                    <div class="p-4 rounded text-center" style="background: var(--cream-100)">
+                      <div class="text-xs mb-1" style="color: var(--warm-gray)">Portfolio Volatility (Annual)</div>
+                      <div id="opt-volatility" class="text-2xl font-bold" style="color: var(--burnt)">-</div>
+                    </div>
+                    <div class="p-4 rounded text-center" style="background: var(--cream-100)">
+                      <div class="text-xs mb-1" style="color: var(--warm-gray)">Sharpe Ratio</div>
+                      <div id="opt-sharpe" class="text-2xl font-bold" style="color: var(--navy)">-</div>
+                    </div>
+                  </div>
+
+                  <!-- Strategy Weights -->
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Weight Bars -->
+                    <div>
+                      <h5 class="text-sm font-semibold mb-3" style="color: var(--dark-brown)">Optimal Weights:</h5>
+                      <div id="weight-bars" class="space-y-2"></div>
+                    </div>
+
+                    <!-- Weight Pie Chart -->
+                    <div>
+                      <h5 class="text-sm font-semibold mb-3" style="color: var(--dark-brown)">Portfolio Allocation:</h5>
+                      <div style="height: 250px; position: relative;">
+                        <canvas id="weight-pie-chart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Data Source Info -->
+                  <div class="mt-4 p-3 rounded text-xs" style="background: var(--cream-200); color: var(--warm-gray)">
+                    <strong style="color: var(--navy)">Data Source:</strong> <span id="opt-data-source">-</span><br>
+                    <strong style="color: var(--navy)">Historical Period:</strong> 90 days of daily returns<br>
+                    <strong style="color: var(--navy)">Methodology:</strong> Covariance matrix calculated from strategy returns mapped to underlying assets (BTC, ETH, SOL)
+                  </div>
+                </div>
+              </div>
+
+              <!-- Loading State -->
+              <div id="optimization-loading" class="hidden text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-4 border-solid border-navy border-r-transparent"></div>
+                <p class="mt-3 text-sm" style="color: var(--warm-gray)">Running optimization...</p>
+              </div>
+
+              <!-- Error State -->
+              <div id="optimization-error" class="hidden p-4 rounded" style="background: #FDEAEA; border: 2px solid var(--deep-red)">
+                <p class="text-sm font-semibold" style="color: var(--deep-red)">
+                  <i class="fas fa-exclamation-triangle mr-2"></i>Optimization Error
+                </p>
+                <p id="optimization-error-msg" class="text-xs mt-1" style="color: var(--deep-red)"></p>
+              </div>
+            </div>
+
             <!-- Real Algorithm Signal Attribution -->
             <div class="card">
               <h3 class="text-xl font-bold mb-4" style="color: var(--navy)">

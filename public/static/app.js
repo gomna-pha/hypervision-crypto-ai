@@ -4464,6 +4464,218 @@ document.addEventListener('DOMContentLoaded', () => {
 // END PAPER TRADING SYSTEM
 // ============================================================================
 
+// ============================================================================
+// PORTFOLIO OPTIMIZATION SYSTEM
+// ============================================================================
+
+// Global variable to store the pie chart instance
+let weightPieChart = null;
+
+// Update risk slider display
+document.addEventListener('DOMContentLoaded', () => {
+  const riskSlider = document.getElementById('risk-slider');
+  const riskValue = document.getElementById('risk-value');
+  
+  if (riskSlider && riskValue) {
+    riskSlider.addEventListener('input', (e) => {
+      riskValue.textContent = e.target.value;
+    });
+  }
+});
+
+// Run portfolio optimization
+async function runPortfolioOptimization() {
+  try {
+    // Show loading state
+    document.getElementById('optimization-loading').classList.remove('hidden');
+    document.getElementById('optimization-results').classList.add('hidden');
+    document.getElementById('optimization-error').classList.add('hidden');
+    
+    // Get selected strategies
+    const checkboxes = document.querySelectorAll('.strategy-checkbox:checked');
+    const strategies = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (strategies.length === 0) {
+      throw new Error('Please select at least one strategy');
+    }
+    
+    // Get configuration
+    const riskPreference = parseFloat(document.getElementById('risk-slider').value);
+    const method = document.getElementById('optimization-method').value;
+    
+    console.log('[Portfolio Optimization] Running with:', { strategies, method, riskPreference });
+    
+    // Call API
+    const response = await fetch('/api/portfolio/optimize', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        strategies,
+        method,
+        riskPreference
+      })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Optimization failed');
+    }
+    
+    const result = await response.json();
+    
+    console.log('[Portfolio Optimization] Result:', result);
+    
+    if (!result.success) {
+      throw new Error(result.error || 'Optimization failed');
+    }
+    
+    // Display results
+    displayOptimizationResults(result);
+    
+  } catch (error) {
+    console.error('[Portfolio Optimization] Error:', error);
+    document.getElementById('optimization-loading').classList.add('hidden');
+    document.getElementById('optimization-error').classList.remove('hidden');
+    document.getElementById('optimization-error-msg').textContent = error.message;
+  }
+}
+
+// Display optimization results
+function displayOptimizationResults(result) {
+  // Hide loading
+  document.getElementById('optimization-loading').classList.add('hidden');
+  
+  // Show results
+  document.getElementById('optimization-results').classList.remove('hidden');
+  
+  // Update metrics
+  const metrics = result.metrics;
+  document.getElementById('opt-return').textContent = (metrics.expectedReturn * 100).toFixed(2) + '%';
+  document.getElementById('opt-volatility').textContent = (metrics.volatility * 100).toFixed(2) + '%';
+  document.getElementById('opt-sharpe').textContent = metrics.sharpeRatio.toFixed(2);
+  
+  // Update data source
+  const source = result.dataSource || 'Realistic Market Simulation (Geometric Brownian Motion)';
+  document.getElementById('opt-data-source').textContent = source;
+  
+  // Display weight bars
+  displayWeightBars(result.strategies, result.weights);
+  
+  // Display pie chart
+  displayWeightPieChart(result.strategies, result.weights);
+  
+  // Scroll to results
+  document.getElementById('optimization-results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Display weight bars
+function displayWeightBars(strategies, weights) {
+  const container = document.getElementById('weight-bars');
+  container.innerHTML = '';
+  
+  strategies.forEach((strategy, i) => {
+    const weight = weights[i];
+    const percentage = (weight * 100).toFixed(1);
+    
+    const barDiv = document.createElement('div');
+    barDiv.innerHTML = `
+      <div class="flex items-center justify-between text-sm mb-1">
+        <span class="font-medium" style="color: var(--dark-brown)">${strategy}</span>
+        <span class="font-bold" style="color: var(--navy)">${percentage}%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: ${percentage}%; background: var(--navy)"></div>
+      </div>
+    `;
+    
+    container.appendChild(barDiv);
+  });
+}
+
+// Display weight pie chart
+function displayWeightPieChart(strategies, weights) {
+  const canvas = document.getElementById('weight-pie-chart');
+  const ctx = canvas.getContext('2d');
+  
+  // Destroy existing chart if it exists
+  if (weightPieChart) {
+    weightPieChart.destroy();
+  }
+  
+  // Color palette for strategies
+  const colors = [
+    '#1B365D', // navy
+    '#2D5F3F', // forest
+    '#C07F39', // burnt
+    '#8B3A3A', // deep-red
+    '#5B8C5A', // green
+    '#D4A574', // tan
+    '#6B5D4F', // warm-gray
+    '#2C2416', // dark-brown
+    '#4A7C9B', // blue
+    '#A67C52'  // brown
+  ];
+  
+  // Create chart
+  weightPieChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: strategies,
+      datasets: [{
+        data: weights.map(w => (w * 100).toFixed(1)),
+        backgroundColor: colors.slice(0, strategies.length),
+        borderColor: 'white',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: {
+            font: {
+              size: 11
+            },
+            padding: 8,
+            generateLabels: function(chart) {
+              const data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map((label, i) => {
+                  const value = data.datasets[0].data[i];
+                  return {
+                    text: `${label}: ${value}%`,
+                    fillStyle: data.datasets[0].backgroundColor[i],
+                    hidden: false,
+                    index: i
+                  };
+                });
+              }
+              return [];
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const label = context.label || '';
+              const value = context.parsed || 0;
+              return `${label}: ${value}%`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+// ============================================================================
+// END PORTFOLIO OPTIMIZATION SYSTEM
+// ============================================================================
+
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
   if (updateInterval) {
