@@ -2314,6 +2314,85 @@ app.get('/', (c) => {
               <div id="composite-signal" class="card fade-in" style="border: 3px solid var(--navy)"></div>
             </div>
 
+            <!-- ML Architecture Dashboard (NEW) -->
+            <div class="card mb-8" style="border: 3px solid var(--burnt); background: linear-gradient(135deg, #FAF7F0 0%, #F5F0E8 100%)">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h3 class="text-2xl font-bold" style="color: var(--navy)">
+                    🧠 ML Architecture Status
+                  </h3>
+                  <p class="text-sm mt-1" style="color: var(--warm-gray)">
+                    Advanced ML: Genetic Algorithm + XGBoost + Hyperbolic Embeddings + HMM Regime Detection
+                  </p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <div class="w-2 h-2 rounded-full pulse-dot" style="background: var(--forest)"></div>
+                  <span class="text-xs font-semibold" style="color: var(--forest)">LIVE</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Market Regime -->
+                <div class="metric-card">
+                  <div class="text-xs font-semibold mb-2" style="color: var(--warm-gray)">Market Regime (HMM)</div>
+                  <div id="ml-regime-display" class="text-center">
+                    <span class="text-sm" style="color: var(--navy)">Loading...</span>
+                  </div>
+                </div>
+
+                <!-- XGBoost Meta-Model -->
+                <div class="metric-card">
+                  <div class="text-xs font-semibold mb-2" style="color: var(--warm-gray)">XGBoost Meta-Model</div>
+                  <div id="ml-metamodel-display">
+                    <span class="text-sm" style="color: var(--navy)">Loading...</span>
+                  </div>
+                </div>
+
+                <!-- Risk Management -->
+                <div class="metric-card">
+                  <div class="text-xs font-semibold mb-2" style="color: var(--warm-gray)">Risk Constraints</div>
+                  <div id="ml-risk-display">
+                    <span class="text-sm" style="color: var(--navy)">Loading...</span>
+                  </div>
+                </div>
+
+                <!-- Strategy Signals -->
+                <div class="metric-card">
+                  <div class="text-xs font-semibold mb-2" style="color: var(--warm-gray)">Active Strategy Signals</div>
+                  <div id="ml-strategies-display" class="text-center">
+                    <div class="text-3xl font-bold" style="color: var(--navy)">0</div>
+                    <div class="text-xs" style="color: var(--warm-gray)">Regime-Conditional</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ML Components Status -->
+              <div class="mt-6 pt-6 border-t" style="border-color: var(--cream-300)">
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
+                  <div class="flex items-center gap-2">
+                    <span style="color: var(--forest)">✓</span>
+                    <span style="color: var(--warm-gray)">5 AI Agents</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span style="color: var(--forest)">✓</span>
+                    <span style="color: var(--warm-gray)">Genetic Algorithm</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span style="color: var(--forest)">✓</span>
+                    <span style="color: var(--warm-gray)">Hyperbolic Embeddings</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span style="color: var(--forest)">✓</span>
+                    <span style="color: var(--warm-gray)">HMM Regime Detection</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span style="color: var(--forest)">✓</span>
+                    <span style="color: var(--warm-gray)">Portfolio Risk Manager</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <!-- Autonomous Trading Agent Control Panel -->
             <div class="card mb-8" style="border: 3px solid var(--forest)">
               <div class="flex items-center justify-between mb-4">

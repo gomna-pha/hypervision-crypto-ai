@@ -24,6 +24,11 @@ let portfolioBalance = 200000; // Starting balance: $200,000
 let executedTrades = new Set(); // Track which opportunities have been executed
 let activeStrategies = new Set(); // Track unique strategies with executed trades
 
+// ML Architecture State
+let mlPipelineData = null;
+let mlEnabled = true; // Toggle ML features
+let lastMLUpdate = null;
+
 // Autonomous Trading Agent State
 let autonomousMode = false; // Toggle for autonomous execution
 let agentConfig = {
@@ -150,6 +155,9 @@ async function updateAgentData() {
     const oppsResponse = await axios.get('/api/opportunities');
     updateOpportunitiesTable(oppsResponse.data);
     
+    // Update ML Pipeline (NEW)
+    await updateMLPipeline();
+    
   } catch (error) {
     console.error('Error updating agent data:', error);
   }
@@ -255,6 +263,137 @@ async function updatePortfolioMetrics() {
     
   } catch (error) {
     console.error('Error updating portfolio metrics:', error);
+  }
+}
+
+// Update ML Pipeline Data (NEW FEATURE)
+async function updateMLPipeline() {
+  if (!mlEnabled) return;
+  
+  try {
+    const response = await axios.post('/api/ml/pipeline', {
+      spotPrice: 96500,
+      perpPrice: 96530,
+      symbol: 'BTC-USD',
+      bidPrice: 96495,
+      askPrice: 96505,
+      volume24h: 1000000
+    });
+    
+    if (response.data.success) {
+      mlPipelineData = response.data.data;
+      lastMLUpdate = new Date();
+      
+      // Update ML status displays
+      updateMLRegimeDisplay();
+      updateMLMetaModelDisplay();
+      updateMLRiskDisplay();
+      
+      console.log('✅ ML Pipeline updated:', {
+        regime: mlPipelineData.regime.current,
+        confidence: mlPipelineData.metaModel?.confidenceScore,
+        action: mlPipelineData.metaModel?.action
+      });
+    }
+  } catch (error) {
+    console.warn('ML Pipeline not available (this is normal if ML features are still deploying):', error.message);
+    mlEnabled = false; // Disable to avoid repeated errors
+  }
+}
+
+// Update ML Regime Display
+function updateMLRegimeDisplay() {
+  const regimeEl = document.getElementById('ml-regime-display');
+  if (!regimeEl || !mlPipelineData) return;
+  
+  const regime = mlPipelineData.regime;
+  const regimeNames = {
+    'neutral': 'NEUTRAL',
+    'risk_on': 'RISK ON',
+    'crisis_stress': 'CRISIS',
+    'defensive': 'DEFENSIVE',
+    'high_conviction': 'HIGH CONVICTION'
+  };
+  
+  const regimeColors = {
+    'neutral': COLORS.warmGray,
+    'risk_on': COLORS.forest,
+    'crisis_stress': COLORS.deepRed,
+    'defensive': COLORS.burnt,
+    'high_conviction': COLORS.navy
+  };
+  
+  regimeEl.innerHTML = `
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg" style="background: ${regimeColors[regime.current]}20; border: 2px solid ${regimeColors[regime.current]}">
+      <span class="text-sm font-bold" style="color: ${regimeColors[regime.current]}">
+        🎯 ${regimeNames[regime.current] || regime.current.toUpperCase()}
+      </span>
+      <span class="text-xs" style="color: ${COLORS.warmGray}">
+        (${(regime.confidence * 100).toFixed(0)}% conf)
+      </span>
+    </div>
+  `;
+}
+
+// Update ML Meta-Model Display
+function updateMLMetaModelDisplay() {
+  const metaEl = document.getElementById('ml-metamodel-display');
+  if (!metaEl || !mlPipelineData || !mlPipelineData.metaModel) return;
+  
+  const meta = mlPipelineData.metaModel;
+  const actionColors = {
+    'EXECUTE': COLORS.forest,
+    'WAIT': COLORS.burnt,
+    'REDUCE': COLORS.deepRed
+  };
+  
+  metaEl.innerHTML = `
+    <div class="space-y-2">
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-semibold" style="color: ${COLORS.navy}">ML Confidence</span>
+        <span class="text-lg font-bold" style="color: ${COLORS.navy}">${meta.confidenceScore.toFixed(1)}%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-sm font-semibold" style="color: ${COLORS.navy}">Action</span>
+        <span class="text-sm font-bold px-2 py-1 rounded" style="background: ${actionColors[meta.action]}20; color: ${actionColors[meta.action]}">
+          ${meta.action}
+        </span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs" style="color: ${COLORS.warmGray}">Signal Agreement</span>
+        <span class="text-xs font-semibold" style="color: ${COLORS.navy}">${(meta.signalAgreement * 100).toFixed(0)}%</span>
+      </div>
+      <div class="flex items-center justify-between">
+        <span class="text-xs" style="color: ${COLORS.warmGray}">Exposure Scaler</span>
+        <span class="text-xs font-semibold" style="color: ${COLORS.navy}">${meta.exposureScaler.toFixed(2)}×</span>
+      </div>
+    </div>
+  `;
+}
+
+// Update ML Risk Display
+function updateMLRiskDisplay() {
+  const riskEl = document.getElementById('ml-risk-display');
+  if (!riskEl || !mlPipelineData || !mlPipelineData.riskConstraints) return;
+  
+  const violations = mlPipelineData.riskConstraints.filter(rc => rc.violated);
+  
+  if (violations.length === 0) {
+    riskEl.innerHTML = `
+      <div class="flex items-center gap-2 px-3 py-2 rounded-lg" style="background: ${COLORS.forest}10; border: 2px solid ${COLORS.forest}">
+        <span class="text-sm" style="color: ${COLORS.forest}">✅ All Risk Checks Pass</span>
+      </div>
+    `;
+  } else {
+    riskEl.innerHTML = `
+      <div class="space-y-1">
+        ${violations.map(v => `
+          <div class="flex items-center gap-2 px-2 py-1 rounded text-xs" style="background: ${COLORS.deepRed}10; color: ${COLORS.deepRed}">
+            ⚠️ ${v.name}: ${v.current.toFixed(1)} > ${v.limit.toFixed(1)}
+          </div>
+        `).join('')}
+      </div>
+    `;
   }
 }
 
