@@ -9,7 +9,7 @@
  * Feeds directly into ML pipeline
  */
 
-import { MarketDataFeed, realtimeFeeds } from '../data/realtime-data-feeds';
+import { MarketDataFeed, realtimeFeeds } from '../data/realtime-data-feeds-node';
 import { RawMarketData } from '../ml/feature-engineering';
 
 export interface AggregatedMarketData {
