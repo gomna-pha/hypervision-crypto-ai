@@ -13,6 +13,8 @@
 import { Hono } from 'hono';
 import { MLOrchestrator } from './ml/ml-orchestrator';
 import type { RawMarketData } from './ml/feature-engineering';
+import { realtimeMLService } from './services/realtime-ml-service';
+import { websocketService } from './services/websocket-service';
 
 // Initialize ML Orchestrator (singleton)
 let mlOrchestrator: MLOrchestrator | null = null;
@@ -342,6 +344,159 @@ export function registerMLEndpoints(app: Hono) {
         },
         metadata: {
           latencyMs: Date.now() - startTime,
+        },
+      });
+    } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500);
+    }
+  });
+  
+  /**
+   * POST /api/ml/realtime/start
+   * Start real-time ML pipeline with WebSocket feeds
+   */
+  app.post('/api/ml/realtime/start', async (c) => {
+    try {
+      const body = await c.req.json().catch(() => ({}));
+      const symbols = body.symbols || ['BTC'];
+      
+      await realtimeMLService.start(symbols);
+      
+      return c.json({
+        success: true,
+        message: 'Real-time ML pipeline started',
+        data: realtimeMLService.getStatus(),
+      });
+    } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500);
+    }
+  });
+  
+  /**
+   * POST /api/ml/realtime/stop
+   * Stop real-time ML pipeline
+   */
+  app.post('/api/ml/realtime/stop', async (c) => {
+    try {
+      realtimeMLService.stop();
+      
+      return c.json({
+        success: true,
+        message: 'Real-time ML pipeline stopped',
+      });
+    } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500);
+    }
+  });
+  
+  /**
+   * GET /api/ml/realtime/status
+   * Get real-time ML pipeline status
+   */
+  app.get('/api/ml/realtime/status', (c) => {
+    try {
+      const status = realtimeMLService.getStatus();
+      
+      return c.json({
+        success: true,
+        data: status,
+      });
+    } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500);
+    }
+  });
+  
+  /**
+   * GET /api/ml/realtime/output/:symbol
+   * Get latest real-time ML output for symbol
+   */
+  app.get('/api/ml/realtime/output/:symbol', (c) => {
+    try {
+      const symbol = c.req.param('symbol').toUpperCase();
+      const output = realtimeMLService.getLatestOutput(symbol);
+      
+      if (!output) {
+        return c.json({
+          success: false,
+          error: `No data available for ${symbol}. Start real-time pipeline first.`,
+        }, 404);
+      }
+      
+      return c.json({
+        success: true,
+        data: {
+          symbol: output.rawData.symbol,
+          timestamp: output.timestamp,
+          dataSource: output.dataSource,
+          dataQuality: output.dataQuality,
+          connectedExchanges: output.connectedExchanges,
+          
+          // Market data
+          spotPrice: output.rawData.spotPrice,
+          exchangePrices: output.rawData.exchangePrices,
+          
+          // ML outputs
+          regime: output.regimeState.current,
+          regimeConfidence: output.regimeState.confidence,
+          metaModel: output.metaModelOutput ? {
+            confidence: output.metaModelOutput.confidence,
+            action: output.metaModelOutput.action,
+            exposureMultiplier: output.metaModelOutput.exposureMultiplier,
+            leverageMultiplier: output.metaModelOutput.leverageMultiplier,
+          } : null,
+          
+          // Strategies
+          activeStrategies: output.strategySignals.length,
+          strategySignals: output.strategySignals.map(s => ({
+            strategy: s.strategy,
+            action: s.action,
+            confidence: s.confidence,
+          })),
+          
+          // Portfolio
+          portfolioMetrics: output.portfolioMetrics,
+          riskViolations: output.riskConstraints.filter(r => r.violated).length,
+          
+          // Performance
+          latencyMs: output.latencyMs,
+          updateLatencyMs: output.updateLatencyMs,
+        },
+      });
+    } catch (error: any) {
+      return c.json({ success: false, error: error.message }, 500);
+    }
+  });
+  
+  /**
+   * GET /api/ml/realtime/ws-status
+   * Get WebSocket connection status
+   */
+  app.get('/api/ml/realtime/ws-status', (c) => {
+    try {
+      const wsStatus = websocketService.getConnectionStatus();
+      const latestBTC = websocketService.getLatestData('BTC');
+      const latestETH = websocketService.getLatestData('ETH');
+      
+      return c.json({
+        success: true,
+        data: {
+          websocket: wsStatus,
+          latestData: {
+            BTC: latestBTC ? {
+              spotPrice: latestBTC.spotPrice,
+              exchanges: latestBTC.exchangePrices,
+              dataQuality: latestBTC.dataQuality,
+              timestamp: latestBTC.timestamp,
+              bestArbitrageSpread: latestBTC.bestArbitrageSpread,
+            } : null,
+            ETH: latestETH ? {
+              spotPrice: latestETH.spotPrice,
+              exchanges: latestETH.exchangePrices,
+              dataQuality: latestETH.dataQuality,
+              timestamp: latestETH.timestamp,
+              bestArbitrageSpread: latestETH.bestArbitrageSpread,
+            } : null,
+          },
         },
       });
     } catch (error: any) {
