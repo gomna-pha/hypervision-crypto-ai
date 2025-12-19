@@ -8,6 +8,7 @@ import {
   getGlobalMarketData,
   calculateArbitrageOpportunities
 } from './api-services'
+import { registerMLEndpoints } from './ml-api-endpoints'
 
 const app = new Hono()
 
@@ -266,6 +267,13 @@ Be concise, professional, and data-driven. Use financial terminology. This is re
     })
   }
 })
+
+// ============================================================================
+// ML ADVANCED FEATURES - Genetic Algorithm, XGBoost, Regime Detection
+// ============================================================================
+
+// Register all ML endpoints
+registerMLEndpoints(app);
 
 // ============================================================================
 // PORTFOLIO OPTIMIZATION APIs - Real Historical Data

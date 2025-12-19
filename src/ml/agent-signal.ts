@@ -251,7 +251,7 @@ export class SentimentAgent extends BaseAgent {
     }
 
     // Confidence based on sentiment extremes (more confident at extremes)
-    const distance From50 = Math.abs(fearGreed - 50);
+    const distanceFrom50 = Math.abs(fearGreed - 50);
     const confidence = distanceFrom50 / 50;
 
     // Risk score (extreme sentiment = higher risk)
