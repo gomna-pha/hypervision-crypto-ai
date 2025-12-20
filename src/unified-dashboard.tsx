@@ -376,13 +376,15 @@ export function registerDashboardRoute(app: Hono) {
         });
         const pipeline = await pipelineRes.json();
         
-        if (pipeline.success && pipeline.data) {
-          const data = pipeline.data;
-          
-          // Update system status
+        // Update system status - show ONLINE if we got any data
+        if (agents || pipeline || opportunities) {
           document.getElementById('system-status').textContent = 'ONLINE';
           document.getElementById('system-status').style.color = '#22c55e';
-          document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        }
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        
+        if (pipeline.success && pipeline.data) {
+          const data = pipeline.data;
           
           // Get real BTC price from agents
           const btcPrice = agents.crossExchange?.vwap || 96500;
@@ -427,21 +429,23 @@ export function registerDashboardRoute(app: Hono) {
             document.getElementById('agent-sentiment-signal').textContent = agents.sentiment.signal || 'NEUTRAL';
           }
           if (agents.crossExchange) {
-            document.getElementById('agent-cross-exchange-score').textContent = agents.crossExchange.liquidityScore;
-            document.getElementById('agent-cross-exchange-signal').textContent = (agents.crossExchange.spread > 0.1 ? 'OPPORTUNITY' : 'TIGHT');
+            document.getElementById('agent-cross-exchange-score').textContent = agents.crossExchange.liquidityScore || agents.crossExchange.score;
+            const spread = parseFloat(agents.crossExchange.spread);
+            document.getElementById('agent-cross-exchange-signal').textContent = (spread > 5 ? 'OPPORTUNITY' : 'TIGHT');
           }
           if (agents.onChain) {
             document.getElementById('agent-on-chain-score').textContent = agents.onChain.score;
             document.getElementById('agent-on-chain-signal').textContent = agents.onChain.signal || 'NEUTRAL';
           }
           if (agents.cnnPattern) {
-            document.getElementById('agent-cnn-pattern-score').textContent = agents.cnnPattern.reinforcedConfidence;
-            document.getElementById('agent-cnn-pattern-signal').textContent = agents.cnnPattern.direction || 'NEUTRAL';
+            document.getElementById('agent-cnn-pattern-score').textContent = agents.cnnPattern.reinforcedConfidence || agents.cnnPattern.score;
+            document.getElementById('agent-cnn-pattern-signal').textContent = (agents.cnnPattern.direction || 'NEUTRAL').toUpperCase();
           }
           
           // Update GA
           if (data.gaGenome) {
-            document.getElementById('ga-signals').textContent = data.gaGenome.activeSignals.filter(s => s === 1).length;
+            const activeCount = data.gaGenome.activeSignals.filter(s => s === 1).length;
+            document.getElementById('ga-signals').textContent = activeCount;
             document.getElementById('ga-fitness').textContent = data.gaGenome.fitness.toFixed(2);
             document.getElementById('ga-last-run').textContent = 'Just now';
           }
@@ -460,7 +464,7 @@ export function registerDashboardRoute(app: Hono) {
           if (data.metaModel) {
             const confidence = Math.round(data.metaModel.confidenceScore || 0);
             document.getElementById('xgb-confidence').textContent = confidence + '%';
-            document.getElementById('xgb-action').textContent = data.metaModel.action;
+            document.getElementById('xgb-action').textContent = data.metaModel.action || 'WAIT';
             document.getElementById('xgb-exposure').textContent = (data.metaModel.exposureScaler || 0).toFixed(2) + 'x';
             
             // Color code confidence
