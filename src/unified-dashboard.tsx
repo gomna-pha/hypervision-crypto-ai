@@ -186,20 +186,20 @@ export function registerDashboardRoute(app: Hono) {
         <!-- Cross-Exchange Agent -->
         <div class="agent-card rounded-lg p-4">
           <div class="text-xs text-gray-400 mb-2">CROSS-EXCHANGE</div>
-          <div id="agent-cross-score" class="text-2xl font-bold text-green-400">--</div>
-          <div id="agent-cross-signal" class="text-xs mt-2">--</div>
+          <div id="agent-cross-exchange-score" class="text-2xl font-bold text-green-400">--</div>
+          <div id="agent-cross-exchange-signal" class="text-xs mt-2">--</div>
         </div>
         <!-- On-Chain Agent -->
         <div class="agent-card rounded-lg p-4">
           <div class="text-xs text-gray-400 mb-2">ON-CHAIN AGENT</div>
-          <div id="agent-onchain-score" class="text-2xl font-bold text-yellow-400">--</div>
-          <div id="agent-onchain-signal" class="text-xs mt-2">--</div>
+          <div id="agent-on-chain-score" class="text-2xl font-bold text-yellow-400">--</div>
+          <div id="agent-on-chain-signal" class="text-xs mt-2">--</div>
         </div>
         <!-- CNN Pattern Agent -->
         <div class="agent-card rounded-lg p-4">
           <div class="text-xs text-gray-400 mb-2">CNN PATTERN</div>
-          <div id="agent-cnn-score" class="text-2xl font-bold text-red-400">--</div>
-          <div id="agent-cnn-signal" class="text-xs mt-2">--</div>
+          <div id="agent-cnn-pattern-score" class="text-2xl font-bold text-red-400">--</div>
+          <div id="agent-cnn-pattern-signal" class="text-xs mt-2">--</div>
         </div>
       </div>
     </div>
