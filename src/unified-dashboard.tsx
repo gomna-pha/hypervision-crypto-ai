@@ -363,159 +363,208 @@ export function registerDashboardRoute(app: Hono) {
       try {
         // Fetch real agent data from /api/agents (REAL APIs: CoinGecko, Blockchain.com, Fear & Greed Index)
         const agentsRes = await fetch('/api/agents');
-        const agents = await agentsRes.json();
+        const agents = await agentsRes.json().catch(() => ({}));
         
         // Fetch real opportunities from 10 algorithms
         const oppsRes = await fetch('/api/opportunities');
-        const opportunities = await oppsRes.json();
+        const opportunities = await oppsRes.json().catch(() => []);
         
         // Fetch ML pipeline data
         const pipelineRes = await fetch('/api/ml/pipeline', { 
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
         });
-        const pipeline = await pipelineRes.json();
+        const pipeline = await pipelineRes.json().catch(() => ({ success: false }));
         
         // Update system status - show ONLINE if we got any data
-        if (agents || pipeline || opportunities) {
+        if (agents && Object.keys(agents).length > 0) {
           document.getElementById('system-status').textContent = 'ONLINE';
           document.getElementById('system-status').style.color = '#22c55e';
         }
-        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        const lastUpdateEl = document.getElementById('last-update');
+        if (lastUpdateEl) {
+          lastUpdateEl.textContent = new Date().toLocaleTimeString();
+        }
         
         if (pipeline.success && pipeline.data) {
           const data = pipeline.data;
           
           // Get real BTC price from agents
-          const btcPrice = agents.crossExchange?.vwap || 96500;
+          const btcPrice = agents?.crossExchange?.vwap || 96500;
           
           // Update market data (from real APIs)
-          document.getElementById('spot-price').textContent = '$' + btcPrice.toLocaleString();
-          document.getElementById('perp-price').textContent = '$' + (btcPrice * 1.0003).toLocaleString();
-          document.getElementById('funding-rate').textContent = '0.010%';
+          const spotPriceEl = document.getElementById('spot-price');
+          const perpPriceEl = document.getElementById('perp-price');
+          const fundingRateEl = document.getElementById('funding-rate');
+          const crossSpreadEl = document.getElementById('cross-spread');
+          const volume24hEl = document.getElementById('volume-24h');
+          const liquidityScoreEl = document.getElementById('liquidity-score');
           
-          if (data.features && data.features.spreads) {
-            document.getElementById('cross-spread').textContent = (data.features.spreads.crossExchange[0] || 0).toFixed(1) + ' bps';
+          if (spotPriceEl) spotPriceEl.textContent = '$' + btcPrice.toLocaleString();
+          if (perpPriceEl) perpPriceEl.textContent = '$' + (btcPrice * 1.0003).toLocaleString();
+          if (fundingRateEl) fundingRateEl.textContent = '0.010%';
+          
+          if (data.features && data.features.spreads && crossSpreadEl) {
+            crossSpreadEl.textContent = (data.features.spreads.crossExchange[0] || 0).toFixed(1) + ' bps';
           }
           
-          document.getElementById('volume-24h').textContent = '$1.2B';
-          document.getElementById('liquidity-score').textContent = (agents.crossExchange?.liquidityScore || 85) + '/100';
+          if (volume24hEl) volume24hEl.textContent = '$1.2B';
+          if (liquidityScoreEl) liquidityScoreEl.textContent = (agents?.crossExchange?.liquidityScore || 85) + '/100';
           
           // Update data quality
           const dataQualityEl = document.getElementById('data-quality');
-          if (agents.crossExchange && agents.onChain) {
+          if (dataQualityEl && agents && agents.crossExchange && agents.onChain) {
             dataQualityEl.textContent = 'EXCELLENT';
             dataQualityEl.className = 'status-badge status-excellent';
-          } else {
+          } else if (dataQualityEl) {
             dataQualityEl.textContent = 'GOOD';
             dataQualityEl.className = 'status-badge status-good';
           }
           
           // Update features (from real-time calculations)
           if (data.features) {
-            document.getElementById('returns-1h').textContent = ((data.features.returns?.log1h || 0) * 100).toFixed(2) + '%';
-            document.getElementById('volatility-24h').textContent = (data.features.volatility?.realized24h || 0).toFixed(1) + '%';
-            document.getElementById('spread-z').textContent = (data.features.zScores?.spreadZ || 0).toFixed(2);
-            document.getElementById('flow-imbalance').textContent = (data.features.flow?.volumeImbalance || 0).toFixed(2);
+            const returns1hEl = document.getElementById('returns-1h');
+            const vol24hEl = document.getElementById('volatility-24h');
+            const spreadZEl = document.getElementById('spread-z');
+            const flowImbalanceEl = document.getElementById('flow-imbalance');
+            
+            if (returns1hEl) returns1hEl.textContent = ((data.features.returns?.log1h || 0) * 100).toFixed(2) + '%';
+            if (vol24hEl) vol24hEl.textContent = (data.features.volatility?.realized24h || 0).toFixed(1) + '%';
+            if (spreadZEl) spreadZEl.textContent = (data.features.zScores?.spreadZ || 0).toFixed(2);
+            if (flowImbalanceEl) flowImbalanceEl.textContent = (data.features.flow?.volumeImbalance || 0).toFixed(2);
           }
           
           // Update agents with REAL data from /api/agents
-          if (agents.economic) {
-            document.getElementById('agent-economic-score').textContent = agents.economic.score;
-            document.getElementById('agent-economic-signal').textContent = agents.economic.policyStance || 'NEUTRAL';
+          if (agents && agents.economic) {
+            const econScoreEl = document.getElementById('agent-economic-score');
+            const econSignalEl = document.getElementById('agent-economic-signal');
+            if (econScoreEl) econScoreEl.textContent = agents.economic.score;
+            if (econSignalEl) econSignalEl.textContent = agents.economic.policyStance || 'NEUTRAL';
           }
-          if (agents.sentiment) {
-            document.getElementById('agent-sentiment-score').textContent = agents.sentiment.score;
-            document.getElementById('agent-sentiment-signal').textContent = agents.sentiment.signal || 'NEUTRAL';
+          if (agents && agents.sentiment) {
+            const sentScoreEl = document.getElementById('agent-sentiment-score');
+            const sentSignalEl = document.getElementById('agent-sentiment-signal');
+            if (sentScoreEl) sentScoreEl.textContent = agents.sentiment.score;
+            if (sentSignalEl) sentSignalEl.textContent = agents.sentiment.signal || 'NEUTRAL';
           }
-          if (agents.crossExchange) {
-            document.getElementById('agent-cross-exchange-score').textContent = agents.crossExchange.liquidityScore || agents.crossExchange.score;
-            const spread = parseFloat(agents.crossExchange.spread);
-            document.getElementById('agent-cross-exchange-signal').textContent = (spread > 5 ? 'OPPORTUNITY' : 'TIGHT');
+          if (agents && agents.crossExchange) {
+            const crossScoreEl = document.getElementById('agent-cross-exchange-score');
+            const crossSignalEl = document.getElementById('agent-cross-exchange-signal');
+            if (crossScoreEl) crossScoreEl.textContent = agents.crossExchange.liquidityScore || agents.crossExchange.score;
+            const spread = parseFloat(agents.crossExchange.spread || 0);
+            if (crossSignalEl) crossSignalEl.textContent = (spread > 5 ? 'OPPORTUNITY' : 'TIGHT');
           }
-          if (agents.onChain) {
-            document.getElementById('agent-on-chain-score').textContent = agents.onChain.score;
-            document.getElementById('agent-on-chain-signal').textContent = agents.onChain.signal || 'NEUTRAL';
+          if (agents && agents.onChain) {
+            const onChainScoreEl = document.getElementById('agent-on-chain-score');
+            const onChainSignalEl = document.getElementById('agent-on-chain-signal');
+            if (onChainScoreEl) onChainScoreEl.textContent = agents.onChain.score;
+            if (onChainSignalEl) onChainSignalEl.textContent = agents.onChain.signal || 'NEUTRAL';
           }
-          if (agents.cnnPattern) {
-            document.getElementById('agent-cnn-pattern-score').textContent = agents.cnnPattern.reinforcedConfidence || agents.cnnPattern.score;
-            document.getElementById('agent-cnn-pattern-signal').textContent = (agents.cnnPattern.direction || 'NEUTRAL').toUpperCase();
+          if (agents && agents.cnnPattern) {
+            const cnnScoreEl = document.getElementById('agent-cnn-pattern-score');
+            const cnnSignalEl = document.getElementById('agent-cnn-pattern-signal');
+            if (cnnScoreEl) cnnScoreEl.textContent = agents.cnnPattern.reinforcedConfidence || agents.cnnPattern.score;
+            if (cnnSignalEl) cnnSignalEl.textContent = (agents.cnnPattern.direction || 'NEUTRAL').toUpperCase();
           }
           
           // Update GA
           if (data.gaGenome) {
+            const gaSignalsEl = document.getElementById('ga-signals');
+            const gaFitnessEl = document.getElementById('ga-fitness');
+            const gaLastRunEl = document.getElementById('ga-last-run');
+            
             const activeCount = data.gaGenome.activeSignals.filter(s => s === 1).length;
-            document.getElementById('ga-signals').textContent = activeCount;
-            document.getElementById('ga-fitness').textContent = data.gaGenome.fitness.toFixed(2);
-            document.getElementById('ga-last-run').textContent = 'Just now';
+            if (gaSignalsEl) gaSignalsEl.textContent = activeCount;
+            if (gaFitnessEl) gaFitnessEl.textContent = data.gaGenome.fitness.toFixed(2);
+            if (gaLastRunEl) gaLastRunEl.textContent = 'Just now';
           }
           
           // Update hyperbolic
-          document.getElementById('hyper-robustness').textContent = 'High';
-          document.getElementById('hyper-similarity').textContent = '0.85';
+          const hyperRobustnessEl = document.getElementById('hyper-robustness');
+          const hyperSimilarityEl = document.getElementById('hyper-similarity');
+          if (hyperRobustnessEl) hyperRobustnessEl.textContent = 'High';
+          if (hyperSimilarityEl) hyperSimilarityEl.textContent = '0.85';
           
           // Update regime
           if (data.regime) {
-            document.getElementById('regime-current').textContent = data.regime.current.toUpperCase().replace('_', ' ');
-            document.getElementById('regime-confidence').textContent = Math.round(data.regime.confidence * 100) + '% Confidence';
+            const regimeCurrentEl = document.getElementById('regime-current');
+            const regimeConfEl = document.getElementById('regime-confidence');
+            if (regimeCurrentEl) regimeCurrentEl.textContent = data.regime.current.toUpperCase().replace('_', ' ');
+            if (regimeConfEl) regimeConfEl.textContent = Math.round(data.regime.confidence * 100) + '% Confidence';
           }
           
           // Update XGBoost
           if (data.metaModel) {
+            const xgbConfidenceEl = document.getElementById('xgb-confidence');
+            const xgbActionEl = document.getElementById('xgb-action');
+            const xgbExposureEl = document.getElementById('xgb-exposure');
+            
             const confidence = Math.round(data.metaModel.confidenceScore || 0);
-            document.getElementById('xgb-confidence').textContent = confidence + '%';
-            document.getElementById('xgb-action').textContent = data.metaModel.action || 'WAIT';
-            document.getElementById('xgb-exposure').textContent = (data.metaModel.exposureScaler || 0).toFixed(2) + 'x';
+            if (xgbConfidenceEl) xgbConfidenceEl.textContent = confidence + '%';
+            if (xgbActionEl) xgbActionEl.textContent = data.metaModel.action || 'WAIT';
+            if (xgbExposureEl) xgbExposureEl.textContent = (data.metaModel.exposureScaler || 0).toFixed(2) + 'x';
             
             // Color code confidence
-            const confEl = document.getElementById('xgb-confidence');
-            if (confidence > 70) {
-              confEl.style.color = '#22c55e';
-            } else if (confidence > 50) {
-              confEl.style.color = '#fbbf24';
-            } else {
-              confEl.style.color = '#ef4444';
+            if (xgbConfidenceEl) {
+              if (confidence > 70) {
+                xgbConfidenceEl.style.color = '#22c55e';
+              } else if (confidence > 50) {
+                xgbConfidenceEl.style.color = '#fbbf24';
+              } else {
+                xgbConfidenceEl.style.color = '#ef4444';
+              }
             }
           }
           
           // Update strategies with REAL opportunities from 10 algorithms
           const strategiesContainer = document.getElementById('active-strategies');
-          strategiesContainer.innerHTML = '';
-          if (opportunities && opportunities.length > 0) {
-            const topOpps = opportunities.slice(0, 4);
-            topOpps.forEach(opp => {
-              const profitColor = opp.netProfit > 0 ? 'text-green-400' : 'text-red-400';
-              strategiesContainer.innerHTML += '<div class="agent-card rounded-lg p-3">' +
-                '<div class="text-xs text-gray-400">' + opp.strategy.toUpperCase() + '</div>' +
-                '<div class="text-lg font-bold ' + profitColor + '">$' + opp.netProfit.toFixed(2) + '</div>' +
-                '<div class="text-xs text-gray-500">' + opp.mlConfidence + '% ML confidence</div>' +
-                '</div>';
-            });
-          } else {
-            strategiesContainer.innerHTML = '<div class="col-span-4 text-center text-gray-400">Scanning for opportunities...</div>';
+          if (strategiesContainer) {
+            strategiesContainer.innerHTML = '';
+            if (opportunities && opportunities.length > 0) {
+              const topOpps = opportunities.slice(0, 4);
+              topOpps.forEach(opp => {
+                const profitColor = opp.netProfit > 0 ? 'text-green-400' : 'text-red-400';
+                strategiesContainer.innerHTML += '<div class="agent-card rounded-lg p-3">' +
+                  '<div class="text-xs text-gray-400">' + opp.strategy.toUpperCase() + '</div>' +
+                  '<div class="text-lg font-bold ' + profitColor + '">$' + opp.netProfit.toFixed(2) + '</div>' +
+                  '<div class="text-xs text-gray-500">' + opp.mlConfidence + '% ML confidence</div>' +
+                  '</div>';
+              });
+            } else {
+              strategiesContainer.innerHTML = '<div class="col-span-4 text-center text-gray-400">Scanning for opportunities...</div>';
+            }
           }
           
           // Update portfolio (from real ML pipeline)
           if (data.portfolio) {
-            document.getElementById('portfolio-pnl').textContent = '$' + (data.portfolio.totalPnL || 0).toFixed(0);
-            document.getElementById('portfolio-sharpe').textContent = (data.portfolio.sharpeRatio || 0).toFixed(2);
-            document.getElementById('portfolio-drawdown').textContent = (data.portfolio.maxDrawdown || 0).toFixed(1) + '%';
+            const portfolioPnlEl = document.getElementById('portfolio-pnl');
+            const portfolioSharpeEl = document.getElementById('portfolio-sharpe');
+            const portfolioDrawdownEl = document.getElementById('portfolio-drawdown');
+            const riskStatusEl = document.getElementById('risk-status');
+            
+            if (portfolioPnlEl) portfolioPnlEl.textContent = '$' + (data.portfolio.totalPnL || 0).toFixed(0);
+            if (portfolioSharpeEl) portfolioSharpeEl.textContent = (data.portfolio.sharpeRatio || 0).toFixed(2);
+            if (portfolioDrawdownEl) portfolioDrawdownEl.textContent = (data.portfolio.maxDrawdown || 0).toFixed(1) + '%';
             
             const riskViolations = (data.riskConstraints || []).filter(r => r.violated).length;
-            const riskEl = document.getElementById('risk-status');
-            if (riskViolations === 0) {
-              riskEl.textContent = 'HEALTHY';
-              riskEl.className = 'status-badge status-excellent';
-            } else {
-              riskEl.textContent = riskViolations + ' VIOLATIONS';
-              riskEl.className = 'status-badge status-danger';
+            if (riskStatusEl) {
+              if (riskViolations === 0) {
+                riskStatusEl.textContent = 'HEALTHY';
+                riskStatusEl.className = 'status-badge status-excellent';
+              } else {
+                riskStatusEl.textContent = riskViolations + ' VIOLATIONS';
+                riskStatusEl.className = 'status-badge status-danger';
+              }
             }
           }
         }
       } catch (error) {
         console.error('Dashboard update error:', error);
-        document.getElementById('system-status').textContent = 'ERROR';
-        document.getElementById('system-status').style.color = '#ef4444';
+        const systemStatusEl = document.getElementById('system-status');
+        if (systemStatusEl) {
+          systemStatusEl.textContent = 'ERROR';
+          systemStatusEl.style.color = '#ef4444';
+        }
         // Don't throw - keep trying on next interval
       }
     }
