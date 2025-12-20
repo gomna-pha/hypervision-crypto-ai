@@ -10,6 +10,7 @@ import {
 } from './api-services'
 import { registerMLEndpoints } from './ml-api-endpoints'
 import { registerDashboardRoute } from './unified-dashboard'
+import { registerAnalyticsRoute } from './analytics-dashboard'
 
 const app = new Hono()
 
@@ -21,6 +22,9 @@ app.use('/static/*', serveStatic({ root: './public' }))
 
 // Register unified dashboard as main route
 registerDashboardRoute(app)
+
+// Register analytics dashboard
+registerAnalyticsRoute(app)
 
 // API Routes with REAL API integration
 app.get('/api/agents', async (c) => {

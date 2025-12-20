@@ -79,10 +79,16 @@ export function registerDashboardRoute(app: Hono) {
           </h1>
           <p class="text-gray-400 mt-1">Real-Time Crypto Arbitrage Trading System</p>
         </div>
-        <div class="text-right">
-          <div class="text-sm text-gray-400">System Status</div>
-          <div id="system-status" class="metric-value">INITIALIZING</div>
-          <div class="text-xs text-gray-500 mt-1">Last Update: <span id="last-update">--</span></div>
+        <div class="flex items-center space-x-6">
+          <a href="/analytics" class="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all flex items-center space-x-2">
+            <i class="fas fa-chart-line"></i>
+            <span>Weekly Analytics</span>
+          </a>
+          <div class="text-right">
+            <div class="text-sm text-gray-400">System Status</div>
+            <div id="system-status" class="metric-value">INITIALIZING</div>
+            <div class="text-xs text-gray-500 mt-1">Last Update: <span id="last-update">--</span></div>
+          </div>
         </div>
       </div>
     </div>
